@@ -984,6 +984,9 @@ export default function PR2ConfigClean() {
   };
   
   const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(PIPE_SIZE_IDS['100']);
+  const [showRangeWarning, setShowRangeWarning] = useState<boolean>(false);
+  const [pendingRangeValue, setPendingRangeValue] = useState<string>('');
+  const [pendingRowId, setPendingRowId] = useState<number | null>(null);
   
   // Get consistent ID for pipe size configuration
   const getPipeSizeId = (pipeSize: string) => {
@@ -1113,13 +1116,42 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Save exactly what user types - no automatic .99 addition
+    // Check for .99 warning on purple length fields
+    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
+      // Show warning popup for missing .99
+      setPendingRangeValue(value);
+      setPendingRowId(rowId);
+      setShowRangeWarning(true);
+      return; // Don't save yet, wait for user decision
+    }
+    
+    // Save exactly what user types
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
     
     updateMM4DataForPipeSize(newData);
     triggerAutoSave();
+  };
+
+  // Handle range warning dialog responses
+  const handleRangeWarningResponse = (addDotNineNine: boolean) => {
+    if (pendingRowId === null) return;
+    
+    const currentData = getCurrentMM4Data();
+    const finalValue = addDotNineNine ? `${pendingRangeValue}.99` : pendingRangeValue;
+    
+    const newData = currentData.map(row => 
+      row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
+    );
+    
+    updateMM4DataForPipeSize(newData);
+    triggerAutoSave();
+    
+    // Reset dialog state
+    setShowRangeWarning(false);
+    setPendingRangeValue('');
+    setPendingRowId(null);
   };
 
   // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒
@@ -4027,6 +4059,45 @@ export default function PR2ConfigClean() {
 
 
       </div>
+
+      {/* Range Warning Dialog for .99 values */}
+      <Dialog open={showRangeWarning} onOpenChange={(open) => {
+        if (!open) {
+          setShowRangeWarning(false);
+          setPendingRangeValue('');
+          setPendingRowId(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Range Continuity Warning
+            </DialogTitle>
+            <DialogDescription>
+              You entered "{pendingRangeValue}" for the length range. For continuous ranges, length values should typically end with ".99".
+              <br /><br />
+              Example: "30.99" creates range 0-30.99m, then next range starts at 30.99m
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 pt-4">
+            <Button
+              onClick={() => handleRangeWarningResponse(true)}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              Add .99 → "{pendingRangeValue}.99"
+            </Button>
+            <Button
+              onClick={() => handleRangeWarningResponse(false)}
+              variant="outline"
+              className="flex-1"
+            >
+              Keep "{pendingRangeValue}"
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
