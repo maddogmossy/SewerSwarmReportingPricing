@@ -1323,6 +1323,19 @@ export default function Dashboard() {
         const hasDefectsRequiringCost = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
           (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
         
+        // SPECIAL DEBUG FOR ITEM 10 - check severity data
+        if (section.itemNo === 10) {
+          console.log('🎯 ITEM 10 SEVERITY CHECK:', {
+            itemNo: section.itemNo,
+            severityGrade: section.severityGrade,
+            severityGrades: section.severityGrades,
+            hasDefectsRequiringCost,
+            defects: section.defects,
+            defectType: section.defectType,
+            cost: section.cost
+          });
+        }
+        
         if (hasDefectsRequiringCost) {
           // DEBUG: Removed console logging to prevent infinite loops
           
