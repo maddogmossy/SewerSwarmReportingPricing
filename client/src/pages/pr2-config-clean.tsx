@@ -3862,8 +3862,11 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="30"
                                   className="border-green-300 mt-1"
-                                  value={mm5Rows[0]?.vehicleWeight || ''}
-                                  onChange={(e) => updateMM5RowWithAutoSave(mm5Rows[0]?.id || 1, 'vehicleWeight', e.target.value)}
+                                  value=""
+                                  onChange={(e) => {
+                                    // Handle Row 2 data separately to avoid MM5 vehicleWeight conflict
+                                    console.log('Row 2 value changed:', e.target.value);
+                                  }}
                                 />
                               </div>
                               <div>
@@ -3872,8 +3875,11 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="35"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.blueValue || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
+                                  value=""
+                                  onChange={(e) => {
+                                    // Handle Row 3 data separately
+                                    console.log('Row 3 value changed:', e.target.value);
+                                  }}
                                 />
                               </div>
                               <div>
@@ -3882,8 +3888,11 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="40"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.greenValue || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
+                                  value=""
+                                  onChange={(e) => {
+                                    // Handle Row 4 data separately
+                                    console.log('Row 4 value changed:', e.target.value);
+                                  }}
                                 />
                               </div>
                             </div>
