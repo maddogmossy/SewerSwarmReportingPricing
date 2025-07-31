@@ -1114,12 +1114,18 @@ export default function PR2ConfigClean() {
   };
 
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+    console.log(`🔍 updateMM4Row called: rowId=${rowId}, field=${field}, value="${value}"`);
+    
     const currentData = getCurrentMM4Data();
+    console.log(`🔍 Current data before update:`, currentData);
     
     // Save exactly what user types - no validation during typing
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
+    
+    console.log(`🔍 New data after update:`, newData);
+    console.log(`🔍 Specific row ${rowId} ${field}:`, newData.find(r => r.id === rowId)?.[field]);
     
     updateMM4DataForPipeSize(newData);
     triggerAutoSave();
@@ -1418,6 +1424,28 @@ export default function PR2ConfigClean() {
         console.log('  - pipeSizeKey:', pipeSizeKey);
         console.log('  - current MM4 data:', currentMM4Data);
         console.log('  - all MM4 storage:', mm4DataByPipeSize);
+        console.log('🔍 CRITICAL - Checking purpleLength values before backend save:');
+        currentMM4Data.forEach(row => {
+          console.log(`   Row ${row.id}: purpleLength="${row.purpleLength}" (length: ${row.purpleLength?.length || 0} chars)`);
+        });
+        
+        // Log the complete MM data being sent to backend
+        const mmDataToSend = {
+          selectedPipeSize: selectedPipeSizeForMM4,
+          selectedPipeSizeId: selectedPipeSizeId,
+          mm1Colors: formData.categoryColor,
+          mm2IdData: selectedIds,
+          mm3CustomPipeSizes: customPipeSizes,
+          mm4DataByPipeSize: mm4DataByPipeSize,
+          mm5Data: getCurrentMM5Data(),
+          mm4Rows: currentMM4Data,
+          mm5Rows: getCurrentMM5Data(),
+          categoryId: categoryId,
+          sector: sector,
+          timestamp: Date.now(),
+          pipeSizeKey: pipeSizeKey
+        };
+        console.log('🚀 FINAL DATA BEING SENT TO BACKEND:', JSON.stringify(mmDataToSend, null, 2));
         
         const mmData = {
           selectedPipeSize: selectedPipeSizeForMM4,
