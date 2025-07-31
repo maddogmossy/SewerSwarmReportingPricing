@@ -330,6 +330,12 @@ export default function PR2Pricing() {
       return;
     }
     
+    // Special handling for van-pack - allow direct creation of MMP1 template
+    if (categoryId === 'van-pack') {
+      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}`);
+      return;
+    }
+    
     // If no existing configuration, show message instead of auto-creating
     toast({
       title: "No Configuration Found",
