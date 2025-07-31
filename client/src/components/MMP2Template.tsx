@@ -12,10 +12,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 
-// 🔒🔒🔒 MMP1 TEMPLATE PROTECTED COMPONENT - DO NOT MODIFY WITHOUT USER PERMISSION 🔒🔒🔒
-// ⚠️ WARNING: USER-CONTROLLED TEMPLATE - AI MODIFICATIONS PROHIBITED ⚠️
+// MMP2 Template - EXACT COPY of MMP1 Master Template
+// Ready for MM4 card customization only
 
-interface MMP1TemplateProps {
+interface MMP2TemplateProps {
   categoryId: string;
   sector: string;
   editId?: number;
@@ -43,7 +43,7 @@ const UK_PIPE_SIZES = [
   100, 125, 150, 175, 200, 225, 250, 275, 300, 350, 375, 400, 450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500, 1800, 2100, 2400
 ];
 
-export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1TemplateProps) {
+export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2TemplateProps) {
   // State management
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
@@ -103,8 +103,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              categoryName: 'MMP1 Template',
-              description: 'Master template configuration',
+              categoryName: 'MMP2 Template',
+              description: 'Structural defects template configuration',
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
               mmData: mmData,
@@ -117,8 +117,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              categoryName: 'MMP1 Template',
-              description: 'Master template configuration',
+              categoryName: 'MMP2 Template',
+              description: 'Structural defects template configuration',
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
               mmData: mmData,
@@ -132,7 +132,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
         if (onSave) onSave();
       } catch (error) {
-        console.error('Error saving MMP1 data:', error);
+        console.error('Error saving MMP2 data:', error);
       }
     }, 500);
     
@@ -174,7 +174,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     const currentData = getCurrentMM4Data();
     const finalValue = addDotNineNine ? `${pendingRangeValue}.99` : pendingRangeValue;
     
-    console.log(`🔄 MMP1Template: Updating row ${pendingRowId} purpleLength from "${pendingRangeValue}" to "${finalValue}"`);
+    console.log(`🔄 MMP2Template: Updating row ${pendingRowId} purpleLength from "${pendingRangeValue}" to "${finalValue}"`);
     
     const newData = currentData.map(row => 
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
@@ -197,11 +197,11 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     // Force a component re-render to update input field values
     setTimeout(() => {
       triggerAutoSave();
-      console.log(`✅ MMP1Template: Final state update completed for row ${pendingRowId}`);
+      console.log(`✅ MMP2Template: Final state update completed for row ${pendingRowId}`);
     }, 50);
     
-    console.log(`✅ MMP1Template: Updated MM4 data:`, newData);
-    console.log(`✅ MMP1Template: Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
+    console.log(`✅ MMP2Template: Updated MM4 data:`, newData);
+    console.log(`✅ MMP2Template: Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
     
     // Reset dialog state AFTER state update
     setTimeout(() => {
