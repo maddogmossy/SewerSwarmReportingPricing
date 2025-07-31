@@ -3781,111 +3781,191 @@ export default function PR2ConfigClean() {
                   </CardHeader>
                   <CardContent>
                     {selectedPipeSizeForMM4 ? (
-                      // Show MM4 interface when pipe size is selected
-                      <div className="grid grid-cols-4 gap-4">
-                        {/* Blue - Day Rate (1 column) */}
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                          <h4 className="font-medium text-blue-800 mb-2">
-                            Day Rate
-                            <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">
-                              {selectedPipeSizeForMM4}mm
-                            </span>
-                          </h4>
-                          <div>
-                            <label className="text-xs text-blue-700">Day Rate</label>
-                            <Input
-                              type="text"
-                              placeholder="Enter day rate"
-                              className="border-blue-300"
-                              value={mm4Rows[0]?.blueValue || ''}
-                              onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Green - No Per Shift (1 column) - Dynamic Rows */}
-                        <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                          <h4 className="font-medium text-green-800 mb-2">
-                            No Per Shift
-                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-mono">
-                              {selectedPipeSizeForMM4}mm
-                            </span>
-                          </h4>
-                          <div className="space-y-2">
-                            {mm4Rows.map((row, index) => (
-                              <div key={row.id}>
-                                <label className="text-xs text-green-700">Qty Per Shift</label>
+                      // Show MM4 interface when pipe size is selected - Conditional Layout
+                      categoryId === 'patching' ? (
+                        /* Orange Patching UI for F607 - 4 Layer Types + No Required Per Shift */
+                        <div className="grid grid-cols-2 gap-6">
+                          {/* Orange Patching Layers (Left Column) */}
+                          <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-4">
+                            <h4 className="font-medium text-orange-800 mb-3">
+                              Patching Layer Configuration
+                              <span className="ml-2 text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded font-mono">
+                                {selectedPipeSizeForMM4}mm
+                              </span>
+                            </h4>
+                            <div className="space-y-3">
+                              <div>
+                                <label className="text-sm font-medium text-orange-700">1. Single Layer</label>
                                 <Input
                                   type="text"
-                                  placeholder="Enter quantity"
-                                  className="border-green-300"
-                                  value={row.greenValue}
-                                  onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
+                                  placeholder="£150"
+                                  className="border-orange-300 mt-1"
+                                  value={mm4Rows[0]?.blueValue || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
                                 />
                               </div>
-                            ))}
+                              <div>
+                                <label className="text-sm font-medium text-orange-700">2. Double Layer</label>
+                                <Input
+                                  type="text"
+                                  placeholder="£275"
+                                  className="border-orange-300 mt-1"
+                                  value={mm4Rows[0]?.greenValue || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-orange-700">3. Triple Layer</label>
+                                <Input
+                                  type="text"
+                                  placeholder="£425"
+                                  className="border-orange-300 mt-1"
+                                  value={mm4Rows[0]?.purpleDebris || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleDebris', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-orange-700">4. Triple Layer + Extra Cure Time</label>
+                                <Input
+                                  type="text"
+                                  placeholder="£625"
+                                  className="border-orange-300 mt-1"
+                                  value={mm4Rows[0]?.purpleLength || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleLength', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* No Required Per Shift (Right Column) */}
+                          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                            <h4 className="font-medium text-green-800 mb-3">
+                              No Required Per Shift
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-mono">
+                                {selectedPipeSizeForMM4}mm
+                              </span>
+                            </h4>
+                            <div className="space-y-3">
+                              {mm5Rows.map((row, index) => (
+                                <div key={row.id}>
+                                  <label className="text-sm font-medium text-green-700">Quantity Required</label>
+                                  <Input
+                                    type="text"
+                                    placeholder="25"
+                                    className="border-green-300 mt-1"
+                                    value={row.costPerMile}
+                                    onChange={(e) => updateMM5RowWithAutoSave(row.id, 'costPerMile', e.target.value)}
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
+                      ) : (
+                        /* Standard MM4 Layout for Non-Patching Categories */
+                        <div className="grid grid-cols-4 gap-4">
+                          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                            <h4 className="font-medium text-blue-800 mb-2">
+                              Day Rate
+                              <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">
+                                {selectedPipeSizeForMM4}mm
+                              </span>
+                            </h4>
+                            <div>
+                              <label className="text-xs text-blue-700">Day Rate</label>
+                              <Input
+                                type="text"
+                                placeholder="Enter day rate"
+                                className="border-blue-300"
+                                value={mm4Rows[0]?.blueValue || ''}
+                                onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
+                              />
+                            </div>
+                          </div>
 
-                        {/* Purple - Range Configuration (Hidden for CCTV category F612) */}
-                        {categoryId !== 'cctv' && (
-                          <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-                            <h4 className="font-medium text-purple-800 mb-2">
-                              Range Configuration
-                              <span className="ml-2 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded font-mono">
+                          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                            <h4 className="font-medium text-green-800 mb-2">
+                              No Per Shift
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-mono">
                                 {selectedPipeSizeForMM4}mm
                               </span>
                             </h4>
                             <div className="space-y-2">
                               {mm4Rows.map((row, index) => (
-                                <div key={row.id} className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <label className="text-xs text-purple-700">Debris %</label>
-                                    <Input
-                                      type="text"
-                                      placeholder="0-15"
-                                      className="border-purple-300"
-                                      value={row.purpleDebris}
-                                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-xs text-purple-700">Length</label>
-                                    <div className="flex items-center gap-2">
-                                      <Input
-                                        type="text"
-                                        placeholder="0-35"
-                                        className="border-purple-300 flex-1"
-                                        value={row.purpleLength}
-                                        onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
-                                      />
-                                      {index === 0 && (
-                                        <Button 
-                                          size="sm" 
-                                          className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
-                                          onClick={addMM4Row}
-                                        >
-                                          +
-                                        </Button>
-                                      )}
-                                      {index > 0 && (
-                                        <Button 
-                                          size="sm" 
-                                          variant="destructive"
-                                          className="h-8 w-8 p-0 flex-shrink-0"
-                                          onClick={() => deleteMM4Row(row.id)}
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                      )}
-                                    </div>
-                                  </div>
+                                <div key={row.id}>
+                                  <label className="text-xs text-green-700">Qty Per Shift</label>
+                                  <Input
+                                    type="text"
+                                    placeholder="Enter quantity"
+                                    className="border-green-300"
+                                    value={row.greenValue}
+                                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
+                                  />
                                 </div>
                               ))}
                             </div>
                           </div>
-                        )}
-                      </div>
+
+                          {/* Purple - Range Configuration (Hidden for CCTV category F612) */}
+                          {categoryId !== 'cctv' && (
+                            <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                              <h4 className="font-medium text-purple-800 mb-2">
+                                Range Configuration
+                                <span className="ml-2 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded font-mono">
+                                  {selectedPipeSizeForMM4}mm
+                                </span>
+                              </h4>
+                              <div className="space-y-2">
+                                {mm4Rows.map((row, index) => (
+                                  <div key={row.id} className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <label className="text-xs text-purple-700">Debris %</label>
+                                      <Input
+                                        type="text"
+                                        placeholder="0-15"
+                                        className="border-purple-300"
+                                        value={row.purpleDebris}
+                                        onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs text-purple-700">Length</label>
+                                      <div className="flex items-center gap-2">
+                                        <Input
+                                          type="text"
+                                          placeholder="0-35"
+                                          className="border-purple-300 flex-1"
+                                          value={row.purpleLength}
+                                          onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
+                                        />
+                                        {index === 0 && (
+                                          <Button 
+                                            size="sm" 
+                                            className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
+                                            onClick={addMM4Row}
+                                          >
+                                            +
+                                          </Button>
+                                        )}
+                                        {index > 0 && (
+                                          <Button 
+                                            size="sm" 
+                                            variant="destructive"
+                                            className="h-8 w-8 p-0 flex-shrink-0"
+                                            onClick={() => deleteMM4Row(row.id)}
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </Button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )
                     ) : (
                       // Show placeholder when no pipe size selected
                       <div className="text-center py-8 text-gray-500">
