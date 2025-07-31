@@ -2651,6 +2651,21 @@ export default function Dashboard() {
       defectType: section.defectType
     });
     
+    // SPECIAL DEBUG FOR ITEM 10 - trace complete workflow
+    if (section.itemNo === 10) {
+      console.log('🎯 ITEM 10 COMPLETE WORKFLOW DEBUG:', {
+        itemNo: section.itemNo,
+        totalLength: section.totalLength,
+        defects: section.defects,
+        defectType: section.defectType,
+        pipeSize: section.pipeSize,
+        needsCleaning: requiresCleaning(section.defects || ''),
+        isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo),
+        pr2ConfigsAvailable: !!pr2Configurations,
+        pr2ConfigsLength: pr2Configurations?.length || 0
+      });
+    }
+    
     // Special debugging for Item 3
     if (section.itemNo === 3) {
       console.log('🎯 ITEM 3 DETAILED DEBUG:', {
@@ -2677,7 +2692,7 @@ export default function Dashboard() {
     const isRestrictedSection = restrictedCleaningSections.includes(section.itemNo);
     
     // Debug cleaning detection - ENHANCED DEBUG for restricted sections only
-    if (isRestrictedSection && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 3)) {
+    if (isRestrictedSection && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 3 || section.itemNo === 10)) {
       console.log(`🔍 Cleaning Check for Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         needsCleaning,
         defects: section.defects,
@@ -2686,7 +2701,9 @@ export default function Dashboard() {
         requiresCleaningResult: requiresCleaning(section.defects || ''),
         pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0,
         shouldProcessMM4: needsCleaning && pr2Configurations,
-        isRestrictedSection: isRestrictedSection
+        isRestrictedSection: isRestrictedSection,
+        sectionLength: parseFloat(section.totalLength) || 0,
+        sectionDebrisPercent: extractDebrisPercentage(section.defects || '')
       });
       
       // Manual tests removed - cleaning detection working correctly
