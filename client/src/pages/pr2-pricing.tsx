@@ -637,6 +637,33 @@ export default function PR2Pricing() {
                     );
                   }
 
+                  // Special handling for cctv category with F612 DevLabel
+                  if (category.id === 'cctv') {
+                    return (
+                      <Card
+                        key={category.id}
+                        className="relative cursor-pointer transition-all hover:shadow-md border-4"
+                        style={{
+                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
+                          backgroundColor: existingConfiguration?.categoryColor 
+                            ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
+                            : 'white'
+                        }}
+                        onClick={() => handleCategoryNavigation(category.id)}
+                      >
+                        <DevLabel id="F612" />
+                        <CardContent className="p-4 text-center relative">
+                          <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
+                          <h3 className="font-medium text-sm mb-1 text-gray-800">
+                            {category.name}
+                          </h3>
+                          <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
+                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                        </CardContent>
+                      </Card>
+                    );
+                  }
+
                   // Special handling for cctv-cleansing-root-cutting category with F611 DevLabel
                   if (category.id === 'cctv-cleansing-root-cutting') {
                     return (
