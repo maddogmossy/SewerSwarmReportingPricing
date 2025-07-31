@@ -153,6 +153,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
 
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
+    // FIXED: Direct value assignment without auto-formatting to prevent input manipulation
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );

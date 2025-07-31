@@ -915,6 +915,21 @@ This prevents data contamination and ensures authentic extraction integrity.
   - **Documentation**: Complete cost calculation workflow documented for future troubleshooting
 - **Result**: MM4 cost calculation system fully operational with correct £84.09 per-length rates and complete item display (21-23)
 
+### CRITICAL: Purple Field Input Bug Fixed - Auto-Addition Logic Removed ✅
+- **Date**: January 31, 2025
+- **Status**: Successfully fixed MM4 purple field input formatting bug where entering "30" became "3.99" with undeletable suffix
+- **Issue Resolved**: Removed auto-addition logic that was automatically appending ".99" to `purpleLength` field values
+- **Files Updated**:
+  - **client/src/pages/pr2-config-clean.tsx**: Removed AUTO-ADD .99 LOGIC from `updateMM4Row` function
+  - **client/src/components/MMP1Template.tsx**: Added direct value assignment without auto-formatting
+- **User Benefits**:
+  - **Natural Input Control**: Users can now enter any value (30, 40, 15.5, etc.) without automatic formatting
+  - **Deletable Values**: No more undeletable ".99" suffixes that prevented value modification
+  - **Accurate Data Entry**: Input values saved exactly as typed by user
+  - **Consistent Behavior**: Both main configuration page and MMP1 template components fixed
+- **Technical Implementation**: Direct value assignment (`processedValue = value`) replaces conditional auto-formatting logic
+- **Result**: MM4 purple field inputs now work naturally without formatting interference
+
 ## Recent Changes (Updated January 30, 2025)
 
 ### CRITICAL: Cleaning Detection & Cost Calculation System Complete ✅

@@ -1113,16 +1113,8 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // AUTO-ADD .99 LOGIC for purpleLength field
-    let processedValue = value;
-    if (field === 'purpleLength' && value.trim() !== '' && !value.includes('.')) {
-      // Auto-add .99 to length values that don't already contain a decimal
-      const numericValue = parseFloat(value);
-      if (!isNaN(numericValue) && numericValue > 0) {
-        processedValue = `${numericValue}.99`;
-        console.log(`🔧 AUTO-ADDED .99: ${value} → ${processedValue}`);
-      }
-    }
+    // FIXED: Remove auto-addition logic - user should control input values directly
+    const processedValue = value;
     
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: processedValue } : row
