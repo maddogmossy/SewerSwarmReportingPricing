@@ -1474,6 +1474,8 @@ export default function PR2ConfigClean() {
           // Keep legacy format for backward compatibility
           mm4Rows: currentMM4Data,
           mm5Rows: getCurrentMM5Data(),
+          // Include patching green window data for F615
+          patchingGreenData: patchingGreenData,
           categoryId: categoryId,
           sector: sector,
           timestamp: Date.now(),
@@ -2147,7 +2149,8 @@ export default function PR2ConfigClean() {
           
           // Check if we already have local MM4/MM5 data to preserve
           const hasLocalMM4Data = Object.keys(mm4DataByPipeSize).length > 0;
-          const hasLocalMM5Data = mm5Data.some(row => row.vehicleWeight || row.costPerMile);
+          // For MM5, don't consider "4" as valid data - force reload to clean it
+          const hasLocalMM5Data = mm5Data.some(row => row.vehicleWeight || (row.costPerMile && row.costPerMile !== '4'));
           
           console.log('🔍 Local data check:');
           console.log('  - hasLocalMM4Data:', hasLocalMM4Data);
@@ -2185,18 +2188,34 @@ export default function PR2ConfigClean() {
           if (!hasLocalMM5Data) {
             // MM5 is now independent of pipe size
             if (config.mmData.mm5Data) {
-              setMm5Data(config.mmData.mm5Data);
-              console.log('✅ Loaded MM5 independent data:', config.mmData.mm5Data);
+              // Clean the MM5 data - if costPerMile has unwanted values, reset to empty
+              const cleanedMM5Data = config.mmData.mm5Data.map((row: any) => ({
+                ...row,
+                costPerMile: row.costPerMile === '4' ? '' : row.costPerMile, // Reset "4" to empty
+                vehicleWeight: row.vehicleWeight || ''
+              }));
+              setMm5Data(cleanedMM5Data);
+              console.log('✅ Loaded MM5 independent data (cleaned):', cleanedMM5Data);
             } else if (config.mmData.mm5Rows) {
               // Legacy format - use as independent data
-              setMm5Data(config.mmData.mm5Rows);
-              console.log('✅ Loaded MM5 legacy data as independent:', config.mmData.mm5Rows);
+              const cleanedMM5Rows = config.mmData.mm5Rows.map((row: any) => ({
+                ...row,
+                costPerMile: row.costPerMile === '4' ? '' : row.costPerMile, // Reset "4" to empty
+                vehicleWeight: row.vehicleWeight || ''
+              }));
+              setMm5Data(cleanedMM5Rows);
+              console.log('✅ Loaded MM5 legacy data as independent (cleaned):', cleanedMM5Rows);
             } else if (config.mmData.mm5DataByPipeSize) {
               // Old pipe-size-specific format - extract first available data as independent
               const firstKey = Object.keys(config.mmData.mm5DataByPipeSize)[0];
               if (firstKey) {
-                setMm5Data(config.mmData.mm5DataByPipeSize[firstKey]);
-                console.log('✅ Migrated MM5 pipe-size data to independent:', config.mmData.mm5DataByPipeSize[firstKey]);
+                const cleanedMM5Migration = config.mmData.mm5DataByPipeSize[firstKey].map((row: any) => ({
+                  ...row,
+                  costPerMile: row.costPerMile === '4' ? '' : row.costPerMile, // Reset "4" to empty
+                  vehicleWeight: row.vehicleWeight || ''
+                }));
+                setMm5Data(cleanedMM5Migration);
+                console.log('✅ Migrated MM5 pipe-size data to independent (cleaned):', cleanedMM5Migration);
               }
             }
           } else {
@@ -2209,6 +2228,12 @@ export default function PR2ConfigClean() {
           }
           if (config.mmData.mm2IdData) {
             setSelectedIds(config.mmData.mm2IdData);
+          }
+          
+          // Load patching green window data for F615
+          if (config.mmData.patchingGreenData && categoryId === 'patching') {
+            setPatchingGreenData(config.mmData.patchingGreenData);
+            console.log('✅ Loaded patching green window data:', config.mmData.patchingGreenData);
           }
         }
         
