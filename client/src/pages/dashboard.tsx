@@ -2763,9 +2763,9 @@ export default function Dashboard() {
     
     // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections AND service defects only
     if (needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service') {
-      // Find cctv configuration for current sector
+      // Find cctv configuration for current sector (check both 'cctv' and 'cctv-jet-vac')
       const cctvConfig = pr2Configurations.find((config: any) => 
-        config.categoryId === 'cctv' && config.sector === currentSector.id
+        (config.categoryId === 'cctv' || config.categoryId === 'cctv-jet-vac') && config.sector === currentSector.id
       );
       
       console.log('🔍 MM4 Debug: Checking for cctv config:', {
@@ -2896,6 +2896,19 @@ export default function Dashboard() {
     
     // STRUCTURAL DEFECT ROUTING: Check for F615 patching configuration for structural defects
     if (section.defectType === 'structural' && pr2Configurations && isRestrictedSection) {
+      // DEBUG: Log Item 13a specifically
+      if (section.itemNo === 13) {
+        console.log('🎯 ITEM 13a F615 ROUTING DEBUG:', {
+          itemNo: section.itemNo,
+          letterSuffix: section.letterSuffix,
+          defectType: section.defectType,
+          isRestrictedSection: isRestrictedSection,
+          pr2ConfigsAvailable: !!pr2Configurations,
+          pr2ConfigsLength: pr2Configurations?.length || 0,
+          availableConfigs: pr2Configurations?.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })) || []
+        });
+      }
+      
       // Find patching configuration for current sector
       const patchingConfig = pr2Configurations.find((config: any) => 
         config.categoryId === 'patching' && config.sector === currentSector.id
