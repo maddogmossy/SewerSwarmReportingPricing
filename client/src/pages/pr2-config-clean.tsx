@@ -2129,11 +2129,11 @@ export default function PR2ConfigClean() {
           console.log('  - hasLocalMM4Data:', hasLocalMM4Data);
           console.log('  - hasLocalMM5Data:', hasLocalMM5Data);
           
-          // CRITICAL FIX: Force backend load for F606 to get restored MM4 data
-          const isF606Configuration = editId === "606" || editId === 606;
+          // CRITICAL FIX: Stop forcing backend load that brings corrupted data
+          // const isF606Configuration = editId === "606" || editId === 606;
           
-          // Only load MM4 data if we don't have local changes OR if this is F606 (force refresh)
-          if (!hasLocalMM4Data || isF606Configuration) {
+          // Only load MM4 data if we don't have local changes - REMOVED F606 force refresh
+          if (!hasLocalMM4Data) {
             // Load MM4/MM5 data from pipe-size-specific storage or legacy format
             if (config.mmData.mm4DataByPipeSize) {
               console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
@@ -2152,6 +2152,21 @@ export default function PR2ConfigClean() {
             }
           } else {
             console.log('🔒 Preserving local MM4 data, skipping backend load');
+          
+          // CRITICAL FIX: If local data is corrupted (empty purpleLength), force fresh data load
+          const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+          const localData = mm4DataByPipeSize[currentKey] || [];
+          const hasCorruptedData = localData.some(row => row.purpleLength === "" && row.id === 1);
+          
+          if (hasCorruptedData) {
+            console.log('🚨 CORRUPTED LOCAL DATA DETECTED - Clearing localStorage and forcing fresh load');
+            localStorage.removeItem('mm4DataByPipeSize');
+            // Force reload from corrected backend data
+            if (config.mmData.mm4DataByPipeSize) {
+              console.log('📥 Loading fresh MM4 data from corrected backend:', config.mmData.mm4DataByPipeSize);
+              setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
+            }
+          }
           }
           
           // Only load MM5 data if we don't have local changes  
