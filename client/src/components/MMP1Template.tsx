@@ -154,19 +154,32 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Always add .99 to ALL purple length values for continuous ranges
-    if (field === 'purpleLength' && value && !value.endsWith('.99')) {
-      // Remove any existing decimal part and add .99
-      const baseValue = value.split('.')[0];
-      value = baseValue + '.99';
-      console.log(`🔧 Auto-added .99 for continuous ranges: "${value.replace('.99', '')}" → "${value}"`);
-    }
-    
+    // Save the raw value first, then add .99 after a delay for purple length
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
     
     updateMM4DataForPipeSize(newData);
+    
+    // Add .99 after user stops typing (only for purple length)
+    if (field === 'purpleLength' && value && !value.endsWith('.99')) {
+      setTimeout(() => {
+        const currentDataAfterDelay = getCurrentMM4Data();
+        const currentRow = currentDataAfterDelay.find(row => row.id === rowId);
+        
+        // Only add .99 if the value hasn't changed and still doesn't end with .99
+        if (currentRow && currentRow[field] === value && !value.endsWith('.99')) {
+          const baseValue = value.split('.')[0];
+          const finalValue = baseValue + '.99';
+          console.log(`🔧 Auto-added .99 after typing delay: "${value}" → "${finalValue}"`);
+          
+          const updatedData = currentDataAfterDelay.map(row => 
+            row.id === rowId ? { ...row, [field]: finalValue } : row
+          );
+          updateMM4DataForPipeSize(updatedData);
+        }
+      }, 1500); // 1.5 second delay to allow typing
+    }
   };
 
   const addMM4Row = () => {
