@@ -53,6 +53,14 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>({});
   const [mm5Data, setMm5Data] = useState<any[]>([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
   const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
+  const [inputBuffer, setInputBuffer] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('inputBuffer');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
   const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(1001);
   const [hasUserChanges, setHasUserChanges] = useState<boolean>(false);
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -214,6 +222,19 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     const newData = currentData.map(row => 
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
+    
+    // CRITICAL: Update buffer to reflect new value so input field shows it immediately
+    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${pendingRowId}-purpleLength`;
+    setInputBuffer(prev => {
+      const updated = {
+        ...prev,
+        [bufferKey]: finalValue
+      };
+      // Persist buffer to localStorage immediately
+      localStorage.setItem('inputBuffer', JSON.stringify(updated));
+      console.log(`🔧 MMP1Template: Updated buffer for ${bufferKey}: "${finalValue}"`);
+      return updated;
+    });
     
     // CRITICAL: Update React state FIRST for immediate UI reflection
     const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;

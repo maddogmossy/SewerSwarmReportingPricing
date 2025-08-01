@@ -1255,6 +1255,19 @@ export default function PR2ConfigClean() {
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
     
+    // CRITICAL: Update buffer to reflect new value so input field shows it immediately
+    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${pendingRowId}-purpleLength`;
+    setInputBuffer(prev => {
+      const updated = {
+        ...prev,
+        [bufferKey]: finalValue
+      };
+      // Persist buffer to localStorage immediately
+      localStorage.setItem('inputBuffer', JSON.stringify(updated));
+      console.log(`🔧 Updated buffer for ${bufferKey}: "${finalValue}"`);
+      return updated;
+    });
+    
     // CRITICAL: Update React state FIRST for immediate UI reflection
     const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     const updatedMM4DataByPipeSize = {
