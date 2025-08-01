@@ -1757,10 +1757,17 @@ export default function Dashboard() {
   const { data: repairPricingData = [] } = useQuery({
     queryKey: ['pr2-configs', currentSector.id],
     queryFn: async () => {
-      // Dashboard PR2 fetching logging removed  
+      console.log('🔍 Dashboard PR2 Config Fetch:', { 
+        sector: currentSector.id, 
+        sectorName: currentSector.name,
+        queryEnabled: !!currentSector?.id 
+      });
       const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: currentSector.id });
       const data = await response.json();
-      // Configuration colors logging removed
+      console.log('🔍 Dashboard PR2 Config Response:', { 
+        responseLength: data.length, 
+        configs: data.map((c: any) => ({ id: c.id, categoryId: c.categoryId, sector: c.sector }))
+      });
       return data;
     },
     enabled: !!currentSector?.id,
