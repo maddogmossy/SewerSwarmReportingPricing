@@ -21,8 +21,8 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    // Route directly to F615 configuration (ID 615) - no auto-generation
-    window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+    // Route directly to F615 configuration (ID 615) with auto-select utilities
+    window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true`;
   };
 
   // Return simple clickable element that triggers auto-detection
