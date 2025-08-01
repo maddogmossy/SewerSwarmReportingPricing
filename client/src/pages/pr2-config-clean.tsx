@@ -1776,8 +1776,9 @@ export default function PR2ConfigClean() {
       const currentData = getCurrentMM4Data();
       
       for (const row of currentData) {
-        // Get the actual value from buffer (if exists) or fallback to stored value
-        const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${row.id}-purpleLength`;
+        // Get the actual value from buffer (if exists) or fallback to stored value - WITH CONFIGURATION ID ISOLATION
+        const configId = editId || 'temp';
+        const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${row.id}-purpleLength`;
         const actualValue = inputBuffer[bufferKey] || row.purpleLength;
         
         console.log(`🔍 .99 Validation Check - Row ${row.id}:`, {
