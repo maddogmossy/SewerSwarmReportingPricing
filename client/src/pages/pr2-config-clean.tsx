@@ -1686,8 +1686,8 @@ export default function PR2ConfigClean() {
   // Navigate back to dashboard
   const handleGoBack = () => {
     // Check for purple length values missing .99 before navigating
-    // DISABLE for F615 (patching category) as requested by user
-    if (getTemplateType(categoryId || '') === 'MMP1' && categoryId !== 'patching') {
+    // DISABLE for F615 (patching category) and F619 (f-robot-cutting) as requested by user
+    if (getTemplateType(categoryId || '') === 'MMP1' && categoryId !== 'patching' && categoryId !== 'f-robot-cutting') {
       const currentData = getCurrentMM4Data();
       
       for (const row of currentData) {
