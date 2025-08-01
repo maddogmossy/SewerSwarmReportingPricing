@@ -2983,12 +2983,13 @@ export default function Dashboard() {
     
     // STRUCTURAL DEFECT ROUTING: Check for F615 patching configuration for structural defects
     if (section.defectType === 'structural' && pr2Configurations && isRestrictedSection) {
-      // DEBUG: Log Item 13a and Item 20 specifically
-      if (section.itemNo === 13 || section.itemNo === 20) {
-        console.log('🎯 ITEM 13a F615 ROUTING DEBUG:', {
+      // DEBUG: Log Item 13a, Item 19, and Item 20 specifically
+      if (section.itemNo === 13 || section.itemNo === 19 || section.itemNo === 20) {
+        console.log(`🎯 ITEM ${section.itemNo} F615 ROUTING DEBUG:`, {
           itemNo: section.itemNo,
           letterSuffix: section.letterSuffix,
           defectType: section.defectType,
+          defects: section.defects,
           isRestrictedSection: isRestrictedSection,
           pr2ConfigsAvailable: !!pr2Configurations,
           pr2ConfigsLength: pr2Configurations?.length || 0,
@@ -3157,6 +3158,19 @@ export default function Dashboard() {
     
     // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST before any other routing
     const recommendations = section.recommendations || '';
+    
+    // DEBUG: Check Item 19 for robotic cutting requirements
+    if (section.itemNo === 19) {
+      console.log(`🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK:`, {
+        itemNo: section.itemNo,
+        defects: section.defects,
+        recommendations: recommendations,
+        hasRoboticCuttingInRecommendations: recommendations.toLowerCase().includes('robotic cutting'),
+        hasID4InRecommendations: recommendations.toLowerCase().includes('id4'),
+        hasJunctionInDefects: (section.defects || '').toLowerCase().includes('jn') || (section.defects || '').toLowerCase().includes('junction'),
+        willTriggerF619: recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')
+      });
+    }
     
     if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
       
