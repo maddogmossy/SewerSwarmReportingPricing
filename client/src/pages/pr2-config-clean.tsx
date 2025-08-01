@@ -1037,15 +1037,8 @@ export default function PR2ConfigClean() {
   };
 
   // MM4/MM5 Data Storage - MM4 scoped by pipe size, MM5 independent
-  // Initialize from localStorage if available
-  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>(() => {
-    try {
-      const saved = localStorage.getItem(`mm4-data-${editId || 'new'}`);
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  // Initialize empty - force fresh data load from cleaned database only
+  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>({});
   
   const [mm5Data, setMm5Data] = useState<any[]>(() => {
     try {
@@ -1083,15 +1076,8 @@ export default function PR2ConfigClean() {
     }
   }, [pipeSize, categoryId]);
 
-  // Save MM4/MM5 data to localStorage whenever it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(`mm4-data-${editId || 'new'}`, JSON.stringify(mm4DataByPipeSize));
-      console.log('💾 Saved MM4 data to localStorage:', mm4DataByPipeSize);
-    } catch (error) {
-      console.error('Failed to save MM4 data to localStorage:', error);
-    }
-  }, [mm4DataByPipeSize, editId]);
+  // DISABLED: No localStorage caching to prevent synthetic data persistence
+  // Data will be loaded fresh from database only
 
   useEffect(() => {
     try {
@@ -1201,8 +1187,7 @@ export default function PR2ConfigClean() {
     // Update MM4 data storage (this calls the same setState but ensures consistency)
     updateMM4DataForPipeSize(newData);
     
-    // Also save to localStorage for persistence
-    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
+    // DISABLED: No localStorage persistence to prevent synthetic data contamination
     
     // Force a component re-render to update input field values
     setTimeout(() => {
