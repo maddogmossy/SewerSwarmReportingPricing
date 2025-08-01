@@ -960,6 +960,18 @@ export default function PR2ConfigClean() {
       });
     }
   }, [autoSelectUtilities, categoryId]); // Removed selectedIds from deps to avoid loop
+
+  // TEST BUTTON: Add test button for manual utilities selection
+  const testAutoSelect = () => {
+    console.log('🧪 MANUAL TEST: Adding id1 to selectedIds');
+    setSelectedIds(prev => {
+      const current = [...prev];
+      if (!current.includes('id1')) {
+        return [...current, 'id1'];
+      }
+      return current;
+    });
+  };
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
   const [customPipeSizes, setCustomPipeSizes] = useState<string[]>([]);
   const [newPipeSize, setNewPipeSize] = useState('');
