@@ -1055,6 +1055,16 @@ export default function PR2ConfigClean() {
     const data = mm4DataByPipeSize[key] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
     console.log(`🔍 MM4 Data for key "${key}":`, data);
     console.log('📊 All MM4 data by pipe size:', mm4DataByPipeSize);
+    
+    // 🧹 FORCE EMPTY purple fields for non-authentic pipe sizes to prevent synthetic data display
+    if (key !== '150-1501') {
+      return data.map(row => ({
+        ...row,
+        purpleDebris: '',
+        purpleLength: ''
+      }));
+    }
+    
     return data;
   };
 
