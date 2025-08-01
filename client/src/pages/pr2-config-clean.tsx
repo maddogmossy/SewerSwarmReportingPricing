@@ -3840,19 +3840,19 @@ export default function PR2ConfigClean() {
 
                         <div className="grid grid-cols-3 gap-4">
                           {/* Day Rate Box (Left Column) */}
-                          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
-                            <h4 className="font-medium text-yellow-800 mb-3">
+                          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                            <h4 className="font-medium text-blue-800 mb-3">
                               Day Rate
-                              <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded font-mono">
+                              <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">
                                 {selectedPipeSizeForMM4}mm
                               </span>
                             </h4>
                             <div>
-                              <label className="text-sm font-medium text-yellow-700">Daily Rate (£)</label>
+                              <label className="text-sm font-medium text-blue-700">Daily Rate (£)</label>
                               <Input
                                 type="text"
                                 placeholder="0"
-                                className="border-yellow-300 mt-1"
+                                className="border-blue-300 mt-1"
                                 value={mm4Rows[0]?.blueValue || ''}
                                 onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
                               />
@@ -3874,8 +3874,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.greenValue || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
+                                  value={mm4Rows[0]?.purpleDebris || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleDebris', e.target.value)}
                                 />
                               </div>
                               <div>
@@ -3884,8 +3884,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.purpleDebris || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleDebris', e.target.value)}
+                                  value={mm4Rows[0]?.greenValue || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
                                 />
                               </div>
                               <div>
