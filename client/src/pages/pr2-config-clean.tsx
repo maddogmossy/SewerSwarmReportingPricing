@@ -3955,8 +3955,8 @@ export default function PR2ConfigClean() {
                                 type="text"
                                 placeholder="0"
                                 className="border-blue-300 mt-1"
-                                value={mm4Rows[0]?.blueValue || ''}
-                                onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
+                                value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'blueValue', getCurrentMM4Data()[0]?.blueValue || '')}
+                                onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'blueValue', e.target.value)}
                               />
                             </div>
                           </div>
@@ -3986,8 +3986,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.greenValue || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
+                                  value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'greenValue', getCurrentMM4Data()[0]?.greenValue || '')}
+                                  onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'greenValue', e.target.value)}
                                 />
                               </div>
                               <div>
@@ -4081,7 +4081,7 @@ export default function PR2ConfigClean() {
                                 type="text"
                                 placeholder="Enter day rate"
                                 className="border-blue-300"
-                                value={getCurrentMM4Data()[0]?.blueValue || ''}
+                                value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'blueValue', getCurrentMM4Data()[0]?.blueValue || '')}
                                 onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'blueValue', e.target.value)}
                               />
                             </div>
@@ -4105,7 +4105,7 @@ export default function PR2ConfigClean() {
                                       type="text"
                                       placeholder="Enter quantity"
                                       className="border-green-300"
-                                      value={row.greenValue || ''}
+                                      value={getBufferedValue(row.id, 'greenValue', row.greenValue || '')}
                                       onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
                                     />
                                   </div>
