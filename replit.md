@@ -1,5 +1,8 @@
 # Replit Architecture Documentation
 
+## Rev v1.2.5 - Production Clean State (January 2025)
+**Lock-in Checkpoint**: All synthetic data eliminated, debug buttons removed, zero synthetic data policy enforced.
+
 ## Overview
 This is a full-stack TypeScript application, built with React and Express, providing document analysis services for sector-specific compliance checking in Utilities, Adoption, and Highways. Its core purpose is to streamline document analysis and compliance processes, offering a robust solution with high market potential in regulated industries by integrating file upload, Stripe payments, and Replit authentication.
 
