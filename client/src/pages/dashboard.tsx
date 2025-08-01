@@ -2820,6 +2820,76 @@ export default function Dashboard() {
       return uniqueMeterages;
     };
 
+    // Helper function to calculate F615 structural patching
+    const calculateF615StructuralPatching = (section: any, patchingConfig: any) => {
+      const sectionPipeSize = section.pipeSize || '150';
+      const mmData = patchingConfig.mmData;
+      const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
+      
+      // Find matching pipe size configuration
+      let matchingMM4Data = null;
+      let matchingPipeSizeKey = null;
+      
+      for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
+        const [keyPipeSize] = pipeSizeKey.split('-');
+        
+        if (keyPipeSize === sectionPipeSize?.replace('mm', '')) {
+          matchingMM4Data = mm4Data;
+          matchingPipeSizeKey = pipeSizeKey;
+          break;
+        }
+      }
+      
+      if (!matchingMM4Data || !Array.isArray(matchingMM4Data) || matchingMM4Data.length === 0) {
+        return null;
+      }
+      
+      const mm4Row = matchingMM4Data[0];
+      const blueValue = parseFloat(mm4Row.blueValue || '0');
+      const greenValue = parseFloat(mm4Row.greenValue || '0');
+      
+      if (blueValue <= 0 || greenValue <= 0) {
+        return null;
+      }
+      
+      // Enhanced structural defect counting with multiple meterage locations
+      const defectsText = section.defects || '';
+      const structuralDefectPattern = /\b(D|DER|DES|DEL|DEG|DF|DJ|DH|DA|DAP|DM|DSS|DC|DPP|DG|DI|DD|DK|DL|DN|DP|DR|DT|DU|DV|DW|DX|DY|DZ)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
+      
+      let totalStructuralPatches = 0;
+      let defectMeterages = [];
+      let match;
+      
+      while ((match = structuralDefectPattern.exec(defectsText)) !== null) {
+        const defectCode = match[1];
+        const meterageText = match[2];
+        const meteragesForThisDefect = meterageText.split(',').map(m => m.trim());
+        const patchesForThisDefect = meteragesForThisDefect.length;
+        
+        defectMeterages.push(...meteragesForThisDefect);
+        totalStructuralPatches += patchesForThisDefect;
+      }
+      
+      if (totalStructuralPatches === 0) {
+        return null;
+      }
+      
+      const costPerPatch = greenValue;
+      const patchCount = totalStructuralPatches;
+      const totalPatchCost = costPerPatch * patchCount;
+      
+      return {
+        cost: totalPatchCost,
+        currency: '£',
+        method: 'F615 Structural Patching',
+        status: 'f615_calculated',
+        patchingType: 'Structural Patching',
+        defectCount: patchCount,
+        costPerUnit: costPerPatch,
+        recommendation: `${patchCount} structural patch${patchCount > 1 ? 'es' : ''} × £${costPerPatch} = £${totalPatchCost}`
+      };
+    };
+
     // NEW: Check for MM4/MM5 data integration for cctv-jet-vac configurations FIRST
     const sectionLength = parseFloat(section.totalLength) || 0;
     const sectionDebrisPercent = extractDebrisPercentage(section.defects || '');
@@ -3167,12 +3237,15 @@ export default function Dashboard() {
         recommendations: recommendations,
         hasRoboticCuttingInRecommendations: recommendations.toLowerCase().includes('robotic cutting'),
         hasID4InRecommendations: recommendations.toLowerCase().includes('id4'),
+        hasP4InRecommendations: recommendations.toLowerCase().includes('p4'),
         hasJunctionInDefects: (section.defects || '').toLowerCase().includes('jn') || (section.defects || '').toLowerCase().includes('junction'),
-        willTriggerF619: recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')
+        willTriggerF619: recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4') || recommendations.toLowerCase().includes('p4')
       });
     }
     
-    if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
+    if (recommendations.toLowerCase().includes('robotic cutting') || 
+        recommendations.toLowerCase().includes('id4') || 
+        recommendations.toLowerCase().includes('p4')) {
       
       // Safety check: Ensure pr2Configurations exists before accessing
       if (!pr2Configurations || !Array.isArray(pr2Configurations)) {
@@ -3206,8 +3279,22 @@ export default function Dashboard() {
         };
       }
       
-      // ID4 config exists - check if it has configured pricing options
+      // DEBUG: F619 config analysis for item 19
+      if (section.itemNo === 19) {
+        console.log('🔍 F619 CONFIG ANALYSIS:', {
+          itemNo: section.itemNo,
+          id4ConfigFound: !!id4Config,
+          configDetails: id4Config ? {
+            id: id4Config.id,
+            categoryId: id4Config.categoryId,
+            hasOldPricingOptions: !!id4Config.pricingOptions,
+            hasMMData: !!id4Config.mmData,
+            mmDataKeys: id4Config.mmData ? Object.keys(id4Config.mmData) : []
+          } : null
+        });
+      }
       
+      // ID4 config exists - check if it has configured pricing options (OLD SYSTEM)
       const firstCutOption = id4Config.pricingOptions?.find((option: any) => 
         option.label?.toLowerCase().includes('first cut') && option.value && option.value.trim() !== ''
       );
@@ -3215,8 +3302,103 @@ export default function Dashboard() {
         option.label?.toLowerCase().includes('cost per cut') && option.value && option.value.trim() !== ''
       );
       
-      if (!firstCutOption && !perCutOption) {
-        // ID4 config exists but has no pricing values - show £0.00
+      // ENHANCED: Check MM4 data first (NEW SYSTEM), then fall back to pricingOptions (OLD SYSTEM)
+      let firstCutCost = 0;
+      let perCutCost = 0;
+      let pricingSource = 'none';
+      
+      // Try MM4 data first (preferred method)
+      if (id4Config.mmData && id4Config.mmData.mm4DataByPipeSize) {
+        const sectionPipeSize = section.pipeSize?.replace('mm', '') || '150';
+        const mm4DataByPipeSize = id4Config.mmData.mm4DataByPipeSize;
+        
+        if (section.itemNo === 19) {
+          console.log('🔍 F619 MM4 DATA SEARCH:', {
+            itemNo: section.itemNo,
+            sectionPipeSize: sectionPipeSize,
+            availablePipeSizes: Object.keys(mm4DataByPipeSize),
+            mm4DataStructure: mm4DataByPipeSize
+          });
+        }
+        
+        // Find matching pipe size configuration
+        for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
+          const [keyPipeSize] = pipeSizeKey.split('-');
+          
+          if (section.itemNo === 19) {
+            console.log(`🔍 F619 CHECKING PIPE SIZE: ${pipeSizeKey}`, {
+              keyPipeSize: keyPipeSize,
+              sectionPipeSize: sectionPipeSize,
+              isMatch: keyPipeSize === sectionPipeSize,
+              mm4Data: mm4Data
+            });
+          }
+          
+          if (keyPipeSize === sectionPipeSize && Array.isArray(mm4Data) && mm4Data.length > 0) {
+            const mm4Row = mm4Data[0]; // Use first row
+            const purpleDebrisValue = parseFloat(mm4Row.purpleDebris || '0');
+            const purpleLengthValue = parseFloat(mm4Row.purpleLength || '0');
+            
+            if (section.itemNo === 19) {
+              console.log('🔍 F619 MM4 VALUES CHECK:', {
+                itemNo: section.itemNo,
+                pipeSizeKey: pipeSizeKey,
+                purpleDebris: mm4Row.purpleDebris,
+                purpleLength: mm4Row.purpleLength,
+                purpleDebrisValue: purpleDebrisValue,
+                purpleLengthValue: purpleLengthValue,
+                hasValidValues: purpleDebrisValue > 0 || purpleLengthValue > 0
+              });
+            }
+            
+            if (purpleDebrisValue > 0 || purpleLengthValue > 0) {
+              firstCutCost = purpleDebrisValue; // First Cut cost from purple debris
+              perCutCost = purpleLengthValue;   // Cost Per Cut from purple length
+              pricingSource = 'mm4';
+              
+              if (section.itemNo === 19) {
+                console.log('✅ F619 MM4 PRICING FOUND:', {
+                  itemNo: section.itemNo,
+                  pipeSizeKey: pipeSizeKey,
+                  firstCutCost: firstCutCost,
+                  perCutCost: perCutCost,
+                  pricingSource: pricingSource,
+                  mm4Row: mm4Row
+                });
+              }
+              break;
+            }
+          }
+        }
+      }
+      
+      // Fall back to old pricingOptions system if MM4 data not available
+      if (pricingSource === 'none') {
+        const firstCutOption = id4Config.pricingOptions?.find((option: any) => 
+          option.label?.toLowerCase().includes('first cut') && option.value && option.value.trim() !== ''
+        );
+        const perCutOption = id4Config.pricingOptions?.find((option: any) => 
+          option.label?.toLowerCase().includes('cost per cut') && option.value && option.value.trim() !== ''
+        );
+        
+        if (firstCutOption || perCutOption) {
+          firstCutCost = firstCutOption ? parseFloat(firstCutOption.value) || 0 : 0;
+          perCutCost = perCutOption ? parseFloat(perCutOption.value) || 0 : 0;
+          pricingSource = 'pricingOptions';
+          
+          if (section.itemNo === 19) {
+            console.log('⚠️ F619 FALLBACK TO OLD PRICING:', {
+              itemNo: section.itemNo,
+              firstCutCost: firstCutCost,
+              perCutCost: perCutCost,
+              pricingSource: pricingSource
+            });
+          }
+        }
+      }
+      
+      if (firstCutCost === 0 && perCutCost === 0) {
+        // No pricing values found in either system
         return {
           cost: 0,
           currency: '£',
@@ -3228,10 +3410,6 @@ export default function Dashboard() {
           recommendation: 'Configure ID4 robotic cutting pricing values'
         };
       }
-      
-      // Enhanced robotic cutting cost calculation with junction detection
-      const firstCutCost = firstCutOption ? parseFloat(firstCutOption.value) || 0 : 0;
-      const perCutCost = perCutOption ? parseFloat(perCutOption.value) || 0 : 0;
       
       // Analyze defect text for junction/connection proximity
       const defectText = section.defects || '';
@@ -3263,6 +3441,57 @@ export default function Dashboard() {
         }
       }
       
+      
+      // ENHANCED: Check if section ALSO requires F615 structural patching
+      const hasStructuralDefects = section.defectType === 'structural' && 
+                                  (section.defects || '').match(/\b(D|DER|DES|DEL|DEG|DF|DJ|DH|DA|DAP|DM|DSS|DC|DPP|DG|DI|DD|DK|DL|DN|DP|DR|DT|DU|DV|DW|DX|DY|DZ)\b/i);
+      
+      if (hasStructuralDefects && section.itemNo === 19) {
+        console.log('🔄 ITEM 19 COMBINED F619+F615 PROCESSING:', {
+          itemNo: section.itemNo,
+          f619Cost: totalCost,
+          hasStructuralDefects: hasStructuralDefects,
+          defectType: section.defectType,
+          defects: section.defects,
+          willContinueToF615: true
+        });
+        
+        // Continue to F615 processing while storing F619 cost
+        const f619Cost = totalCost;
+        const f619Details = cutDetails.join(' + ');
+        
+        // Process F615 structural patching
+        const patchingConfig = pr2Configurations.find((config: any) => 
+          config.categoryId === 'patching' && config.sector === currentSector.id
+        );
+        
+        if (patchingConfig && patchingConfig.mmData) {
+          const f615Result = calculateF615StructuralPatching(section, patchingConfig);
+          if (f615Result && f615Result.cost > 0) {
+            const combinedCost = f619Cost + f615Result.cost;
+            
+            console.log('✅ ITEM 19 COMBINED COST CALCULATION:', {
+              itemNo: section.itemNo,
+              f619Cost: f619Cost,
+              f615Cost: f615Result.cost,
+              combinedCost: combinedCost,
+              f619Details: f619Details,
+              f615Details: f615Result.recommendation
+            });
+            
+            return {
+              cost: combinedCost,
+              currency: '£',
+              method: 'Combined F619+F615',
+              status: 'combined_calculated',
+              patchingType: 'Robotic Cutting + Structural Patching',
+              defectCount: f615Result.defectCount + 1,
+              costPerUnit: combinedCost,
+              recommendation: `${f619Details} + ${f615Result.recommendation}`
+            };
+          }
+        }
+      }
       
       return {
         cost: totalCost,
