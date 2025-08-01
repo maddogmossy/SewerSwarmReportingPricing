@@ -2726,7 +2726,7 @@ export default function Dashboard() {
         defectType: section.defectType,
         pipeSize: section.pipeSize,
         needsCleaning: requiresCleaning(section.defects || ''),
-        isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo),
+        isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
         pr2ConfigsAvailable: !!pr2Configurations,
         pr2ConfigsLength: pr2Configurations?.length || 0
       });
@@ -2780,8 +2780,8 @@ export default function Dashboard() {
     // Check if this section requires cleaning and has MM4/MM5 configuration data
     const needsCleaning = requiresCleaning(section.defects || '');
     
-    // RESTRICTED CLEANING SECTIONS: Only Items 3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23
-    const restrictedCleaningSections = [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23];
+    // RESTRICTED CLEANING SECTIONS: Only Items 3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23
+    const restrictedCleaningSections = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23];
     const isRestrictedSection = restrictedCleaningSections.includes(section.itemNo);
     
     // Debug cleaning detection - ENHANCED DEBUG for restricted sections only
@@ -2935,8 +2935,8 @@ export default function Dashboard() {
     
     // STRUCTURAL DEFECT ROUTING: Check for F615 patching configuration for structural defects
     if (section.defectType === 'structural' && pr2Configurations && isRestrictedSection) {
-      // DEBUG: Log Item 13a specifically
-      if (section.itemNo === 13) {
+      // DEBUG: Log Item 13a and Item 20 specifically
+      if (section.itemNo === 13 || section.itemNo === 20) {
         console.log('🎯 ITEM 13a F615 ROUTING DEBUG:', {
           itemNo: section.itemNo,
           letterSuffix: section.letterSuffix,
