@@ -2922,24 +2922,41 @@ export default function Dashboard() {
     
     // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections AND service defects only
     if (needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service') {
-      // Find cctv configuration for current sector (check both 'cctv' and 'cctv-jet-vac')
-      const cctvConfig = pr2Configurations.find((config: any) => 
-        (config.categoryId === 'cctv' || config.categoryId === 'cctv-jet-vac') && config.sector === currentSector.id
+      // DYNAMIC CONFIGURATION SELECTION: Check which CCTV configuration the user has actually configured with MM data
+      // Priority: F608 (cctv-van-pack) > F606 (cctv-jet-vac) > F612 (cctv) based on which has valid MM data
+      const cctvConfigs = pr2Configurations.filter((config: any) => 
+        ['cctv-van-pack', 'cctv-jet-vac', 'cctv'].includes(config.categoryId) && 
+        config.sector === currentSector.id
       );
       
-      console.log('🔍 MM4 Debug: Checking for cctv config:', {
+      // Find the configuration with the most complete MM data (user's active choice)
+      const cctvConfig = cctvConfigs.find((config: any) => {
+        const hasValidMM4 = config.mmData?.mm4Rows?.some((row: any) => 
+          row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
+        );
+        return hasValidMM4;
+      }) || cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac') || cctvConfigs[0];
+      
+      console.log('🔍 MM4 Dynamic Config Selection:', {
         sectionId: section.itemNo,
         needsCleaning,
-        configFound: !!cctvConfig,
-        currentSector: currentSector.id,
-        allConfigs: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })),
-        configDetails: cctvConfig ? {
+        availableConfigs: cctvConfigs.map(c => ({ 
+          id: c.id, 
+          categoryId: c.categoryId, 
+          hasValidMM4: c.mmData?.mm4Rows?.some((row: any) => 
+            row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
+          )
+        })),
+        selectedConfig: cctvConfig ? {
           id: cctvConfig.id,
           categoryId: cctvConfig.categoryId,
-          sector: cctvConfig.sector,
+          reason: cctvConfig.mmData?.mm4Rows?.some((row: any) => 
+            row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
+          ) ? 'Has valid MM4 data' : 'Default/fallback selection',
           hasMMData: !!cctvConfig.mmData,
           mmDataKeys: cctvConfig.mmData ? Object.keys(cctvConfig.mmData) : []
-        } : null
+        } : null,
+        currentSector: currentSector.id
       });
       
       if (cctvConfig && cctvConfig.mmData) {
