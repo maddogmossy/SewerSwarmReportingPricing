@@ -737,48 +737,23 @@ export default function PR2ConfigClean() {
 
   // Debug logging disabled to prevent infinite loops
 
-  // Route to existing configuration or auto-create new pipe size configurations
+  // Route to existing configuration - AUTO-CREATION DISABLED
   useEffect(() => {
     // Only run when we have categoryId and sector but not already editing
     if (!isEditing && categoryId && sector && allCategoryConfigs) {
-
+      console.log('🔍 ROUTING DEBUG - Auto-creation disabled, only finding existing configs');
       
-      // If we have a pipe size, look for pipe-size-specific configuration first
-      if (pipeSize) {
-        const normalizedPipeSize = pipeSize.replace(/mm$/i, '');
-        const pipeSizeConfig = allCategoryConfigs.find(config => 
-          config.categoryId === categoryId && 
-          config.sector === sector &&
-          config.categoryName && config.categoryName.includes(`${normalizedPipeSize}mm`)
-        );
-        
-        if (pipeSizeConfig) {
-
-          setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${pipeSizeConfig.id}`);
-          return;
-        } else {
-          // AUTO-CREATE: No pipe-size-specific config exists, create one immediately
-
-          const autoCreateAndRedirect = async () => {
-            const normalizedPipeSize = pipeSize.replace(/mm$/i, '');
-            const configName = `${normalizedPipeSize}mm ${categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Configuration`;
-            
-            const newConfigId = await createPipeSizeConfiguration(categoryId, sector, pipeSize, configName);
-            
-            if (newConfigId) {
-
-              setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${newConfigId}`);
-            } else {
-              console.error('❌ Failed to auto-create configuration, staying on current page');
-            }
-          };
-          
-          autoCreateAndRedirect();
+      // For patching category, ALWAYS route to F615 (id=615)
+      if (categoryId === 'patching') {
+        console.log('🎯 PATCHING CATEGORY - Forcing route to F615 (id=615)');
+        const f615Config = allCategoryConfigs.find(config => config.id === 615);
+        if (f615Config) {
+          setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615`);
           return;
         }
       }
       
-      // Find existing general configuration for this category (same logic as pricing page)
+      // For other categories, find existing general configuration
       const existingConfig = allCategoryConfigs.find(config => 
         config.categoryId === categoryId && 
         config.sector === sector &&
@@ -786,11 +761,10 @@ export default function PR2ConfigClean() {
       );
       
       if (existingConfig) {
-
-        // Redirect to edit the general configuration
+        console.log('🔄 EXISTING CONFIG FOUND - Redirecting to edit mode:', existingConfig.id);
         setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${existingConfig.id}`);
       } else {
-
+        console.log('⚠️ NO EXISTING CONFIG - Staying in create mode (auto-creation disabled)');
       }
     }
   }, [allCategoryConfigs, isEditing, categoryId, sector, pipeSize, setLocation]);
