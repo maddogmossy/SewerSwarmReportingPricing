@@ -3050,11 +3050,19 @@ export default function Dashboard() {
               const dayRate = blueValue; // Blue window is day rate
               const costPerPatch = greenValue; // Green window is cost per patch (Row 2 default)
               
-              // Count defect meterages that need patches (using Row 2 - Double Layer default)
-              // Each defect location gets one patch
+              // Count structural defects that need patches (using Row 2 - Double Layer default)
+              // For F615 structural patching, count actual structural defect instances
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
-              const patchCount = defectMeterages.length; // One patch per defect location
+              
+              // Enhanced patch counting: Count structural defect codes (D, DER, DES, etc.)
+              const structuralDefectPattern = /\b(D|DER|DES|DF|DL|DS|DB|DG|DM|DN|DR|DT|DU|DV|DW|DY|DZ)\b/g;
+              const structuralDefectMatches = defectsText.match(structuralDefectPattern) || [];
+              
+              // Use the higher count between meterage locations and structural defect instances
+              const meterageCount = defectMeterages.length;
+              const structuralDefectCount = structuralDefectMatches.length;
+              const patchCount = Math.max(meterageCount, structuralDefectCount, 1); // Minimum 1 patch
               
               const totalPatchCost = costPerPatch * patchCount;
               
@@ -3065,9 +3073,12 @@ export default function Dashboard() {
                 dayRate: blueValue, // Day rate from blue window
                 costPerPatch: greenValue, // Cost per patch from green window (Row 2 default)
                 defectMeterages: defectMeterages,
-                patchCount: patchCount, // Number of patches needed
+                meterageCount: meterageCount,
+                structuralDefectCount: structuralDefectCount,
+                structuralDefectMatches: structuralDefectMatches,
+                patchCount: patchCount, // Number of patches needed (max of meterage or defect count)
                 totalPatchCost: totalPatchCost, // Total cost for all patches
-                note: 'F615 structural patching - green window pricing, purple window minimums'
+                note: 'F615 structural patching - enhanced counting: max(meterage, defect codes)'
               });
               
               // For minimum quantity check, we need to access purple window data (patchingGreenData)
