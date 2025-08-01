@@ -1192,19 +1192,7 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     console.log(`🔍 updateMM4Row called: rowId=${rowId}, field=${field}, value="${value}"`);
     
-    // Check for .99 validation BEFORE saving - but only for purpleLength and NOT for F615/F619 structural defects
-    if (field === 'purpleLength' && value.trim() !== '' && !value.endsWith('.99')) {
-      // Skip .99 validation for F615 (patching) and F619 (f-robot-cutting) as per user request
-      const shouldSkipValidation = (categoryId === 'patching' || categoryId === 'f-robot-cutting');
-      
-      if (!shouldSkipValidation) {
-        // Show .99 validation popup for service recommendations
-        setPendingRangeValue(value);
-        setPendingRowId(rowId);
-        setShowRangeWarning(true);
-        return; // Don't save yet, wait for user decision
-      }
-    }
+    // No validation during typing - validation happens on save/navigation only
     
     // IMMEDIATE: Store in input buffer to prevent backend overwrites
     const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
