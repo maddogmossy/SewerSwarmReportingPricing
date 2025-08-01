@@ -1773,8 +1773,17 @@ export default function PR2ConfigClean() {
         const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${row.id}-purpleLength`;
         const actualValue = inputBuffer[bufferKey] || row.purpleLength;
         
+        console.log(`🔍 .99 Validation Check - Row ${row.id}:`, {
+          bufferKey,
+          bufferedValue: inputBuffer[bufferKey],
+          storedValue: row.purpleLength,
+          actualValue,
+          needsValidation: !!(actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99'))
+        });
+        
         if (actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99')) {
           // Show warning popup for missing .99
+          console.log(`⚠️ .99 Validation triggered for Row ${row.id} with value "${actualValue}"`);
           setPendingRangeValue(actualValue);
           setPendingRowId(row.id);
           setShowRangeWarning(true);
