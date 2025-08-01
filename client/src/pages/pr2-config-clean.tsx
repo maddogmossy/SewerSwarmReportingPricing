@@ -3458,25 +3458,53 @@ export default function PR2ConfigClean() {
           
           {/* Right side - Navigation buttons */}
           <div className="flex items-center gap-3">
-            {/* Test autoSelectUtilities parameter */}
-            {getTemplateType(categoryId || '') === 'MMP1' && !selectedIds.includes('id1') && (
-              <Button 
-                onClick={() => {
-                  const currentUrl = window.location.pathname + window.location.search;
-                  const newUrl = currentUrl.includes('autoSelectUtilities=true') 
-                    ? currentUrl 
-                    : currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'autoSelectUtilities=true';
-                  console.log('🧪 TESTING: Adding autoSelectUtilities parameter to URL');
-                  console.log('Current URL:', currentUrl);
-                  console.log('New URL:', newUrl);
-                  window.history.pushState({}, '', newUrl);
-                  window.location.reload();
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                size="sm"
-              >
-                Test Auto-Select
-              </Button>
+            {/* Cache management buttons */}
+            {getTemplateType(categoryId || '') === 'MMP1' && (
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => {
+                    // Clear all MM4/MM5 cache to force fresh data load
+                    console.log('🧹 Clearing MM4/MM5 cache...');
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                      const key = localStorage.key(i);
+                      if (key && (key.includes('mm4') || key.includes('mm5') || key.includes('615'))) {
+                        keysToRemove.push(key);
+                      }
+                    }
+                    keysToRemove.forEach(key => {
+                      console.log('🗑️ Removing:', key);
+                      localStorage.removeItem(key);
+                    });
+                    localStorage.removeItem('mm4DataByPipeSize');
+                    console.log('✅ Cache cleared. Reloading...');
+                    window.location.reload();
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  size="sm"
+                >
+                  Clear Cache
+                </Button>
+                {!selectedIds.includes('id1') && (
+                  <Button 
+                    onClick={() => {
+                      const currentUrl = window.location.pathname + window.location.search;
+                      const newUrl = currentUrl.includes('autoSelectUtilities=true') 
+                        ? currentUrl 
+                        : currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'autoSelectUtilities=true';
+                      console.log('🧪 TESTING: Adding autoSelectUtilities parameter to URL');
+                      console.log('Current URL:', currentUrl);
+                      console.log('New URL:', newUrl);
+                      window.history.pushState({}, '', newUrl);
+                      window.location.reload();
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                    size="sm"
+                  >
+                    Test Auto-Select
+                  </Button>
+                )}
+              </div>
             )}
             <Button 
               onClick={handleGoBack}
