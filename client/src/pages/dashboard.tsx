@@ -5188,6 +5188,7 @@ export default function Dashboard() {
             <Button
               onClick={() => {
                 // Navigate to F615 TP2 configuration page with auto-select utilities
+                console.log('🚀 DASHBOARD TP2 DIALOG - Navigating to F615 with autoSelectUtilities=true');
                 window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&autoSelectUtilities=true`;
               }}
               className="bg-orange-600 hover:bg-orange-700 text-white"

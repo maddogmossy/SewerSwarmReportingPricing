@@ -752,8 +752,12 @@ export default function PR2ConfigClean() {
           const currentParams = new URLSearchParams(window.location.search);
           const hasAutoSelect = currentParams.get('autoSelectUtilities') === 'true' || autoSelectUtilities;
           const autoSelectParam = hasAutoSelect ? '&autoSelectUtilities=true' : '';
+          const pipeSizeParam = pipeSize ? `&pipeSize=${pipeSize}` : '';
           console.log('🔄 F615 REDIRECT - Preserving autoSelectUtilities:', hasAutoSelect);
-          setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615${autoSelectParam}`);
+          console.log('🔄 F615 REDIRECT - Original URL:', window.location.href);
+          const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615${autoSelectParam}${pipeSizeParam}`;
+          console.log('🔄 F615 REDIRECT - New URL:', newUrl);
+          setLocation(newUrl);
           return;
         }
       }
