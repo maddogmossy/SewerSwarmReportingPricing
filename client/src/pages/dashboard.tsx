@@ -2990,12 +2990,13 @@ export default function Dashboard() {
             const hasValidRate = blueValue > 0 && greenValue > 0;
             
             if (hasValidRate) {
-              // F615 PATCHING LOGIC: Count defects needing patches and calculate cost per patch
-              // Blue value = cost per patch (e.g., £250 per patch)
-              // Green value = minimum required quantity for efficiency
-              const costPerPatch = blueValue; // Blue window is cost per patch
+              // F615 PATCHING LOGIC: Green window contains patch pricing, blue is day rate, purple is minimum quantities
+              // Blue value = day rate (e.g., £1650 per day)
+              // Green value = patch cost (e.g., £450 per patch) - DEFAULT ROW 2 DOUBLE LAYER
+              const dayRate = blueValue; // Blue window is day rate
+              const costPerPatch = greenValue; // Green window is cost per patch (Row 2 default)
               
-              // Count defect meterages that need patches (using default option 2 - Double Layer)
+              // Count defect meterages that need patches (using Row 2 - Double Layer default)
               // Each defect location gets one patch
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
@@ -3007,13 +3008,19 @@ export default function Dashboard() {
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
-                costPerPatch: blueValue, // Cost per individual patch
+                dayRate: blueValue, // Day rate from blue window
+                costPerPatch: greenValue, // Cost per patch from green window (Row 2 default)
                 defectMeterages: defectMeterages,
                 patchCount: patchCount, // Number of patches needed
                 totalPatchCost: totalPatchCost, // Total cost for all patches
-                minimumQuantity: greenValue, // Required minimum from green window
-                note: 'F615 structural patching - no purple window range restrictions'
+                note: 'F615 structural patching - green window pricing, purple window minimums'
               });
+              
+              // For minimum quantity check, we need to access purple window data (patchingGreenData)
+              // This would require accessing the mmData.patchingGreenData array for Row 2 quantities
+              const patchingGreenData = mmData.patchingGreenData || [];
+              const minimumQuantityRow2 = patchingGreenData[1] || {}; // Row 2 index = 1
+              const minimumQuantity = parseFloat(minimumQuantityRow2.quantity || '0');
               
               // Count total structural items across all sections (not just defects)
               const totalStructuralItems = sectionData?.filter(s => 
@@ -3021,20 +3028,21 @@ export default function Dashboard() {
                 restrictedCleaningSections.includes(s.itemNo)
               ).length || 0;
               
-              const meetsMinimumRuns = totalStructuralItems >= greenValue;
+              const meetsMinimumRuns = totalStructuralItems >= minimumQuantity;
               
               return {
                 cost: totalPatchCost, // Display total patch cost
                 currency: '£',
                 method: 'F615 Structural Patching',
                 status: meetsMinimumRuns ? 'f615_calculated' : 'f615_insufficient_items',
+                dayRate: dayRate,
                 costPerPatch: costPerPatch,
                 patchCount: patchCount,
                 totalPatchCost: totalPatchCost,
-                minimumQuantity: greenValue,
+                minimumQuantity: minimumQuantity,
                 totalStructuralItems: totalStructuralItems,
                 meetsMinimumRuns: meetsMinimumRuns,
-                recommendation: `F615 structural patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost}`
+                recommendation: `F615 structural patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost} (min: ${minimumQuantity})`
               };
             }
           }
