@@ -119,7 +119,7 @@ const CATEGORY_PAGE_IDS = {
   'ims-cutting': 'p24',
   'excavation': 'p25',
   'patching': 'p26',
-  'robotic-cutting': 'p4', // TP3 Template - ID4 Robotic Cutting
+  'f-robot-cutting': 'p4', // TP3 Template - ID4 Robotic Cutting
   'tankering': 'p27'
 };
 
@@ -264,7 +264,7 @@ export default function PR2ConfigClean() {
         'excavation': `${formattedSize} Excavation Configuration`,
         'patching': `${formattedSize} Patching Configuration`,
         'patching-p006a': `${formattedSize} Patching Configuration`,
-        'robotic-cutting': `${formattedSize} Robotic Cutting Configuration`, // TP3 Template
+        'f-robot-cutting': `${formattedSize} Robotic Cutting Configuration`, // TP3 Template
         'day-rate-db11': `${formattedSize} P26 Day Rate Configuration`, // P26 Template
         'tankering': `${formattedSize} Tankering Configuration`
       };
@@ -286,7 +286,7 @@ export default function PR2ConfigClean() {
       'excavation': 'Excavation Configuration',
       'patching': 'Patching Configuration',
       'patching-p006a': 'Patching Configuration',
-      'robotic-cutting': 'Robotic Cutting Configuration', // TP3 Template
+      'f-robot-cutting': 'Robotic Cutting Configuration', // TP3 Template
       'day-rate-db11': 'P26 - Day Rate Configuration', // P26 Template
       'tankering': 'Tankering Configuration'
     };
@@ -607,7 +607,7 @@ export default function PR2ConfigClean() {
     // Determine correct dev code based on current category
     const currentDevCode = (() => {
       if (window.location.href.includes('categoryId=patching')) return 'db6';
-      if (window.location.href.includes('categoryId=robotic-cutting')) return 'db2';
+      if (window.location.href.includes('categoryId=f-robot-cutting')) return 'db2';
       return 'db11'; // TP1 CCTV configurations
     })();
     
@@ -2073,8 +2073,8 @@ export default function PR2ConfigClean() {
     setHasUserChanges(false);
     setMm2ColorLocked(false); // Reset MM2 color lock when switching configurations
     
-    // CLEAR PR1 CACHE CONTAMINATION for robotic-cutting configurations
-    if (categoryId === 'robotic-cutting') {
+    // CLEAR PR1 CACHE CONTAMINATION for f-robot-cutting configurations
+    if (categoryId === 'f-robot-cutting') {
       // Clear any localStorage that might contain old PR1 data
       try {
         localStorage.removeItem('pr1-config-cache');
@@ -2144,7 +2144,7 @@ export default function PR2ConfigClean() {
         
         // FORCE TP3 template name override to prevent PR1 cache contamination
         const correctCategoryName = (() => {
-          if (categoryId === 'robotic-cutting') {
+          if (categoryId === 'f-robot-cutting') {
 
             return 'TP3 - Robotic Cutting Configuration';
           }
