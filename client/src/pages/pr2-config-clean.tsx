@@ -1174,7 +1174,23 @@ export default function PR2ConfigClean() {
     console.log(`🔍 Specific row ${rowId} ${field}:`, newData.find(r => r.id === rowId)?.[field]);
     
     updateMM4DataForPipeSize(newData);
-    triggerAutoSave();
+    
+    // IMMEDIATE: Save to localStorage for persistence without triggering backend
+    const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    const updatedMM4DataByPipeSize = {
+      ...mm4DataByPipeSize,
+      [pipeSizeKey]: newData
+    };
+    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
+    
+    // DELAYED: Trigger auto-save to backend after user stops typing
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
+    }
+    const timeoutId = setTimeout(() => {
+      triggerAutoSave();
+    }, 1000); // Wait 1 second before saving to backend
+    setAutoSaveTimeout(timeoutId);
   };
 
   // Handle range warning dialog responses
