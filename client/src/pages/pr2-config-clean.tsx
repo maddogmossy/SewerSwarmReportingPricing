@@ -972,19 +972,37 @@ export default function PR2ConfigClean() {
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
   
-  // Input buffer to prevent backend overwrites during typing
-  const [inputBuffer, setInputBuffer] = useState<{[key: string]: string}>({});
+  // Input buffer to prevent backend overwrites during typing - persisted to localStorage
+  const [inputBuffer, setInputBuffer] = useState<{[key: string]: string}>(() => {
+    try {
+      const stored = localStorage.getItem('inputBuffer');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
   
   // Helper function to get buffered value or fallback
   const getBufferedValue = (rowId: number, field: string, fallbackValue: string) => {
     const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
     const bufferedValue = inputBuffer[bufferKey];
     if (bufferedValue !== undefined) {
-      console.log(`🔒 Using buffered value for ${bufferKey}: "${bufferedValue}"`);
+      console.log(`🔒 Using buffered value for ${bufferKey}: "${bufferedValue}" (persisted)`);
       return bufferedValue;
     }
     console.log(`📄 Using fallback value for ${bufferKey}: "${fallbackValue}"`);
     return fallbackValue;
+  };
+
+  // Function to clear specific buffer entries (when user saves successfully)
+  const clearBufferForRow = (rowId: number, field: string) => {
+    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
+    setInputBuffer(prev => {
+      const updated = { ...prev };
+      delete updated[bufferKey];
+      localStorage.setItem('inputBuffer', JSON.stringify(updated));
+      return updated;
+    });
   };
 
 
@@ -1176,10 +1194,15 @@ export default function PR2ConfigClean() {
     
     // IMMEDIATE: Store in input buffer to prevent backend overwrites
     const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
-    setInputBuffer(prev => ({
-      ...prev,
-      [bufferKey]: value
-    }));
+    setInputBuffer(prev => {
+      const updated = {
+        ...prev,
+        [bufferKey]: value
+      };
+      // Persist buffer to localStorage immediately
+      localStorage.setItem('inputBuffer', JSON.stringify(updated));
+      return updated;
+    });
     
     // Allow input for all pipe sizes - user is responsible for authentic data
     console.log(`✅ Allowing input for pipe size: ${selectedPipeSizeForMM4}mm`);
