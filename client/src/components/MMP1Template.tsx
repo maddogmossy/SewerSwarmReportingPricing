@@ -297,6 +297,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
 
   // Auto-save wrappers
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+    console.log(`🔍 MMP1Template updateMM4RowWithAutoSave: rowId=${rowId}, field=${field}, value="${value}"`);
     updateMM4Row(rowId, field, value);
     triggerAutoSave();
   };
@@ -594,7 +595,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                     <Input
                       type="text"
                       value={row.purpleLength}
-                      onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
                       placeholder="30m"
                       className="flex-1 text-xs h-7"
                     />
