@@ -1265,9 +1265,10 @@ export default function PR2ConfigClean() {
       // Persist buffer to localStorage immediately
       localStorage.setItem('inputBuffer', JSON.stringify(updated));
       console.log(`🔧 Updated buffer for ${bufferKey}: "${finalValue}"`);
+      console.log(`🔧 Full buffer after update:`, updated);
       return updated;
     });
-    
+
     // CRITICAL: Update React state FIRST for immediate UI reflection
     const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     const updatedMM4DataByPipeSize = {
@@ -1278,12 +1279,14 @@ export default function PR2ConfigClean() {
     
     // Update MM4 data storage (this calls the same setState but ensures consistency)
     updateMM4DataForPipeSize(newData);
+    console.log(`🔧 Updated MM4 storage to sync with buffer for row ${pendingRowId}`);
     
     // DISABLED: No localStorage persistence to prevent synthetic data contamination
     
-    // Force a component re-render to update input field values
-    setTimeout(() => {
-      triggerAutoSave();
+    // Force a component re-render to update input field values and IMMEDIATELY save to backend
+    setTimeout(async () => {
+      console.log(`✅ Triggering IMMEDIATE backend save for .99 update - row ${pendingRowId}`);
+      await triggerAutoSave();
       console.log(`✅ Final state update completed for row ${pendingRowId}`);
     }, 50);
     
