@@ -3948,8 +3948,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.purpleDebris || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleDebris', e.target.value)}
+                                  value={getCurrentMM4Data()[0]?.purpleDebris || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'purpleDebris', e.target.value)}
                                 />
                               </div>
                               <div>
@@ -3968,8 +3968,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.purpleLength || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleLength', e.target.value)}
+                                  value={getCurrentMM4Data()[0]?.purpleLength || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'purpleLength', e.target.value)}
                                 />
                               </div>
                               <div>
@@ -4092,51 +4092,55 @@ export default function PR2ConfigClean() {
                                 </span>
                               </h4>
                               <div className="space-y-2">
-                                {mm4Rows.map((row, index) => (
-                                  <div key={row.id} className="grid grid-cols-2 gap-2">
-                                    <div>
-                                      <label className="text-xs text-purple-700">Debris %</label>
-                                      <Input
-                                        type="text"
-                                        placeholder="0-15"
-                                        className="border-purple-300"
-                                        value={row.purpleDebris}
-                                        onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
-                                      />
-                                    </div>
-                                    <div>
-                                      <label className="text-xs text-purple-700">Length</label>
-                                      <div className="flex items-center gap-2">
+                                {(() => {
+                                  // 🧹 Use getCurrentMM4Data() to get clean, pipe-size-specific data
+                                  const currentData = getCurrentMM4Data();
+                                  return currentData.map((row, index) => (
+                                    <div key={row.id} className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <label className="text-xs text-purple-700">Debris %</label>
                                         <Input
                                           type="text"
-                                          placeholder="0-35"
-                                          className="border-purple-300 flex-1"
-                                          value={row.purpleLength}
-                                          onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
+                                          placeholder="0-15"
+                                          className="border-purple-300"
+                                          value={row.purpleDebris || ''}
+                                          onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
                                         />
-                                        {index === 0 && (
-                                          <Button 
-                                            size="sm" 
-                                            className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
-                                            onClick={addMM4Row}
-                                          >
-                                            +
-                                          </Button>
-                                        )}
-                                        {index > 0 && (
-                                          <Button 
-                                            size="sm" 
-                                            variant="destructive"
-                                            className="h-8 w-8 p-0 flex-shrink-0"
-                                            onClick={() => deleteMM4Row(row.id)}
-                                          >
-                                            <Trash2 className="w-4 h-4" />
-                                          </Button>
-                                        )}
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-purple-700">Length</label>
+                                        <div className="flex items-center gap-2">
+                                          <Input
+                                            type="text"
+                                            placeholder="0-35"
+                                            className="border-purple-300 flex-1"
+                                            value={row.purpleLength || ''}
+                                            onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
+                                          />
+                                          {index === 0 && (
+                                            <Button 
+                                              size="sm" 
+                                              className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
+                                              onClick={addMM4Row}
+                                            >
+                                              +
+                                            </Button>
+                                          )}
+                                          {index > 0 && (
+                                            <Button 
+                                              size="sm" 
+                                              variant="destructive"
+                                              className="h-8 w-8 p-0 flex-shrink-0"
+                                              onClick={() => deleteMM4Row(row.id)}
+                                            >
+                                              <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  ));
+                                })()}
                               </div>
                             </div>
                           )}
