@@ -1159,11 +1159,8 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     console.log(`🔍 updateMM4Row called: rowId=${rowId}, field=${field}, value="${value}"`);
     
-    // 🧹 PREVENT synthetic data: Only allow authentic data entry for 150mm and 300mm pipe sizes
-    if (selectedPipeSizeForMM4 !== '150' && selectedPipeSizeForMM4 !== '300') {
-      console.log('🚫 Blocking synthetic data entry for non-authentic pipe size:', selectedPipeSizeForMM4);
-      return;
-    }
+    // Allow input for all pipe sizes - user is responsible for authentic data
+    console.log(`✅ Allowing input for pipe size: ${selectedPipeSizeForMM4}mm`);
     
     const currentData = getCurrentMM4Data();
     console.log(`🔍 Current data before update:`, currentData);
@@ -1596,11 +1593,8 @@ export default function PR2ConfigClean() {
 
   // Patching Green Window Data Management (Independent)
   const updatePatchingGreenRow = (rowId: number, value: string) => {
-    // 🧹 PREVENT synthetic data: Only allow authentic data entry for 150mm and 300mm pipe sizes
-    if (selectedPipeSizeForMM4 !== '150' && selectedPipeSizeForMM4 !== '300') {
-      console.log('🚫 Blocking synthetic data entry for non-authentic pipe size:', selectedPipeSizeForMM4);
-      return;
-    }
+    // Allow input for all pipe sizes - user is responsible for authentic data
+    console.log(`✅ Allowing patching input for pipe size: ${selectedPipeSizeForMM4}mm`);
     
     setPatchingGreenData(prev => 
       prev.map(row => row.id === rowId ? { ...row, quantity: value } : row)
