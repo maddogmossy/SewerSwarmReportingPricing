@@ -3898,6 +3898,16 @@ export default function PR2ConfigClean() {
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleLength', e.target.value)}
                                 />
                               </div>
+                              <div>
+                                <label className="text-sm font-medium text-green-700">4. Triple Layer + Extra Cure Time</label>
+                                <Input
+                                  type="text"
+                                  placeholder="0"
+                                  className="border-green-300 mt-1"
+                                  value={mm4Rows[1]?.blueValue || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[1]?.id || 2, 'blueValue', e.target.value)}
+                                />
+                              </div>
                             </div>
                           </div>
 
