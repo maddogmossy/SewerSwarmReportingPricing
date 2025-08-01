@@ -1199,19 +1199,21 @@ export default function PR2ConfigClean() {
     };
     localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
     
-    // DELAYED: Clear buffer and trigger auto-save after user stops typing
+    // DELAYED: Trigger auto-save after user stops typing (keep buffer longer)
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
     }
     const timeoutId = setTimeout(() => {
-      // Clear from buffer after saving
-      setInputBuffer(prev => {
-        const updated = { ...prev };
-        delete updated[bufferKey];
-        return updated;
-      });
       triggerAutoSave();
-    }, 1000); // Wait 1 second before saving to backend
+      // Clear from buffer after a longer delay to prevent overwrites
+      setTimeout(() => {
+        setInputBuffer(prev => {
+          const updated = { ...prev };
+          delete updated[bufferKey];
+          return updated;
+        });
+      }, 2000); // Clear buffer 2 seconds after saving
+    }, 1500); // Wait 1.5 seconds before saving to backend
     setAutoSaveTimeout(timeoutId);
   };
 
@@ -2230,8 +2232,13 @@ export default function PR2ConfigClean() {
           // CRITICAL FIX: Stop forcing backend load that brings corrupted data
           // const isF606Configuration = editId === "606" || editId === 606;
           
-          // Only load MM4 data if we don't have local changes - REMOVED F606 force refresh
-          if (!hasLocalMM4Data) {
+          // Only load MM4 data if we don't have local changes AND no active input buffer values
+          const hasActiveBufferValues = Object.keys(inputBuffer).length > 0;
+          console.log('🔍 Buffer check:');
+          console.log('  - hasActiveBufferValues:', hasActiveBufferValues);
+          console.log('  - buffer contents:', inputBuffer);
+          
+          if (!hasLocalMM4Data && !hasActiveBufferValues) {
             // Load MM4/MM5 data from pipe-size-specific storage or legacy format
             if (config.mmData.mm4DataByPipeSize) {
               console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
