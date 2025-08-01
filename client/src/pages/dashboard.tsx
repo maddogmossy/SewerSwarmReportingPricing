@@ -51,7 +51,8 @@ import {
   Database,
   ArrowLeft,
   Info,
-  Wrench
+  Wrench,
+  Truck
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -2922,39 +2923,56 @@ export default function Dashboard() {
     
     // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections AND service defects only
     if (needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service') {
-      // DYNAMIC CONFIGURATION SELECTION: Check which CCTV configuration the user has actually configured with MM data
-      // Priority: F608 (cctv-van-pack) > F606 (cctv-jet-vac) > F612 (cctv) based on which has valid MM data
+      // DYNAMIC CONFIGURATION SELECTION: Only F606 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
+      // F612 (cctv) excluded - CCTV only, not for cleaning service defects
       const cctvConfigs = pr2Configurations.filter((config: any) => 
-        ['cctv-van-pack', 'cctv-jet-vac', 'cctv'].includes(config.categoryId) && 
+        ['cctv-van-pack', 'cctv-jet-vac'].includes(config.categoryId) && 
         config.sector === currentSector.id
       );
       
-      // Find the configuration with the most complete MM data (user's active choice)
-      const cctvConfig = cctvConfigs.find((config: any) => {
-        const hasValidMM4 = config.mmData?.mm4Rows?.some((row: any) => 
-          row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
-        );
-        return hasValidMM4;
-      }) || cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac') || cctvConfigs[0];
+      // DEFAULT PRIORITY: F606 (cctv-jet-vac) is default, but F608 (cctv-van-pack) takes priority if configured
+      const f606Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
+      const f608Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-van-pack');
+      
+      // Check if F608 has valid MM4 data (user configured it)
+      const f608HasValidMM4 = f608Config?.mmData?.mm4Rows?.some((row: any) => 
+        row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
+      );
+      
+      // Selection logic: Check user preference AND configuration status
+      // Priority: User preference (if both are configured) > Configured config > F606 default
+      const userPrefersF608 = localStorage.getItem('equipmentPriority') === 'f608';
+      const bothConfigured = f608HasValidMM4 && f606Config?.mmData?.mm4Rows?.some((row: any) => 
+        row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
+      );
+      
+      let cctvConfig;
+      if (bothConfigured) {
+        // Both are configured - use user preference
+        cctvConfig = userPrefersF608 ? f608Config : f606Config;
+      } else if (f608HasValidMM4) {
+        // Only F608 configured
+        cctvConfig = f608Config;
+      } else {
+        // Default to F606
+        cctvConfig = f606Config;
+      }
       
       console.log('🔍 MM4 Dynamic Config Selection:', {
         sectionId: section.itemNo,
         needsCleaning,
-        availableConfigs: cctvConfigs.map(c => ({ 
-          id: c.id, 
-          categoryId: c.categoryId, 
-          hasValidMM4: c.mmData?.mm4Rows?.some((row: any) => 
-            row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
-          )
-        })),
+        f606Available: !!f606Config,
+        f608Available: !!f608Config,
+        f608HasValidMM4: f608HasValidMM4,
+        userPrefersF608: userPrefersF608,
+        bothConfigured: bothConfigured,
         selectedConfig: cctvConfig ? {
           id: cctvConfig.id,
           categoryId: cctvConfig.categoryId,
-          reason: cctvConfig.mmData?.mm4Rows?.some((row: any) => 
-            row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
-          ) ? 'Has valid MM4 data' : 'Default/fallback selection',
+          reason: bothConfigured ? `User preference: ${cctvConfig.categoryId}` : 
+                  cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 configured with MM4 data' : 'F606 default selection',
           hasMMData: !!cctvConfig.mmData,
-          mmDataKeys: cctvConfig.mmData ? Object.keys(cctvConfig.mmData) : []
+          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac'
         } : null,
         currentSector: currentSector.id
       });
@@ -4685,6 +4703,59 @@ export default function Dashboard() {
       </div>
 
       <div className="container mx-auto p-6 max-w-none">
+        {/* Equipment Selection Interface */}
+        <div className="mb-4 bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Truck className="h-5 w-5 text-blue-600" />
+                <h3 className="text-sm font-medium text-gray-900">Equipment Priority</h3>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                    localStorage.getItem('equipmentPriority') !== 'f608' 
+                      ? 'bg-blue-100 text-blue-800 border-2 border-blue-400' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  onClick={() => {
+                    localStorage.setItem('equipmentPriority', 'f606');
+                    window.dispatchEvent(new Event('storage'));
+                    // Force re-render to update cost calculations
+                    window.location.reload();
+                  }}
+                >
+                  <div className="flex items-center gap-1">
+                    <Truck className="h-3 w-3" />
+                    F606 Jet Vac (Priority)
+                  </div>
+                </button>
+                <button
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                    localStorage.getItem('equipmentPriority') === 'f608' 
+                      ? 'bg-orange-100 text-orange-800 border-2 border-orange-400' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  onClick={() => {
+                    localStorage.setItem('equipmentPriority', 'f608');
+                    window.dispatchEvent(new Event('storage'));
+                    // Force re-render to update cost calculations
+                    window.location.reload();
+                  }}
+                >
+                  <div className="flex items-center gap-1">
+                    <Zap className="h-3 w-3" />
+                    F608 Van Pack (Priority)
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500">
+              Changes equipment priority for Item 3 cost calculations
+            </div>
+          </div>
+        </div>
+        
         <div className="mb-6">
           {/* Dashboard Header */}
           <div className="flex items-center gap-3 mb-6">
