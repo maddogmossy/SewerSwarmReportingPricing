@@ -3836,54 +3836,64 @@ export default function PR2ConfigClean() {
                     {selectedPipeSizeForMM4 ? (
                       // Show MM4 interface when pipe size is selected - Conditional Layout
                       categoryId === 'patching' ? (
-                        /* Blue Patching UI for F607 - 4 Layer Types + No Required Per Shift */
+                        /* F615 Patching UI - Day Rate + Green Patching Layers + Purple Required Per Shift */
 
-                        <div className="grid grid-cols-2 gap-6">
-                          {/* Blue Patching Layers (Left Column) */}
-                          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                            <h4 className="font-medium text-blue-800 mb-3">
+                        <div className="grid grid-cols-3 gap-4">
+                          {/* Day Rate Box (Left Column) */}
+                          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
+                            <h4 className="font-medium text-yellow-800 mb-3">
+                              Day Rate
+                              <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded font-mono">
+                                {selectedPipeSizeForMM4}mm
+                              </span>
+                            </h4>
+                            <div>
+                              <label className="text-sm font-medium text-yellow-700">Daily Rate (£)</label>
+                              <Input
+                                type="text"
+                                placeholder="0"
+                                className="border-yellow-300 mt-1"
+                                value={mm4Rows[0]?.blueValue || ''}
+                                onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Green Patching Layers (Middle Column) */}
+                          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                            <h4 className="font-medium text-green-800 mb-3">
                               Patching Layer Configuration
-                              <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-mono">
                                 {selectedPipeSizeForMM4}mm
                               </span>
                             </h4>
                             <div className="space-y-3">
                               <div>
-                                <label className="text-sm font-medium text-blue-700">1. Single Layer</label>
+                                <label className="text-sm font-medium text-green-700">1. Single Layer</label>
                                 <Input
                                   type="text"
                                   placeholder="0"
-                                  className="border-blue-300 mt-1"
-                                  value={mm4Rows[0]?.blueValue || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <label className="text-sm font-medium text-blue-700">2. Double Layer</label>
-                                <Input
-                                  type="text"
-                                  placeholder="0"
-                                  className="border-blue-300 mt-1"
+                                  className="border-green-300 mt-1"
                                   value={mm4Rows[0]?.greenValue || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-blue-700">3. Triple Layer</label>
+                                <label className="text-sm font-medium text-green-700">2. Double Layer</label>
                                 <Input
                                   type="text"
                                   placeholder="0"
-                                  className="border-blue-300 mt-1"
+                                  className="border-green-300 mt-1"
                                   value={mm4Rows[0]?.purpleDebris || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleDebris', e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-blue-700">4. Triple Layer + Extra Cure Time</label>
+                                <label className="text-sm font-medium text-green-700">3. Triple Layer</label>
                                 <Input
                                   type="text"
                                   placeholder="0"
-                                  className="border-blue-300 mt-1"
+                                  className="border-green-300 mt-1"
                                   value={mm4Rows[0]?.purpleLength || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleLength', e.target.value)}
                                 />
@@ -3891,51 +3901,51 @@ export default function PR2ConfigClean() {
                             </div>
                           </div>
 
-                          {/* No Required Per Shift (Right Column) */}
-                          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                            <h4 className="font-medium text-green-800 mb-3">
+                          {/* Purple Required Per Shift (Right Column) */}
+                          <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                            <h4 className="font-medium text-purple-800 mb-3">
                               No Required Per Shift
-                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-mono">
+                              <span className="ml-2 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded font-mono">
                                 {selectedPipeSizeForMM4}mm
                               </span>
                             </h4>
                             <div className="space-y-3">
                               <div>
-                                <label className="text-sm font-medium text-green-700">Row 1 - Quantity Required</label>
+                                <label className="text-sm font-medium text-purple-700">Row 1 - Quantity Required</label>
                                 <Input
                                   type="text"
                                   placeholder="0"
-                                  className="border-green-300 mt-1"
+                                  className="border-purple-300 mt-1"
                                   value={patchingGreenData[0]?.quantity || ''}
                                   onChange={(e) => updatePatchingGreenRow(1, e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-green-700">Row 2 - Quantity Required</label>
+                                <label className="text-sm font-medium text-purple-700">Row 2 - Quantity Required</label>
                                 <Input
                                   type="text"
                                   placeholder="0"
-                                  className="border-green-300 mt-1"
+                                  className="border-purple-300 mt-1"
                                   value={patchingGreenData[1]?.quantity || ''}
                                   onChange={(e) => updatePatchingGreenRow(2, e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-green-700">Row 3 - Quantity Required</label>
+                                <label className="text-sm font-medium text-purple-700">Row 3 - Quantity Required</label>
                                 <Input
                                   type="text"
                                   placeholder="0"
-                                  className="border-green-300 mt-1"
+                                  className="border-purple-300 mt-1"
                                   value={patchingGreenData[2]?.quantity || ''}
                                   onChange={(e) => updatePatchingGreenRow(3, e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-green-700">Row 4 - Quantity Required</label>
+                                <label className="text-sm font-medium text-purple-700">Row 4 - Quantity Required</label>
                                 <Input
                                   type="text"
                                   placeholder="0"
-                                  className="border-green-300 mt-1"
+                                  className="border-purple-300 mt-1"
                                   value={patchingGreenData[3]?.quantity || ''}
                                   onChange={(e) => updatePatchingGreenRow(4, e.target.value)}
                                 />
