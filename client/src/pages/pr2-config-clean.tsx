@@ -942,7 +942,9 @@ export default function PR2ConfigClean() {
       categoryId,
       templateType: getTemplateType(categoryId || ''),
       selectedIds,
-      shouldTrigger: autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1'
+      shouldTrigger: autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1',
+      currentURL: window.location.href,
+      urlParams: window.location.search
     });
     
     if (autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1') {
@@ -950,8 +952,10 @@ export default function PR2ConfigClean() {
       setSelectedIds(prev => {
         const current = [...prev];
         if (!current.includes('id1')) {
+          console.log('✅ Adding id1 to selectedIds:', [...current, 'id1']);
           return [...current, 'id1'];
         }
+        console.log('ℹ️ id1 already selected:', current);
         return current;
       });
     }
