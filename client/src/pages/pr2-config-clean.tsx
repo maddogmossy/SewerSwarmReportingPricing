@@ -1159,6 +1159,12 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     console.log(`🔍 updateMM4Row called: rowId=${rowId}, field=${field}, value="${value}"`);
     
+    // 🧹 PREVENT synthetic data: Only allow authentic data entry for 150mm and 300mm pipe sizes
+    if (selectedPipeSizeForMM4 !== '150' && selectedPipeSizeForMM4 !== '300') {
+      console.log('🚫 Blocking synthetic data entry for non-authentic pipe size:', selectedPipeSizeForMM4);
+      return;
+    }
+    
     const currentData = getCurrentMM4Data();
     console.log(`🔍 Current data before update:`, currentData);
     
@@ -4013,8 +4019,8 @@ export default function PR2ConfigClean() {
                                 type="text"
                                 placeholder="Enter day rate"
                                 className="border-blue-300"
-                                value={mm4Rows[0]?.blueValue || ''}
-                                onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
+                                value={getCurrentMM4Data()[0]?.blueValue || ''}
+                                onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'blueValue', e.target.value)}
                               />
                             </div>
                           </div>
@@ -4027,18 +4033,22 @@ export default function PR2ConfigClean() {
                               </span>
                             </h4>
                             <div className="space-y-2">
-                              {mm4Rows.map((row, index) => (
-                                <div key={row.id}>
-                                  <label className="text-xs text-green-700">Qty Per Shift</label>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter quantity"
-                                    className="border-green-300"
-                                    value={row.greenValue}
-                                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
-                                  />
-                                </div>
-                              ))}
+                              {(() => {
+                                // 🧹 Use getCurrentMM4Data() to get clean, pipe-size-specific data
+                                const currentData = getCurrentMM4Data();
+                                return currentData.map((row, index) => (
+                                  <div key={row.id}>
+                                    <label className="text-xs text-green-700">Qty Per Shift</label>
+                                    <Input
+                                      type="text"
+                                      placeholder="Enter quantity"
+                                      className="border-green-300"
+                                      value={row.greenValue || ''}
+                                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
+                                    />
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </div>
 
