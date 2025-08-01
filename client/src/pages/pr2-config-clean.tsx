@@ -2255,7 +2255,7 @@ export default function PR2ConfigClean() {
           // CRITICAL FIX: Stop forcing backend load that brings corrupted data
           // const isF606Configuration = editId === "606" || editId === 606;
           
-          // Only load MM4 data if we don't have local changes AND no active input buffer values for THIS pipe size
+          // Always load MM4 data from backend, individual fields will use buffer values when available
           const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
           const hasBufferForCurrentPipeSize = Object.keys(inputBuffer).some(key => key.startsWith(currentPipeSizeKey));
           const hasLocalMM4ForCurrentPipeSize = !!mm4DataByPipeSize[currentPipeSizeKey];
@@ -2267,7 +2267,8 @@ export default function PR2ConfigClean() {
           console.log('  - currentPipeSizeKey:', currentPipeSizeKey);
           console.log('  - buffer contents:', inputBuffer);
           
-          if (!hasLocalMM4ForCurrentPipeSize && !hasBufferForCurrentPipeSize) {
+          // FIXED: Always load backend data - individual fields will use buffered values via getBufferedValue()
+          if (!hasLocalMM4ForCurrentPipeSize) {
             // Load MM4/MM5 data from pipe-size-specific storage or legacy format
             if (config.mmData.mm4DataByPipeSize) {
               console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
@@ -2285,7 +2286,8 @@ export default function PR2ConfigClean() {
               console.log('❌ No MM4 data found in backend config');
             }
           } else {
-            console.log('🔒 Preserving local MM4 data, skipping backend load');
+            console.log('🔒 Preserving local MM4 data for this pipe size, skipping backend load');
+            console.log('  - Reason: hasLocalMM4ForCurrentPipeSize =', hasLocalMM4ForCurrentPipeSize);
           
           // DISABLED: Corrupted data detection was clearing user input values for patching
           // User inputs are now preserved regardless of field completion status
