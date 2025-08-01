@@ -978,7 +978,13 @@ export default function PR2ConfigClean() {
   // Helper function to get buffered value or fallback
   const getBufferedValue = (rowId: number, field: string, fallbackValue: string) => {
     const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
-    return inputBuffer[bufferKey] ?? fallbackValue;
+    const bufferedValue = inputBuffer[bufferKey];
+    if (bufferedValue !== undefined) {
+      console.log(`🔒 Using buffered value for ${bufferKey}: "${bufferedValue}"`);
+      return bufferedValue;
+    }
+    console.log(`📄 Using fallback value for ${bufferKey}: "${fallbackValue}"`);
+    return fallbackValue;
   };
 
 
@@ -1205,14 +1211,8 @@ export default function PR2ConfigClean() {
     }
     const timeoutId = setTimeout(() => {
       triggerAutoSave();
-      // Clear from buffer after a longer delay to prevent overwrites
-      setTimeout(() => {
-        setInputBuffer(prev => {
-          const updated = { ...prev };
-          delete updated[bufferKey];
-          return updated;
-        });
-      }, 2000); // Clear buffer 2 seconds after saving
+      // DISABLED: Never clear buffer to prevent overwrites
+      // The buffer will persist and protect user input indefinitely
     }, 1500); // Wait 1.5 seconds before saving to backend
     setAutoSaveTimeout(timeoutId);
   };
