@@ -3465,6 +3465,16 @@ export default function PR2ConfigClean() {
           
           {/* Right side - Navigation buttons */}
           <div className="flex items-center gap-3">
+            {/* TEST BUTTON for utilities selection */}
+            {getTemplateType(categoryId || '') === 'MMP1' && (
+              <Button 
+                onClick={testAutoSelect}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                size="sm"
+              >
+                Test Select Utilities
+              </Button>
+            )}
             <Button 
               onClick={handleGoBack}
               className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"
