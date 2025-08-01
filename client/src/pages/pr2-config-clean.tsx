@@ -935,13 +935,27 @@ export default function PR2ConfigClean() {
     }
   }, [selectedId, categoryId]);
 
-  // Auto-select utilities (id1) when autoSelectUtilities is true
+  // Auto-select utilities (id1) when autoSelectUtilities is true (run once on mount)
   useEffect(() => {
-    if (autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1' && !selectedIds.includes('id1')) {
+    console.log('🔍 AUTO-SELECT DEBUG:', {
+      autoSelectUtilities,
+      categoryId,
+      templateType: getTemplateType(categoryId || ''),
+      selectedIds,
+      shouldTrigger: autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1'
+    });
+    
+    if (autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1') {
       console.log('🎯 AUTO-SELECTING utilities (id1) card due to autoSelectUtilities=true');
-      setSelectedIds(prev => [...new Set([...prev, 'id1'])]);
+      setSelectedIds(prev => {
+        const current = [...prev];
+        if (!current.includes('id1')) {
+          return [...current, 'id1'];
+        }
+        return current;
+      });
     }
-  }, [autoSelectUtilities, categoryId, selectedIds]);
+  }, [autoSelectUtilities, categoryId]); // Removed selectedIds from deps to avoid loop
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
   const [customPipeSizes, setCustomPipeSizes] = useState<string[]>([]);
   const [newPipeSize, setNewPipeSize] = useState('');
