@@ -3055,14 +3055,36 @@ export default function Dashboard() {
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
               
-              // Enhanced patch counting: Count structural defect codes (D, DER, DES, etc.)
-              const structuralDefectPattern = /\b(D|DER|DES|DF|DL|DS|DB|DG|DM|DN|DR|DT|DU|DV|DW|DY|DZ)\b/g;
-              const structuralDefectMatches = defectsText.match(structuralDefectPattern) || [];
+              // Enhanced patch counting: Count structural defect instances with meterages
+              // Look for patterns like "D Deformation...at 26.47m, 58.97m" - this means 2 patches
+              const structuralDefectPattern = /\b(D|DER|DES|DF|DL|DS|DB|DG|DM|DN|DR|DT|DU|DV|DW|DY|DZ)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
               
-              // Use the higher count between meterage locations and structural defect instances
-              const meterageCount = defectMeterages.length;
-              const structuralDefectCount = structuralDefectMatches.length;
-              const patchCount = Math.max(meterageCount, structuralDefectCount, 1); // Minimum 1 patch
+              let totalStructuralPatches = 0;
+              let structuralMatch;
+              
+              while ((structuralMatch = structuralDefectPattern.exec(defectsText)) !== null) {
+                const defectCode = structuralMatch[1];
+                const meterageText = structuralMatch[2];
+                
+                // Count comma-separated meterages for this defect
+                const meteragesForThisDefect = meterageText.split(/\s*,\s*/).filter(m => m.trim().length > 0);
+                totalStructuralPatches += meteragesForThisDefect.length;
+                
+                console.log(`🎯 F615 Structural Defect Found:`, {
+                  defectCode,
+                  meterageText,
+                  meteragesForThisDefect,
+                  patchesForThisDefect: meteragesForThisDefect.length
+                });
+              }
+              
+              // Fallback: if no specific pattern found, use basic counting
+              if (totalStructuralPatches === 0) {
+                const basicStructuralMatches = defectsText.match(/\b(D|DER|DES|DF|DL|DS|DB|DG|DM|DN|DR|DT|DU|DV|DW|DY|DZ)\b/g) || [];
+                totalStructuralPatches = Math.max(basicStructuralMatches.length, defectMeterages.length, 1);
+              }
+              
+              const patchCount = totalStructuralPatches;
               
               const totalPatchCost = costPerPatch * patchCount;
               
@@ -3073,12 +3095,11 @@ export default function Dashboard() {
                 dayRate: blueValue, // Day rate from blue window
                 costPerPatch: greenValue, // Cost per patch from green window (Row 2 default)
                 defectMeterages: defectMeterages,
-                meterageCount: meterageCount,
-                structuralDefectCount: structuralDefectCount,
-                structuralDefectMatches: structuralDefectMatches,
-                patchCount: patchCount, // Number of patches needed (max of meterage or defect count)
+                totalStructuralPatches: totalStructuralPatches,
+                patchCount: patchCount, // Number of patches needed based on defect instances with meterages
                 totalPatchCost: totalPatchCost, // Total cost for all patches
-                note: 'F615 structural patching - enhanced counting: max(meterage, defect codes)'
+                defectsText: defectsText,
+                note: 'F615 structural patching - enhanced counting: structural defects with meterage locations'
               });
               
               // For minimum quantity check, we need to access purple window data (patchingGreenData)
