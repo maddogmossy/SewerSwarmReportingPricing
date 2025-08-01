@@ -748,8 +748,11 @@ export default function PR2ConfigClean() {
         console.log('🎯 PATCHING CATEGORY - Forcing route to F615 (id=615)');
         const f615Config = allCategoryConfigs.find(config => config.id === 615);
         if (f615Config) {
-          // Preserve autoSelectUtilities parameter when redirecting
-          const autoSelectParam = autoSelectUtilities ? '&autoSelectUtilities=true' : '';
+          // Check for autoSelectUtilities in current URL and preserve it
+          const currentParams = new URLSearchParams(window.location.search);
+          const hasAutoSelect = currentParams.get('autoSelectUtilities') === 'true' || autoSelectUtilities;
+          const autoSelectParam = hasAutoSelect ? '&autoSelectUtilities=true' : '';
+          console.log('🔄 F615 REDIRECT - Preserving autoSelectUtilities:', hasAutoSelect);
           setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615${autoSelectParam}`);
           return;
         }
@@ -928,7 +931,10 @@ export default function PR2ConfigClean() {
       allURLParams: Object.fromEntries(urlSearchParams.entries())
     });
     
-    if (autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1') {
+    // Check both the parsed parameter and direct URL parameter
+    const shouldAutoSelect = (autoSelectUtilities || autoSelectParam === 'true') && getTemplateType(categoryId || '') === 'MMP1';
+    
+    if (shouldAutoSelect) {
       console.log('🎯 AUTO-SELECTING utilities (id1) card due to autoSelectUtilities=true');
       setSelectedIds(prev => {
         const current = [...prev];
@@ -938,6 +944,14 @@ export default function PR2ConfigClean() {
         }
         console.log('ℹ️ id1 already selected:', current);
         return current;
+      });
+    } else {
+      console.log('❌ AUTO-SELECT CONDITIONS NOT MET:', {
+        autoSelectUtilities,
+        autoSelectParam,
+        categoryId,
+        templateType: getTemplateType(categoryId || ''),
+        shouldAutoSelect
       });
     }
   }, [autoSelectUtilities, categoryId]); // Removed selectedIds from deps to avoid loop
