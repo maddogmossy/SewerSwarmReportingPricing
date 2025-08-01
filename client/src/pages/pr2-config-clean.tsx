@@ -1769,9 +1769,13 @@ export default function PR2ConfigClean() {
       const currentData = getCurrentMM4Data();
       
       for (const row of currentData) {
-        if (row.purpleLength && row.purpleLength.trim() !== '' && !row.purpleLength.endsWith('.99')) {
+        // Get the actual value from buffer (if exists) or fallback to stored value
+        const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${row.id}-purpleLength`;
+        const actualValue = inputBuffer[bufferKey] || row.purpleLength;
+        
+        if (actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99')) {
           // Show warning popup for missing .99
-          setPendingRangeValue(row.purpleLength);
+          setPendingRangeValue(actualValue);
           setPendingRowId(row.id);
           setShowRangeWarning(true);
           return; // Don't navigate yet, wait for user decision
