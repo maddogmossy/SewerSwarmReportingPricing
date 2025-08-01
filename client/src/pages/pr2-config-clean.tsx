@@ -1589,6 +1589,12 @@ export default function PR2ConfigClean() {
 
   // Patching Green Window Data Management (Independent)
   const updatePatchingGreenRow = (rowId: number, value: string) => {
+    // 🧹 PREVENT synthetic data: Only allow authentic data entry for 150mm pipe size
+    if (selectedPipeSizeForMM4 !== '150') {
+      console.log('🚫 Blocking synthetic data entry for non-authentic pipe size:', selectedPipeSizeForMM4);
+      return;
+    }
+    
     setPatchingGreenData(prev => 
       prev.map(row => row.id === rowId ? { ...row, quantity: value } : row)
     );
@@ -4000,7 +4006,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-purple-300 mt-1"
-                                  value={patchingGreenData[0]?.quantity || ''}
+                                  value={selectedPipeSizeForMM4 === '150' ? (patchingGreenData[0]?.quantity || '') : ''}
                                   onChange={(e) => updatePatchingGreenRow(1, e.target.value)}
                                 />
                               </div>
@@ -4010,7 +4016,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-purple-300 mt-1"
-                                  value={patchingGreenData[1]?.quantity || ''}
+                                  value={selectedPipeSizeForMM4 === '150' ? (patchingGreenData[1]?.quantity || '') : ''}
                                   onChange={(e) => updatePatchingGreenRow(2, e.target.value)}
                                 />
                               </div>
@@ -4020,7 +4026,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-purple-300 mt-1"
-                                  value={patchingGreenData[2]?.quantity || ''}
+                                  value={selectedPipeSizeForMM4 === '150' ? (patchingGreenData[2]?.quantity || '') : ''}
                                   onChange={(e) => updatePatchingGreenRow(3, e.target.value)}
                                 />
                               </div>
@@ -4030,7 +4036,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-purple-300 mt-1"
-                                  value={patchingGreenData[3]?.quantity || ''}
+                                  value={selectedPipeSizeForMM4 === '150' ? (patchingGreenData[3]?.quantity || '') : ''}
                                   onChange={(e) => updatePatchingGreenRow(4, e.target.value)}
                                 />
                               </div>
