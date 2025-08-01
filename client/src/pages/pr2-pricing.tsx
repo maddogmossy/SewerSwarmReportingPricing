@@ -59,7 +59,7 @@ const STANDARD_CATEGORIES = [
   { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket },
   { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame },
   { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun },
-  { id: 'robotic-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings },
+  { id: 'f-robot-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations (id: f-robotic-cutting)', icon: Settings },
   { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe },
   { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck }
 ];
