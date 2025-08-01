@@ -1206,7 +1206,7 @@ export default function Dashboard() {
                 <div 
                   className="text-xs max-w-sm bg-yellow-50 hover:bg-yellow-100 border-2 border-yellow-200 hover:border-yellow-400 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer"
                   onClick={() => {
-                    window.open(`/pr2-config-clean?categoryId=robotic-cutting&sector=${currentSector.id}&edit=163`, '_blank');
+                    window.location.href = `/pr2-config-clean?categoryId=f-robot-cutting&sector=${currentSector.id}`;
                   }}
                 >
                   <div className="font-bold text-black mb-1">🤖 TP3 ROBOTIC CUTTING</div>
@@ -3095,7 +3095,7 @@ export default function Dashboard() {
       }
       
       const id4Config = pr2Configurations.find((config: any) => 
-        config.categoryId === 'robotic-cutting'
+        config.categoryId === 'f-robot-cutting'
       );
       
       if (!id4Config) {
