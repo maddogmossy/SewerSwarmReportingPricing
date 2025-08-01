@@ -2255,13 +2255,19 @@ export default function PR2ConfigClean() {
           // CRITICAL FIX: Stop forcing backend load that brings corrupted data
           // const isF606Configuration = editId === "606" || editId === 606;
           
-          // Only load MM4 data if we don't have local changes AND no active input buffer values
-          const hasActiveBufferValues = Object.keys(inputBuffer).length > 0;
+          // Only load MM4 data if we don't have local changes AND no active input buffer values for THIS pipe size
+          const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+          const hasBufferForCurrentPipeSize = Object.keys(inputBuffer).some(key => key.startsWith(currentPipeSizeKey));
+          const hasLocalMM4ForCurrentPipeSize = !!mm4DataByPipeSize[currentPipeSizeKey];
+          
           console.log('🔍 Buffer check:');
-          console.log('  - hasActiveBufferValues:', hasActiveBufferValues);
+          console.log('  - hasActiveBufferValues:', Object.keys(inputBuffer).length > 0);
+          console.log('  - hasBufferForCurrentPipeSize:', hasBufferForCurrentPipeSize);
+          console.log('  - hasLocalMM4ForCurrentPipeSize:', hasLocalMM4ForCurrentPipeSize);
+          console.log('  - currentPipeSizeKey:', currentPipeSizeKey);
           console.log('  - buffer contents:', inputBuffer);
           
-          if (!hasLocalMM4Data && !hasActiveBufferValues) {
+          if (!hasLocalMM4ForCurrentPipeSize && !hasBufferForCurrentPipeSize) {
             // Load MM4/MM5 data from pipe-size-specific storage or legacy format
             if (config.mmData.mm4DataByPipeSize) {
               console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
