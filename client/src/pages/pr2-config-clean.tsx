@@ -982,9 +982,10 @@ export default function PR2ConfigClean() {
     }
   });
   
-  // Helper function to get buffered value or fallback
+  // Helper function to get buffered value or fallback - WITH CONFIGURATION ID ISOLATION
   const getBufferedValue = (rowId: number, field: string, fallbackValue: string) => {
-    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
+    const configId = editId || 'temp';
+    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
     const bufferedValue = inputBuffer[bufferKey];
     if (bufferedValue !== undefined) {
       console.log(`🔒 Using buffered value for ${bufferKey}: "${bufferedValue}" (persisted)`);
@@ -994,9 +995,10 @@ export default function PR2ConfigClean() {
     return fallbackValue;
   };
 
-  // Function to clear specific buffer entries (when user saves successfully)
+  // Function to clear specific buffer entries (when user saves successfully) - WITH CONFIGURATION ID ISOLATION
   const clearBufferForRow = (rowId: number, field: string) => {
-    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
+    const configId = editId || 'temp';
+    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
     setInputBuffer(prev => {
       const updated = { ...prev };
       delete updated[bufferKey];
@@ -1194,8 +1196,9 @@ export default function PR2ConfigClean() {
     
     // No validation during typing - validation happens on save/navigation only
     
-    // IMMEDIATE: Store in input buffer to prevent backend overwrites
-    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
+    // IMMEDIATE: Store in input buffer to prevent backend overwrites - WITH CONFIGURATION ID ISOLATION
+    const configId = editId || 'temp';
+    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
     setInputBuffer(prev => {
       const updated = {
         ...prev,
@@ -1255,8 +1258,9 @@ export default function PR2ConfigClean() {
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
     
-    // CRITICAL: Update buffer to reflect new value so input field shows it immediately
-    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${pendingRowId}-purpleLength`;
+    // CRITICAL: Update buffer to reflect new value so input field shows it immediately - WITH CONFIGURATION ID ISOLATION
+    const configId = editId || 'temp';
+    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${pendingRowId}-purpleLength`;
     setInputBuffer(prev => {
       const updated = {
         ...prev,
