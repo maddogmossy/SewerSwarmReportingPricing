@@ -4085,7 +4085,8 @@ export default function PR2ConfigClean() {
                                             value={row.purpleLength || ''}
                                             onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
                                           />
-                                          {index === 0 && (
+                                          {/* Hide + button for F619 F-Robot Cutting */}
+                                          {index === 0 && categoryId !== 'f-robot-cutting' && (
                                             <Button 
                                               size="sm" 
                                               className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
