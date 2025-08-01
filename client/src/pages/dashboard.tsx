@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect, useMemo, useCallback } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -550,6 +551,19 @@ export default function Dashboard() {
   const search = useSearch();
   const urlParams = new URLSearchParams(search);
   const reportId = urlParams.get('reportId');
+  
+  // Equipment priority state with localStorage sync
+  const [equipmentPriority, setEquipmentPriority] = useState<'f606' | 'f608'>(() => {
+    return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+  });
+  
+  // Force component re-render when equipment priority changes
+  const [costRecalcTrigger, setCostRecalcTrigger] = useState(0);
+  
+  // Update cost calculations when equipment priority changes
+  useEffect(() => {
+    setCostRecalcTrigger(prev => prev + 1);
+  }, [equipmentPriority]);
 
   // Column visibility state with localStorage persistence
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(() => {
@@ -2940,8 +2954,8 @@ export default function Dashboard() {
       );
       
       // Selection logic: Check user preference AND configuration status
-      // Priority: User preference (if both are configured) > Configured config > F606 default
-      const userPrefersF608 = localStorage.getItem('equipmentPriority') === 'f608';
+      // Priority: User preference (if both are configured) > Configured config > F606 default  
+      const userPrefersF608 = equipmentPriority === 'f608';
       const bothConfigured = f608HasValidMM4 && f606Config?.mmData?.mm4Rows?.some((row: any) => 
         row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
       );
@@ -4508,7 +4522,7 @@ export default function Dashboard() {
     return meetsMinimum;
   };
 
-  // Cost calculation function for enhanced table - using useMemo to ensure reactivity
+  // Cost calculation function for enhanced table - using useMemo to ensure reactivity with equipment priority
   const calculateCost = useMemo(() => {
     return (section: any): string | JSX.Element => {
       // DEBUG: Track ALL sections entering cost calculation to see which TP2 sections are missing
@@ -4625,7 +4639,7 @@ export default function Dashboard() {
     // Show warning triangle icon for sections without pricing
     return "⚠️";
     };
-  }, [pr2Configurations, sectionData]);
+  }, [pr2Configurations, sectionData, equipmentPriority, costRecalcTrigger]);
 
   // REMOVED: Auto-cost trigger useEffect was causing infinite loops
   // Cost calculations continue working normally without popup dialogs
@@ -4703,57 +4717,101 @@ export default function Dashboard() {
       </div>
 
       <div className="container mx-auto p-6 max-w-none">
-        {/* Equipment Selection Interface */}
+        {/* Enhanced Equipment Selection Interface */}
         <div className="mb-4 bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Truck className="h-5 w-5 text-blue-600" />
-                <h3 className="text-sm font-medium text-gray-900">Equipment Priority</h3>
+                <h3 className="text-sm font-medium text-gray-900">Equipment Priority Control</h3>
               </div>
               <div className="flex gap-2">
                 <button
-                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
-                    localStorage.getItem('equipmentPriority') !== 'f608' 
-                      ? 'bg-blue-100 text-blue-800 border-2 border-blue-400' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                    equipmentPriority === 'f606'
+                      ? 'bg-blue-500 text-white border-2 border-blue-600 shadow-md transform scale-105' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
                   }`}
                   onClick={() => {
+                    setEquipmentPriority('f606');
                     localStorage.setItem('equipmentPriority', 'f606');
-                    window.dispatchEvent(new Event('storage'));
-                    // Force re-render to update cost calculations
-                    window.location.reload();
+                    setCostRecalcTrigger(prev => prev + 1);
+                    toast({
+                      title: "Equipment Priority Updated",
+                      description: "F606 Jet Vac now has priority for cost calculations",
+                    });
                   }}
                 >
-                  <div className="flex items-center gap-1">
-                    <Truck className="h-3 w-3" />
-                    F606 Jet Vac (Priority)
+                  <div className="flex items-center gap-2">
+                    <Truck className="h-4 w-4" />
+                    <div className="text-left">
+                      <div className="font-medium">F606 Jet Vac</div>
+                      <div className="text-xs opacity-75">Heavy Duty</div>
+                    </div>
+                    {equipmentPriority === 'f606' && <CheckCircle className="h-4 w-4" />}
                   </div>
                 </button>
                 <button
-                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
-                    localStorage.getItem('equipmentPriority') === 'f608' 
-                      ? 'bg-orange-100 text-orange-800 border-2 border-orange-400' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                    equipmentPriority === 'f608'
+                      ? 'bg-orange-500 text-white border-2 border-orange-600 shadow-md transform scale-105' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
                   }`}
                   onClick={() => {
+                    setEquipmentPriority('f608');
                     localStorage.setItem('equipmentPriority', 'f608');
-                    window.dispatchEvent(new Event('storage'));
-                    // Force re-render to update cost calculations
-                    window.location.reload();
+                    setCostRecalcTrigger(prev => prev + 1);
+                    toast({
+                      title: "Equipment Priority Updated", 
+                      description: "F608 Van Pack now has priority for cost calculations",
+                    });
                   }}
                 >
-                  <div className="flex items-center gap-1">
-                    <Zap className="h-3 w-3" />
-                    F608 Van Pack (Priority)
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4" />
+                    <div className="text-left">
+                      <div className="font-medium">F608 Van Pack</div>
+                      <div className="text-xs opacity-75">Compact</div>
+                    </div>
+                    {equipmentPriority === 'f608' && <CheckCircle className="h-4 w-4" />}
                   </div>
                 </button>
               </div>
             </div>
-            <div className="text-xs text-gray-500">
-              Changes equipment priority for Item 3 cost calculations
+            <div className="text-right">
+              <div className="text-xs text-gray-500 mb-1">Current Priority</div>
+              <div className={`text-sm font-medium ${equipmentPriority === 'f606' ? 'text-blue-600' : 'text-orange-600'}`}>
+                {equipmentPriority === 'f606' ? 'F606 Jet Vac Active' : 'F608 Van Pack Active'}
+              </div>
             </div>
           </div>
+          
+          {/* Live Cost Display */}
+          {sectionData && sectionData.find(s => s.itemNo === 3) && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-gray-600">
+                  Item 3 Cost Preview ({equipmentPriority === 'f606' ? 'F606 Jet Vac' : 'F608 Van Pack'}):
+                </div>
+                <div className={`text-sm font-bold ${equipmentPriority === 'f606' ? 'text-blue-600' : 'text-orange-600'}`}>
+                  {(() => {
+                    const item3Section = sectionData.find(s => s.itemNo === 3);
+                    if (item3Section) {
+                      // Use the same cost calculation as the main table
+                      const costDisplay = calculateCost(item3Section);
+                      if (React.isValidElement(costDisplay)) {
+                        const spanElement = costDisplay as React.ReactElement;
+                        const costMatch = spanElement.props?.children?.match?.(/£[\d.]+/);
+                        return costMatch ? costMatch[0] : '£0.00';
+                      }
+                      return '£0.00';
+                    }
+                    return '£0.00';
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="mb-6">
