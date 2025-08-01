@@ -574,7 +574,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           </CardContent>
         </Card>
 
-        {/* Purple Card - Hidden for CCTV category */}
+        {/* Purple Card - Hidden only for pure CCTV category F612 */}
         {categoryId !== 'cctv' && (
           <Card className="bg-purple-50 border-purple-200">
             <CardHeader className="pb-3">

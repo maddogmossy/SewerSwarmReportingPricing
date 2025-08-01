@@ -4046,7 +4046,7 @@ export default function PR2ConfigClean() {
                             </div>
                           </div>
 
-                          {/* Purple - Range Configuration (Hidden for CCTV category F612) */}
+                          {/* Purple - Range Configuration (Hidden only for pure CCTV category F612) */}
                           {categoryId !== 'cctv' && (
                             <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
                               <h4 className="font-medium text-purple-800 mb-2">
