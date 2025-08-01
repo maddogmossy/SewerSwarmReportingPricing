@@ -4119,34 +4119,44 @@ export default function Dashboard() {
         // Cost calculation debug completed
       }
       
-      // Check if section actually has defects - support both old and new severity grade systems
+      // FIXED: Simplified defect detection logic for both old and new severity grade systems
       const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
-      const hasDefects = needsStructuralRepair 
-        ? (
-            // For structural defects, check STR grade first, fallback to old severityGrade
-            (section.severityGrades?.structural && section.severityGrades.structural > 0) ||
-            (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0)
-          )
-        : (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0);
       
-      // CRITICAL FIX: Check both old and new severity grade formats for TP2 sections
-      // TP2 sections use new severityGrades JSONB format with structural: 2
-      const hasTP2StructuralDefects = needsStructuralRepair && (
+      // Check for defects using multiple detection methods
+      const hasDefects = (
+        // New JSONB severity grades (TP2 sections like Item 20)
         (section.severityGrades?.structural && section.severityGrades.structural > 0) ||
-        (section.defectType === 'structural' && section.severityGrade && section.severityGrade !== "0")
+        (section.severityGrades?.service && section.severityGrades.service > 0) ||
+        // Old severity grade system
+        (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
+        // Direct defect type check for structural sections
+        (section.defectType === 'structural' && section.defects && section.defects.trim().length > 0)
       );
       
-      // ADDITIONAL DEBUG: Log why TP2 sections might be failing hasDefects check
-      if (section.itemNo >= 13 && section.itemNo <= 21) {
-        // TP2 DEFECTS CHECK - Item analysis completed
+      // DEBUG: Log Item 20 specifically to track why it might fail
+      if (section.itemNo === 20) {
+        console.log('🔍 ITEM 20 DEFECT DETECTION:', {
+          itemNo: section.itemNo,
+          defectType: section.defectType,
+          severityGrades: section.severityGrades,
+          severityGrade: section.severityGrade,
+          hasDefects: hasDefects,
+          needsStructuralRepair: needsStructuralRepair,
+          defectsText: section.defects
+        });
       }
       
-      // Use TP2 structural check for structural defects, original logic for service defects
-      if (!hasDefects && !hasTP2StructuralDefects) {
+      // If no defects detected, return £0.00
+      if (!hasDefects) {
         if (section.itemNo >= 13 && section.itemNo <= 21) {
-          // TP2 section filtered out - no defects detected
+          console.log(`⚠️ TP2 section ${section.itemNo} filtered out - no defects detected`);
         }
         return "£0.00";
+      }
+      
+      // DEBUG: Confirm Item 20 passes defect detection and proceeds to cost calculation
+      if (section.itemNo === 20) {
+        console.log('✅ ITEM 20 PASSED DEFECT DETECTION - Proceeding to calculateAutoCost()');
       }
       
       // REMOVED: Auto-cost mode logic that was causing infinite loops
