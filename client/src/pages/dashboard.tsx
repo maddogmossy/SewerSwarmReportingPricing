@@ -2974,10 +2974,22 @@ export default function Dashboard() {
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
           // Check each MM4 row to see if section matches criteria
           for (const mm4Row of matchingMM4Data) {
-            const blueValue = parseFloat(mm4Row.blueValue || '0');
-            const greenValue = parseFloat(mm4Row.greenValue || '0');
-            const purpleDebris = parseFloat(mm4Row.purpleDebris || '0');
-            const purpleLength = parseFloat(mm4Row.purpleLength || '0');
+            // Get buffered values if available (to handle input protection)
+            const getBufferedValue = (rowId: number, field: string, fallback: string) => {
+              try {
+                const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+                const pipeSizeKey = matchingPipeSizeKey;
+                const bufferKey = `${pipeSizeKey}-${rowId}-${field}`;
+                return buffer[bufferKey] || fallback;
+              } catch {
+                return fallback;
+              }
+            };
+            
+            const blueValue = parseFloat(getBufferedValue(mm4Row.id, 'blueValue', mm4Row.blueValue || '0'));
+            const greenValue = parseFloat(getBufferedValue(mm4Row.id, 'greenValue', mm4Row.greenValue || '0'));
+            const purpleDebris = parseFloat(getBufferedValue(mm4Row.id, 'purpleDebris', mm4Row.purpleDebris || '0'));
+            const purpleLength = parseFloat(getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'));
             
             // Check if section matches this MM4 configuration criteria
             const debrisMatch = sectionDebrisPercent <= purpleDebris;
