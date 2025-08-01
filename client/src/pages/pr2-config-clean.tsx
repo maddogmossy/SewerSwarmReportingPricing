@@ -971,6 +971,15 @@ export default function PR2ConfigClean() {
   const [appliedSectors, setAppliedSectors] = useState<string[]>([]);
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
+  
+  // Input buffer to prevent backend overwrites during typing
+  const [inputBuffer, setInputBuffer] = useState<{[key: string]: string}>({});
+  
+  // Helper function to get buffered value or fallback
+  const getBufferedValue = (rowId: number, field: string, fallbackValue: string) => {
+    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
+    return inputBuffer[bufferKey] ?? fallbackValue;
+  };
 
 
 
@@ -1159,6 +1168,13 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     console.log(`🔍 updateMM4Row called: rowId=${rowId}, field=${field}, value="${value}"`);
     
+    // IMMEDIATE: Store in input buffer to prevent backend overwrites
+    const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
+    setInputBuffer(prev => ({
+      ...prev,
+      [bufferKey]: value
+    }));
+    
     // Allow input for all pipe sizes - user is responsible for authentic data
     console.log(`✅ Allowing input for pipe size: ${selectedPipeSizeForMM4}mm`);
     
@@ -1175,7 +1191,7 @@ export default function PR2ConfigClean() {
     
     updateMM4DataForPipeSize(newData);
     
-    // IMMEDIATE: Save to localStorage for persistence without triggering backend
+    // IMMEDIATE: Save to localStorage for persistence
     const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     const updatedMM4DataByPipeSize = {
       ...mm4DataByPipeSize,
@@ -1183,11 +1199,17 @@ export default function PR2ConfigClean() {
     };
     localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
     
-    // DELAYED: Trigger auto-save to backend after user stops typing
+    // DELAYED: Clear buffer and trigger auto-save after user stops typing
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
     }
     const timeoutId = setTimeout(() => {
+      // Clear from buffer after saving
+      setInputBuffer(prev => {
+        const updated = { ...prev };
+        delete updated[bufferKey];
+        return updated;
+      });
       triggerAutoSave();
     }, 1000); // Wait 1 second before saving to backend
     setAutoSaveTimeout(timeoutId);
@@ -1599,7 +1621,7 @@ export default function PR2ConfigClean() {
   // MM4/MM5 Auto-save wrappers
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     updateMM4Row(rowId, field, value);
-    triggerAutoSave();
+    // Skip immediate triggerAutoSave since updateMM4Row handles debounced saving
   };
 
   const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
@@ -3924,7 +3946,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={getCurrentMM4Data()[0]?.purpleDebris || ''}
+                                  value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'purpleDebris', getCurrentMM4Data()[0]?.purpleDebris || '')}
                                   onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'purpleDebris', e.target.value)}
                                 />
                               </div>
@@ -3944,7 +3966,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={getCurrentMM4Data()[0]?.purpleLength || ''}
+                                  value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'purpleLength', getCurrentMM4Data()[0]?.purpleLength || '')}
                                   onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'purpleLength', e.target.value)}
                                 />
                               </div>
@@ -4085,7 +4107,7 @@ export default function PR2ConfigClean() {
                                           type="text"
                                           placeholder={categoryId === 'f-robot-cutting' ? '0' : '0-15'}
                                           className="border-purple-300"
-                                          value={row.purpleDebris || ''}
+                                          value={getBufferedValue(row.id, 'purpleDebris', row.purpleDebris || '')}
                                           onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
                                         />
                                       </div>
@@ -4098,7 +4120,7 @@ export default function PR2ConfigClean() {
                                             type="text"
                                             placeholder={categoryId === 'f-robot-cutting' ? '0' : '0-35'}
                                             className="border-purple-300 flex-1"
-                                            value={row.purpleLength || ''}
+                                            value={getBufferedValue(row.id, 'purpleLength', row.purpleLength || '')}
                                             onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
                                           />
                                           {/* Hide + button for F619 F-Robot Cutting */}
