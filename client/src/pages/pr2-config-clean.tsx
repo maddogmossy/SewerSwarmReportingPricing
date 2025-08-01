@@ -744,21 +744,25 @@ export default function PR2ConfigClean() {
       console.log('🔍 ROUTING DEBUG - Auto-creation disabled, only finding existing configs');
       
       // For patching category, ALWAYS route to F615 (id=615) - PRESERVE autoSelectUtilities parameter
-      if (categoryId === 'patching') {
-        console.log('🎯 PATCHING CATEGORY - Forcing route to F615 (id=615)');
-        const f615Config = allCategoryConfigs.find(config => config.id === 615);
-        if (f615Config) {
-          // Check for autoSelectUtilities in current URL and preserve it
-          const currentParams = new URLSearchParams(window.location.search);
-          const hasAutoSelect = currentParams.get('autoSelectUtilities') === 'true' || autoSelectUtilities;
-          const autoSelectParam = hasAutoSelect ? '&autoSelectUtilities=true' : '';
-          const pipeSizeParam = pipeSize ? `&pipeSize=${pipeSize}` : '';
-          console.log('🔄 F615 REDIRECT - Preserving autoSelectUtilities:', hasAutoSelect);
-          console.log('🔄 F615 REDIRECT - Original URL:', window.location.href);
-          const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615${autoSelectParam}${pipeSizeParam}`;
-          console.log('🔄 F615 REDIRECT - New URL:', newUrl);
-          setLocation(newUrl);
-          return;
+      if (categoryId === 'patching' && !editingId) {
+        console.log('🎯 PATCHING CATEGORY - Checking if we need to redirect to F615');
+        const currentParams = new URLSearchParams(window.location.search);
+        const hasId = currentParams.get('id') === '615';
+        
+        if (!hasId) {
+          console.log('🔄 PATCHING REDIRECT - No ID parameter, redirecting to F615');
+          const f615Config = allCategoryConfigs.find(config => config.id === 615);
+          if (f615Config) {
+            const hasAutoSelect = currentParams.get('autoSelectUtilities') === 'true' || autoSelectUtilities;
+            const autoSelectParam = hasAutoSelect ? '&autoSelectUtilities=true' : '';
+            const pipeSizeParam = pipeSize ? `&pipeSize=${pipeSize}` : '';
+            const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615${autoSelectParam}${pipeSizeParam}`;
+            console.log('🔄 F615 REDIRECT - New URL:', newUrl);
+            setLocation(newUrl);
+            return;
+          }
+        } else {
+          console.log('✅ PATCHING - Already has ID=615, no redirect needed');
         }
       }
       
@@ -3454,26 +3458,7 @@ export default function PR2ConfigClean() {
           
           {/* Right side - Navigation buttons */}
           <div className="flex items-center gap-3">
-            {/* Test autoSelectUtilities parameter */}
-            {getTemplateType(categoryId || '') === 'MMP1' && !selectedIds.includes('id1') && (
-              <Button 
-                onClick={() => {
-                  const currentUrl = window.location.pathname + window.location.search;
-                  const newUrl = currentUrl.includes('autoSelectUtilities=true') 
-                    ? currentUrl 
-                    : currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'autoSelectUtilities=true';
-                  console.log('🧪 TESTING: Adding autoSelectUtilities parameter to URL');
-                  console.log('Current URL:', currentUrl);
-                  console.log('New URL:', newUrl);
-                  window.history.pushState({}, '', newUrl);
-                  window.location.reload();
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                size="sm"
-              >
-                Test Auto-Select
-              </Button>
-            )}
+
             <Button 
               onClick={handleGoBack}
               className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"
