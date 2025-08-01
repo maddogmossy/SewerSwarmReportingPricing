@@ -3434,25 +3434,6 @@ export default function PR2ConfigClean() {
           
           {/* Right side - Navigation buttons */}
           <div className="flex items-center gap-3">
-            {/* Manual utilities selection button for testing */}
-            {getTemplateType(categoryId || '') === 'MMP1' && !autoSelectUtilities && (
-              <Button 
-                onClick={() => {
-                  console.log('🧪 MANUAL SELECT: Adding id1 to selectedIds');
-                  setSelectedIds(prev => {
-                    const current = [...prev];
-                    if (!current.includes('id1')) {
-                      return [...current, 'id1'];
-                    }
-                    return current;
-                  });
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                size="sm"
-              >
-                Select Utilities
-              </Button>
-            )}
             <Button 
               onClick={handleGoBack}
               className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"
