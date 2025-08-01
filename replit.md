@@ -1,7 +1,15 @@
 # Replit Architecture Documentation
 
-## Rev v6.2 - Production Clean State (August 2025)
-**Lock-in Checkpoint**: All synthetic data eliminated, debug buttons removed, zero synthetic data policy enforced.
+## Rev v6.3 - Enhanced Cost Calculation System (August 2025)
+**Lock-in Checkpoint**: Advanced cost calculation system with combined F619+F615 processing, enhanced patch counting for multiple defect locations, and MM4 integration for robotic cutting.
+
+### Key Achievements in v6.3:
+- **F619 MM4 Integration**: Robotic cutting now uses MM4 data (purpleDebris=£450 first cut, purpleLength=£150 per cut) instead of legacy pricingOptions
+- **Enhanced F615 Patch Counting**: Advanced pattern matching for multiple defect locations (e.g., "D Deformation at 26.47m, 58.97m" = 2 patches)
+- **Combined F619+F615 Processing**: Sections with both junction and structural defects now calculate combined costs properly
+- **P4/ID4 Legacy Support**: Updated robotic cutting detection to include "P4" references from old recommendation windows
+- **Authentic MM4 Pricing**: F615 patching uses authentic 150mm (£450/patch) and 300mm (£550/patch) pricing from MM4 configurations
+- **Advanced Debugging System**: Comprehensive console logging for cost calculation tracing and validation
 
 ## Overview
 This is a full-stack TypeScript application, built with React and Express, providing document analysis services for sector-specific compliance checking in Utilities, Adoption, and Highways. Its core purpose is to streamline document analysis and compliance processes, offering a robust solution with high market potential in regulated industries by integrating file upload, Stripe payments, and Replit authentication.
