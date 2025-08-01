@@ -2233,8 +2233,8 @@ export default function Dashboard() {
         const pipeSize = firstSection.pipeSize?.match(/\d+/)?.[0] || '150';
         window.location.href = `/pr2-config-clean?categoryId=cctv&sector=${currentSector.id}&pipeSize=${pipeSize}`;
       } else if (needsStructural) {
-        // Navigate to patching configuration with auto-select utilities
-        window.location.href = `/pr2-config-clean?categoryId=patching&sector=${currentSector.id}&autoSelectUtilities=true`;
+        // Navigate to F615 patching configuration with auto-select utilities
+        window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&autoSelectUtilities=true`;
       }
     }
   }, [rawSectionData, currentSector]);
@@ -5186,8 +5186,8 @@ export default function Dashboard() {
             </Button>
             <Button
               onClick={() => {
-                // Navigate to TP2 configuration page with auto-select utilities
-                window.location.href = `/pr2-config-clean?categoryId=patching&sector=${currentSector.id}&autoSelectUtilities=true`;
+                // Navigate to F615 TP2 configuration page with auto-select utilities
+                window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&autoSelectUtilities=true`;
               }}
               className="bg-orange-600 hover:bg-orange-700 text-white"
             >
@@ -5244,8 +5244,10 @@ export default function Dashboard() {
               onClick={() => {
                 // Navigate to configuration page based on type
                 const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv' : 'patching';
-                const autoSelect = categoryId === 'patching' ? '&autoSelectUtilities=true' : '';
-                window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}${autoSelect}`;
+                const routeUrl = categoryId === 'patching' 
+                  ? `/pr2-config-clean?id=615&categoryId=${categoryId}&sector=${currentSector.id}&autoSelectUtilities=true`
+                  : `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}`;
+                window.location.href = routeUrl;
               }}
               className="bg-amber-600 hover:bg-amber-700 text-white"
             >
