@@ -934,6 +934,14 @@ export default function PR2ConfigClean() {
       setSelectedIds([selectedId]);
     }
   }, [selectedId, categoryId]);
+
+  // Auto-select utilities (id1) when autoSelectUtilities is true
+  useEffect(() => {
+    if (autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1' && !selectedIds.includes('id1')) {
+      console.log('🎯 AUTO-SELECTING utilities (id1) card due to autoSelectUtilities=true');
+      setSelectedIds(prev => [...new Set([...prev, 'id1'])]);
+    }
+  }, [autoSelectUtilities, categoryId, selectedIds]);
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
   const [customPipeSizes, setCustomPipeSizes] = useState<string[]>([]);
   const [newPipeSize, setNewPipeSize] = useState('');
