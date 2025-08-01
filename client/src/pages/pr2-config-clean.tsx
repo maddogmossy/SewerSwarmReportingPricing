@@ -743,12 +743,14 @@ export default function PR2ConfigClean() {
     if (!isEditing && categoryId && sector && allCategoryConfigs) {
       console.log('🔍 ROUTING DEBUG - Auto-creation disabled, only finding existing configs');
       
-      // For patching category, ALWAYS route to F615 (id=615)
+      // For patching category, ALWAYS route to F615 (id=615) - PRESERVE autoSelectUtilities parameter
       if (categoryId === 'patching') {
         console.log('🎯 PATCHING CATEGORY - Forcing route to F615 (id=615)');
         const f615Config = allCategoryConfigs.find(config => config.id === 615);
         if (f615Config) {
-          setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615`);
+          // Preserve autoSelectUtilities parameter when redirecting
+          const autoSelectParam = autoSelectUtilities ? '&autoSelectUtilities=true' : '';
+          setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615${autoSelectParam}`);
           return;
         }
       }
