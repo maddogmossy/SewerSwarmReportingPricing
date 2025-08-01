@@ -2680,6 +2680,53 @@ export default function Dashboard() {
     };
   };
 
+  // Helper function to analyze junction/connection proximity for robotic cutting
+  const analyzeJunctionProximity = (defectText: string) => {
+    // Look for defect locations (OJM, JDM, etc.)
+    const defectPattern = /(OJM|JDM|D)\s+([\d.]+)m/gi;
+    const connectionPattern = /(JN|CN)\s+([\d.]+)m/gi;
+    
+    const defectLocations: number[] = [];
+    const connections: { type: string; location: number }[] = [];
+    
+    // Find all defect locations that might need robotic cutting
+    let defectMatch;
+    while ((defectMatch = defectPattern.exec(defectText)) !== null) {
+      defectLocations.push(parseFloat(defectMatch[2]));
+    }
+    
+    // Find all junction/connection locations
+    let connectionMatch;
+    while ((connectionMatch = connectionPattern.exec(defectText)) !== null) {
+      connections.push({
+        type: connectionMatch[1],
+        location: parseFloat(connectionMatch[2])
+      });
+    }
+    
+    // Count junctions within 0.7m of any defect requiring robotic cutting
+    let nearbyJunctionCount = 0;
+    const junctionDetails: string[] = [];
+    
+    for (const defectLocation of defectLocations) {
+      for (const connection of connections) {
+        const distance = Math.abs(defectLocation - connection.location);
+        if (distance <= 0.7) {
+          nearbyJunctionCount++;
+          junctionDetails.push(`${connection.type} at ${connection.location}m (${distance.toFixed(2)}m from defect)`);
+        }
+      }
+    }
+    
+    return {
+      nearbyJunctionCount,
+      junctionDetails,
+      hasNearbyJunctions: nearbyJunctionCount > 0,
+      defectLocations,
+      connectionLocations: connections
+    };
+  };
+
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
     console.log('🔍 MM4 Cost Calculation Called for Section:', {
@@ -3136,12 +3183,39 @@ export default function Dashboard() {
         };
       }
       
-      // Calculate robotic cutting cost
+      // Enhanced robotic cutting cost calculation with junction detection
       const firstCutCost = firstCutOption ? parseFloat(firstCutOption.value) || 0 : 0;
       const perCutCost = perCutOption ? parseFloat(perCutOption.value) || 0 : 0;
       
-      // Simple calculation: first cut + per cut (assuming 1 additional cut)
-      const totalCost = firstCutCost + perCutCost;
+      // Analyze defect text for junction/connection proximity
+      const defectText = section.defects || '';
+      const junctionAnalysis = analyzeJunctionProximity(defectText);
+      
+      // Calculate cuts needed:
+      // 1. Always need patch cost (base cost)
+      // 2. Add first cut cost if junction/connection within 0.7m
+      // 3. Add additional cut cost for each additional junction at same location
+      let totalCost = 0;
+      let cutDetails = [];
+      
+      // Base patch cost (using first cut cost as patch base)
+      totalCost += firstCutCost;
+      cutDetails.push(`Patch repair: £${firstCutCost}`);
+      
+      // Add cuts for nearby junctions
+      if (junctionAnalysis.nearbyJunctionCount > 0) {
+        // First junction requires first cut rate
+        totalCost += firstCutCost;
+        cutDetails.push(`Junction cut 1: £${firstCutCost}`);
+        
+        // Additional junctions require per-cut rate
+        if (junctionAnalysis.nearbyJunctionCount > 1) {
+          const additionalCuts = junctionAnalysis.nearbyJunctionCount - 1;
+          const additionalCost = additionalCuts * perCutCost;
+          totalCost += additionalCost;
+          cutDetails.push(`Additional cuts (${additionalCuts}): £${additionalCost}`);
+        }
+      }
       
       
       return {
@@ -3152,7 +3226,7 @@ export default function Dashboard() {
         patchingType: 'Robotic Cutting',
         defectCount: 1,
         costPerUnit: totalCost,
-        recommendation: `Robotic cutting: £${firstCutCost} first cut + £${perCutCost} per additional cut`
+        recommendation: `Robotic cutting: ${cutDetails.join(' + ')}${junctionAnalysis.nearbyJunctionCount > 0 ? ` (${junctionAnalysis.nearbyJunctionCount} junction${junctionAnalysis.nearbyJunctionCount > 1 ? 's' : ''} detected)` : ''}`
       };
     }
     
