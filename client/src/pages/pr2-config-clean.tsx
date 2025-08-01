@@ -911,14 +911,19 @@ export default function PR2ConfigClean() {
 
   // Auto-select utilities (id1) when autoSelectUtilities is true (run once on mount)
   useEffect(() => {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const autoSelectParam = urlSearchParams.get('autoSelectUtilities');
     console.log('🔍 AUTO-SELECT DEBUG:', {
       autoSelectUtilities,
+      autoSelectParam,
+      autoSelectParamRaw: urlSearchParams.get('autoSelectUtilities'),
       categoryId,
       templateType: getTemplateType(categoryId || ''),
       selectedIds,
       shouldTrigger: autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1',
       currentURL: window.location.href,
-      urlParams: window.location.search
+      urlParams: window.location.search,
+      allURLParams: Object.fromEntries(urlSearchParams.entries())
     });
     
     if (autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1') {
@@ -3429,6 +3434,25 @@ export default function PR2ConfigClean() {
           
           {/* Right side - Navigation buttons */}
           <div className="flex items-center gap-3">
+            {/* Manual utilities selection button for testing */}
+            {getTemplateType(categoryId || '') === 'MMP1' && !autoSelectUtilities && (
+              <Button 
+                onClick={() => {
+                  console.log('🧪 MANUAL SELECT: Adding id1 to selectedIds');
+                  setSelectedIds(prev => {
+                    const current = [...prev];
+                    if (!current.includes('id1')) {
+                      return [...current, 'id1'];
+                    }
+                    return current;
+                  });
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                size="sm"
+              >
+                Select Utilities
+              </Button>
+            )}
             <Button 
               onClick={handleGoBack}
               className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"

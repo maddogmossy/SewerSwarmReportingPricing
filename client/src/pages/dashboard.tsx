@@ -2234,6 +2234,7 @@ export default function Dashboard() {
         window.location.href = `/pr2-config-clean?categoryId=cctv&sector=${currentSector.id}&pipeSize=${pipeSize}`;
       } else if (needsStructural) {
         // Navigate to F615 patching configuration with auto-select utilities
+        console.log('🚀 DASHBOARD NAVIGATION - Redirecting to F615 with autoSelectUtilities=true');
         window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&autoSelectUtilities=true`;
       }
     }
