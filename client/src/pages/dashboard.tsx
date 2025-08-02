@@ -2458,13 +2458,19 @@ export default function Dashboard() {
   }, [rawSectionData]);
 
   const handleExportReport = useCallback(() => {
-    // Reset service cost warning dismissed state so it can show again
+    // Reset service cost warning dismissed state and clear existing data
     setServiceCostWarningDismissed(false);
+    setServiceCostData(null);
+    setShowServiceCostWarning(false);
     
-    // Check for service cost issues before export
-    if (rawSectionData && rawSectionData.length > 0) {
-      checkServiceCostCompletion(rawSectionData);
-    }
+    // Use setTimeout to ensure state updates happen before check
+    setTimeout(() => {
+      // Force check for service cost issues before export
+      if (rawSectionData && rawSectionData.length > 0) {
+        console.log('🔄 Export triggered: Checking service costs...');
+        checkServiceCostCompletion(rawSectionData);
+      }
+    }, 200);
     
     // Export functionality - trigger Excel export
     exportToExcel();
