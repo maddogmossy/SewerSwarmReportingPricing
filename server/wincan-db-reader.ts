@@ -223,16 +223,16 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             reject(obsErr);
             return;
           }
-        
-        
-        // Get authentic severity grades from SECSTAT table
-        const secstatQuery = `SELECT * FROM SECSTAT`;
-        
-        db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
-          if (secErr) {
-            secstatRecords = [];
-          } else {
-          }
+          
+          
+          // Get authentic severity grades from SECSTAT table
+          const secstatQuery = `SELECT * FROM SECSTAT`;
+          
+          db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
+            if (secErr) {
+              secstatRecords = [];
+            } else {
+            }
           
           db.close();
           
