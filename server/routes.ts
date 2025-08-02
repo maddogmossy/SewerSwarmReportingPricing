@@ -530,9 +530,8 @@ export async function registerRoutes(app: Express) {
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           
-          // Import the working database reader from backup
-          const { readWincanDatabase } = await import('./wincan-db-reader-backup');
-          const { storeWincanSections } = await import('./wincan-db-reader');
+          // Use the original working database reader
+          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
           
           // CRITICAL FIX: Use the original uploaded file path that has the actual content
           const realUploadPath = filePath; // This contains the actual uploaded data
