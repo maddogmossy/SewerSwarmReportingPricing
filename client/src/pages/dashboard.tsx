@@ -4986,60 +4986,7 @@ export default function Dashboard() {
               Export to Excel
             </Button>
 
-            {/* Test Service Cost Warning Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                console.log('🔍 MANUAL SERVICE COST CHECK TRIGGERED');
-                
-                // Get ALL sections for comprehensive analysis
-                console.log('🔍 COMPREHENSIVE SERVICE ITEM ANALYSIS');
-                console.log('🔍 Total sections in rawSectionData:', rawSectionData.length);
-                
-                // Find all service sections
-                const allServiceSections = rawSectionData.filter(section => section.defectType === 'service');
-                console.log('🔍 Service sections (defectType=service):', allServiceSections.map(s => ({
-                  itemNo: s.itemNo,
-                  letterSuffix: s.letterSuffix,
-                  defects: s.defects,
-                  recommendations: s.recommendations
-                })));
-                
-                // Find sections with "blue" in recommendations (cleanse & survey)
-                const blueCleanseSections = rawSectionData.filter(section => 
-                  section.recommendations && section.recommendations.toLowerCase().includes('blue')
-                );
-                console.log('🔍 Sections with "blue" in recommendations:', blueCleanseSections.map(s => ({
-                  itemNo: s.itemNo,
-                  letterSuffix: s.letterSuffix,
-                  defectType: s.defectType,
-                  recommendations: s.recommendations
-                })));
-                
-                // Find sections with cleanse/survey keywords
-                const cleanseSurveySections = rawSectionData.filter(section => 
-                  section.recommendations && (
-                    section.recommendations.toLowerCase().includes('cleanse') ||
-                    section.recommendations.toLowerCase().includes('survey') ||
-                    section.recommendations.toLowerCase().includes('clean')
-                  )
-                );
-                console.log('🔍 Sections with cleanse/survey keywords:', cleanseSurveySections.map(s => ({
-                  itemNo: s.itemNo,
-                  letterSuffix: s.letterSuffix,
-                  defectType: s.defectType,
-                  recommendations: s.recommendations
-                })));
-                
-                // Force trigger service cost check
-                checkServiceCostCompletion(rawSectionData);
-              }}
-              className="bg-orange-100 text-orange-700 hover:bg-orange-200"
-            >
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              Test Service Warning
-            </Button>
+
 
             {/* Clear button removed to prevent accidental data loss */}
           </div>
