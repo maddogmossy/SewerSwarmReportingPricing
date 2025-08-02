@@ -59,20 +59,28 @@ export default function ServiceCostWarningDialog({
   };
 
   const handleApply = () => {
+    console.log('🔄 ServiceCostWarningDialog: Apply clicked with option:', selectedOption);
+    
     switch (selectedOption) {
       case 'leave':
         // No changes needed, just close and trigger export
+        console.log('🔄 ServiceCostWarningDialog: Leaving costs as-is, triggering export');
         onClose();
         if (onExport) {
-          setTimeout(() => onExport(), 100); // Small delay to ensure dialog closes first
+          setTimeout(() => onExport(), 200); // Longer delay to ensure dialog closes first
         }
         break;
       
       case 'spread':
         const spreadCosts = calculateSpreadCosts();
+        console.log('🔄 ServiceCostWarningDialog: Applying spread costs:', spreadCosts);
         onApply(spreadCosts);
+        // Wait longer for state updates to complete before export
         if (onExport) {
-          setTimeout(() => onExport(), 100); // Small delay to ensure updates complete first
+          setTimeout(() => {
+            console.log('🔄 ServiceCostWarningDialog: Triggering export after spread cost application');
+            onExport();
+          }, 500);
         }
         break;
       
@@ -81,9 +89,14 @@ export default function ServiceCostWarningDialog({
           itemNo: item.itemNo,
           newCost: parseFloat(manualCosts[item.itemNo]) || item.currentCost
         }));
+        console.log('🔄 ServiceCostWarningDialog: Applying manual costs:', manualCostUpdates);
         onApply(manualCostUpdates);
+        // Wait longer for state updates to complete before export
         if (onExport) {
-          setTimeout(() => onExport(), 100); // Small delay to ensure updates complete first
+          setTimeout(() => {
+            console.log('🔄 ServiceCostWarningDialog: Triggering export after manual cost application');
+            onExport();
+          }, 500);
         }
         break;
     }

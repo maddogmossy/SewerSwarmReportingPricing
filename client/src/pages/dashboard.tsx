@@ -720,8 +720,15 @@ export default function Dashboard() {
     const newAdjustedCosts = new Map(adjustedServiceCosts);
     newCosts.forEach(({ itemNo, newCost }) => {
       newAdjustedCosts.set(itemNo, newCost);
+      console.log(`🔄 Set adjusted cost for item ${itemNo}: £${newCost.toFixed(2)}`);
     });
     setAdjustedServiceCosts(newAdjustedCosts);
+    
+    // Force a re-render by triggering a state update
+    setTimeout(() => {
+      console.log('🔄 Forcing dashboard re-render after cost updates');
+      setAdjustedServiceCosts(new Map(newAdjustedCosts));
+    }, 50);
     
     toast({
       title: "Service Costs Updated",
@@ -731,6 +738,9 @@ export default function Dashboard() {
     // Close the dialog
     setShowServiceCostWarning(false);
     setServiceCostData(null);
+    
+    // Note: Export will be triggered by the ServiceCostWarningDialog's onExport callback
+    console.log('🔄 Service costs applied - export will be triggered by dialog');
   };
 
   // Handler for service cost warning dialog cancel
@@ -4707,9 +4717,14 @@ export default function Dashboard() {
     
     // Data rows
     const dataRows = sectionData.map(section => {
-      // Apply same cost logic as dashboard
+      // Apply same cost logic as dashboard - use calculateAutoCost for accurate pricing
       let costValue = section.cost || '£0.00';
-      if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
+      
+      // Check for adjusted service costs first (same logic as calculateAutoCost)
+      const adjustedCost = adjustedServiceCosts.get(section.itemNo);
+      if (section.defectType === 'service' && adjustedCost) {
+        costValue = `£${adjustedCost.toFixed(2)} (Day Rate Adjusted)`;
+      } else if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
         costValue = 'Complete';
       } else {
         const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
@@ -4719,6 +4734,20 @@ export default function Dashboard() {
           costValue = 'Complete';
         } else if (sectionsNeedingPricing.includes(section.itemNo)) {
           costValue = 'Configure utilities sector pricing first';
+        } else {
+          // Use the same cost calculation logic as the dashboard
+          const costResult = calculateAutoCost(section);
+          if (costResult && typeof costResult === 'object' && costResult.props && costResult.props.children) {
+            // Extract the cost from the JSX element if it's a React component
+            const costText = costResult.props.children;
+            if (Array.isArray(costText)) {
+              costValue = costText[0]; // Get the main cost value
+            } else {
+              costValue = costText;
+            }
+          } else if (typeof costResult === 'string') {
+            costValue = costResult;
+          }
         }
       }
       
