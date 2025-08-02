@@ -17,6 +17,7 @@ import { ReportValidationStatus } from "@/components/ReportValidationStatus";
 import { PatchRepairPricingDialog } from "@/components/PatchRepairPricingDialog";
 import { ValidationWarningPopup } from "@/components/ValidationWarningPopup";
 import { useValidationWarnings } from "@/hooks/useValidationWarnings";
+import ServiceCostWarningDialog from "@/components/ServiceCostWarningDialog";
 import { validateReportExportReadiness, ValidationResult, ReportSection, TravelInfo } from "@shared/report-validation";
 import * as XLSX from 'xlsx';
 
@@ -672,6 +673,16 @@ export default function Dashboard() {
   // Validation warning popup system
   const validationWarnings = useValidationWarnings();
 
+  // Service cost warning dialog state
+  const [showServiceCostWarning, setShowServiceCostWarning] = useState(false);
+  const [serviceCostData, setServiceCostData] = useState<{
+    serviceItems: { itemNo: number; currentCost: number; method: string; defects: string }[];
+    dayRate: number;
+    runsPerShift: number;
+    totalServiceCost: number;
+    configType: string;
+  } | null>(null);
+
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
     // Patch pricing click handler called
@@ -695,6 +706,69 @@ export default function Dashboard() {
     setShowPatchPricingDialog(false);
     setSelectedPatchSection(null);
     setSelectedPatchCalculation(null);
+  };
+
+  // Handler for service cost warning dialog
+  const handleServiceCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
+    // Apply new service costs - for now, show toast notification
+    // In future, this would update the backend/calculation logic
+    console.log('🔄 Applying new service costs:', newCosts);
+    
+    toast({
+      title: "Service Costs Updated",
+      description: `Updated costs for ${newCosts.length} service items`,
+    });
+    
+    // Close the dialog
+    setShowServiceCostWarning(false);
+    setServiceCostData(null);
+  };
+
+  // Function to check if all service costs are populated and trigger warning
+  const checkServiceCostCompletion = (sectionData: any[]) => {
+    if (!sectionData || sectionData.length === 0) return;
+
+    // Find all service sections with costs
+    const serviceSectionsWithCosts = sectionData.filter(section => {
+      const costCalc = calculateCost(section);
+      return section.defectType === 'service' && 
+             costCalc?.status === 'f608_calculated' && 
+             costCalc.cost > 0;
+    });
+
+    // Only trigger if we have service items and haven't shown the dialog yet
+    if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData) {
+      // Get the first service item's config details for reference
+      const firstServiceSection = serviceSectionsWithCosts[0];
+      const firstCostCalc = calculateCost(firstServiceSection);
+      
+      if (firstCostCalc && firstCostCalc.dayRate && firstCostCalc.runsPerShift) {
+        const serviceItems = serviceSectionsWithCosts.map(section => {
+          const costCalc = calculateCost(section);
+          return {
+            itemNo: section.itemNo,
+            currentCost: costCalc?.cost || 0,
+            method: costCalc?.method || 'Unknown',
+            defects: section.defects || 'No details available'
+          };
+        });
+
+        const totalServiceCost = serviceItems.reduce((sum, item) => sum + item.currentCost, 0);
+
+        setServiceCostData({
+          serviceItems,
+          dayRate: firstCostCalc.dayRate,
+          runsPerShift: firstCostCalc.runsPerShift,
+          totalServiceCost,
+          configType: firstCostCalc.configType || 'F608 Van Pack'
+        });
+
+        // Auto-trigger dialog after a short delay to allow costs to render
+        setTimeout(() => {
+          setShowServiceCostWarning(true);
+        }, 1000);
+      }
+    }
   };
 
 
@@ -1915,11 +1989,18 @@ export default function Dashboard() {
         } catch (error) {
           console.error('🔧 TP1 CONFIG CHECK ERROR:', error);
         }
+
+        // Check for service cost completion and trigger warning dialog
+        try {
+          checkServiceCostCompletion(rawSectionData);
+        } catch (error) {
+          console.error('🔧 SERVICE COST CHECK ERROR:', error);
+        }
       } catch (error) {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
     }
-  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length]);
+  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData]);
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
@@ -5841,6 +5922,23 @@ export default function Dashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Service Cost Warning Dialog */}
+      {serviceCostData && (
+        <ServiceCostWarningDialog
+          isOpen={showServiceCostWarning}
+          onClose={() => {
+            setShowServiceCostWarning(false);
+            setServiceCostData(null);
+          }}
+          serviceItems={serviceCostData.serviceItems}
+          dayRate={serviceCostData.dayRate}
+          runsPerShift={serviceCostData.runsPerShift}
+          totalServiceCost={serviceCostData.totalServiceCost}
+          configType={serviceCostData.configType}
+          onApply={handleServiceCostApply}
+        />
+      )}
     </div>
   );
 }
