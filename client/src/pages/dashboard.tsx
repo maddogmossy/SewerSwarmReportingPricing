@@ -726,6 +726,9 @@ export default function Dashboard() {
   
   // Store adjusted structural costs in local state
   const [adjustedStructuralCosts, setAdjustedStructuralCosts] = useState<Map<number, number>>(new Map());
+  
+  // Track which items have structural pricing applied (for green highlighting)
+  const [appliedStructuralPricing, setAppliedStructuralPricing] = useState<Set<number>>(new Set());
 
   // Handler for service cost warning dialog
   const handleServiceCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
@@ -766,15 +769,20 @@ export default function Dashboard() {
     
     // Store adjusted costs in local state
     const newAdjustedCosts = new Map(adjustedStructuralCosts);
+    const newAppliedItems = new Set(appliedStructuralPricing);
+    
     newCosts.forEach(({ itemNo, newCost }) => {
       newAdjustedCosts.set(itemNo, newCost);
-      console.log(`🔄 Set adjusted cost for item ${itemNo}: £${newCost.toFixed(2)}`);
+      newAppliedItems.add(itemNo); // Mark this item as having applied pricing
+      console.log(`🔄 Set adjusted cost for item ${itemNo}: £${newCost.toFixed(2)} - marked as applied`);
     });
+    
     setAdjustedStructuralCosts(newAdjustedCosts);
+    setAppliedStructuralPricing(newAppliedItems);
     
     toast({
-      title: "Structural Costs Updated",
-      description: `Updated costs for ${newCosts.length} structural items to meet day rate requirements`,
+      title: "Structural Costs Applied",
+      description: `Applied structural pricing for ${newCosts.length} items - prices now shown in green`,
     });
     
     // Close the dialog and reset export workflow flag
@@ -5348,10 +5356,17 @@ export default function Dashboard() {
         );
       }
       
+      // Check if this item has applied structural pricing (green highlight)
+      const hasAppliedStructuralPricing = appliedStructuralPricing.has(section.itemNo);
+      
       // Orange minimum check - logging removed
       // Check if orange minimum is met to determine cost color
       const orangeMinimumMet = checkOrangeMinimumMet();
-      const costColor = orangeMinimumMet ? "text-green-600" : "text-red-600";
+      
+      // Determine cost color: applied structural pricing = green, otherwise orange minimum check
+      const costColor = hasAppliedStructuralPricing 
+        ? "text-green-600 bg-green-50 border border-green-200 rounded px-2 py-1" 
+        : (orangeMinimumMet ? "text-green-600" : "text-red-600");
       
       // Orange minimum result - logging removed
       
@@ -5359,7 +5374,10 @@ export default function Dashboard() {
       return (
         <span 
           className={`${costColor} font-medium cursor-help`}
-          title={`Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}\nPer-length rate: £${autoCost.cost.toFixed(2)}`}
+          title={hasAppliedStructuralPricing 
+            ? `Applied structural pricing: £${autoCost.cost.toFixed(2)}\nStatus: Applied via structural warning dialog`
+            : `Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}\nPer-length rate: £${autoCost.cost.toFixed(2)}`
+          }
         >
           £{autoCost.cost.toFixed(2)}
         </span>
