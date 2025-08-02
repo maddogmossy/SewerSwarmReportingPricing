@@ -736,29 +736,8 @@ export default function Dashboard() {
     console.log('🔄 Service costs applied - waiting for export signal');
   };
 
-  // Listen for service cost dialog completion event
-  useEffect(() => {
-    const handleServiceCostDialogComplete = (event: CustomEvent) => {
-      console.log('🔄 Service cost dialog completed, triggering export...');
-      if (event.detail?.shouldExport) {
-        // Wait a bit more for state updates to propagate
-        setTimeout(() => {
-          console.log('🔄 Executing export after service cost handling');
-          exportToExcel();
-          toast({
-            title: "Report Exported",
-            description: "Report has been exported successfully with updated costs"
-          });
-        }, 100);
-      }
-    };
-
-    window.addEventListener('serviceCostDialogComplete', handleServiceCostDialogComplete as EventListener);
-    
-    return () => {
-      window.removeEventListener('serviceCostDialogComplete', handleServiceCostDialogComplete as EventListener);
-    };
-  }, [exportToExcel, toast]);
+  // State to track if export should happen after service cost dialog
+  const [shouldExportAfterServiceCost, setShouldExportAfterServiceCost] = useState(false);
 
   // Handler for service cost warning dialog cancel
   const handleServiceCostCancel = () => {
@@ -4667,6 +4646,21 @@ export default function Dashboard() {
     performExport();
   };
 
+  // Watch for service cost dialog completion to trigger export
+  useEffect(() => {
+    if (shouldExportAfterServiceCost) {
+      console.log('🔄 Triggering export after service cost handling');
+      setShouldExportAfterServiceCost(false); // Reset flag
+      setTimeout(() => {
+        exportToExcel();
+        toast({
+          title: "Report Exported",
+          description: "Report has been exported successfully with updated costs"
+        });
+      }, 100);
+    }
+  }, [shouldExportAfterServiceCost]);
+
   const performExport = () => {
     if (!sectionData?.length) return;
     
@@ -6090,6 +6084,7 @@ export default function Dashboard() {
           totalServiceCost={serviceCostData.totalServiceCost}
           configType={serviceCostData.configType}
           onApply={handleServiceCostApply}
+          onComplete={() => setShouldExportAfterServiceCost(true)}
         />
       )}
     </div>

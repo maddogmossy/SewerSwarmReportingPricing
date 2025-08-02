@@ -20,7 +20,7 @@ interface ServiceCostWarningDialogProps {
   totalServiceCost: number;
   configType: string;
   onApply: (newCosts: { itemNo: number; newCost: number }[]) => void;
-  onExport?: () => void; // New callback to trigger export after dialog handling
+  onComplete?: () => void; // Callback to trigger export after dialog handling
 }
 
 export default function ServiceCostWarningDialog({
@@ -32,7 +32,7 @@ export default function ServiceCostWarningDialog({
   totalServiceCost,
   configType,
   onApply,
-  onExport
+  onComplete
 }: ServiceCostWarningDialogProps) {
   const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>('leave');
   const [manualCosts, setManualCosts] = useState<{ [itemNo: number]: string }>({});
@@ -63,11 +63,10 @@ export default function ServiceCostWarningDialog({
     
     switch (selectedOption) {
       case 'leave':
-        // No changes needed, just close and signal to trigger export
+        // No changes needed, just close
         console.log('🔄 ServiceCostWarningDialog: Leaving costs as-is, closing dialog');
         onClose();
-        // Signal that export should happen after dialog closes
-        window.dispatchEvent(new CustomEvent('serviceCostDialogComplete', { detail: { shouldExport: true } }));
+        if (onComplete) onComplete();
         break;
       
       case 'spread':
@@ -75,8 +74,7 @@ export default function ServiceCostWarningDialog({
         console.log('🔄 ServiceCostWarningDialog: Applying spread costs:', spreadCosts);
         onApply(spreadCosts);
         onClose();
-        // Signal that export should happen after costs are applied
-        window.dispatchEvent(new CustomEvent('serviceCostDialogComplete', { detail: { shouldExport: true } }));
+        if (onComplete) onComplete();
         break;
       
       case 'manual':
@@ -87,8 +85,7 @@ export default function ServiceCostWarningDialog({
         console.log('🔄 ServiceCostWarningDialog: Applying manual costs:', manualCostUpdates);
         onApply(manualCostUpdates);
         onClose();
-        // Signal that export should happen after costs are applied
-        window.dispatchEvent(new CustomEvent('serviceCostDialogComplete', { detail: { shouldExport: true } }));
+        if (onComplete) onComplete();
         break;
     }
   };
