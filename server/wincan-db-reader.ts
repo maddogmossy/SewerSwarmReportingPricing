@@ -169,6 +169,8 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
   const tableCheckQuery = `SELECT name FROM sqlite_master WHERE type='table'`;
   
   return new Promise((resolve, reject) => {
+    console.log('🔍 Checking database structure for file:', db3FilePath);
+    
     db.all(tableCheckQuery, [], (tableErr: any, tables: any[]) => {
       if (tableErr) {
         console.error('❌ Error checking database tables:', tableErr);
@@ -177,6 +179,7 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
         return;
       }
       
+      console.log('📋 Raw table query result:', tables);
       const tableNames = tables.map(t => t.name);
       console.log('📋 Available tables in database:', tableNames);
       
