@@ -211,15 +211,9 @@ export async function processWincanDatabase(mainFilePath: string, sector: string
         
         // Check if we have the required tables
         if (!inspTableNames.includes('SECTION')) {
-          console.error('❌ Neither database contains SECTION table. Both files appear to be configuration/metadata files.');
+          console.error('❌ Neither database contains SECTION table. Main tables:', mainTableNames, 'Inspection tables:', inspTableNames);
           inspectionDb.close();
-          
-          const hasConfigTables = mainTableNames.includes('EQUIPMENT') || mainTableNames.includes('OPERATOR') || mainTableNames.includes('WORKGROUP');
-          if (hasConfigTables) {
-            reject(new Error(`You've uploaded configuration/metadata files, but the main inspection database is missing. Please upload the file containing SECTION, SECOBS, and SECSTAT tables (usually the main .db3 file without "_Meta" in the name).`));
-          } else {
-            reject(new Error(`Invalid Wincan database: Missing SECTION table. Found tables: ${mainTableNames.join(', ')}`));
-          }
+          reject(new Error(`Invalid Wincan database: Missing SECTION table in both files. Main file tables: ${mainTableNames.join(', ')}, Inspection file tables: ${inspTableNames.join(', ')}`));
           return;
         }
       
