@@ -30,8 +30,25 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
   });
   
-  // Equipment options with F606 as default highlighted option
-  const equipmentOptions = [
+  // Equipment options with dynamic priority ordering
+  const equipmentOptions = equipmentPriority === 'f608' ? [
+    {
+      id: 'cctv-van-pack',
+      name: 'CCTV/Van Pack', 
+      description: 'Combined CCTV inspection and cleansing operations',
+      icon: Monitor,
+      configId: 'F608',
+      isDefault: true
+    },
+    {
+      id: 'cctv-jet-vac',
+      name: 'CCTV/Jet Vac',
+      description: 'Combined CCTV inspection with jet vac services',
+      icon: Video,
+      configId: 'F606',
+      isDefault: false
+    }
+  ] : [
     {
       id: 'cctv-jet-vac',
       name: 'CCTV/Jet Vac',
@@ -103,7 +120,6 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             
             {/* Equipment Priority Controls */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <div className="text-sm font-medium text-blue-800 mb-2">Current Priority Setting</div>
               <div className="flex gap-2">
                 <button
                   className={`flex-1 px-3 py-2 text-sm rounded transition-all ${
@@ -116,11 +132,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                     localStorage.setItem('equipmentPriority', 'f606');
                     toast({
                       title: "Equipment Priority Updated",
-                      description: "F606 Jet Vac now has priority for cost calculations",
+                      description: "F606 CCTV/Jet Vac now has priority for cost calculations",
                     });
                   }}
                 >
-                  F606 Jet Vac
+                  F606 CCTV/Jet Vac
                 </button>
                 <button
                   className={`flex-1 px-3 py-2 text-sm rounded transition-all ${
@@ -133,15 +149,12 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                     localStorage.setItem('equipmentPriority', 'f608');
                     toast({
                       title: "Equipment Priority Updated", 
-                      description: "F608 Van Pack now has priority for cost calculations",
+                      description: "F608 CCTV/Van Pack now has priority for cost calculations",
                     });
                   }}
                 >
-                  F608 Van Pack
+                  F608 CCTV/Van Pack
                 </button>
-              </div>
-              <div className="text-xs text-gray-600 mt-2">
-                Current: {equipmentPriority === 'f606' ? 'F606 Jet Vac (Heavy Duty)' : 'F608 Van Pack (Compact)'}
               </div>
             </div>
             
