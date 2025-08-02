@@ -1621,7 +1621,6 @@ export default function Dashboard() {
                 >
                   <span className="text-xs font-semibold text-green-600">
                     £{costCalculation.cost.toFixed(2)}
-                    <span className="ml-1 text-xs opacity-75">(Adjusted)</span>
                   </span>
                 </div>
               );
