@@ -708,38 +708,19 @@ export default function Dashboard() {
     setSelectedPatchCalculation(null);
   };
 
+  // Store adjusted service costs in local state
+  const [adjustedServiceCosts, setAdjustedServiceCosts] = useState<Map<number, number>>(new Map());
+
   // Handler for service cost warning dialog
   const handleServiceCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
     console.log('🔄 Applying new service costs:', newCosts);
     
-    // Create a map of new costs for quick lookup
-    const newCostMap = new Map(newCosts.map(item => [item.itemNo, item.newCost]));
-    
-    // Update the raw section data with new costs
-    setRawSectionData(prevData => {
-      if (!prevData) return prevData;
-      
-      return prevData.map(section => {
-        if (section.defectType === 'service' && newCostMap.has(section.itemNo)) {
-          const newCost = newCostMap.get(section.itemNo);
-          
-          // Store the adjusted cost in the section
-          return {
-            ...section,
-            adjustedServiceCost: newCost,
-            serviceAdjustmentApplied: true,
-            cost: newCost?.toFixed(2) || section.cost
-          };
-        }
-        return section;
-      });
-    });
-    
-    // Update buffer with new service costs to persist changes
+    // Store adjusted costs in local state
+    const newAdjustedCosts = new Map(adjustedServiceCosts);
     newCosts.forEach(({ itemNo, newCost }) => {
-      const bufferKey = `service-cost-adjustment-${itemNo}`;
-      saveToInputBuffer(bufferKey, newCost.toFixed(2));
+      newAdjustedCosts.set(itemNo, newCost);
     });
+    setAdjustedServiceCosts(newAdjustedCosts);
     
     toast({
       title: "Service Costs Updated",
@@ -2903,10 +2884,11 @@ export default function Dashboard() {
     });
     
     // Check for adjusted service costs first
-    if (section.serviceAdjustmentApplied && section.adjustedServiceCost) {
+    const adjustedCost = adjustedServiceCosts.get(section.itemNo);
+    if (section.defectType === 'service' && adjustedCost) {
       return (
         <span className="text-green-600 font-semibold">
-          £{section.adjustedServiceCost.toFixed(2)}
+          £{adjustedCost.toFixed(2)}
           <span className="ml-1 text-xs">(Day Rate Adjusted)</span>
         </span>
       );
