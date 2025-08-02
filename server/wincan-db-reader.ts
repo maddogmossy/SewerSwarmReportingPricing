@@ -293,7 +293,7 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
               }
             } else if (defectText && defectText !== 'No service or structural defect found') {
               const { MSCC5Classifier } = await import('./mscc5-classifier');
-              const classification = await MSCC5Classifier.classifyObservation(defectText, sector);
+              const classification = await MSCC5Classifier.classifyDefect(defectText, sector);
               
               severityGrade = classification.severityGrade;
               recommendations = classification.recommendations;

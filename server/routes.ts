@@ -519,13 +519,13 @@ export async function registerRoutes(app: Express) {
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           
           // Import and use Wincan database reader
-          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
+          const { processWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
           // Use the main database file for processing
           const mainDbPath = validation.files?.main || filePath;
           
           // Extract authentic data from database
-          const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+          const sections = await processWincanDatabase(mainDbPath, req.body.sector || 'utilities');
           
           
           // Store sections in database
