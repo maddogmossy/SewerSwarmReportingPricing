@@ -675,6 +675,7 @@ export default function Dashboard() {
 
   // Service cost warning dialog state
   const [showServiceCostWarning, setShowServiceCostWarning] = useState(false);
+  const [serviceCostWarningDismissed, setServiceCostWarningDismissed] = useState(false);
   const [serviceCostData, setServiceCostData] = useState<{
     serviceItems: { itemNo: number; currentCost: number; method: string; defects: string }[];
     dayRate: number;
@@ -732,6 +733,18 @@ export default function Dashboard() {
     setServiceCostData(null);
   };
 
+  // Handler for service cost warning dialog cancel
+  const handleServiceCostCancel = () => {
+    console.log('🚫 Service cost warning dismissed by user');
+    
+    // Mark as dismissed so it won't show again until export is attempted
+    setServiceCostWarningDismissed(true);
+    
+    // Close the dialog
+    setShowServiceCostWarning(false);
+    setServiceCostData(null);
+  };
+
   // Function to check if all service costs are populated and trigger warning
   const checkServiceCostCompletion = (sectionData: any[]) => {
     if (!sectionData || sectionData.length === 0) return;
@@ -779,8 +792,8 @@ export default function Dashboard() {
       serviceSectionsCount: serviceSectionsWithCosts.length
     });
 
-    // Only trigger if we have service items and haven't shown the dialog yet
-    if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData) {
+    // Only trigger if we have service items, haven't shown the dialog yet, and it hasn't been dismissed
+    if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed) {
       // Get the first service item's config details for reference
       const firstServiceSection = serviceSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstServiceSection);
@@ -2445,6 +2458,9 @@ export default function Dashboard() {
   }, [rawSectionData]);
 
   const handleExportReport = useCallback(() => {
+    // Reset service cost warning dismissed state so it can show again
+    setServiceCostWarningDismissed(false);
+    
     // Export functionality - trigger Excel export
     exportToExcel();
     
@@ -5990,10 +6006,7 @@ export default function Dashboard() {
       {serviceCostData && (
         <ServiceCostWarningDialog
           isOpen={showServiceCostWarning}
-          onClose={() => {
-            setShowServiceCostWarning(false);
-            setServiceCostData(null);
-          }}
+          onClose={handleServiceCostCancel}
           serviceItems={serviceCostData.serviceItems}
           dayRate={serviceCostData.dayRate}
           runsPerShift={serviceCostData.runsPerShift}
