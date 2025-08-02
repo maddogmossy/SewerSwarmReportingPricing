@@ -206,7 +206,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           return;
         }
         
-        
         // Get observations for each section (exclude finish node codes)
         const observationQuery = `
           SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
@@ -224,148 +223,143 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             return;
           }
           
-          
           // Get authentic severity grades from SECSTAT table
           const secstatQuery = `SELECT * FROM SECSTAT`;
           
           db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
             if (secErr) {
               secstatRecords = [];
-            } else {
             }
             
             db.close();
-          
-          // Build observation map by section
-          const observationMap: { [sectionRef: string]: string[] } = {};
-          for (const obsRecord of observationRecords) {
-            const sectionRef = obsRecord.OBJ_Section_REF;
-            if (!observationMap[sectionRef]) {
-              observationMap[sectionRef] = [];
-            }
             
-            // Build observation text from database fields
-            const code = obsRecord.OBJ_Code || '';
-            const position = obsRecord.OBJ_PosFrom || '';  
-            const text = obsRecord.OBJ_Text || '';
-            
-            const observationText = `${code} ${position}m ${text}`.trim();
-            observationMap[sectionRef].push(observationText);
-          }
-          
-          // Build severity grade map from SECSTAT table
-          const severityMap: { [sectionRef: string]: { structural: number, service: number } } = {};
-          for (const secRecord of secstatRecords) {
-            const sectionRef = secRecord.OBJ_Section_REF;
-            if (sectionRef) {
-              severityMap[sectionRef] = {
-                structural: secRecord.OBJ_StructuralGrade || 0,
-                service: secRecord.OBJ_ServiceGrade || 0
-              };
-            }
-          }
-          
-          const authenticSections: WincanSectionData[] = [];
-          let itemCounter = 1;
-          
-          // Process each section record
-          for (const record of sectionRecords) {
-            const sectionRef = record.OBJ_PK;
-            const observations = observationMap[sectionRef] || [];
-            const authenticGrades = severityMap[sectionRef];
-            
-            // Extract authentic manhole references
-            const startMH = record.FromNodeKey || extractAuthenticValue(record, ['OBJ_FromNode', 'FromNode']) || 'UNKNOWN';
-            const finishMH = record.ToNodeKey || extractAuthenticValue(record, ['OBJ_ToNode', 'ToNode']) || 'UNKNOWN';
-            
-            // Extract authentic pipe specifications
-            const pipeSize = extractAuthenticValue(record, ['OBJ_Size1', 'Size1', 'Diameter']) || '150';
-            const pipeMaterial = extractAuthenticValue(record, ['OBJ_Material', 'Material']) || 'PVC';
-            const lengthValue = extractAuthenticValue(record, ['OBJ_Length', 'Length']);
-            const totalLength = lengthValue !== null ? parseFloat(lengthValue) : 10;
-            
-            // Extract authentic inspection metadata
-            const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
-            const inspectionTime = '09:00:00';
-            
-            
-            // Format observations with defect codes
-            const defectText = observations.length > 0 ? await formatObservationText(observations, sector) : 'No service or structural defect found';
-            
-            // Apply authentic severity grades or MSCC5 classification
-            let severityGrade = 0;
-            let recommendations = 'No action required this pipe section is at an adoptable condition';
-            let adoptable = 'Yes';
-            let defectType = 'service';
-            
-            if (authenticGrades) {
-              
-              // Use higher grade as primary severity
-              severityGrade = Math.max(authenticGrades.structural, authenticGrades.service);
-              defectType = authenticGrades.structural > authenticGrades.service ? 'structural' : 'service';
-              
-              if (severityGrade > 0) {
-                if (defectType === 'structural') {
-                  recommendations = 'WRc Drain Repair Book: Structural repair or relining required';
-                  adoptable = 'Conditional';
-                } else {
-                  recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
-                  adoptable = 'Conditional';
-                }
+            // Build observation map by section
+            const observationMap: { [sectionRef: string]: string[] } = {};
+            for (const obsRecord of observationRecords) {
+              const sectionRef = obsRecord.OBJ_Section_REF;
+              if (!observationMap[sectionRef]) {
+                observationMap[sectionRef] = [];
               }
-            } else if (defectText && defectText !== 'No service or structural defect found') {
-              const { MSCC5Classifier } = await import('./mscc5-classifier');
-              const classification = await MSCC5Classifier.classifyDefect(defectText, sector);
               
-              severityGrade = classification.severityGrade;
-              recommendations = classification.recommendations;
-              adoptable = classification.adoptable;
-              defectType = classification.defectType;
+              // Build observation text from database fields
+              const code = obsRecord.OBJ_Code || '';
+              const position = obsRecord.OBJ_PosFrom || '';  
+              const text = obsRecord.OBJ_Text || '';
+              
+              const observationText = `${code} ${position}m ${text}`.trim();
+              observationMap[sectionRef].push(observationText);
             }
             
-            const authenticItemNo = itemCounter++;
+            // Build severity grade map from SECSTAT table
+            const severityMap: { [sectionRef: string]: { structural: number, service: number } } = {};
+            for (const secRecord of secstatRecords) {
+              const sectionRef = secRecord.OBJ_Section_REF;
+              if (sectionRef) {
+                severityMap[sectionRef] = {
+                  structural: secRecord.OBJ_StructuralGrade || 0,
+                  service: secRecord.OBJ_ServiceGrade || 0
+                };
+              }
+            }
             
-            const sectionData: WincanSectionData = {
-              itemNo: authenticItemNo,
-              projectNo: record.OBJ_Name || 'GR7188',
-              startMH: startMH,
-              finishMH: finishMH,
-              pipeSize: pipeSize.toString(),
-              pipeMaterial: pipeMaterial,
-              totalLength: totalLength.toFixed(2),
-              lengthSurveyed: totalLength.toFixed(2),
-              defects: defectText,
-              recommendations: recommendations,
-              severityGrade: severityGrade,
-              adoptable: adoptable,
-              inspectionDate: inspectionDate,
-              inspectionTime: inspectionTime,
-              defectType: defectType,
-            };
+            const authenticSections: WincanSectionData[] = [];
+            let itemCounter = 1;
             
-            // Only add if we have meaningful data
-            if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
-              // Apply multi-defect splitting logic if defects exist
-              if (defectText && defectText !== 'No service or structural defect found') {
-                const { MSCC5Classifier } = await import('./mscc5-classifier');
-                const splitSections = MSCC5Classifier.splitMultiDefectSection(defectText, authenticItemNo, sectionData);
+            // Process each section record
+            for (const record of sectionRecords) {
+              const sectionRef = record.OBJ_PK;
+              const observations = observationMap[sectionRef] || [];
+              const authenticGrades = severityMap[sectionRef];
+              
+              // Extract authentic manhole references
+              const startMH = record.FromNodeKey || extractAuthenticValue(record, ['OBJ_FromNode', 'FromNode']) || 'UNKNOWN';
+              const finishMH = record.ToNodeKey || extractAuthenticValue(record, ['OBJ_ToNode', 'ToNode']) || 'UNKNOWN';
+              
+              // Extract authentic pipe specifications
+              const pipeSize = extractAuthenticValue(record, ['OBJ_Size1', 'Size1', 'Diameter']) || '150';
+              const pipeMaterial = extractAuthenticValue(record, ['OBJ_Material', 'Material']) || 'PVC';
+              const lengthValue = extractAuthenticValue(record, ['OBJ_Length', 'Length']);
+              const totalLength = lengthValue !== null ? parseFloat(lengthValue) : 10;
+              
+              // Extract authentic inspection metadata
+              const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
+              const inspectionTime = '09:00:00';
+              
+              // Format observations with defect codes
+              const defectText = observations.length > 0 ? await formatObservationText(observations, sector) : 'No service or structural defect found';
+              
+              // Apply authentic severity grades or MSCC5 classification
+              let severityGrade = 0;
+              let recommendations = 'No action required this pipe section is at an adoptable condition';
+              let adoptable = 'Yes';
+              let defectType = 'service';
+              
+              if (authenticGrades) {
+                // Use higher grade as primary severity
+                severityGrade = Math.max(authenticGrades.structural, authenticGrades.service);
+                defectType = authenticGrades.structural > authenticGrades.service ? 'structural' : 'service';
                 
-                for (const splitSection of splitSections) {
-                  authenticSections.push(splitSection);
-                  const displayNo = splitSection.letterSuffix ? `${splitSection.itemNo}${splitSection.letterSuffix}` : splitSection.itemNo;
+                if (severityGrade > 0) {
+                  if (defectType === 'structural') {
+                    recommendations = 'WRc Drain Repair Book: Structural repair or relining required';
+                    adoptable = 'Conditional';
+                  } else {
+                    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+                    adoptable = 'Conditional';
+                  }
                 }
-              } else {
-                authenticSections.push(sectionData);
+              } else if (defectText && defectText !== 'No service or structural defect found') {
+                const { MSCC5Classifier } = await import('./mscc5-classifier');
+                const classification = await MSCC5Classifier.classifyDefect(defectText, sector);
+                
+                severityGrade = classification.severityGrade;
+                recommendations = classification.recommendations;
+                adoptable = classification.adoptable;
+                defectType = classification.defectType;
               }
-            } else {
+              
+              const authenticItemNo = itemCounter++;
+              
+              const sectionData: WincanSectionData = {
+                itemNo: authenticItemNo,
+                projectNo: record.OBJ_Name || 'GR7188',
+                startMH: startMH,
+                finishMH: finishMH,
+                pipeSize: pipeSize.toString(),
+                pipeMaterial: pipeMaterial,
+                totalLength: totalLength.toFixed(2),
+                lengthSurveyed: totalLength.toFixed(2),
+                defects: defectText,
+                recommendations: recommendations,
+                severityGrade: severityGrade,
+                adoptable: adoptable,
+                inspectionDate: inspectionDate,
+                inspectionTime: inspectionTime,
+                defectType: defectType,
+              };
+              
+              // Only add if we have meaningful data
+              if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
+                // Apply multi-defect splitting logic if defects exist
+                if (defectText && defectText !== 'No service or structural defect found') {
+                  const { MSCC5Classifier } = await import('./mscc5-classifier');
+                  const splitSections = MSCC5Classifier.splitMultiDefectSection(defectText, authenticItemNo, sectionData);
+                  
+                  for (const splitSection of splitSections) {
+                    authenticSections.push(splitSection);
+                  }
+                } else {
+                  authenticSections.push(sectionData);
+                }
+              }
             }
-          }
-          
+            
             resolve(authenticSections);
           });
         });
       });
     });
+  });
 }
 
 // Store authentic sections in database with comprehensive duplicate prevention
