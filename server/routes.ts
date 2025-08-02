@@ -518,14 +518,33 @@ export async function registerRoutes(app: Express) {
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           
-          // Import and use Wincan database reader
-          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
+          // Import and use Wincan database reader from backup (working version)
+          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
           
           // Use the main database file for processing
           const mainDbPath = validation.files?.main || filePath;
           
-          // Extract authentic data from database
+          // Extract authentic data from database with enhanced debugging
+          console.log('🔍 Processing database file:', mainDbPath);
+          console.log('🔍 Sector:', req.body.sector || 'utilities');
+          
           const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+          
+          console.log('📊 SECSTAT Processing Results:');
+          console.log(`📊 Total sections extracted: ${sections.length}`);
+          
+          // Log severity grade samples for verification
+          const sectionsWithGrades = sections.filter(s => s.severityGrade > 0);
+          console.log(`📊 Sections with severity grades: ${sectionsWithGrades.length}`);
+          
+          if (sectionsWithGrades.length > 0) {
+            console.log('📊 Sample severity data:', sectionsWithGrades.slice(0, 3).map(s => ({
+              item: s.itemNo,
+              severity: s.severityGrade,
+              defectType: s.defectType,
+              defects: s.defects.substring(0, 50) + '...'
+            })));
+          }
           
           
           // Store sections in database
