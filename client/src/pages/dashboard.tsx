@@ -737,7 +737,7 @@ export default function Dashboard() {
       defects: s.defects
     })));
 
-    // Find all service sections with costs
+    // Find all service sections with costs (including insufficient items)
     const serviceSectionsWithCosts = sectionData.filter(section => {
       if (section.defectType !== 'service') return false;
       
@@ -746,7 +746,7 @@ export default function Dashboard() {
       const hasServiceCost = costCalc && 
                            typeof costCalc === 'object' && 
                            'status' in costCalc &&
-                           costCalc.status === 'f608_calculated' && 
+                           (costCalc.status === 'f608_calculated' || costCalc.status === 'f608_insufficient_items') && 
                            costCalc.cost > 0;
       
       console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
@@ -4993,12 +4993,43 @@ export default function Dashboard() {
               onClick={() => {
                 console.log('🔍 MANUAL SERVICE COST CHECK TRIGGERED');
                 
-                // Get all service sections from current data
+                // Get ALL sections for comprehensive analysis
+                console.log('🔍 COMPREHENSIVE SERVICE ITEM ANALYSIS');
+                console.log('🔍 Total sections in rawSectionData:', rawSectionData.length);
+                
+                // Find all service sections
                 const allServiceSections = rawSectionData.filter(section => section.defectType === 'service');
-                console.log('🔍 All service sections found:', allServiceSections.map(s => ({
+                console.log('🔍 Service sections (defectType=service):', allServiceSections.map(s => ({
                   itemNo: s.itemNo,
                   letterSuffix: s.letterSuffix,
-                  defects: s.defects
+                  defects: s.defects,
+                  recommendations: s.recommendations
+                })));
+                
+                // Find sections with "blue" in recommendations (cleanse & survey)
+                const blueCleanseSections = rawSectionData.filter(section => 
+                  section.recommendations && section.recommendations.toLowerCase().includes('blue')
+                );
+                console.log('🔍 Sections with "blue" in recommendations:', blueCleanseSections.map(s => ({
+                  itemNo: s.itemNo,
+                  letterSuffix: s.letterSuffix,
+                  defectType: s.defectType,
+                  recommendations: s.recommendations
+                })));
+                
+                // Find sections with cleanse/survey keywords
+                const cleanseSurveySections = rawSectionData.filter(section => 
+                  section.recommendations && (
+                    section.recommendations.toLowerCase().includes('cleanse') ||
+                    section.recommendations.toLowerCase().includes('survey') ||
+                    section.recommendations.toLowerCase().includes('clean')
+                  )
+                );
+                console.log('🔍 Sections with cleanse/survey keywords:', cleanseSurveySections.map(s => ({
+                  itemNo: s.itemNo,
+                  letterSuffix: s.letterSuffix,
+                  defectType: s.defectType,
+                  recommendations: s.recommendations
                 })));
                 
                 // Force trigger service cost check
