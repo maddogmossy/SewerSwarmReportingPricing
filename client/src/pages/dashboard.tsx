@@ -3021,6 +3021,19 @@ export default function Dashboard() {
         }
         
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
+          // DEBUG: Special tracking for Item 13 F608 Row 3 calculations
+          if (section.itemNo === 13) {
+            console.log(`🎯 ITEM 13 F608 ROW 3 DEBUG:`, {
+              itemNo: section.itemNo,
+              defectType: section.defectType,
+              defects: section.defects,
+              sectionLength: sectionLength,
+              sectionDebrisPercent: sectionDebrisPercent,
+              totalMM4Rows: matchingMM4Data.length,
+              availableRows: matchingMM4Data.map(r => ({ id: r.id, greenValue: r.greenValue, purpleDebris: r.purpleDebris, purpleLength: r.purpleLength }))
+            });
+          }
+          
           // Check each MM4 row to see if section matches criteria
           for (const mm4Row of matchingMM4Data) {
             // Get buffered values if available (to handle input protection)
@@ -3045,6 +3058,23 @@ export default function Dashboard() {
             const lengthMatch = sectionLength <= purpleLength;
             // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
             const hasValidRate = (blueValue > 0 && greenValue > 0) || (blueValue > 0 && purpleDebris > 0) || (greenValue > 0 && purpleDebris > 0);
+            
+            // DEBUG: Item 13 Row 3 specific validation
+            if (section.itemNo === 13 && mm4Row.id === 3) {
+              console.log(`🧮 ITEM 13 ROW 3 VALIDATION:`, {
+                rowId: mm4Row.id,
+                sectionDebrisPercent: sectionDebrisPercent,
+                purpleDebris: purpleDebris,
+                debrisMatch: debrisMatch,
+                sectionLength: sectionLength,
+                purpleLength: purpleLength,
+                lengthMatch: lengthMatch,
+                blueValue: blueValue,
+                greenValue: greenValue,
+                hasValidRate: hasValidRate,
+                willProceedToCalculation: debrisMatch && lengthMatch && hasValidRate
+              });
+            }
             
             if (debrisMatch && lengthMatch && hasValidRate) {
               // F606/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
@@ -3072,7 +3102,11 @@ export default function Dashboard() {
               // For service defects, calculate cost based on rate per run
               const totalCost = ratePerRun; // Single run cost for this section
               
-              console.log(`✅ F608 Multi-Row Cost Calculation (Row ${mm4Row.id}):`, {
+              // Special focus on Item 13 Row 3 calculation results
+              const isItem13Row3 = section.itemNo === 13 && mm4Row.id === 3;
+              const logLevel = isItem13Row3 ? '🎯 ITEM 13 ROW 3 FINAL CALCULATION' : `✅ F608 Multi-Row Cost Calculation (Row ${mm4Row.id})`;
+              
+              console.log(logLevel, {
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
@@ -3085,7 +3119,8 @@ export default function Dashboard() {
                 debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
                 lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`,
                 configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
-                inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0
+                inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0,
+                expectedCalculation: isItem13Row3 ? `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run` : undefined
               });
               
               // Count total service items across all sections (not just defects)
