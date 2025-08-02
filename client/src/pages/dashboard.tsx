@@ -3081,8 +3081,8 @@ export default function Dashboard() {
         }
         
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
-          // DEBUG: Special tracking for Item 13 F608 Row 3 calculations AND Item 22 F608 first-time configuration
-          if (section.itemNo === 13 || section.itemNo === 22) {
+          // DEBUG: Special tracking for Item 13 F608 Row 3 calculations AND Items 21-23 F608 MM4-225 validation
+          if (section.itemNo === 13 || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
             console.log(`🎯 ITEM ${section.itemNo} F608 DEBUG:`, {
               itemNo: section.itemNo,
               defectType: section.defectType,
@@ -3109,8 +3109,23 @@ export default function Dashboard() {
               try {
                 const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
                 const pipeSizeKey = matchingPipeSizeKey;
-                const bufferKey = `${pipeSizeKey}-${rowId}-${field}`;
-                return buffer[bufferKey] || fallback;
+                // FIXED: Include F608 prefix to match buffer key format: 608-225-2251-1-purpleDebris
+                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
+                const bufferKey = `${configPrefix}-${pipeSizeKey}-${rowId}-${field}`;
+                const bufferedValue = buffer[bufferKey] || fallback;
+                
+                // Debug for F608 MM4-225 buffer retrieval issues
+                if (matchingPipeSizeKey === '225-2251' && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23)) {
+                  console.log(`🔍 F608-225 Buffer Retrieval for Item ${section.itemNo}:`, {
+                    field: field,
+                    bufferKey: bufferKey,
+                    bufferedValue: bufferedValue,
+                    fallback: fallback,
+                    allBufferKeys: Object.keys(buffer).filter(k => k.includes('225-2251'))
+                  });
+                }
+                
+                return bufferedValue;
               } catch {
                 return fallback;
               }
@@ -3127,8 +3142,8 @@ export default function Dashboard() {
             // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
             const hasValidRate = (blueValue > 0 && greenValue > 0) || (blueValue > 0 && purpleDebris > 0) || (greenValue > 0 && purpleDebris > 0);
             
-            // DEBUG: Item 13 Row 3 and Item 22 validation tracking
-            if ((section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 22) {
+            // DEBUG: Item 13 Row 3 and Items 21-23 validation tracking
+            if ((section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
               console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION:`, {
                 itemNo: section.itemNo,
                 rowId: mm4Row.id,
@@ -3181,8 +3196,8 @@ export default function Dashboard() {
               // For service defects, calculate cost based on rate per run
               const totalCost = ratePerRun; // Single run cost for this section
               
-              // Special focus on Item 13 Row 3 and Item 22 calculation results
-              const isSpecialTracking = (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 22;
+              // Special focus on Item 13 Row 3 and Items 21-23 calculation results
+              const isSpecialTracking = (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23;
               const logLevel = isSpecialTracking ? `🎯 ITEM ${section.itemNo} ROW ${mm4Row.id} FINAL CALCULATION` : `✅ F608 Multi-Row Cost Calculation (Row ${mm4Row.id})`;
               
               console.log(logLevel, {
