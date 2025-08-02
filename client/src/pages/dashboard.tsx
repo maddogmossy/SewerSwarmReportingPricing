@@ -4651,18 +4651,38 @@ export default function Dashboard() {
     if (shouldExportAfterServiceCost) {
       console.log('🔄 Triggering export after service cost handling');
       setShouldExportAfterServiceCost(false); // Reset flag
+      
+      // Longer delay to ensure all state updates are complete
       setTimeout(() => {
-        exportToExcel();
-        toast({
-          title: "Report Exported",
-          description: "Report has been exported successfully with updated costs"
-        });
-      }, 100);
+        console.log('🔄 Executing performExport directly after service cost handling');
+        try {
+          performExport();
+          toast({
+            title: "Report Exported",
+            description: "Report has been exported successfully with updated costs"
+          });
+        } catch (error) {
+          console.error('❌ Export failed:', error);
+          toast({
+            title: "Export Failed",
+            description: "There was an error exporting the report. Please try again.",
+            variant: "destructive"
+          });
+        }
+      }, 300);
     }
   }, [shouldExportAfterServiceCost]);
 
   const performExport = () => {
-    if (!sectionData?.length) return;
+    console.log('🔄 performExport called', { 
+      sectionDataLength: sectionData?.length, 
+      adjustedServiceCostsSize: adjustedServiceCosts.size 
+    });
+    
+    if (!sectionData?.length) {
+      console.error('❌ No section data available for export');
+      return;
+    }
     
     // Get visible columns based on hiddenColumns state
     const currentHiddenColumns = hiddenColumns;
@@ -4748,16 +4768,30 @@ export default function Dashboard() {
         } else {
           // Use the same cost calculation logic as the dashboard
           const costResult = calculateAutoCost(section);
-          if (costResult && typeof costResult === 'object' && costResult.props && costResult.props.children) {
-            // Extract the cost from the JSX element if it's a React component
-            const costText = costResult.props.children;
-            if (Array.isArray(costText)) {
-              costValue = costText[0]; // Get the main cost value
-            } else {
-              costValue = costText;
-            }
-          } else if (typeof costResult === 'string') {
+          if (typeof costResult === 'string') {
             costValue = costResult;
+          } else if (costResult && typeof costResult === 'object') {
+            // Handle JSX element - try to extract meaningful text
+            if ('cost' in costResult && typeof costResult.cost === 'number') {
+              costValue = `£${costResult.cost.toFixed(2)}`;
+            } else if ('props' in costResult && costResult.props) {
+              // Try to extract text content from JSX
+              const extractText = (element: any): string => {
+                if (typeof element === 'string') return element;
+                if (typeof element === 'number') return element.toString();
+                if (Array.isArray(element)) return element.map(extractText).join(' ');
+                if (element && typeof element === 'object' && element.props && element.props.children) {
+                  return extractText(element.props.children);
+                }
+                return '';
+              };
+              const extractedText = extractText(costResult);
+              costValue = extractedText || '£0.00';
+            } else {
+              costValue = '£0.00';
+            }
+          } else {
+            costValue = '£0.00';
           }
         }
       }
@@ -4832,12 +4866,15 @@ export default function Dashboard() {
     
     // Generate Excel file and download
     const fileName = `SewerAI_${projectNo}_Inspection_Report_${reportDate.replace(/\//g, '-')}.xlsx`;
-    XLSX.writeFile(wb, fileName);
+    console.log('🔄 About to write Excel file:', fileName);
     
-    toast({
-      title: "Excel Export Complete",
-      description: `Report exported as .xlsx file with native Excel column hiding support`,
-    });
+    try {
+      XLSX.writeFile(wb, fileName);
+      console.log('✅ Excel file written successfully');
+    } catch (error) {
+      console.error('❌ Error writing Excel file:', error);
+      throw error;
+    }
   };
 
   // Calculate actual costs based on PR1 pricing configuration
