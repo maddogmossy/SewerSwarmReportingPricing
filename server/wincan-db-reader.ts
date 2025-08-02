@@ -365,6 +365,7 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
         });
       });
     });
+  });
 }
 
 // Store authentic sections in database with comprehensive duplicate prevention
