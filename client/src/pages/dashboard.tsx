@@ -728,12 +728,44 @@ export default function Dashboard() {
   const checkServiceCostCompletion = (sectionData: any[]) => {
     if (!sectionData || sectionData.length === 0) return;
 
+    // Find all service sections
+    const allServiceSections = sectionData.filter(section => section.defectType === 'service');
+    console.log('🔍 SERVICE COST WARNING - All service sections found:', allServiceSections.map(s => ({
+      itemNo: s.itemNo,
+      letterSuffix: s.letterSuffix,
+      defectType: s.defectType,
+      defects: s.defects
+    })));
+
     // Find all service sections with costs
     const serviceSectionsWithCosts = sectionData.filter(section => {
       const costCalc = calculateCost(section);
-      return section.defectType === 'service' && 
-             costCalc?.status === 'f608_calculated' && 
-             costCalc.cost > 0;
+      const hasServiceCost = section.defectType === 'service' && 
+                           costCalc?.status === 'f608_calculated' && 
+                           costCalc?.cost > 0;
+      
+      if (section.defectType === 'service') {
+        console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+          defectType: section.defectType,
+          costCalc: costCalc ? {
+            status: costCalc.status,
+            cost: costCalc.cost,
+            method: costCalc.method,
+            dayRate: costCalc.dayRate,
+            runsPerShift: costCalc.runsPerShift
+          } : 'no cost calc',
+          hasServiceCost
+        });
+      }
+      
+      return hasServiceCost;
+    });
+
+    console.log('🔍 SERVICE COST WARNING - Service sections with costs:', serviceSectionsWithCosts.length);
+    console.log('🔍 SERVICE COST WARNING - Dialog state:', {
+      showServiceCostWarning,
+      hasServiceCostData: !!serviceCostData,
+      serviceSectionsCount: serviceSectionsWithCosts.length
     });
 
     // Only trigger if we have service items and haven't shown the dialog yet
