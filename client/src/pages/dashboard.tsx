@@ -2461,6 +2461,11 @@ export default function Dashboard() {
     // Reset service cost warning dismissed state so it can show again
     setServiceCostWarningDismissed(false);
     
+    // Check for service cost issues before export
+    if (rawSectionData && rawSectionData.length > 0) {
+      checkServiceCostCompletion(rawSectionData);
+    }
+    
     // Export functionality - trigger Excel export
     exportToExcel();
     
@@ -2468,7 +2473,7 @@ export default function Dashboard() {
       title: "Report Exported",
       description: "Report has been exported successfully"
     });
-  }, []);
+  }, [rawSectionData]);
 
   // Debug PR2 data loading
   // RepairPricingData logging removed
