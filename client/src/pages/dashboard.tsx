@@ -1026,20 +1026,44 @@ export default function Dashboard() {
         });
 
         const totalServiceCost = serviceItems.reduce((sum, item) => sum + item.currentCost, 0);
-
-        setServiceCostData({
-          serviceItems,
-          dayRate: firstCostCalc.dayRate,
-          runsPerShift: firstCostCalc.runsPerShift,
+        
+        // Check if service cost is below day rate
+        const dayRate = firstCostCalc.dayRate || 0;
+        const isServiceCostBelowDayRate = totalServiceCost < dayRate;
+        
+        console.log('🔍 SERVICE COST WARNING - Cost analysis:', {
           totalServiceCost,
-          configType: (firstCostCalc && 'configType' in firstCostCalc) ? firstCostCalc.configType : 'F608 Van Pack'
+          dayRate,
+          isServiceCostBelowDayRate,
+          serviceItemsCount: serviceItems.length,
+          serviceItemDetails: serviceItems.map(item => ({
+            itemNo: item.itemNo,
+            currentCost: item.currentCost
+          })),
+          comparison: `${totalServiceCost} < ${dayRate} = ${isServiceCostBelowDayRate}`,
+          willTriggerWarning: isServiceCostBelowDayRate
         });
 
-        // Auto-trigger dialog after a short delay to allow costs to render
-        setTimeout(() => {
-          setIsExportWorkflow(false); // Not from export workflow
-          setShowServiceCostWarning(true);
-        }, 1000);
+        // Only show warning if service cost is below day rate
+        if (isServiceCostBelowDayRate) {
+          console.log('🔄 SERVICE COST WARNING - Triggering warning dialog');
+          
+          setServiceCostData({
+            serviceItems,
+            dayRate: dayRate,
+            runsPerShift: firstCostCalc.runsPerShift,
+            totalServiceCost,
+            configType: (firstCostCalc && 'configType' in firstCostCalc) ? firstCostCalc.configType : 'F608 Van Pack'
+          });
+
+          // Auto-trigger dialog after a short delay to allow costs to render
+          setTimeout(() => {
+            setIsExportWorkflow(false); // Not from export workflow
+            setShowServiceCostWarning(true);
+          }, 1000);
+        } else {
+          console.log('🔍 SERVICE COST WARNING - Service costs meet day rate, no warning needed');
+        }
       }
     }
   };
