@@ -18,40 +18,8 @@ export function validateDb3Files(directory: string): { valid: boolean; message: 
   return { valid: true, message: "✅ Both database files loaded successfully." };
 }
 
-export function validateGenericDb3Files(directory: string, uploadedFilePath?: string): { valid: boolean; message: string; files?: { main: string; meta?: string }; warning?: string } {
+export function validateGenericDb3Files(directory: string, baseName?: string): { valid: boolean; message: string; files?: { main: string; meta?: string }; warning?: string } {
   try {
-    // If we have a specific uploaded file path, use it directly
-    if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
-      console.log('🔍 Using specific uploaded file path:', uploadedFilePath);
-      
-      // Check if there's a matching meta file
-      const baseName = path.basename(uploadedFilePath, '.db3');
-      const expectedMetaFile = path.join(directory, `${baseName}_Meta.db3`);
-      
-      if (fs.existsSync(expectedMetaFile)) {
-        return { 
-          valid: true, 
-          message: "✅ Both database files loaded successfully.",
-          files: {
-            main: uploadedFilePath,
-            meta: expectedMetaFile
-          }
-        };
-      } else {
-        console.warn("⚠️ Meta.db3 missing — grading will be partial.");
-        
-        return { 
-          valid: true, 
-          message: "✅ Main database file loaded successfully.",
-          warning: "⚠️ Meta.db3 missing — grading will be partial.",
-          files: {
-            main: uploadedFilePath
-          }
-        };
-      }
-    }
-
-    // Fallback to directory scanning
     const files = fs.readdirSync(directory);
     const db3Files = files.filter(file => file.endsWith('.db3') && !file.includes('_Meta'));
     const metaFiles = files.filter(file => file.endsWith('_Meta.db3'));

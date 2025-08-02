@@ -488,7 +488,7 @@ export async function registerRoutes(app: Express) {
           const { validateGenericDb3Files } = await import('./db3-validator');
           
           // Validate that both .db3 and _Meta.db3 files are present
-          const validation = validateGenericDb3Files(uploadDirectory, filePath);
+          const validation = validateGenericDb3Files(uploadDirectory);
           
           if (!validation.valid) {
             // Update status to failed due to missing files
@@ -519,15 +519,13 @@ export async function registerRoutes(app: Express) {
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           
           // Import and use Wincan database reader
-          const { processWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
+          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
           // Use the main database file for processing
           const mainDbPath = validation.files?.main || filePath;
-          console.log('🔍 File paths - Original:', filePath, 'Validation result:', mainDbPath);
-          console.log('🔍 Validation object:', JSON.stringify(validation, null, 2));
           
           // Extract authentic data from database
-          const sections = await processWincanDatabase(mainDbPath, req.body.sector || 'utilities', validation.files?.meta);
+          const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
           
           
           // Store sections in database
@@ -780,15 +778,10 @@ export async function registerRoutes(app: Express) {
       const userId = "test-user";
       const { name, description } = req.body;
       
-      // Validate required fields
-      if (!name || name.trim() === '') {
-        return res.status(400).json({ error: "Folder name is required" });
-      }
-      
       const [folder] = await db.insert(projectFolders).values({
         userId,
-        folderName: name.trim(),
-        projectAddress: description?.trim() || "Not specified"
+        folderName: name,
+        projectAddress: description || "Not specified"
       }).returning();
       
       res.json(folder);
