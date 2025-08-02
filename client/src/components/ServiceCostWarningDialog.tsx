@@ -37,14 +37,19 @@ export default function ServiceCostWarningDialog({
 
   // Calculate the shortfall from day rate
   const serviceItemCount = serviceItems.length;
-  const minimumShiftCost = serviceItemCount >= runsPerShift ? dayRate : (dayRate / runsPerShift) * serviceItemCount;
-  const shortfall = Math.max(0, minimumShiftCost - totalServiceCost);
+  const shortfall = Math.max(0, dayRate - totalServiceCost);
+  const minimumShiftCost = dayRate;
 
   // Calculate spread costs if user chooses that option
   const calculateSpreadCosts = () => {
     if (serviceItems.length === 0) return [];
     
-    const additionalCostPerItem = shortfall / serviceItems.length;
+    // Calculate unused runs and cost per additional run
+    const unusedRuns = runsPerShift - serviceItemCount;
+    const costPerAdditionalRun = unusedRuns > 0 ? shortfall / unusedRuns : 0;
+    
+    // Add the cost per additional run to each service item
+    const additionalCostPerItem = costPerAdditionalRun;
     return serviceItems.map(item => ({
       itemNo: item.itemNo,
       newCost: item.currentCost + additionalCostPerItem
