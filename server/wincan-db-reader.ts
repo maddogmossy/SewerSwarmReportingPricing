@@ -362,12 +362,14 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     
     // Check file header to determine if corrupted
     const buffer = fs.readFileSync(filePath);
-    const header = buffer.subarray(0, 16).toString('ascii');
+    const header = buffer.subarray(0, 20).toString('ascii');
     console.log("📊 DATABASE HEADER:", header.replace(/\0/g, '\\0'));
+    console.log("📊 FILE SIZE:", buffer.length);
     
-    if (!header.startsWith('SQLite format 3')) {
+    if (!header.includes('SQLite format')) {
       console.error("❌ CORRUPTED DATABASE FILE DETECTED");
-      console.error("📊 File header:", header.replace(/\0/g, '\\0'));
+      console.error("📊 File header (first 20 bytes):", header.replace(/\0/g, '\\0'));
+      console.error("📊 Header hex:", buffer.subarray(0, 20).toString('hex'));
       throw new Error("Database file corrupted during upload");
     }
     

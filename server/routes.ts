@@ -32,7 +32,19 @@ if (!process.env.STRIPE_SECRET_KEY) {
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const upload = multer({
-  dest: "uploads/",
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      // Ensure uploads directory exists
+      if (!existsSync('uploads')) {
+        fs.mkdirSync('uploads', { recursive: true });
+      }
+      cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+      // Keep original filename to maintain .db3 extension
+      cb(null, file.originalname);
+    }
+  }),
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
   },
@@ -521,10 +533,13 @@ export async function registerRoutes(app: Express) {
           // Import and use Wincan database reader
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
-          // Use the main database file for processing
-          const mainDbPath = validation.files?.main || filePath;
+          // CRITICAL FIX: Always use the real uploaded file, ignore validation.files paths
+          const mainDbPath = filePath; // This is the actual file with content
+          console.log("📂 MULTER FILE INFO:", req.file);
           console.log("🔍 PROCESSING FILE PATH:", mainDbPath);
           console.log("🔍 ORIGINAL FILE PATH:", filePath);
+          console.log("🔍 FILE EXISTS CHECK:", existsSync(mainDbPath));
+          console.log("🔍 FILE STATS:", existsSync(mainDbPath) ? fs.statSync(mainDbPath) : 'FILE NOT FOUND');
           
           // Extract authentic data from database
           const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
