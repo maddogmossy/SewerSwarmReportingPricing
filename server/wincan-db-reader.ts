@@ -346,6 +346,124 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
   });
 }
 
+// Import required modules for database reading
+import Database from 'better-sqlite3';
+import fs from 'fs';
+
+// Export the readWincanDatabase function for compatibility
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
+  console.log("🔍 READING DATABASE FILE:", filePath);
+  try {
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      console.error("❌ File not found:", filePath);
+      throw new Error("Database file not found - cannot extract authentic data");
+    }
+    
+    // Check file header to determine if corrupted
+    const buffer = fs.readFileSync(filePath);
+    const header = buffer.subarray(0, 16).toString('ascii');
+    console.log("📊 DATABASE HEADER:", header.replace(/\0/g, '\\0'));
+    
+    if (!header.startsWith('SQLite format 3')) {
+      console.error("❌ CORRUPTED DATABASE FILE DETECTED");
+      console.error("📊 File header:", header.replace(/\0/g, '\\0'));
+      throw new Error("Database file corrupted during upload");
+    }
+    
+    // Open the database only if verified as valid SQLite
+    const database = new Database(filePath, { readonly: true });
+    
+    // Build manhole name mapping from NODE table
+    const manholeMap = new Map<string, string>();
+    try {
+      const nodeData = database.prepare("SELECT OBJ_PK, OBJ_Key FROM NODE WHERE OBJ_Key IS NOT NULL").all();
+      for (const node of nodeData) {
+        if (node.OBJ_PK && node.OBJ_Key) {
+          manholeMap.set(node.OBJ_PK, node.OBJ_Key);
+        }
+      }
+    } catch (error) {
+      console.warn("Could not read NODE table");
+    }
+
+    // Build observation data mapping from SECOBS table via SECINSP
+    const observationMap = new Map<string, string[]>();
+    try {
+      const obsData = database.prepare(`
+        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation 
+        FROM SECINSP si 
+        JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
+        WHERE obs.OBS_OpCode IS NOT NULL 
+        AND obs.OBS_OpCode NOT IN ('MH', 'MHF')
+        ORDER BY si.INS_Section_FK, obs.OBS_Distance
+      `).all();
+      for (const obs of obsData) {
+        if (obs.INS_Section_FK && obs.OBS_OpCode) {
+          if (!observationMap.has(obs.INS_Section_FK)) {
+            observationMap.set(obs.INS_Section_FK, []);
+          }
+          const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
+          const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
+          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
+        }
+      }
+    } catch (error) {
+      console.warn("Could not read SECOBS table");
+    }
+
+    // Extract sections from SECTION table
+    const sectionData = database.prepare(`
+      SELECT s.*, fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey
+      FROM SECTION s
+      LEFT JOIN NODE fromNode ON s.SEC_FromNode = fromNode.OBJ_PK  
+      LEFT JOIN NODE toNode ON s.SEC_ToNode = toNode.OBJ_PK
+    `).all();
+
+    database.close();
+
+    const authenticSections: WincanSectionData[] = [];
+    
+    for (const record of sectionData) {
+      const itemNo = parseInt(record.SEC_Key) || 0;
+      const startMH = record.FromNodeKey || manholeMap.get(record.SEC_FromNode) || 'UNKNOWN';
+      const finishMH = record.ToNodeKey || manholeMap.get(record.SEC_ToNode) || 'UNKNOWN';
+      
+      if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
+        const observations = observationMap.get(record.SEC_PK) || [];
+        const defectText = observations.length > 0 ? observations.join('. ') : 'No service or structural defect found';
+        
+        const sectionData: WincanSectionData = {
+          itemNo,
+          letterSuffix: null,
+          projectNo: record.SEC_InspectionNo || 'Unknown',
+          inspectionDate: record.SEC_Date || new Date().toISOString().split('T')[0],
+          inspectionTime: record.SEC_Time || '00:00',
+          startMH,
+          finishMH,
+          pipeSize: record.SEC_Diameter?.toString() || '150',
+          pipeMaterial: record.SEC_Material || 'Unknown',
+          totalLength: record.SEC_Length?.toString() || '0',
+          lengthSurveyed: record.SEC_Length?.toString() || '0',
+          defects: defectText,
+          defectType: 'service',
+          recommendations: 'No recommendations',
+          severityGrade: 1,
+          adoptable: 'Suitable'
+        };
+        
+        authenticSections.push(sectionData);
+      }
+    }
+    
+    return authenticSections;
+    
+  } catch (error) {
+    console.error("Database processing error:", error);
+    throw error;
+  }
+}
+
 // Store authentic sections in database with comprehensive duplicate prevention
 export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
   

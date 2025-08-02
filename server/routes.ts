@@ -523,6 +523,8 @@ export async function registerRoutes(app: Express) {
           
           // Use the main database file for processing
           const mainDbPath = validation.files?.main || filePath;
+          console.log("🔍 PROCESSING FILE PATH:", mainDbPath);
+          console.log("🔍 ORIGINAL FILE PATH:", filePath);
           
           // Extract authentic data from database
           const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
