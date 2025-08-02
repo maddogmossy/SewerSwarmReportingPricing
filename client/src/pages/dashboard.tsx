@@ -830,11 +830,17 @@ export default function Dashboard() {
       showStructuralCostWarning,
       structuralCostData: !!structuralCostData,
       structuralCostWarningDismissed,
-      shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed
+      shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData
     });
 
-    // Only trigger if we have structural items, haven't shown the dialog yet, and it hasn't been dismissed
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed) {
+    // Reset dismissed state when new data is available (similar to service warning logic)
+    if (structuralSectionsWithCosts.length > 0 && structuralCostWarningDismissed) {
+      console.log('🔄 STRUCTURAL COST WARNING - Resetting dismissed state for new data');
+      setStructuralCostWarningDismissed(false);
+    }
+
+    // Only trigger if we have structural items and haven't shown the dialog yet
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);
@@ -882,22 +888,30 @@ export default function Dashboard() {
             currentCost: item.currentCost,
             patchCount: item.patchCount,
             costPerPatch: item.costPerPatch
-          }))
+          })),
+          comparison: `${totalStructuralCost} < ${dayRate} = ${isStructuralCostBelowDayRate}`,
+          willTriggerWarning: isStructuralCostBelowDayRate
         });
         
         // Only show warning if structural cost is below day rate
         if (isStructuralCostBelowDayRate) {
           console.log('🔄 STRUCTURAL COST WARNING - Triggering warning dialog');
+          console.log('🔄 STRUCTURAL COST WARNING - Setting dialog data and state');
           
-          setStructuralCostData({
+          const warningData = {
             structuralItems,
             dayRate: dayRate,
             minPatches: dayRate > 0 ? Math.ceil(dayRate / (structuralItems[0]?.costPerPatch || 1)) : totalPatchCount,
             totalStructuralCost,
             configType: firstCostCalc.configType || 'F615 Patching'
-          });
+          };
           
+          console.log('🔄 STRUCTURAL COST WARNING - Warning data:', warningData);
+          
+          setStructuralCostData(warningData);
           setShowStructuralCostWarning(true);
+          
+          console.log('🔄 STRUCTURAL COST WARNING - State set, dialog should now be visible');
         } else {
           console.log('🔍 STRUCTURAL COST WARNING - Structural costs meet day rate, no warning needed');
         }
