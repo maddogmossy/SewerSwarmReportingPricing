@@ -199,30 +199,30 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
       `;
       
       db.all(query, [], async (err: any, sectionRecords: any[]) => {
-      if (err) {
-        console.error('❌ Error reading SECTION table:', err);
-        db.close();
-        reject(err);
-        return;
-      }
-      
-      
-      // Get observations for each section (exclude finish node codes)
-      const observationQuery = `
-        SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
-        FROM SECOBS 
-        WHERE OBJ_Code IS NOT NULL 
-        AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
-        ORDER BY OBJ_Section_REF, OBJ_PosFrom
-      `;
-      
-      db.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
-        if (obsErr) {
-          console.error('❌ Error reading SECOBS table:', obsErr);
+        if (err) {
+          console.error('❌ Error reading SECTION table:', err);
           db.close();
-          reject(obsErr);
+          reject(err);
           return;
         }
+        
+        
+        // Get observations for each section (exclude finish node codes)
+        const observationQuery = `
+          SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
+          FROM SECOBS 
+          WHERE OBJ_Code IS NOT NULL 
+          AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
+          ORDER BY OBJ_Section_REF, OBJ_PosFrom
+        `;
+        
+        db.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
+          if (obsErr) {
+            console.error('❌ Error reading SECOBS table:', obsErr);
+            db.close();
+            reject(obsErr);
+            return;
+          }
         
         
         // Get authentic severity grades from SECSTAT table
