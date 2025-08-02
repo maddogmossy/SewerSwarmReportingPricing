@@ -954,18 +954,11 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       } else {
       }
       
-      // UPSTREAM/DOWNSTREAM RULE APPLICATION:
-      // - UPSTREAM inspection: Show downstream MH as Start MH (reverse the flow)
-      // - DOWNSTREAM inspection: Show upstream MH as Start MH (normal flow)
-      if (inspectionDirection === 'upstream') {
-        // Upstream inspection: downstream MH becomes Start MH, upstream MH becomes Finish MH
-        startMH = toMH;   // Show higher number first (SW02)
-        finishMH = fromMH; // Show lower number second (SW01)
-      } else {
-        // Downstream inspection: upstream MH becomes Start MH, downstream MH becomes Finish MH
-        startMH = fromMH;  // Show lower number first (SW01)
-        finishMH = toMH;   // Show higher number second (SW02)
-      }
+      // FIXED MH DIRECTION LOGIC:
+      // Always show MH in logical flow order: fromMH → toMH (SW01 → SW02)
+      // This ensures Items 1,4,11,12,15,16,17,18 display correctly in sequence
+      startMH = fromMH;  // Always start with the 'from' manhole (SW01)
+      finishMH = toMH;   // Always finish with the 'to' manhole (SW02)
       
       // Extract authentic pipe specifications
       const pipeSize = record.OBJ_Size1 || 'UNKNOWN';
