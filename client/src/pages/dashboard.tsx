@@ -877,7 +877,13 @@ export default function Dashboard() {
           dayRate,
           totalPatchCount,
           isStructuralCostBelowDayRate,
-          structuralItemsCount: structuralItems.length
+          structuralItemsCount: structuralItems.length,
+          structuralItemDetails: structuralItems.map(item => ({
+            itemNo: item.itemNo,
+            currentCost: item.currentCost,
+            patchCount: item.patchCount,
+            costPerPatch: item.costPerPatch
+          }))
         });
         
         // Only show warning if structural cost is below day rate
@@ -2280,7 +2286,16 @@ export default function Dashboard() {
         // Check for structural cost completion and trigger warning dialog
         try {
           console.log('🔍 TRIGGERING STRUCTURAL COST CHECK with sections:', rawSectionData.length);
+          console.log('🔍 STRUCTURAL CHECK STATES BEFORE:', {
+            showStructuralCostWarning,
+            structuralCostData: !!structuralCostData,
+            structuralCostWarningDismissed
+          });
           checkStructuralCostCompletion(rawSectionData);
+          console.log('🔍 STRUCTURAL CHECK STATES AFTER:', {
+            showStructuralCostWarning,
+            structuralCostData: !!structuralCostData
+          });
         } catch (error) {
           console.error('🔧 STRUCTURAL COST CHECK ERROR:', error);
         }
