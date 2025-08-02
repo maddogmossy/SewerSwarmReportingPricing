@@ -792,6 +792,14 @@ export default function Dashboard() {
       serviceSectionsCount: serviceSectionsWithCosts.length
     });
 
+    console.log('🔍 SERVICE COST WARNING - Trigger condition check:', {
+      serviceSectionsWithCosts: serviceSectionsWithCosts.length,
+      showServiceCostWarning,
+      serviceCostData: !!serviceCostData,
+      serviceCostWarningDismissed,
+      shouldTrigger: serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed
+    });
+
     // Only trigger if we have service items, haven't shown the dialog yet, and it hasn't been dismissed
     if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed) {
       // Get the first service item's config details for reference
@@ -2458,6 +2466,8 @@ export default function Dashboard() {
   }, [rawSectionData]);
 
   const handleExportReport = useCallback(() => {
+    console.log('🔄 Export triggered: Resetting service cost warning states...');
+    
     // Reset service cost warning dismissed state and clear existing data
     setServiceCostWarningDismissed(false);
     setServiceCostData(null);
@@ -2465,12 +2475,19 @@ export default function Dashboard() {
     
     // Use setTimeout to ensure state updates happen before check
     setTimeout(() => {
+      console.log('🔄 Export: State reset complete, checking service costs...');
+      console.log('🔄 Export: Current states:', {
+        serviceCostWarningDismissed: false, // We just set this
+        showServiceCostWarning: false, // We just set this
+        serviceCostData: null, // We just set this
+        rawSectionDataLength: rawSectionData?.length || 0
+      });
+      
       // Force check for service cost issues before export
       if (rawSectionData && rawSectionData.length > 0) {
-        console.log('🔄 Export triggered: Checking service costs...');
         checkServiceCostCompletion(rawSectionData);
       }
-    }, 200);
+    }, 300); // Increased timeout for state updates
     
     // Export functionality - trigger Excel export
     exportToExcel();
