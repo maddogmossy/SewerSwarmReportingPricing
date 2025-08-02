@@ -778,10 +778,15 @@ export async function registerRoutes(app: Express) {
       const userId = "test-user";
       const { name, description } = req.body;
       
+      console.log('🔍 Folder creation request body:', { name, description, typeof_name: typeof name });
+      
       // Validate that name is provided and not empty
       if (!name || typeof name !== 'string' || name.trim().length === 0) {
+        console.log('❌ Folder validation failed:', { name, typeof_name: typeof name });
         return res.status(400).json({ error: "Folder name is required" });
       }
+      
+      console.log('✅ Folder validation passed, creating folder:', name.trim());
       
       const [folder] = await db.insert(projectFolders).values({
         userId,
@@ -789,6 +794,7 @@ export async function registerRoutes(app: Express) {
         projectAddress: description || "Not specified"
       }).returning();
       
+      console.log('✅ Folder created successfully:', folder);
       res.json(folder);
     } catch (error) {
       console.error("Error creating folder:", error);
