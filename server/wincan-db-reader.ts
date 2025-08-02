@@ -160,347 +160,242 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
 }
 
 // Process authentic Wincan database for sector-specific infrastructure analysis
-export async function processWincanDatabase(db3FilePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
+export async function processWincanDatabase(mainFilePath: string, sector: string = 'utilities', metaFilePath?: string): Promise<WincanSectionData[]> {
   
   const sqlite3 = (await import('sqlite3')).default;
-  const db = new sqlite3.Database(db3FilePath);
   
-  // Execute query to get authentic sections with proper JOIN
-  const query = `
-    SELECT s.*, 
-           fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey,
-           s.OBJ_Size1, s.OBJ_Material, s.OBJ_Length, s.OBJ_TimeStamp, s.OBJ_FlowDir
-    FROM SECTION s
-    LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
-    LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
-  `;
+  // Determine which file contains the inspection data vs configuration data
+  let inspectionDbPath = mainFilePath;
+  let configDbPath = metaFilePath;
+  
+  // Check if we need to swap the files (if main file is actually the meta file)
+  const mainDb = new sqlite3.Database(mainFilePath);
   
   return new Promise((resolve, reject) => {
-    db.all(query, [], async (err: any, sectionRecords: any[]) => {
-      if (err) {
-        console.error('❌ Error reading SECTION table:', err);
-        db.close();
-        reject(err);
+    console.log('🔍 Analyzing file structure - Main:', mainFilePath, 'Meta:', metaFilePath);
+    
+    const checkMainQuery = `SELECT name FROM sqlite_master WHERE type='table'`;
+    mainDb.all(checkMainQuery, [], (mainErr: any, mainTables: any[]) => {
+      if (mainErr) {
+        console.error('❌ Error checking main database tables:', mainErr);
+        mainDb.close();
+        reject(mainErr);
         return;
       }
       
+      const mainTableNames = mainTables.map(t => t.name);
+      console.log('📋 Main file tables:', mainTableNames);
       
-      // Get observations for each section (exclude finish node codes)
-      const observationQuery = `
-        SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
-        FROM SECOBS 
-        WHERE OBJ_Code IS NOT NULL 
-        AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
-        ORDER BY OBJ_Section_REF, OBJ_PosFrom
-      `;
+      // If main file doesn't have SECTION but has EQUIPMENT/OPERATOR, it's actually the meta file
+      if (!mainTableNames.includes('SECTION') && (mainTableNames.includes('EQUIPMENT') || mainTableNames.includes('OPERATOR'))) {
+        console.log('🔄 Main file appears to be meta file, swapping file roles');
+        inspectionDbPath = metaFilePath || mainFilePath;
+        configDbPath = mainFilePath;
+      }
       
-      db.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
-        if (obsErr) {
-          console.error('❌ Error reading SECOBS table:', obsErr);
-          db.close();
-          reject(obsErr);
+      mainDb.close();
+      
+      // Now open the correct inspection database
+      const inspectionDb = new sqlite3.Database(inspectionDbPath);
+      
+      inspectionDb.all(checkMainQuery, [], (inspErr: any, inspTables: any[]) => {
+        if (inspErr) {
+          console.error('❌ Error checking inspection database tables:', inspErr);
+          inspectionDb.close();
+          reject(inspErr);
           return;
         }
         
+        const inspTableNames = inspTables.map(t => t.name);
+        console.log('📋 Inspection file tables:', inspTableNames);
         
-        // Get authentic severity grades from SECSTAT table
-        const secstatQuery = `SELECT * FROM SECSTAT`;
-        
-        db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
-          if (secErr) {
-            secstatRecords = [];
+        // Check if we have the required tables
+        if (!inspTableNames.includes('SECTION')) {
+          console.error('❌ Neither database contains SECTION table. Both files appear to be configuration/metadata files.');
+          inspectionDb.close();
+          
+          const hasConfigTables = mainTableNames.includes('EQUIPMENT') || mainTableNames.includes('OPERATOR') || mainTableNames.includes('WORKGROUP');
+          if (hasConfigTables) {
+            reject(new Error(`You've uploaded configuration/metadata files, but the main inspection database is missing. Please upload the file containing SECTION, SECOBS, and SECSTAT tables (usually the main .db3 file without "_Meta" in the name).`));
           } else {
+            reject(new Error(`Invalid Wincan database: Missing SECTION table. Found tables: ${mainTableNames.join(', ')}`));
           }
-          
-          db.close();
-          
-          // Build observation map by section
-          const observationMap: { [sectionRef: string]: string[] } = {};
-          for (const obsRecord of observationRecords) {
-            const sectionRef = obsRecord.OBJ_Section_REF;
-            if (!observationMap[sectionRef]) {
-              observationMap[sectionRef] = [];
+          return;
+        }
+      
+        // Execute query to get authentic sections with proper JOIN
+        const query = `
+          SELECT s.*, 
+                 fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey,
+                 s.OBJ_Size1, s.OBJ_Material, s.OBJ_Length, s.OBJ_TimeStamp, s.OBJ_FlowDir
+          FROM SECTION s
+          LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
+          LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
+        `;
+        
+        inspectionDb.all(query, [], async (err: any, sectionRecords: any[]) => {
+          if (err) {
+            console.error('❌ Error reading SECTION table:', err);
+            inspectionDb.close();
+            reject(err);
+            return;
+          }
+        
+        // Get observations for each section (exclude finish node codes)
+        const observationQuery = `
+          SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
+          FROM SECOBS 
+          WHERE OBJ_Code IS NOT NULL 
+          AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
+          ORDER BY OBJ_Section_REF, OBJ_PosFrom
+        `;
+        
+          inspectionDb.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
+            if (obsErr) {
+              console.error('❌ Error reading SECOBS table:', obsErr);
+              inspectionDb.close();
+              reject(obsErr);
+              return;
             }
-            
-            // Build observation text from database fields
-            const code = obsRecord.OBJ_Code || '';
-            const position = obsRecord.OBJ_PosFrom || '';  
-            const text = obsRecord.OBJ_Text || '';
-            
-            const observationText = `${code} ${position}m ${text}`.trim();
-            observationMap[sectionRef].push(observationText);
-          }
           
-          // Build severity grade map from SECSTAT table
-          const severityMap: { [sectionRef: string]: { structural: number, service: number } } = {};
-          for (const secRecord of secstatRecords) {
-            const sectionRef = secRecord.OBJ_Section_REF;
-            if (sectionRef) {
-              severityMap[sectionRef] = {
-                structural: secRecord.OBJ_StructuralGrade || 0,
-                service: secRecord.OBJ_ServiceGrade || 0
-              };
-            }
-          }
+          // Get authentic severity grades from SECSTAT table
+          const secstatQuery = `SELECT * FROM SECSTAT`;
           
-          const authenticSections: WincanSectionData[] = [];
-          let itemCounter = 1;
-          
-          // Process each section record
-          for (const record of sectionRecords) {
-            const sectionRef = record.OBJ_PK;
-            const observations = observationMap[sectionRef] || [];
-            const authenticGrades = severityMap[sectionRef];
-            
-            // Extract authentic manhole references
-            const startMH = record.FromNodeKey || extractAuthenticValue(record, ['OBJ_FromNode', 'FromNode']) || 'UNKNOWN';
-            const finishMH = record.ToNodeKey || extractAuthenticValue(record, ['OBJ_ToNode', 'ToNode']) || 'UNKNOWN';
-            
-            // Extract authentic pipe specifications
-            const pipeSize = extractAuthenticValue(record, ['OBJ_Size1', 'Size1', 'Diameter']) || '150';
-            const pipeMaterial = extractAuthenticValue(record, ['OBJ_Material', 'Material']) || 'PVC';
-            const lengthValue = extractAuthenticValue(record, ['OBJ_Length', 'Length']);
-            const totalLength = lengthValue !== null ? parseFloat(lengthValue) : 10;
-            
-            // Extract authentic inspection metadata
-            const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
-            const inspectionTime = '09:00:00';
-            
-            
-            // Format observations with defect codes
-            const defectText = observations.length > 0 ? await formatObservationText(observations, sector) : 'No service or structural defect found';
-            
-            // Apply authentic severity grades or MSCC5 classification
-            let severityGrade = 0;
-            let recommendations = 'No action required this pipe section is at an adoptable condition';
-            let adoptable = 'Yes';
-            let defectType = 'service';
-            
-            if (authenticGrades) {
-              
-              // Use higher grade as primary severity
-              severityGrade = Math.max(authenticGrades.structural, authenticGrades.service);
-              defectType = authenticGrades.structural > authenticGrades.service ? 'structural' : 'service';
-              
-              if (severityGrade > 0) {
-                if (defectType === 'structural') {
-                  recommendations = 'WRc Drain Repair Book: Structural repair or relining required';
-                  adoptable = 'Conditional';
-                } else {
-                  recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
-                  adoptable = 'Conditional';
-                }
+            inspectionDb.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
+              if (secErr) {
+                secstatRecords = [];
               }
-            } else if (defectText && defectText !== 'No service or structural defect found') {
-              const { MSCC5Classifier } = await import('./mscc5-classifier');
-              const classification = await MSCC5Classifier.classifyObservation(defectText, sector);
               
-              severityGrade = classification.severityGrade;
-              recommendations = classification.recommendations;
-              adoptable = classification.adoptable;
-              defectType = classification.defectType;
+              inspectionDb.close();
+            
+            // Build observation map by section
+            const observationMap: { [sectionRef: string]: string[] } = {};
+            for (const obsRecord of observationRecords) {
+              const sectionRef = obsRecord.OBJ_Section_REF;
+              if (!observationMap[sectionRef]) {
+                observationMap[sectionRef] = [];
+              }
+              
+              // Build observation text from database fields
+              const code = obsRecord.OBJ_Code || '';
+              const position = obsRecord.OBJ_PosFrom || '';  
+              const text = obsRecord.OBJ_Text || '';
+              
+              const observationText = `${code} ${position}m ${text}`.trim();
+              observationMap[sectionRef].push(observationText);
             }
             
-            const authenticItemNo = itemCounter++;
+            // Build severity grade map from SECSTAT table
+            const severityMap: { [sectionRef: string]: { structural: number, service: number } } = {};
+            for (const secRecord of secstatRecords) {
+              const sectionRef = secRecord.OBJ_Section_REF;
+              if (sectionRef) {
+                severityMap[sectionRef] = {
+                  structural: secRecord.OBJ_StructuralGrade || 0,
+                  service: secRecord.OBJ_ServiceGrade || 0
+                };
+              }
+            }
             
-            const sectionData: WincanSectionData = {
-              itemNo: authenticItemNo,
-              projectNo: record.OBJ_Name || 'GR7188',
-              startMH: startMH,
-              finishMH: finishMH,
-              pipeSize: pipeSize.toString(),
-              pipeMaterial: pipeMaterial,
-              totalLength: totalLength.toFixed(2),
-              lengthSurveyed: totalLength.toFixed(2),
-              defects: defectText,
-              recommendations: recommendations,
-              severityGrade: severityGrade,
-              adoptable: adoptable,
-              inspectionDate: inspectionDate,
-              inspectionTime: inspectionTime,
-              defectType: defectType,
-            };
+            const authenticSections: WincanSectionData[] = [];
+            let itemCounter = 1;
             
-            // Only add if we have meaningful data
-            if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
-              // Apply multi-defect splitting logic if defects exist
-              if (defectText && defectText !== 'No service or structural defect found') {
-                const { MSCC5Classifier } = await import('./mscc5-classifier');
-                const splitSections = MSCC5Classifier.splitMultiDefectSection(defectText, authenticItemNo, sectionData);
+            // Process each section record
+            for (const record of sectionRecords) {
+              const sectionRef = record.OBJ_PK;
+              const observations = observationMap[sectionRef] || [];
+              const authenticGrades = severityMap[sectionRef];
+              
+              // Extract authentic manhole references
+              const startMH = record.FromNodeKey || extractAuthenticValue(record, ['OBJ_FromNode', 'FromNode']) || 'UNKNOWN';
+              const finishMH = record.ToNodeKey || extractAuthenticValue(record, ['OBJ_ToNode', 'ToNode']) || 'UNKNOWN';
+              
+              // Extract authentic pipe specifications
+              const pipeSize = extractAuthenticValue(record, ['OBJ_Size1', 'Size1', 'Diameter']) || '150';
+              const pipeMaterial = extractAuthenticValue(record, ['OBJ_Material', 'Material']) || 'PVC';
+              const lengthValue = extractAuthenticValue(record, ['OBJ_Length', 'Length']);
+              const totalLength = lengthValue !== null ? parseFloat(lengthValue) : 10;
+              
+              // Extract authentic inspection metadata
+              const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
+              const inspectionTime = '09:00:00';
+              
+              // Format observations with defect codes
+              const defectText = observations.length > 0 ? await formatObservationText(observations, sector) : 'No service or structural defect found';
+              
+              // Apply authentic severity grades or MSCC5 classification
+              let severityGrade = 0;
+              let recommendations = 'No action required this pipe section is at an adoptable condition';
+              let adoptable = 'Yes';
+              let defectType = 'service';
+              
+              if (authenticGrades) {
+                // Use higher grade as primary severity
+                severityGrade = Math.max(authenticGrades.structural, authenticGrades.service);
+                defectType = authenticGrades.structural > authenticGrades.service ? 'structural' : 'service';
                 
-                for (const splitSection of splitSections) {
-                  authenticSections.push(splitSection);
-                  const displayNo = splitSection.letterSuffix ? `${splitSection.itemNo}${splitSection.letterSuffix}` : splitSection.itemNo;
+                if (severityGrade > 0) {
+                  if (defectType === 'structural') {
+                    recommendations = 'WRc Drain Repair Book: Structural repair or relining required';
+                    adoptable = 'Conditional';
+                  } else {
+                    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+                    adoptable = 'Conditional';
+                  }
                 }
-              } else {
-                authenticSections.push(sectionData);
+              } else if (defectText && defectText !== 'No service or structural defect found') {
+                const { MSCC5Classifier } = await import('./mscc5-classifier');
+                const classification = await MSCC5Classifier.classifyDefect(defectText, sector);
+                
+                severityGrade = classification.severityGrade;
+                recommendations = classification.recommendations;
+                adoptable = classification.adoptable;
+                defectType = classification.defectType;
               }
-            } else {
+              
+              const authenticItemNo = itemCounter++;
+              
+              const sectionData: WincanSectionData = {
+                itemNo: authenticItemNo,
+                projectNo: record.OBJ_Name || 'GR7188',
+                startMH: startMH,
+                finishMH: finishMH,
+                pipeSize: pipeSize.toString(),
+                pipeMaterial: pipeMaterial,
+                totalLength: totalLength.toFixed(2),
+                lengthSurveyed: totalLength.toFixed(2),
+                defects: defectText,
+                recommendations: recommendations,
+                severityGrade: severityGrade,
+                adoptable: adoptable,
+                inspectionDate: inspectionDate,
+                inspectionTime: inspectionTime,
+                defectType: defectType,
+              };
+              
+              // Only add if we have meaningful data
+              if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
+                // Apply multi-defect splitting logic if defects exist
+                if (defectText && defectText !== 'No service or structural defect found') {
+                  const { MSCC5Classifier } = await import('./mscc5-classifier');
+                  const splitSections = MSCC5Classifier.splitMultiDefectSection(defectText, authenticItemNo, sectionData);
+                  
+                  for (const splitSection of splitSections) {
+                    authenticSections.push(splitSection);
+                  }
+                } else {
+                  authenticSections.push(sectionData);
+                }
+              }
             }
-          }
-          
-          resolve(authenticSections);
+            
+              resolve(authenticSections);
+            });
+          });
         });
       });
     });
   });
-}
-
-// Import required modules for database reading
-import Database from 'better-sqlite3';
-import fs from 'fs';
-
-// Export the readWincanDatabase function for compatibility
-export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
-  console.log("🔍 READING DATABASE FILE:", filePath);
-  try {
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      console.error("❌ File not found:", filePath);
-      throw new Error("Database file not found - cannot extract authentic data");
-    }
-    
-    // Check file header to determine if corrupted
-    const buffer = fs.readFileSync(filePath);
-    const header = buffer.subarray(0, 20).toString('ascii');
-    console.log("📊 DATABASE HEADER:", header.replace(/\0/g, '\\0'));
-    console.log("📊 FILE SIZE:", buffer.length);
-    
-    if (!header.includes('SQLite format')) {
-      console.error("❌ CORRUPTED DATABASE FILE DETECTED");
-      console.error("📊 File header (first 20 bytes):", header.replace(/\0/g, '\\0'));
-      console.error("📊 Header hex:", buffer.subarray(0, 20).toString('hex'));
-      throw new Error("Database file corrupted during upload");
-    }
-    
-    // Open the database only if verified as valid SQLite
-    const database = new Database(filePath, { readonly: true });
-    
-    // Build manhole name mapping from NODE table
-    const manholeMap = new Map<string, string>();
-    try {
-      const nodeData = database.prepare("SELECT OBJ_PK, OBJ_Key FROM NODE WHERE OBJ_Key IS NOT NULL").all();
-      for (const node of nodeData) {
-        if (node.OBJ_PK && node.OBJ_Key) {
-          manholeMap.set(node.OBJ_PK, node.OBJ_Key);
-        }
-      }
-    } catch (error) {
-      console.warn("Could not read NODE table");
-    }
-
-    // First check what tables and columns exist
-    const tables = database.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
-    console.log("📋 Available tables:", tables.map(t => t.name));
-
-    // Build observation data mapping - try different approaches
-    const observationMap = new Map<string, string[]>();
-    console.log("🔍 Attempting to read observation data...");
-    
-    // First try to see what observation tables exist
-    const obsTables = tables.filter(t => t.name.toLowerCase().includes('obs') || t.name.toLowerCase().includes('sec'));
-    console.log("📋 Observation-related tables:", obsTables.map(t => t.name));
-    
-    // Try multiple approaches for observation data
-    try {
-      // Approach 1: Standard SECOBS
-      const obsData = database.prepare(`
-        SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
-        FROM SECOBS 
-        WHERE OBJ_Code IS NOT NULL 
-        AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
-        ORDER BY OBJ_Section_REF, OBJ_PosFrom
-      `).all();
-      
-      console.log(`📋 Found ${obsData.length} observations`);
-      
-      for (const obs of obsData) {
-        if (obs.OBJ_Section_REF && obs.OBJ_Code) {
-          if (!observationMap.has(obs.OBJ_Section_REF)) {
-            observationMap.set(obs.OBJ_Section_REF, []);
-          }
-          const position = obs.OBJ_PosFrom ? ` at ${obs.OBJ_PosFrom}m` : '';
-          const description = obs.OBJ_Text ? ` (${obs.OBJ_Text})` : '';
-          observationMap.get(obs.OBJ_Section_REF)!.push(`${obs.OBJ_Code}${position}${description}`);
-        }
-      }
-    } catch (error) {
-      console.warn("Could not read observation data:", error.message);
-    }
-    
-    // Check SECTION table columns
-    let sectionColumns = [];
-    try {
-      sectionColumns = database.prepare("PRAGMA table_info(SECTION)").all();
-      console.log("📋 SECTION columns:", sectionColumns.map(c => c.name));
-    } catch (error) {
-      console.log("No SECTION table found");
-    }
-    
-    // Extract sections with flexible column matching
-    let sectionData = [];
-    try {
-      // Try different possible column names
-      sectionData = database.prepare(`
-        SELECT s.*, fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey
-        FROM SECTION s
-        LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
-        LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
-      `).all();
-    } catch (error) {
-      console.log("Trying alternative column names...");
-      try {
-        sectionData = database.prepare(`SELECT * FROM SECTION LIMIT 10`).all();
-        if (sectionData.length > 0) {
-          console.log("📋 Sample SECTION data:", Object.keys(sectionData[0]));
-        }
-      } catch (err) {
-        console.log("Could not read SECTION table");
-      }
-    }
-
-    database.close();
-
-    const authenticSections: WincanSectionData[] = [];
-    
-    for (const record of sectionData) {
-      const itemNo = parseInt(record.SEC_Key) || 0;
-      const startMH = record.FromNodeKey || manholeMap.get(record.SEC_FromNode) || 'UNKNOWN';
-      const finishMH = record.ToNodeKey || manholeMap.get(record.SEC_ToNode) || 'UNKNOWN';
-      
-      if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
-        const observations = observationMap.get(record.SEC_PK) || [];
-        const defectText = observations.length > 0 ? observations.join('. ') : 'No service or structural defect found';
-        
-        const sectionData: WincanSectionData = {
-          itemNo,
-          letterSuffix: null,
-          projectNo: record.SEC_InspectionNo || 'Unknown',
-          inspectionDate: record.SEC_Date || new Date().toISOString().split('T')[0],
-          inspectionTime: record.SEC_Time || '00:00',
-          startMH,
-          finishMH,
-          pipeSize: record.SEC_Diameter?.toString() || '150',
-          pipeMaterial: record.SEC_Material || 'Unknown',
-          totalLength: record.SEC_Length?.toString() || '0',
-          lengthSurveyed: record.SEC_Length?.toString() || '0',
-          defects: defectText,
-          defectType: 'service',
-          recommendations: 'No recommendations',
-          severityGrade: 1,
-          adoptable: 'Suitable'
-        };
-        
-        authenticSections.push(sectionData);
-      }
-    }
-    
-    return authenticSections;
-    
-  } catch (error) {
-    console.error("Database processing error:", error);
-    throw error;
-  }
 }
 
 // Store authentic sections in database with comprehensive duplicate prevention

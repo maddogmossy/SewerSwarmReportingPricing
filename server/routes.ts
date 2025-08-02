@@ -32,19 +32,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      // Ensure uploads directory exists
-      if (!existsSync('uploads')) {
-        fs.mkdirSync('uploads', { recursive: true });
-      }
-      cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-      // Keep original filename to maintain .db3 extension
-      cb(null, file.originalname);
-    }
-  }),
+  dest: "uploads/",
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
   },
@@ -500,7 +488,7 @@ export async function registerRoutes(app: Express) {
           const { validateGenericDb3Files } = await import('./db3-validator');
           
           // Validate that both .db3 and _Meta.db3 files are present
-          const validation = validateGenericDb3Files(uploadDirectory);
+          const validation = validateGenericDb3Files(uploadDirectory, filePath);
           
           if (!validation.valid) {
             // Update status to failed due to missing files
@@ -530,15 +518,16 @@ export async function registerRoutes(app: Express) {
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           
-          // Use the original working database reader
-          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
+          // Import and use Wincan database reader
+          const { processWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
-          // CRITICAL FIX: Use the original uploaded file path that has the actual content
-          const realUploadPath = filePath; // This contains the actual uploaded data
-          console.log("🔍 USING REAL FILE PATH:", realUploadPath);
+          // Use the main database file for processing
+          const mainDbPath = validation.files?.main || filePath;
+          console.log('🔍 File paths - Original:', filePath, 'Validation result:', mainDbPath);
+          console.log('🔍 Validation object:', JSON.stringify(validation, null, 2));
           
-          // Extract authentic data from database using the actual uploaded file
-          const sections = await readWincanDatabase(realUploadPath, req.body.sector || 'utilities');
+          // Extract authentic data from database
+          const sections = await processWincanDatabase(mainDbPath, req.body.sector || 'utilities', validation.files?.meta);
           
           
           // Store sections in database
@@ -791,10 +780,15 @@ export async function registerRoutes(app: Express) {
       const userId = "test-user";
       const { name, description } = req.body;
       
+      // Validate required fields
+      if (!name || name.trim() === '') {
+        return res.status(400).json({ error: "Folder name is required" });
+      }
+      
       const [folder] = await db.insert(projectFolders).values({
         userId,
-        folderName: name,
-        projectAddress: description || "Not specified"
+        folderName: name.trim(),
+        projectAddress: description?.trim() || "Not specified"
       }).returning();
       
       res.json(folder);
