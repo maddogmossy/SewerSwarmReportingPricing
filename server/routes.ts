@@ -488,7 +488,7 @@ export async function registerRoutes(app: Express) {
           const { validateGenericDb3Files } = await import('./db3-validator');
           
           // Validate that both .db3 and _Meta.db3 files are present
-          const validation = validateGenericDb3Files(uploadDirectory);
+          const validation = validateGenericDb3Files(uploadDirectory, filePath);
           
           if (!validation.valid) {
             // Update status to failed due to missing files
