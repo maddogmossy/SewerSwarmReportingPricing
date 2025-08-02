@@ -134,6 +134,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       title: "Equipment Priority Updated",
                       description: "F606 CCTV/Jet Vac now has priority for cost calculations",
                     });
+                    setIsOpen(false);
+                    // Trigger page refresh to update dashboard costs
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
                   }}
                 >
                   F606 CCTV/Jet Vac
@@ -151,6 +156,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       title: "Equipment Priority Updated", 
                       description: "F608 CCTV/Van Pack now has priority for cost calculations",
                     });
+                    setIsOpen(false);
+                    // Trigger page refresh to update dashboard costs
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
                   }}
                 >
                   F608 CCTV/Van Pack
