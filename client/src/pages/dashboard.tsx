@@ -724,12 +724,6 @@ export default function Dashboard() {
     });
     setAdjustedServiceCosts(newAdjustedCosts);
     
-    // Force a re-render by triggering a state update
-    setTimeout(() => {
-      console.log('🔄 Forcing dashboard re-render after cost updates');
-      setAdjustedServiceCosts(new Map(newAdjustedCosts));
-    }, 50);
-    
     toast({
       title: "Service Costs Updated",
       description: `Updated costs for ${newCosts.length} service items to meet day rate requirements`,
@@ -739,9 +733,32 @@ export default function Dashboard() {
     setShowServiceCostWarning(false);
     setServiceCostData(null);
     
-    // Note: Export will be triggered by the ServiceCostWarningDialog's onExport callback
-    console.log('🔄 Service costs applied - export will be triggered by dialog');
+    console.log('🔄 Service costs applied - waiting for export signal');
   };
+
+  // Listen for service cost dialog completion event
+  useEffect(() => {
+    const handleServiceCostDialogComplete = (event: CustomEvent) => {
+      console.log('🔄 Service cost dialog completed, triggering export...');
+      if (event.detail?.shouldExport) {
+        // Wait a bit more for state updates to propagate
+        setTimeout(() => {
+          console.log('🔄 Executing export after service cost handling');
+          exportToExcel();
+          toast({
+            title: "Report Exported",
+            description: "Report has been exported successfully with updated costs"
+          });
+        }, 100);
+      }
+    };
+
+    window.addEventListener('serviceCostDialogComplete', handleServiceCostDialogComplete as EventListener);
+    
+    return () => {
+      window.removeEventListener('serviceCostDialogComplete', handleServiceCostDialogComplete as EventListener);
+    };
+  }, [exportToExcel, toast]);
 
   // Handler for service cost warning dialog cancel
   const handleServiceCostCancel = () => {
@@ -6073,14 +6090,6 @@ export default function Dashboard() {
           totalServiceCost={serviceCostData.totalServiceCost}
           configType={serviceCostData.configType}
           onApply={handleServiceCostApply}
-          onExport={() => {
-            console.log('🔄 Export: Service cost dialog completed - proceeding with export');
-            exportToExcel();
-            toast({
-              title: "Report Exported",
-              description: "Report has been exported successfully"
-            });
-          }}
         />
       )}
     </div>

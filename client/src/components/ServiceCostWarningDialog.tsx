@@ -63,25 +63,20 @@ export default function ServiceCostWarningDialog({
     
     switch (selectedOption) {
       case 'leave':
-        // No changes needed, just close and trigger export
-        console.log('🔄 ServiceCostWarningDialog: Leaving costs as-is, triggering export');
+        // No changes needed, just close and signal to trigger export
+        console.log('🔄 ServiceCostWarningDialog: Leaving costs as-is, closing dialog');
         onClose();
-        if (onExport) {
-          setTimeout(() => onExport(), 200); // Longer delay to ensure dialog closes first
-        }
+        // Signal that export should happen after dialog closes
+        window.dispatchEvent(new CustomEvent('serviceCostDialogComplete', { detail: { shouldExport: true } }));
         break;
       
       case 'spread':
         const spreadCosts = calculateSpreadCosts();
         console.log('🔄 ServiceCostWarningDialog: Applying spread costs:', spreadCosts);
         onApply(spreadCosts);
-        // Wait longer for state updates to complete before export
-        if (onExport) {
-          setTimeout(() => {
-            console.log('🔄 ServiceCostWarningDialog: Triggering export after spread cost application');
-            onExport();
-          }, 500);
-        }
+        onClose();
+        // Signal that export should happen after costs are applied
+        window.dispatchEvent(new CustomEvent('serviceCostDialogComplete', { detail: { shouldExport: true } }));
         break;
       
       case 'manual':
@@ -91,13 +86,9 @@ export default function ServiceCostWarningDialog({
         }));
         console.log('🔄 ServiceCostWarningDialog: Applying manual costs:', manualCostUpdates);
         onApply(manualCostUpdates);
-        // Wait longer for state updates to complete before export
-        if (onExport) {
-          setTimeout(() => {
-            console.log('🔄 ServiceCostWarningDialog: Triggering export after manual cost application');
-            onExport();
-          }, 500);
-        }
+        onClose();
+        // Signal that export should happen after costs are applied
+        window.dispatchEvent(new CustomEvent('serviceCostDialogComplete', { detail: { shouldExport: true } }));
         break;
     }
   };
