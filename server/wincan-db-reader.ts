@@ -233,8 +233,8 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
               secstatRecords = [];
             } else {
             }
-          
-          db.close();
+            
+            db.close();
           
           // Build observation map by section
           const observationMap: { [sectionRef: string]: string[] } = {};
@@ -361,11 +361,11 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             }
           }
           
-          resolve(authenticSections);
+            resolve(authenticSections);
+          });
         });
       });
     });
-  });
 }
 
 // Store authentic sections in database with comprehensive duplicate prevention
