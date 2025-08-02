@@ -739,24 +739,27 @@ export default function Dashboard() {
 
     // Find all service sections with costs
     const serviceSectionsWithCosts = sectionData.filter(section => {
-      const costCalc = calculateCost(section);
-      const hasServiceCost = section.defectType === 'service' && 
-                           costCalc?.status === 'f608_calculated' && 
-                           costCalc?.cost > 0;
+      if (section.defectType !== 'service') return false;
       
-      if (section.defectType === 'service') {
-        console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-          defectType: section.defectType,
-          costCalc: costCalc ? {
-            status: costCalc.status,
-            cost: costCalc.cost,
-            method: costCalc.method,
-            dayRate: costCalc.dayRate,
-            runsPerShift: costCalc.runsPerShift
-          } : 'no cost calc',
-          hasServiceCost
-        });
-      }
+      // Call calculateAutoCost directly to get the cost object instead of rendered JSX
+      const costCalc = calculateAutoCost(section);
+      const hasServiceCost = costCalc && 
+                           typeof costCalc === 'object' && 
+                           'status' in costCalc &&
+                           costCalc.status === 'f608_calculated' && 
+                           costCalc.cost > 0;
+      
+      console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+        defectType: section.defectType,
+        costCalc: costCalc && typeof costCalc === 'object' ? {
+          status: costCalc.status,
+          cost: costCalc.cost,
+          method: costCalc.method,
+          dayRate: costCalc.dayRate,
+          runsPerShift: costCalc.runsPerShift
+        } : 'no cost calc',
+        hasServiceCost
+      });
       
       return hasServiceCost;
     });
@@ -772,15 +775,21 @@ export default function Dashboard() {
     if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData) {
       // Get the first service item's config details for reference
       const firstServiceSection = serviceSectionsWithCosts[0];
-      const firstCostCalc = calculateCost(firstServiceSection);
+      const firstCostCalc = calculateAutoCost(firstServiceSection);
       
-      if (firstCostCalc && firstCostCalc.dayRate && firstCostCalc.runsPerShift) {
+      if (firstCostCalc && 
+          typeof firstCostCalc === 'object' && 
+          'dayRate' in firstCostCalc && 
+          'runsPerShift' in firstCostCalc &&
+          firstCostCalc.dayRate && 
+          firstCostCalc.runsPerShift) {
+        
         const serviceItems = serviceSectionsWithCosts.map(section => {
-          const costCalc = calculateCost(section);
+          const costCalc = calculateAutoCost(section);
           return {
             itemNo: section.itemNo,
-            currentCost: costCalc?.cost || 0,
-            method: costCalc?.method || 'Unknown',
+            currentCost: (costCalc && typeof costCalc === 'object' && 'cost' in costCalc) ? costCalc.cost : 0,
+            method: (costCalc && typeof costCalc === 'object' && 'method' in costCalc) ? costCalc.method : 'Unknown',
             defects: section.defects || 'No details available'
           };
         });
@@ -792,7 +801,7 @@ export default function Dashboard() {
           dayRate: firstCostCalc.dayRate,
           runsPerShift: firstCostCalc.runsPerShift,
           totalServiceCost,
-          configType: firstCostCalc.configType || 'F608 Van Pack'
+          configType: (firstCostCalc && 'configType' in firstCostCalc) ? firstCostCalc.configType : 'F608 Van Pack'
         });
 
         // Auto-trigger dialog after a short delay to allow costs to render
@@ -2024,6 +2033,7 @@ export default function Dashboard() {
 
         // Check for service cost completion and trigger warning dialog
         try {
+          console.log('🔍 TRIGGERING SERVICE COST CHECK with sections:', rawSectionData.length);
           checkServiceCostCompletion(rawSectionData);
         } catch (error) {
           console.error('🔧 SERVICE COST CHECK ERROR:', error);
@@ -4974,6 +4984,30 @@ export default function Dashboard() {
             >
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
+            </Button>
+
+            {/* Test Service Cost Warning Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                console.log('🔍 MANUAL SERVICE COST CHECK TRIGGERED');
+                
+                // Get all service sections from current data
+                const allServiceSections = rawSectionData.filter(section => section.defectType === 'service');
+                console.log('🔍 All service sections found:', allServiceSections.map(s => ({
+                  itemNo: s.itemNo,
+                  letterSuffix: s.letterSuffix,
+                  defects: s.defects
+                })));
+                
+                // Force trigger service cost check
+                checkServiceCostCompletion(rawSectionData);
+              }}
+              className="bg-orange-100 text-orange-700 hover:bg-orange-200"
+            >
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Test Service Warning
             </Button>
 
             {/* Clear button removed to prevent accidental data loss */}
