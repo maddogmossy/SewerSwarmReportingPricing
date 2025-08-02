@@ -776,22 +776,27 @@ export async function registerRoutes(app: Express) {
   app.post("/api/folders", async (req: Request, res: Response) => {
     try {
       const userId = "test-user";
-      const { name, description } = req.body;
+      const { folderName, projectAddress, projectPostcode, projectNumber, travelDistance, travelTime, addressValidated } = req.body;
       
-      console.log('🔍 Folder creation request body:', { name, description, typeof_name: typeof name });
+      console.log('🔍 Folder creation request body:', { folderName, projectAddress, typeof_folderName: typeof folderName });
       
-      // Validate that name is provided and not empty
-      if (!name || typeof name !== 'string' || name.trim().length === 0) {
-        console.log('❌ Folder validation failed:', { name, typeof_name: typeof name });
+      // Validate that folderName is provided and not empty
+      if (!folderName || typeof folderName !== 'string' || folderName.trim().length === 0) {
+        console.log('❌ Folder validation failed:', { folderName, typeof_folderName: typeof folderName });
         return res.status(400).json({ error: "Folder name is required" });
       }
       
-      console.log('✅ Folder validation passed, creating folder:', name.trim());
+      console.log('✅ Folder validation passed, creating folder:', folderName.trim());
       
       const [folder] = await db.insert(projectFolders).values({
         userId,
-        folderName: name.trim(),
-        projectAddress: description || "Not specified"
+        folderName: folderName.trim(),
+        projectAddress: projectAddress || "Not specified",
+        projectPostcode: projectPostcode || null,
+        projectNumber: projectNumber || null,
+        travelDistance: travelDistance || null,
+        travelTime: travelTime || null,
+        addressValidated: addressValidated || false
       }).returning();
       
       console.log('✅ Folder created successfully:', folder);
