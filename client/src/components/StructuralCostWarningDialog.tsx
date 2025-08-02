@@ -38,7 +38,11 @@ export default function StructuralCostWarningDialog({
   onComplete,
   isExportWorkflow = false
 }: StructuralCostWarningDialogProps) {
-  const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>('spread');
+  // Default to 'leave' when costs already meet/exceed day rate, otherwise 'spread'
+  const costsExceedDayRate = totalStructuralCost >= dayRate;
+  const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>(
+    costsExceedDayRate ? 'leave' : 'spread'
+  );
   const [manualCosts, setManualCosts] = useState<{ [itemNo: number]: string }>({});
 
   // Calculate the shortfall from day rate
@@ -126,7 +130,10 @@ export default function StructuralCostWarningDialog({
             Structural Repair Cost Warning
           </DialogTitle>
           <DialogDescription>
-            Current structural repair costs (£{totalStructuralCost.toFixed(2)}) are below the minimum day rate requirement for {configType}.
+            {costsExceedDayRate 
+              ? `Current structural repair costs (£${totalStructuralCost.toFixed(2)}) meet the minimum day rate requirement for ${configType}. You can keep current prices or make adjustments.`
+              : `Current structural repair costs (£${totalStructuralCost.toFixed(2)}) are below the minimum day rate requirement for ${configType}.`
+            }
           </DialogDescription>
         </DialogHeader>
 
@@ -155,8 +162,17 @@ export default function StructuralCostWarningDialog({
                 <span className="ml-2 font-medium">{minPatches}</span>
               </div>
               <div className="col-span-2">
-                <span className="text-gray-600">Shortfall to minimum:</span>
-                <span className="ml-2 font-medium text-orange-600">£{shortfall.toFixed(2)}</span>
+                {costsExceedDayRate ? (
+                  <>
+                    <span className="text-gray-600">Excess over minimum:</span>
+                    <span className="ml-2 font-medium text-green-600">£{(totalStructuralCost - dayRate).toFixed(2)}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-gray-600">Shortfall to minimum:</span>
+                    <span className="ml-2 font-medium text-orange-600">£{shortfall.toFixed(2)}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -199,7 +215,12 @@ export default function StructuralCostWarningDialog({
 
           {/* Options */}
           <div className="space-y-4">
-            <h4 className="font-medium">Choose how to handle the cost shortfall:</h4>
+            <h4 className="font-medium">
+              {costsExceedDayRate 
+                ? "Choose how to handle structural costs:" 
+                : "Choose how to handle the cost shortfall:"
+              }
+            </h4>
             
             {/* Option 1: Leave as-is */}
             <div className="flex items-start gap-3">
@@ -217,7 +238,10 @@ export default function StructuralCostWarningDialog({
                   Keep current costs
                 </label>
                 <p className="text-sm text-gray-600">
-                  Leave structural costs as-is (£{totalStructuralCost.toFixed(2)}) - below minimum day rate
+                  {costsExceedDayRate 
+                    ? `Keep current pricing (£${totalStructuralCost.toFixed(2)}) - meets day rate requirements`
+                    : `Leave structural costs as-is (£${totalStructuralCost.toFixed(2)}) - below minimum day rate`
+                  }
                 </p>
               </div>
             </div>

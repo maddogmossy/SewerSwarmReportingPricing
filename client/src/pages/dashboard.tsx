@@ -850,8 +850,8 @@ export default function Dashboard() {
       setStructuralCostWarningDismissed(false);
     }
 
-    // Only trigger if we have structural sections with valid costs and haven't shown the dialog yet
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData) {
+    // Always trigger if we have structural sections with valid costs and haven't shown the dialog yet
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);
@@ -904,8 +904,8 @@ export default function Dashboard() {
           willTriggerWarning: isStructuralCostBelowDayRate
         });
         
-        // Only show warning if structural cost is below day rate
-        if (isStructuralCostBelowDayRate) {
+        // Always show structural warning for user review and potential adjustment
+        if (true) {
           console.log('🔄 STRUCTURAL COST WARNING - Triggering warning dialog');
           console.log('🔄 STRUCTURAL COST WARNING - Setting dialog data and state');
           
