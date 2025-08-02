@@ -38,7 +38,7 @@ export default function StructuralCostWarningDialog({
   onComplete,
   isExportWorkflow = false
 }: StructuralCostWarningDialogProps) {
-  const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>('leave');
+  const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>('spread');
   const [manualCosts, setManualCosts] = useState<{ [itemNo: number]: string }>({});
 
   // Calculate the shortfall from day rate
