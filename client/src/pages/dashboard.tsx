@@ -849,8 +849,7 @@ export default function Dashboard() {
       if (firstCostCalc && 
           typeof firstCostCalc === 'object' && 
           'dayRate' in firstCostCalc && 
-          'patchCount' in firstCostCalc &&
-          'configType' in firstCostCalc) {
+          'patchCount' in firstCostCalc) {
         
         // Calculate total structural cost and other metrics
         const structuralItems = structuralSectionsWithCosts.map(section => {
