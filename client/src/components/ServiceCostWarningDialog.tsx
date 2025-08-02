@@ -21,6 +21,7 @@ interface ServiceCostWarningDialogProps {
   configType: string;
   onApply: (newCosts: { itemNo: number; newCost: number }[]) => void;
   onComplete?: () => void; // Callback to trigger export after dialog handling
+  isExportWorkflow?: boolean; // Flag to indicate if triggered from export
 }
 
 export default function ServiceCostWarningDialog({
@@ -32,7 +33,8 @@ export default function ServiceCostWarningDialog({
   totalServiceCost,
   configType,
   onApply,
-  onComplete
+  onComplete,
+  isExportWorkflow = false
 }: ServiceCostWarningDialogProps) {
   const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>('leave');
   const [manualCosts, setManualCosts] = useState<{ [itemNo: number]: string }>({});
@@ -59,14 +61,18 @@ export default function ServiceCostWarningDialog({
   };
 
   const handleApply = () => {
-    console.log('🔄 ServiceCostWarningDialog: Apply clicked with option:', selectedOption);
+    console.log('🔄 ServiceCostWarningDialog: Apply clicked with option:', selectedOption, 'isExportWorkflow:', isExportWorkflow);
     
     switch (selectedOption) {
       case 'leave':
         // No changes needed, just close
         console.log('🔄 ServiceCostWarningDialog: Leaving costs as-is, closing dialog');
         onClose();
-        if (onComplete) onComplete();
+        // Only trigger export if this was called from export workflow
+        if (isExportWorkflow && onComplete) {
+          console.log('🔄 ServiceCostWarningDialog: Triggering export after leaving costs as-is');
+          onComplete();
+        }
         break;
       
       case 'spread':
@@ -74,7 +80,11 @@ export default function ServiceCostWarningDialog({
         console.log('🔄 ServiceCostWarningDialog: Applying spread costs:', spreadCosts);
         onApply(spreadCosts);
         onClose();
-        if (onComplete) onComplete();
+        // Only trigger export if this was called from export workflow
+        if (isExportWorkflow && onComplete) {
+          console.log('🔄 ServiceCostWarningDialog: Triggering export after applying spread costs');
+          onComplete();
+        }
         break;
       
       case 'manual':
@@ -85,7 +95,11 @@ export default function ServiceCostWarningDialog({
         console.log('🔄 ServiceCostWarningDialog: Applying manual costs:', manualCostUpdates);
         onApply(manualCostUpdates);
         onClose();
-        if (onComplete) onComplete();
+        // Only trigger export if this was called from export workflow
+        if (isExportWorkflow && onComplete) {
+          console.log('🔄 ServiceCostWarningDialog: Triggering export after applying manual costs');
+          onComplete();
+        }
         break;
     }
   };

@@ -729,15 +729,18 @@ export default function Dashboard() {
       description: `Updated costs for ${newCosts.length} service items to meet day rate requirements`,
     });
     
-    // Close the dialog
+    // Close the dialog and reset export workflow flag
     setShowServiceCostWarning(false);
     setServiceCostData(null);
+    setIsExportWorkflow(false);
     
     console.log('🔄 Service costs applied - waiting for export signal');
   };
 
   // State to track if export should happen after service cost dialog
   const [shouldExportAfterServiceCost, setShouldExportAfterServiceCost] = useState(false);
+  // State to track if dialog was triggered from export workflow
+  const [isExportWorkflow, setIsExportWorkflow] = useState(false);
 
   // Handler for service cost warning dialog cancel
   const handleServiceCostCancel = () => {
@@ -746,9 +749,10 @@ export default function Dashboard() {
     // Mark as dismissed so it won't show again until export is attempted
     setServiceCostWarningDismissed(true);
     
-    // Close the dialog
+    // Close the dialog and reset export workflow flag
     setShowServiceCostWarning(false);
     setServiceCostData(null);
+    setIsExportWorkflow(false);
   };
 
   // Function to check if all service costs are populated and trigger warning
@@ -841,6 +845,7 @@ export default function Dashboard() {
 
         // Auto-trigger dialog after a short delay to allow costs to render
         setTimeout(() => {
+          setIsExportWorkflow(false); // Not from export workflow
           setShowServiceCostWarning(true);
         }, 1000);
       }
@@ -2490,6 +2495,7 @@ export default function Dashboard() {
         
         if (serviceItems.length > 0) {
           // Service items exist - check for warning and defer export
+          setIsExportWorkflow(true); // Mark as export workflow
           checkServiceCostCompletion(rawSectionData);
           console.log('🔄 Export: Service cost check triggered - export deferred until dialog handled');
           return; // Don't export yet - wait for dialog response
@@ -6122,6 +6128,7 @@ export default function Dashboard() {
           configType={serviceCostData.configType}
           onApply={handleServiceCostApply}
           onComplete={() => setShouldExportAfterServiceCost(true)}
+          isExportWorkflow={isExportWorkflow}
         />
       )}
     </div>
