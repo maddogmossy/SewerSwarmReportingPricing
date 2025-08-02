@@ -790,57 +790,67 @@ export default function Dashboard() {
       defects: s.defects
     })));
 
-    // Find all structural sections with costs (F615 patching)
-    const structuralSectionsWithCosts = sectionData.filter(section => {
+    // Find structural sections that show orange warning triangles in recommendations
+    const structuralSectionsWithTriangles = sectionData.filter(section => {
       if (section.defectType !== 'structural') return false;
       
-      // Call calculateAutoCost directly to get the cost object instead of rendered JSX
-      const costCalc = calculateAutoCost(section);
-      const hasStructuralCost = costCalc && 
-                               typeof costCalc === 'object' && 
-                               'status' in costCalc &&
-                               (costCalc.status === 'f615_calculated' || costCalc.status === 'f615_patching') && 
-                               costCalc.cost > 0;
+      // EXCLUDE robotic cutting cases - they use ID4, not TP2
+      const recommendations = section.recommendations || '';
+      const requiresRoboticCutting = recommendations.toLowerCase().includes('robotic cutting') || 
+                                   recommendations.toLowerCase().includes('id4');
+      if (requiresRoboticCutting) return false;
       
-      console.log(`🔍 STRUCTURAL COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+      // Check if this section would show an orange triangle (needs TP2 configuration)
+      const costCalculation = calculateAutoCost(section);
+      
+      // A section shows an orange triangle if:
+      // 1. No cost calculation returned (null) 
+      // 2. Cost calculation failed with TP2 unconfigured status
+      // 3. Cost = 0 with failed status indicating missing TP2 config
+      const showsOrangeTriangle = !costCalculation || 
+                                 costCalculation === null || 
+                                 (typeof costCalculation === 'object' && 'status' in costCalculation &&
+                                  ['tp2_unconfigured', 'tp1_unconfigured', 'tp1_invalid', 'tp1_missing'].includes(costCalculation.status));
+      
+      console.log(`🔍 STRUCTURAL TRIANGLE WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         defectType: section.defectType,
-        costCalc: costCalc && typeof costCalc === 'object' ? {
-          status: 'status' in costCalc ? costCalc.status : 'unknown',
-          cost: 'cost' in costCalc ? costCalc.cost : 0,
-          method: 'method' in costCalc ? costCalc.method : 'unknown',
-          dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
-          patchCount: 'patchCount' in costCalc ? costCalc.patchCount : 0,
-          costPerPatch: 'costPerPatch' in costCalc ? costCalc.costPerPatch : 0
+        defects: section.defects?.substring(0, 50),
+        recommendations: recommendations?.substring(0, 50),
+        requiresRoboticCutting,
+        costCalc: costCalculation && typeof costCalculation === 'object' ? {
+          status: 'status' in costCalculation ? costCalculation.status : 'unknown',
+          cost: 'cost' in costCalculation ? costCalculation.cost : 0,
+          method: 'method' in costCalculation ? costCalculation.method : 'unknown'
         } : 'no cost calc',
-        hasStructuralCost
+        showsOrangeTriangle
       });
       
-      return hasStructuralCost;
+      return showsOrangeTriangle;
     });
 
-    console.log('🔍 STRUCTURAL COST WARNING - Structural sections with costs:', structuralSectionsWithCosts.length);
-    console.log('🔍 STRUCTURAL COST WARNING - Dialog state:', {
+    console.log('🔍 STRUCTURAL TRIANGLE WARNING - Structural sections with orange triangles:', structuralSectionsWithTriangles.length);
+    console.log('🔍 STRUCTURAL TRIANGLE WARNING - Dialog state:', {
       showStructuralCostWarning,
       hasStructuralCostData: !!structuralCostData,
-      structuralSectionsCount: structuralSectionsWithCosts.length
+      structuralTrianglesCount: structuralSectionsWithTriangles.length
     });
 
-    console.log('🔍 STRUCTURAL COST WARNING - Trigger condition check:', {
-      structuralSectionsWithCosts: structuralSectionsWithCosts.length,
+    console.log('🔍 STRUCTURAL TRIANGLE WARNING - Trigger condition check:', {
+      structuralSectionsWithTriangles: structuralSectionsWithTriangles.length,
       showStructuralCostWarning,
       structuralCostData: !!structuralCostData,
       structuralCostWarningDismissed,
-      shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData
+      shouldTrigger: structuralSectionsWithTriangles.length > 0 && !showStructuralCostWarning && !structuralCostData
     });
 
     // Reset dismissed state when new data is available (similar to service warning logic)
-    if (structuralSectionsWithCosts.length > 0 && structuralCostWarningDismissed) {
-      console.log('🔄 STRUCTURAL COST WARNING - Resetting dismissed state for new data');
+    if (structuralSectionsWithTriangles.length > 0 && structuralCostWarningDismissed) {
+      console.log('🔄 STRUCTURAL TRIANGLE WARNING - Resetting dismissed state for new data');
       setStructuralCostWarningDismissed(false);
     }
 
-    // Only trigger if we have structural items and haven't shown the dialog yet
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData) {
+    // Only trigger if we have structural sections with orange triangles and haven't shown the dialog yet
+    if (structuralSectionsWithTriangles.length > 0 && !showStructuralCostWarning && !structuralCostData) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);
