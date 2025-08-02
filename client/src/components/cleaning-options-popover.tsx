@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Video, Monitor } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface CleaningOptionsPopoverProps {
   children: React.ReactNode;
@@ -22,6 +23,12 @@ interface CleaningOptionsPopoverProps {
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+  
+  // Equipment priority state with localStorage sync
+  const [equipmentPriority, setEquipmentPriority] = useState<'f606' | 'f608'>(() => {
+    return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+  });
   
   // Equipment options with F606 as default highlighted option
   const equipmentOptions = [
@@ -86,13 +93,57 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Equipment Selection</DialogTitle>
+            <DialogTitle>Equipment Priority Selection</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-3">
             <p className="text-sm text-gray-600 mb-4">
-              Select equipment for cleansing and survey operations:
+              Select equipment priority for cleansing and survey operations:
             </p>
+            
+            {/* Equipment Priority Controls */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <div className="text-sm font-medium text-blue-800 mb-2">Current Priority Setting</div>
+              <div className="flex gap-2">
+                <button
+                  className={`flex-1 px-3 py-2 text-sm rounded transition-all ${
+                    equipmentPriority === 'f606'
+                      ? 'bg-blue-600 text-white shadow-md' 
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50'
+                  }`}
+                  onClick={() => {
+                    setEquipmentPriority('f606');
+                    localStorage.setItem('equipmentPriority', 'f606');
+                    toast({
+                      title: "Equipment Priority Updated",
+                      description: "F606 Jet Vac now has priority for cost calculations",
+                    });
+                  }}
+                >
+                  F606 Jet Vac
+                </button>
+                <button
+                  className={`flex-1 px-3 py-2 text-sm rounded transition-all ${
+                    equipmentPriority === 'f608'
+                      ? 'bg-orange-600 text-white shadow-md' 
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50'
+                  }`}
+                  onClick={() => {
+                    setEquipmentPriority('f608');
+                    localStorage.setItem('equipmentPriority', 'f608');
+                    toast({
+                      title: "Equipment Priority Updated", 
+                      description: "F608 Van Pack now has priority for cost calculations",
+                    });
+                  }}
+                >
+                  F608 Van Pack
+                </button>
+              </div>
+              <div className="text-xs text-gray-600 mt-2">
+                Current: {equipmentPriority === 'f606' ? 'F606 Jet Vac (Heavy Duty)' : 'F608 Van Pack (Compact)'}
+              </div>
+            </div>
             
             {equipmentOptions.map((equipment) => {
               const IconComponent = equipment.icon;
