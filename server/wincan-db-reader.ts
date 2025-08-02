@@ -389,38 +389,75 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       console.warn("Could not read NODE table");
     }
 
-    // Build observation data mapping from SECOBS table via SECINSP
+    // First check what tables and columns exist
+    const tables = database.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+    console.log("📋 Available tables:", tables.map(t => t.name));
+
+    // Build observation data mapping - try different approaches
     const observationMap = new Map<string, string[]>();
+    console.log("🔍 Attempting to read observation data...");
+    
+    // First try to see what observation tables exist
+    const obsTables = tables.filter(t => t.name.toLowerCase().includes('obs') || t.name.toLowerCase().includes('sec'));
+    console.log("📋 Observation-related tables:", obsTables.map(t => t.name));
+    
+    // Try multiple approaches for observation data
     try {
+      // Approach 1: Standard SECOBS
       const obsData = database.prepare(`
-        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation 
-        FROM SECINSP si 
-        JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
-        WHERE obs.OBS_OpCode IS NOT NULL 
-        AND obs.OBS_OpCode NOT IN ('MH', 'MHF')
-        ORDER BY si.INS_Section_FK, obs.OBS_Distance
+        SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
+        FROM SECOBS 
+        WHERE OBJ_Code IS NOT NULL 
+        AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
+        ORDER BY OBJ_Section_REF, OBJ_PosFrom
       `).all();
+      
+      console.log(`📋 Found ${obsData.length} observations`);
+      
       for (const obs of obsData) {
-        if (obs.INS_Section_FK && obs.OBS_OpCode) {
-          if (!observationMap.has(obs.INS_Section_FK)) {
-            observationMap.set(obs.INS_Section_FK, []);
+        if (obs.OBJ_Section_REF && obs.OBJ_Code) {
+          if (!observationMap.has(obs.OBJ_Section_REF)) {
+            observationMap.set(obs.OBJ_Section_REF, []);
           }
-          const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
-          const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
-          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
+          const position = obs.OBJ_PosFrom ? ` at ${obs.OBJ_PosFrom}m` : '';
+          const description = obs.OBJ_Text ? ` (${obs.OBJ_Text})` : '';
+          observationMap.get(obs.OBJ_Section_REF)!.push(`${obs.OBJ_Code}${position}${description}`);
         }
       }
     } catch (error) {
-      console.warn("Could not read SECOBS table");
+      console.warn("Could not read observation data:", error.message);
     }
-
-    // Extract sections from SECTION table
-    const sectionData = database.prepare(`
-      SELECT s.*, fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey
-      FROM SECTION s
-      LEFT JOIN NODE fromNode ON s.SEC_FromNode = fromNode.OBJ_PK  
-      LEFT JOIN NODE toNode ON s.SEC_ToNode = toNode.OBJ_PK
-    `).all();
+    
+    // Check SECTION table columns
+    let sectionColumns = [];
+    try {
+      sectionColumns = database.prepare("PRAGMA table_info(SECTION)").all();
+      console.log("📋 SECTION columns:", sectionColumns.map(c => c.name));
+    } catch (error) {
+      console.log("No SECTION table found");
+    }
+    
+    // Extract sections with flexible column matching
+    let sectionData = [];
+    try {
+      // Try different possible column names
+      sectionData = database.prepare(`
+        SELECT s.*, fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey
+        FROM SECTION s
+        LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
+        LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
+      `).all();
+    } catch (error) {
+      console.log("Trying alternative column names...");
+      try {
+        sectionData = database.prepare(`SELECT * FROM SECTION LIMIT 10`).all();
+        if (sectionData.length > 0) {
+          console.log("📋 Sample SECTION data:", Object.keys(sectionData[0]));
+        }
+      } catch (err) {
+        console.log("Could not read SECTION table");
+      }
+    }
 
     database.close();
 

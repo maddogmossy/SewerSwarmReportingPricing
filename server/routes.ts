@@ -530,19 +530,16 @@ export async function registerRoutes(app: Express) {
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           
-          // Import and use Wincan database reader
-          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
+          // Import the working database reader from backup
+          const { readWincanDatabase } = await import('./wincan-db-reader-backup');
+          const { storeWincanSections } = await import('./wincan-db-reader');
           
-          // CRITICAL FIX: Always use the real uploaded file, ignore validation.files paths
-          const mainDbPath = filePath; // This is the actual file with content
-          console.log("📂 MULTER FILE INFO:", req.file);
-          console.log("🔍 PROCESSING FILE PATH:", mainDbPath);
-          console.log("🔍 ORIGINAL FILE PATH:", filePath);
-          console.log("🔍 FILE EXISTS CHECK:", existsSync(mainDbPath));
-          console.log("🔍 FILE STATS:", existsSync(mainDbPath) ? fs.statSync(mainDbPath) : 'FILE NOT FOUND');
+          // CRITICAL FIX: Use the original uploaded file path that has the actual content
+          const realUploadPath = filePath; // This contains the actual uploaded data
+          console.log("🔍 USING REAL FILE PATH:", realUploadPath);
           
-          // Extract authentic data from database
-          const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+          // Extract authentic data from database using the actual uploaded file
+          const sections = await readWincanDatabase(realUploadPath, req.body.sector || 'utilities');
           
           
           // Store sections in database
