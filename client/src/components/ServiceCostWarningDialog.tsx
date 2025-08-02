@@ -20,6 +20,7 @@ interface ServiceCostWarningDialogProps {
   totalServiceCost: number;
   configType: string;
   onApply: (newCosts: { itemNo: number; newCost: number }[]) => void;
+  onExport?: () => void; // New callback to trigger export after dialog handling
 }
 
 export default function ServiceCostWarningDialog({
@@ -30,7 +31,8 @@ export default function ServiceCostWarningDialog({
   runsPerShift,
   totalServiceCost,
   configType,
-  onApply
+  onApply,
+  onExport
 }: ServiceCostWarningDialogProps) {
   const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>('leave');
   const [manualCosts, setManualCosts] = useState<{ [itemNo: number]: string }>({});
@@ -59,13 +61,19 @@ export default function ServiceCostWarningDialog({
   const handleApply = () => {
     switch (selectedOption) {
       case 'leave':
-        // No changes needed, just close
+        // No changes needed, just close and trigger export
         onClose();
+        if (onExport) {
+          setTimeout(() => onExport(), 100); // Small delay to ensure dialog closes first
+        }
         break;
       
       case 'spread':
         const spreadCosts = calculateSpreadCosts();
         onApply(spreadCosts);
+        if (onExport) {
+          setTimeout(() => onExport(), 100); // Small delay to ensure updates complete first
+        }
         break;
       
       case 'manual':
@@ -74,6 +82,9 @@ export default function ServiceCostWarningDialog({
           newCost: parseFloat(manualCosts[item.itemNo]) || item.currentCost
         }));
         onApply(manualCostUpdates);
+        if (onExport) {
+          setTimeout(() => onExport(), 100); // Small delay to ensure updates complete first
+        }
         break;
     }
   };

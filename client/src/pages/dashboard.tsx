@@ -2466,7 +2466,7 @@ export default function Dashboard() {
   }, [rawSectionData]);
 
   const handleExportReport = useCallback(() => {
-    console.log('🔄 Export triggered: Resetting service cost warning states...');
+    console.log('🔄 Export triggered: Checking for service cost issues first...');
     
     // Reset service cost warning dismissed state and clear existing data
     setServiceCostWarningDismissed(false);
@@ -2476,26 +2476,29 @@ export default function Dashboard() {
     // Use setTimeout to ensure state updates happen before check
     setTimeout(() => {
       console.log('🔄 Export: State reset complete, checking service costs...');
-      console.log('🔄 Export: Current states:', {
-        serviceCostWarningDismissed: false, // We just set this
-        showServiceCostWarning: false, // We just set this
-        serviceCostData: null, // We just set this
-        rawSectionDataLength: rawSectionData?.length || 0
-      });
       
-      // Force check for service cost issues before export
+      // Check if we have service items that would trigger warning
       if (rawSectionData && rawSectionData.length > 0) {
-        checkServiceCostCompletion(rawSectionData);
+        const serviceItems = rawSectionData.filter(section => section.defectType === 'service');
+        console.log('🔄 Export: Found service items:', serviceItems.length);
+        
+        if (serviceItems.length > 0) {
+          // Service items exist - check for warning and defer export
+          checkServiceCostCompletion(rawSectionData);
+          console.log('🔄 Export: Service cost check triggered - export deferred until dialog handled');
+          return; // Don't export yet - wait for dialog response
+        }
       }
-    }, 300); // Increased timeout for state updates
-    
-    // Export functionality - trigger Excel export
-    exportToExcel();
-    
-    toast({
-      title: "Report Exported",
-      description: "Report has been exported successfully"
-    });
+      
+      // No service items or no warning needed - proceed with export
+      console.log('🔄 Export: No service cost issues - proceeding with export');
+      exportToExcel();
+      
+      toast({
+        title: "Report Exported",
+        description: "Report has been exported successfully"
+      });
+    }, 300);
   }, [rawSectionData]);
 
   // Debug PR2 data loading
@@ -6041,6 +6044,14 @@ export default function Dashboard() {
           totalServiceCost={serviceCostData.totalServiceCost}
           configType={serviceCostData.configType}
           onApply={handleServiceCostApply}
+          onExport={() => {
+            console.log('🔄 Export: Service cost dialog completed - proceeding with export');
+            exportToExcel();
+            toast({
+              title: "Report Exported",
+              description: "Report has been exported successfully"
+            });
+          }}
         />
       )}
     </div>
