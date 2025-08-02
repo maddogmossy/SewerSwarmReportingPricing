@@ -749,7 +749,15 @@ export default function Dashboard() {
     setServiceCostData(null);
     setIsExportWorkflow(false);
     
-    console.log('🔄 Service costs applied - waiting for export signal');
+    console.log('🔄 Service costs applied - triggering structural check');
+    
+    // Force structural warning check after state cleanup
+    setTimeout(() => {
+      if (rawSectionData && rawSectionData.length > 0) {
+        console.log('🔄 Triggering delayed structural warning check');
+        checkStructuralCostCompletion(rawSectionData);
+      }
+    }, 100);
   };
 
   // Handler for structural cost warning dialog
@@ -938,6 +946,14 @@ export default function Dashboard() {
     setShowServiceCostWarning(false);
     setServiceCostData(null);
     setIsExportWorkflow(false);
+    
+    // Force structural warning check after state cleanup
+    setTimeout(() => {
+      if (rawSectionData && rawSectionData.length > 0) {
+        console.log('🔄 Triggering delayed structural warning check after cancel');
+        checkStructuralCostCompletion(rawSectionData);
+      }
+    }, 100);
   };
 
   // Function to check if all service costs are populated and trigger warning
