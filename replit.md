@@ -1,5 +1,16 @@
 # Replit Architecture Documentation
 
+## Rev v8.0 - Enhanced Warning System with Visual Feedback (August 2025)
+**Lock-in Checkpoint**: Advanced warning system with intelligent triggering, combined work display, and visual pricing feedback for structural applications.
+
+### Key Achievements in v8.0:
+- **Enhanced Structural Warning System**: Always triggers regardless of day rate status with intelligent default selection ("Keep Current Prices" when costs exceed day rate)
+- **Combined Work Display**: Item 19 now properly shows "1 cut & 2 patches" for F619 robotic cutting + F615 structural patching work
+- **Green Pricing Feedback**: Applied structural pricing now displays with green highlighting and background borders in dashboard
+- **Intelligent Dialog Messaging**: Context-aware dialog text showing "Excess over minimum" vs "Shortfall to minimum" based on cost scenarios
+- **Sequential Workflow Enhancement**: Seamless service warning → structural warning → export workflow with proper state management
+- **Visual State Management**: Applied pricing tracking separate from cost adjustments for clear user feedback
+
 ## Rev v6.3 - Enhanced Cost Calculation System (August 2025)
 **Lock-in Checkpoint**: Advanced cost calculation system with combined F619+F615 processing, enhanced patch counting for multiple defect locations, and MM4 integration for robotic cutting.
 
