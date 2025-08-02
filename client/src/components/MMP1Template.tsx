@@ -336,7 +336,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     console.log(`🔍 MMP1Template updateMM4RowWithAutoSave: rowId=${rowId}, field=${field}, value="${value}"`);
     updateMM4Row(rowId, field, value);
-    triggerAutoSave();
+    // Skip immediate triggerAutoSave to prevent purple value conflicts - updateMM4Row handles debounced saving
   };
 
   const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {

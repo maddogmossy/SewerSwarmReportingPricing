@@ -300,7 +300,7 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
   // Auto-save wrappers
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     updateMM4Row(rowId, field, value);
-    triggerAutoSave();
+    // Skip immediate triggerAutoSave to prevent purple value conflicts - updateMM4Row handles debounced saving
   };
 
   const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {

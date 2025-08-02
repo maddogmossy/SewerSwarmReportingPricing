@@ -4718,19 +4718,20 @@ export default function Dashboard() {
 
       <div className="container mx-auto p-6 max-w-none">
         {/* Enhanced Equipment Selection Interface */}
-        <div className="mb-4 bg-white border border-gray-200 rounded-lg p-4">
+        <div className="mb-4 bg-gradient-to-r from-blue-50 to-orange-50 border-2 border-blue-200 rounded-lg p-4 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Truck className="h-5 w-5 text-blue-600" />
-                <h3 className="text-sm font-medium text-gray-900">Equipment Priority Control</h3>
+                <Truck className="h-6 w-6 text-blue-600" />
+                <h3 className="text-lg font-bold text-gray-900">Equipment Priority Control</h3>
+                <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">ACTIVE</div>
               </div>
               <div className="flex gap-2">
                 <button
-                  className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  className={`px-6 py-3 text-sm rounded-lg transition-all duration-300 ${
                     equipmentPriority === 'f606'
-                      ? 'bg-blue-500 text-white border-2 border-blue-600 shadow-md transform scale-105' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
+                      ? 'bg-blue-600 text-white border-3 border-blue-700 shadow-xl transform scale-110' 
+                      : 'bg-white text-gray-700 hover:bg-blue-50 border-2 border-gray-400 hover:border-blue-300'
                   }`}
                   onClick={() => {
                     setEquipmentPriority('f606');
@@ -4752,10 +4753,10 @@ export default function Dashboard() {
                   </div>
                 </button>
                 <button
-                  className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  className={`px-6 py-3 text-sm rounded-lg transition-all duration-300 ${
                     equipmentPriority === 'f608'
-                      ? 'bg-orange-500 text-white border-2 border-orange-600 shadow-md transform scale-105' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
+                      ? 'bg-orange-600 text-white border-3 border-orange-700 shadow-xl transform scale-110' 
+                      : 'bg-white text-gray-700 hover:bg-orange-50 border-2 border-gray-400 hover:border-orange-300'
                   }`}
                   onClick={() => {
                     setEquipmentPriority('f608');
@@ -4780,8 +4781,8 @@ export default function Dashboard() {
             </div>
             <div className="text-right">
               <div className="text-xs text-gray-500 mb-1">Current Priority</div>
-              <div className={`text-sm font-medium ${equipmentPriority === 'f606' ? 'text-blue-600' : 'text-orange-600'}`}>
-                {equipmentPriority === 'f606' ? 'F606 Jet Vac Active' : 'F608 Van Pack Active'}
+              <div className={`text-lg font-bold ${equipmentPriority === 'f606' ? 'text-blue-600' : 'text-orange-600'} animate-pulse`}>
+                {equipmentPriority === 'f606' ? '🚛 F606 Jet Vac Active' : '⚡ F608 Van Pack Active'}
               </div>
             </div>
           </div>
@@ -4790,10 +4791,10 @@ export default function Dashboard() {
           {sectionData && sectionData.find(s => s.itemNo === 3) && (
             <div className="mt-3 pt-3 border-t border-gray-200">
               <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-600">
-                  Item 3 Cost Preview ({equipmentPriority === 'f606' ? 'F606 Jet Vac' : 'F608 Van Pack'}):
+                <div className="text-sm font-medium text-gray-700">
+                  💰 Item 3 Cost Preview ({equipmentPriority === 'f606' ? 'F606 Jet Vac' : 'F608 Van Pack'}):
                 </div>
-                <div className={`text-sm font-bold ${equipmentPriority === 'f606' ? 'text-blue-600' : 'text-orange-600'}`}>
+                <div className={`text-xl font-bold ${equipmentPriority === 'f606' ? 'text-blue-600' : 'text-orange-600'} animate-bounce`}>
                   {(() => {
                     const item3Section = sectionData.find(s => s.itemNo === 3);
                     if (item3Section) {
