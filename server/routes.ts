@@ -778,10 +778,15 @@ export async function registerRoutes(app: Express) {
       const userId = "test-user";
       const { name, description } = req.body;
       
+      // Validate required fields
+      if (!name || name.trim() === '') {
+        return res.status(400).json({ error: "Folder name is required" });
+      }
+      
       const [folder] = await db.insert(projectFolders).values({
         userId,
-        folderName: name,
-        projectAddress: description || "Not specified"
+        folderName: name.trim(),
+        projectAddress: description?.trim() || "Not specified"
       }).returning();
       
       res.json(folder);
