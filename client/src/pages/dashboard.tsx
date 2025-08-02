@@ -18,6 +18,7 @@ import { PatchRepairPricingDialog } from "@/components/PatchRepairPricingDialog"
 import { ValidationWarningPopup } from "@/components/ValidationWarningPopup";
 import { useValidationWarnings } from "@/hooks/useValidationWarnings";
 import ServiceCostWarningDialog from "@/components/ServiceCostWarningDialog";
+import StructuralCostWarningDialog from "@/components/StructuralCostWarningDialog";
 import { validateReportExportReadiness, ValidationResult, ReportSection, TravelInfo } from "@shared/report-validation";
 import * as XLSX from 'xlsx';
 
@@ -684,6 +685,17 @@ export default function Dashboard() {
     configType: string;
   } | null>(null);
 
+  // Structural cost warning dialog state
+  const [showStructuralCostWarning, setShowStructuralCostWarning] = useState(false);
+  const [structuralCostWarningDismissed, setStructuralCostWarningDismissed] = useState(false);
+  const [structuralCostData, setStructuralCostData] = useState<{
+    structuralItems: { itemNo: number; currentCost: number; method: string; defects: string; patchCount?: number; costPerPatch?: number }[];
+    dayRate: number;
+    minPatches: number;
+    totalStructuralCost: number;
+    configType: string;
+  } | null>(null);
+
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
     // Patch pricing click handler called
@@ -711,6 +723,9 @@ export default function Dashboard() {
 
   // Store adjusted service costs in local state
   const [adjustedServiceCosts, setAdjustedServiceCosts] = useState<Map<number, number>>(new Map());
+  
+  // Store adjusted structural costs in local state
+  const [adjustedStructuralCosts, setAdjustedStructuralCosts] = useState<Map<number, number>>(new Map());
 
   // Handler for service cost warning dialog
   const handleServiceCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
@@ -735,6 +750,154 @@ export default function Dashboard() {
     setIsExportWorkflow(false);
     
     console.log('🔄 Service costs applied - waiting for export signal');
+  };
+
+  // Handler for structural cost warning dialog
+  const handleStructuralCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
+    console.log('🔄 Applying new structural costs:', newCosts);
+    
+    // Store adjusted costs in local state
+    const newAdjustedCosts = new Map(adjustedStructuralCosts);
+    newCosts.forEach(({ itemNo, newCost }) => {
+      newAdjustedCosts.set(itemNo, newCost);
+      console.log(`🔄 Set adjusted cost for item ${itemNo}: £${newCost.toFixed(2)}`);
+    });
+    setAdjustedStructuralCosts(newAdjustedCosts);
+    
+    toast({
+      title: "Structural Costs Updated",
+      description: `Updated costs for ${newCosts.length} structural items to meet day rate requirements`,
+    });
+    
+    // Close the dialog and reset export workflow flag
+    setShowStructuralCostWarning(false);
+    setStructuralCostData(null);
+    setIsExportWorkflow(false);
+    
+    console.log('🔄 Structural costs applied - waiting for export signal');
+  };
+
+  // Function to check if all structural costs are populated and trigger warning
+  const checkStructuralCostCompletion = (sectionData: any[]) => {
+    if (!sectionData || sectionData.length === 0) return;
+
+    // Find all structural sections
+    const allStructuralSections = sectionData.filter(section => section.defectType === 'structural');
+    console.log('🔍 STRUCTURAL COST WARNING - All structural sections found:', allStructuralSections.map(s => ({
+      itemNo: s.itemNo,
+      letterSuffix: s.letterSuffix,
+      defectType: s.defectType,
+      defects: s.defects
+    })));
+
+    // Find all structural sections with costs (F615 patching)
+    const structuralSectionsWithCosts = sectionData.filter(section => {
+      if (section.defectType !== 'structural') return false;
+      
+      // Call calculateAutoCost directly to get the cost object instead of rendered JSX
+      const costCalc = calculateAutoCost(section);
+      const hasStructuralCost = costCalc && 
+                               typeof costCalc === 'object' && 
+                               'status' in costCalc &&
+                               (costCalc.status === 'f615_calculated' || costCalc.status === 'f615_patching') && 
+                               costCalc.cost > 0;
+      
+      console.log(`🔍 STRUCTURAL COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+        defectType: section.defectType,
+        costCalc: costCalc && typeof costCalc === 'object' ? {
+          status: 'status' in costCalc ? costCalc.status : 'unknown',
+          cost: 'cost' in costCalc ? costCalc.cost : 0,
+          method: 'method' in costCalc ? costCalc.method : 'unknown',
+          dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
+          patchCount: 'patchCount' in costCalc ? costCalc.patchCount : 0,
+          costPerPatch: 'costPerPatch' in costCalc ? costCalc.costPerPatch : 0
+        } : 'no cost calc',
+        hasStructuralCost
+      });
+      
+      return hasStructuralCost;
+    });
+
+    console.log('🔍 STRUCTURAL COST WARNING - Structural sections with costs:', structuralSectionsWithCosts.length);
+    console.log('🔍 STRUCTURAL COST WARNING - Dialog state:', {
+      showStructuralCostWarning,
+      hasStructuralCostData: !!structuralCostData,
+      structuralSectionsCount: structuralSectionsWithCosts.length
+    });
+
+    console.log('🔍 STRUCTURAL COST WARNING - Trigger condition check:', {
+      structuralSectionsWithCosts: structuralSectionsWithCosts.length,
+      showStructuralCostWarning,
+      structuralCostData: !!structuralCostData,
+      structuralCostWarningDismissed,
+      shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed
+    });
+
+    // Only trigger if we have structural items, haven't shown the dialog yet, and it hasn't been dismissed
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed) {
+      // Get the first structural item's config details for reference
+      const firstStructuralSection = structuralSectionsWithCosts[0];
+      const firstCostCalc = calculateAutoCost(firstStructuralSection);
+      
+      console.log('🔍 STRUCTURAL COST WARNING - First structural item config details:', {
+        itemNo: firstStructuralSection.itemNo,
+        costCalc: firstCostCalc,
+        equipmentPriority: equipmentPriority,
+        configType: firstCostCalc && typeof firstCostCalc === 'object' && 'configType' in firstCostCalc ? firstCostCalc.configType : 'unknown'
+      });
+
+      if (firstCostCalc && 
+          typeof firstCostCalc === 'object' && 
+          'dayRate' in firstCostCalc && 
+          'patchCount' in firstCostCalc &&
+          'configType' in firstCostCalc) {
+        
+        // Calculate total structural cost and other metrics
+        const structuralItems = structuralSectionsWithCosts.map(section => {
+          const costCalc = calculateAutoCost(section);
+          return {
+            itemNo: section.itemNo,
+            currentCost: typeof costCalc === 'object' && 'cost' in costCalc ? costCalc.cost : 0,
+            method: typeof costCalc === 'object' && 'method' in costCalc ? costCalc.method : 'F615 Patching',
+            defects: section.defects || '',
+            patchCount: typeof costCalc === 'object' && 'patchCount' in costCalc ? costCalc.patchCount : 1,
+            costPerPatch: typeof costCalc === 'object' && 'costPerPatch' in costCalc ? costCalc.costPerPatch : 0
+          };
+        });
+        
+        const totalStructuralCost = structuralItems.reduce((sum, item) => sum + item.currentCost, 0);
+        const totalPatchCount = structuralItems.reduce((sum, item) => sum + (item.patchCount || 1), 0);
+        
+        // Check if structural cost is below day rate
+        const dayRate = firstCostCalc.dayRate || 0;
+        const isStructuralCostBelowDayRate = totalStructuralCost < dayRate;
+        
+        console.log('🔍 STRUCTURAL COST WARNING - Cost analysis:', {
+          totalStructuralCost,
+          dayRate,
+          totalPatchCount,
+          isStructuralCostBelowDayRate,
+          structuralItemsCount: structuralItems.length
+        });
+        
+        // Only show warning if structural cost is below day rate
+        if (isStructuralCostBelowDayRate) {
+          console.log('🔄 STRUCTURAL COST WARNING - Triggering warning dialog');
+          
+          setStructuralCostData({
+            structuralItems,
+            dayRate: dayRate,
+            minPatches: dayRate > 0 ? Math.ceil(dayRate / (structuralItems[0]?.costPerPatch || 1)) : totalPatchCount,
+            totalStructuralCost,
+            configType: firstCostCalc.configType || 'F615 Patching'
+          });
+          
+          setShowStructuralCostWarning(true);
+        } else {
+          console.log('🔍 STRUCTURAL COST WARNING - Structural costs meet day rate, no warning needed');
+        }
+      }
+    }
   };
 
   // State to track if export should happen after service cost dialog
@@ -783,11 +946,11 @@ export default function Dashboard() {
       console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         defectType: section.defectType,
         costCalc: costCalc && typeof costCalc === 'object' ? {
-          status: costCalc.status,
-          cost: costCalc.cost,
-          method: costCalc.method,
-          dayRate: costCalc.dayRate,
-          runsPerShift: costCalc.runsPerShift
+          status: 'status' in costCalc ? costCalc.status : 'unknown',
+          cost: 'cost' in costCalc ? costCalc.cost : 0,
+          method: 'method' in costCalc ? costCalc.method : 'unknown',
+          dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
+          runsPerShift: 'runsPerShift' in costCalc ? costCalc.runsPerShift : 0
         } : 'no cost calc',
         hasServiceCost
       });
@@ -1632,6 +1795,20 @@ export default function Dashboard() {
                 </div>
               );
             }
+
+            // Special handling for adjusted structural costs - always show in green
+            if (costCalculation.status === 'adjusted_structural_cost') {
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title={`${costCalculation.method}: £${costCalculation.cost.toFixed(2)}\nThis cost has been adjusted to meet day rate requirements`}
+                >
+                  <span className="text-xs font-semibold text-green-600">
+                    £{costCalculation.cost.toFixed(2)}
+                  </span>
+                </div>
+              );
+            }
             
             // Check if orange minimum is met to determine cost color
             const orangeMinimumMet = checkOrangeMinimumMet();
@@ -2099,11 +2276,19 @@ export default function Dashboard() {
         } catch (error) {
           console.error('🔧 SERVICE COST CHECK ERROR:', error);
         }
+
+        // Check for structural cost completion and trigger warning dialog
+        try {
+          console.log('🔍 TRIGGERING STRUCTURAL COST CHECK with sections:', rawSectionData.length);
+          checkStructuralCostCompletion(rawSectionData);
+        } catch (error) {
+          console.error('🔧 STRUCTURAL COST CHECK ERROR:', error);
+        }
       } catch (error) {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
     }
-  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData]);
+  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData, showStructuralCostWarning, structuralCostData]);
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
@@ -2964,15 +3149,29 @@ export default function Dashboard() {
     });
     
     // Check for adjusted service costs first
-    const adjustedCost = adjustedServiceCosts.get(section.itemNo);
-    if (section.defectType === 'service' && adjustedCost) {
+    const adjustedServiceCost = adjustedServiceCosts.get(section.itemNo);
+    if (section.defectType === 'service' && adjustedServiceCost) {
       return {
-        cost: adjustedCost,
+        cost: adjustedServiceCost,
         currency: '£',
         method: 'Day Rate Adjusted Service Cost',
         status: 'adjusted_service_cost',
         isAdjusted: true,
         configType: 'Adjusted Service Cost'
+      };
+    }
+    
+    // Check for adjusted structural costs
+    const adjustedStructuralCost = adjustedStructuralCosts.get(section.itemNo);
+    if (section.defectType === 'structural' && adjustedStructuralCost) {
+      return {
+        cost: adjustedStructuralCost,
+        currency: '£',
+        method: 'Day Rate Adjusted Structural Cost',
+        status: 'adjusted_structural_cost',
+        isAdjusted: true,
+        configType: 'Adjusted Structural Cost',
+        patchCount: 1 // Default patch count for adjusted structural costs
       };
     }
     
@@ -6152,6 +6351,30 @@ export default function Dashboard() {
           onApply={handleServiceCostApply}
           onComplete={() => setShouldExportAfterServiceCost(true)}
           isExportWorkflow={isExportWorkflow}
+        />
+      )}
+
+      {/* Structural Cost Warning Dialog */}
+      {structuralCostData && (
+        <StructuralCostWarningDialog
+          isOpen={showStructuralCostWarning}
+          onClose={() => {
+            setShowStructuralCostWarning(false);
+            setStructuralCostData(null);
+            setStructuralCostWarningDismissed(true);
+            setIsExportWorkflow(false);
+          }}
+          structuralItems={structuralCostData.structuralItems}
+          dayRate={structuralCostData.dayRate}
+          minPatches={structuralCostData.minPatches}
+          totalStructuralCost={structuralCostData.totalStructuralCost}
+          configType={structuralCostData.configType}
+          onApply={handleStructuralCostApply}
+          isExportWorkflow={isExportWorkflow}
+          onComplete={() => {
+            console.log('🔄 Structural Cost Warning Dialog: onComplete called - triggering export');
+            performExport();
+          }}
         />
       )}
     </div>
