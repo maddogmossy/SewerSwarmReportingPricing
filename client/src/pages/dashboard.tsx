@@ -1612,6 +1612,21 @@ export default function Dashboard() {
             !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status);
           
           if (isValidCostCalculation) {
+            // Special handling for adjusted service costs - always show in green
+            if (costCalculation.status === 'adjusted_service_cost') {
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title={`${costCalculation.method}: £${costCalculation.cost.toFixed(2)}\nThis cost has been adjusted to meet day rate requirements`}
+                >
+                  <span className="text-xs font-semibold text-green-600">
+                    £{costCalculation.cost.toFixed(2)}
+                    <span className="ml-1 text-xs opacity-75">(Adjusted)</span>
+                  </span>
+                </div>
+              );
+            }
+            
             // Check if orange minimum is met to determine cost color
             const orangeMinimumMet = checkOrangeMinimumMet();
             const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600";
@@ -2945,12 +2960,14 @@ export default function Dashboard() {
     // Check for adjusted service costs first
     const adjustedCost = adjustedServiceCosts.get(section.itemNo);
     if (section.defectType === 'service' && adjustedCost) {
-      return (
-        <span className="text-green-600 font-semibold">
-          £{adjustedCost.toFixed(2)}
-          <span className="ml-1 text-xs">(Day Rate Adjusted)</span>
-        </span>
-      );
+      return {
+        cost: adjustedCost,
+        currency: '£',
+        method: 'Day Rate Adjusted Service Cost',
+        status: 'adjusted_service_cost',
+        isAdjusted: true,
+        configType: 'Adjusted Service Cost'
+      };
     }
     
     // DEBUG: Track Item 13 (service) vs Item 13a (structural) separately
