@@ -115,7 +115,7 @@ export default function ServiceCostWarningDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-orange-600 flex items-center gap-2">
+          <DialogTitle className="text-blue-600 flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
             Service Cost Day Rate Warning
           </DialogTitle>
@@ -126,39 +126,49 @@ export default function ServiceCostWarningDialog({
 
         <div className="space-y-6">
           {/* Cost Summary */}
-          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="font-medium text-orange-800">Service Items:</span>
-                  <span className="text-orange-900 font-bold">{serviceItems.length}</span>
+                  <span className="font-medium text-blue-800">Service Items:</span>
+                  <span className="text-blue-900 font-bold">{serviceItems.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-orange-800">Day Rate:</span>
-                  <span className="text-orange-900 font-bold">£{dayRate.toFixed(2)}</span>
+                  <span className="font-medium text-blue-800">Day Rate:</span>
+                  <span className="text-blue-900 font-bold">£{dayRate.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-orange-800">Runs per Shift:</span>
-                  <span className="text-orange-900 font-bold">{runsPerShift}</span>
+                  <span className="font-medium text-blue-800">Runs per Shift:</span>
+                  <span className="text-blue-900 font-bold">{runsPerShift}</span>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="font-medium text-orange-800">Total Service Cost:</span>
-                  <span className="text-orange-900 font-bold">£{totalServiceCost.toFixed(2)}</span>
+                  <span className="font-medium text-blue-800">Total Service Cost:</span>
+                  <span className="text-blue-900 font-bold">£{totalServiceCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-orange-800">Minimum Shift Cost:</span>
-                  <span className="text-orange-900 font-bold">£{minimumShiftCost.toFixed(2)}</span>
+                  <span className="font-medium text-blue-800">Minimum Shift Cost:</span>
+                  <span className="text-blue-900 font-bold">£{minimumShiftCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-orange-800">Shortfall:</span>
+                  <span className="font-medium text-blue-800">Shortfall:</span>
                   <span className={`font-bold ${shortfall > 0 ? 'text-red-600' : 'text-green-600'}`}>
                     £{shortfall.toFixed(2)}
                   </span>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleApply} className="bg-blue-600 hover:bg-blue-700">
+              Apply
+            </Button>
           </div>
 
           {/* Service Items Table */}
@@ -286,18 +296,7 @@ export default function ServiceCostWarningDialog({
           </div>
         </div>
 
-        <DialogFooter className="flex gap-2">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleApply}
-            className="bg-orange-600 hover:bg-orange-700 text-white"
-          >
-            <Calculator className="h-4 w-4 mr-2" />
-            Apply Changes
-          </Button>
-        </DialogFooter>
+
       </DialogContent>
     </Dialog>
   );

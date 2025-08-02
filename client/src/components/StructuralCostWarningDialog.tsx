@@ -161,6 +161,16 @@ export default function StructuralCostWarningDialog({
             </div>
           </div>
 
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleApply} className="bg-orange-600 hover:bg-orange-700">
+              Apply
+            </Button>
+          </div>
+
           {/* Structural Items */}
           <div>
             <h4 className="font-medium mb-2">Structural Repair Items ({structuralItems.length})</h4>
@@ -284,17 +294,7 @@ export default function StructuralCostWarningDialog({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleApply}
-            className="bg-orange-600 hover:bg-orange-700"
-          >
-            Apply
-          </Button>
-        </DialogFooter>
+
       </DialogContent>
     </Dialog>
   );
