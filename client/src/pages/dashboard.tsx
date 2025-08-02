@@ -2972,7 +2972,10 @@ export default function Dashboard() {
         cctvConfig = f606Config;
       }
       
-      console.log('🔍 MM4 Dynamic Config Selection:', {
+      // Enhanced logging for Item 22 F608 first-time configuration analysis
+      const enhancedLogging = section.itemNo === 22 || section.itemNo === 13;
+      
+      console.log(enhancedLogging ? '🔍 ENHANCED MM4 Dynamic Config Selection:' : '🔍 MM4 Dynamic Config Selection:', {
         sectionId: section.itemNo,
         needsCleaning,
         f606Available: !!f606Config,
@@ -2986,19 +2989,22 @@ export default function Dashboard() {
           reason: bothConfigured ? `User preference: ${cctvConfig.categoryId}` : 
                   cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 configured with MM4 data' : 'F606 default selection',
           hasMMData: !!cctvConfig.mmData,
-          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac'
+          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+          allConfiguredPipeSizes: enhancedLogging && cctvConfig.mmData ? Object.keys(cctvConfig.mmData.mm4DataByPipeSize || {}) : undefined
         } : null,
         currentSector: currentSector.id
       });
       
       if (cctvConfig && cctvConfig.mmData) {
-        console.log('🔍 MM4/MM5 Dashboard Cost Integration:', {
+        console.log(enhancedLogging ? '🔍 ENHANCED MM4/MM5 Dashboard Cost Integration:' : '🔍 MM4/MM5 Dashboard Cost Integration:', {
           sectionId: section.itemNo,
           sectionLength,
           sectionDebrisPercent,
           sectionPipeSize,
           hasMMData: !!cctvConfig.mmData,
-          mmData: cctvConfig.mmData
+          mmData: cctvConfig.mmData,
+          allPipeSizesConfigured: enhancedLogging ? Object.keys(cctvConfig.mmData?.mm4DataByPipeSize || {}) : undefined,
+          currentPipeSizeMatching: enhancedLogging ? `Looking for ${sectionPipeSize?.replace('mm', '')}` : undefined
         });
         
         // Get MM4 data for the matching pipe size
@@ -3020,17 +3026,49 @@ export default function Dashboard() {
           }
         }
         
+        // Enhanced debugging for Item 22 - show all pipe size configurations vs section requirements
+        if (section.itemNo === 22) {
+          console.log('🔍 F608 ALL PIPE SIZE CONFIGURATIONS vs ITEM 22:', {
+            sectionPipeSize: sectionPipeSize,
+            sectionLength: sectionLength,
+            sectionDebrisPercent: sectionDebrisPercent,
+            allConfiguredPipeSizes: Object.keys(mm4DataByPipeSize),
+            matchingPipeSizeKey: matchingPipeSizeKey,
+            matchFound: !!matchingMM4Data,
+            allPipeSizeDetails: Object.entries(mm4DataByPipeSize).map(([key, data]) => ({
+              pipeSizeKey: key,
+              pipeSize: key.split('-')[0],
+              rowCount: Array.isArray(data) ? data.length : 0,
+              rows: Array.isArray(data) ? data.map(r => ({
+                id: r.id,
+                blueValue: r.blueValue,
+                greenValue: r.greenValue,
+                purpleDebris: r.purpleDebris,
+                purpleLength: r.purpleLength
+              })) : []
+            }))
+          });
+        }
+        
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
-          // DEBUG: Special tracking for Item 13 F608 Row 3 calculations
-          if (section.itemNo === 13) {
-            console.log(`🎯 ITEM 13 F608 ROW 3 DEBUG:`, {
+          // DEBUG: Special tracking for Item 13 F608 Row 3 calculations AND Item 22 F608 first-time configuration
+          if (section.itemNo === 13 || section.itemNo === 22) {
+            console.log(`🎯 ITEM ${section.itemNo} F608 DEBUG:`, {
               itemNo: section.itemNo,
               defectType: section.defectType,
               defects: section.defects,
+              sectionPipeSize: sectionPipeSize,
               sectionLength: sectionLength,
               sectionDebrisPercent: sectionDebrisPercent,
               totalMM4Rows: matchingMM4Data.length,
-              availableRows: matchingMM4Data.map(r => ({ id: r.id, greenValue: r.greenValue, purpleDebris: r.purpleDebris, purpleLength: r.purpleLength }))
+              availableRows: matchingMM4Data.map(r => ({ 
+                id: r.id, 
+                blueValue: r.blueValue,
+                greenValue: r.greenValue, 
+                purpleDebris: r.purpleDebris, 
+                purpleLength: r.purpleLength 
+              })),
+              matchingPipeSizeKey: matchingPipeSizeKey
             });
           }
           
@@ -3059,10 +3097,12 @@ export default function Dashboard() {
             // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
             const hasValidRate = (blueValue > 0 && greenValue > 0) || (blueValue > 0 && purpleDebris > 0) || (greenValue > 0 && purpleDebris > 0);
             
-            // DEBUG: Item 13 Row 3 specific validation
-            if (section.itemNo === 13 && mm4Row.id === 3) {
-              console.log(`🧮 ITEM 13 ROW 3 VALIDATION:`, {
+            // DEBUG: Item 13 Row 3 and Item 22 validation tracking
+            if ((section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 22) {
+              console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION:`, {
+                itemNo: section.itemNo,
                 rowId: mm4Row.id,
+                sectionPipeSize: sectionPipeSize,
                 sectionDebrisPercent: sectionDebrisPercent,
                 purpleDebris: purpleDebris,
                 debrisMatch: debrisMatch,
@@ -3072,7 +3112,12 @@ export default function Dashboard() {
                 blueValue: blueValue,
                 greenValue: greenValue,
                 hasValidRate: hasValidRate,
-                willProceedToCalculation: debrisMatch && lengthMatch && hasValidRate
+                willProceedToCalculation: debrisMatch && lengthMatch && hasValidRate,
+                validationBreakdown: {
+                  debrisCheck: `${sectionDebrisPercent}% ≤ ${purpleDebris}% = ${debrisMatch}`,
+                  lengthCheck: `${sectionLength}m ≤ ${purpleLength}m = ${lengthMatch}`,
+                  rateCheck: `hasValidRate = ${hasValidRate}`
+                }
               });
             }
             
@@ -3102,14 +3147,15 @@ export default function Dashboard() {
               // For service defects, calculate cost based on rate per run
               const totalCost = ratePerRun; // Single run cost for this section
               
-              // Special focus on Item 13 Row 3 calculation results
-              const isItem13Row3 = section.itemNo === 13 && mm4Row.id === 3;
-              const logLevel = isItem13Row3 ? '🎯 ITEM 13 ROW 3 FINAL CALCULATION' : `✅ F608 Multi-Row Cost Calculation (Row ${mm4Row.id})`;
+              // Special focus on Item 13 Row 3 and Item 22 calculation results
+              const isSpecialTracking = (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 22;
+              const logLevel = isSpecialTracking ? `🎯 ITEM ${section.itemNo} ROW ${mm4Row.id} FINAL CALCULATION` : `✅ F608 Multi-Row Cost Calculation (Row ${mm4Row.id})`;
               
               console.log(logLevel, {
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
+                sectionPipeSize: sectionPipeSize,
                 originalBlueValue: blueValue,
                 effectiveDayRate: dayRate, // Day rate (from current row or inherited from Row 1)
                 runsPerShift: greenValue, // Runs per shift from green window
@@ -3120,7 +3166,8 @@ export default function Dashboard() {
                 lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`,
                 configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
                 inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0,
-                expectedCalculation: isItem13Row3 ? `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run` : undefined
+                expectedCalculation: `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run`,
+                allPipeSizeConfigs: isSpecialTracking ? Object.keys(mmData.mm4DataByPipeSize || {}) : undefined
               });
               
               // Count total service items across all sections (not just defects)
