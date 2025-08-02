@@ -816,6 +816,13 @@ export default function Dashboard() {
       const firstServiceSection = serviceSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstServiceSection);
       
+      console.log('🔍 SERVICE COST WARNING - First service item config details:', {
+        itemNo: firstServiceSection.itemNo,
+        costCalc: firstCostCalc,
+        equipmentPriority: equipmentPriority,
+        configType: firstCostCalc && typeof firstCostCalc === 'object' && 'configType' in firstCostCalc ? firstCostCalc.configType : 'unknown'
+      });
+
       if (firstCostCalc && 
           typeof firstCostCalc === 'object' && 
           'dayRate' in firstCostCalc && 
