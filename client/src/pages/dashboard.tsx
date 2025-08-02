@@ -3043,30 +3043,49 @@ export default function Dashboard() {
             // Check if section matches this MM4 configuration criteria
             const debrisMatch = sectionDebrisPercent <= purpleDebris;
             const lengthMatch = sectionLength <= purpleLength;
-            const hasValidRate = blueValue > 0 && greenValue > 0;
+            // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
+            const hasValidRate = (blueValue > 0 && greenValue > 0) || (blueValue > 0 && purpleDebris > 0) || (greenValue > 0 && purpleDebris > 0);
             
             if (debrisMatch && lengthMatch && hasValidRate) {
-              // F606 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
-              // Blue value = day rate (e.g., £1850 per day)
-              // Green value = runs per shift (e.g., 22 runs)
-              const dayRate = blueValue; // Blue window is day rate
+              // F606/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
+              // Blue value = day rate (e.g., £1850 per day) - can be inherited from Row 1
+              // Green value = runs per shift (e.g., 22 runs) - Row 2 specific
+              
+              // For Row 2 calculations, use Row 1's day rate if Row 2's blueValue is empty
+              let effectiveDayRate = blueValue;
+              if (blueValue <= 0 && matchingMM4Data.length > 1) {
+                // Try to get day rate from Row 1
+                const row1 = matchingMM4Data.find(r => r.id === 1);
+                if (row1) {
+                  const row1BlueValue = parseFloat(getBufferedValue(1, 'blueValue', row1.blueValue || '0'));
+                  if (row1BlueValue > 0) {
+                    effectiveDayRate = row1BlueValue;
+                    console.log(`🔄 F608 Row ${mm4Row.id}: Using Row 1 day rate £${effectiveDayRate} for calculation`);
+                  }
+                }
+              }
+              
+              const dayRate = effectiveDayRate; // Blue window is day rate (or inherited from Row 1)
               const runsPerShift = greenValue; // Green window is runs per shift
-              const ratePerRun = dayRate / runsPerShift; // Calculate rate per run
+              const ratePerRun = dayRate > 0 && runsPerShift > 0 ? dayRate / runsPerShift : 0; // Calculate rate per run
               
               // For service defects, calculate cost based on rate per run
               const totalCost = ratePerRun; // Single run cost for this section
               
-              console.log('✅ F606 Service Cost Calculation:', {
+              console.log(`✅ F608 Multi-Row Cost Calculation (Row ${mm4Row.id}):`, {
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
-                dayRate: blueValue, // Day rate from blue window
+                originalBlueValue: blueValue,
+                effectiveDayRate: dayRate, // Day rate (from current row or inherited from Row 1)
                 runsPerShift: greenValue, // Runs per shift from green window
                 ratePerRun: ratePerRun, // Calculated rate per run
                 totalCost: totalCost, // Total cost for this section
                 minimumQuantity: greenValue, // Required minimum from green window
                 debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
-                lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`
+                lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`,
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+                inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0
               });
               
               // Count total service items across all sections (not just defects)
@@ -3080,8 +3099,8 @@ export default function Dashboard() {
               return {
                 cost: totalCost, // Display calculated service cost
                 currency: '£',
-                method: 'F606 Service Cost',
-                status: meetsMinimumRuns ? 'f606_calculated' : 'f606_insufficient_items',
+                method: cctvConfig.categoryId === 'cctv-van-pack' ? `F608 Row ${mm4Row.id} Service Cost` : `F606 Row ${mm4Row.id} Service Cost`,
+                status: meetsMinimumRuns ? 'f608_calculated' : 'f608_insufficient_items',
                 dayRate: dayRate,
                 runsPerShift: runsPerShift,
                 ratePerRun: ratePerRun,
@@ -3089,7 +3108,9 @@ export default function Dashboard() {
                 minimumQuantity: runsPerShift,
                 totalServiceItems: totalServiceItems,
                 meetsMinimumRuns: meetsMinimumRuns,
-                recommendation: `F606 service: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
+                mm4RowUsed: mm4Row.id,
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+                recommendation: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'F608' : 'F606'} Row ${mm4Row.id}: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
               };
             }
           }
