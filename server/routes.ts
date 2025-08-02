@@ -527,7 +527,7 @@ export async function registerRoutes(app: Express) {
           console.log('🔍 Validation object:', JSON.stringify(validation, null, 2));
           
           // Extract authentic data from database
-          const sections = await processWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+          const sections = await processWincanDatabase(mainDbPath, req.body.sector || 'utilities', validation.files?.meta);
           
           
           // Store sections in database

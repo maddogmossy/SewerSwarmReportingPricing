@@ -160,54 +160,80 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
 }
 
 // Process authentic Wincan database for sector-specific infrastructure analysis
-export async function processWincanDatabase(db3FilePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
+export async function processWincanDatabase(mainFilePath: string, sector: string = 'utilities', metaFilePath?: string): Promise<WincanSectionData[]> {
   
   const sqlite3 = (await import('sqlite3')).default;
-  const db = new sqlite3.Database(db3FilePath);
   
-  // First, check what tables exist in the database
-  const tableCheckQuery = `SELECT name FROM sqlite_master WHERE type='table'`;
+  // Determine which file contains the inspection data vs configuration data
+  let inspectionDbPath = mainFilePath;
+  let configDbPath = metaFilePath;
+  
+  // Check if we need to swap the files (if main file is actually the meta file)
+  const mainDb = new sqlite3.Database(mainFilePath);
   
   return new Promise((resolve, reject) => {
-    console.log('🔍 Checking database structure for file:', db3FilePath);
+    console.log('🔍 Analyzing file structure - Main:', mainFilePath, 'Meta:', metaFilePath);
     
-    db.all(tableCheckQuery, [], (tableErr: any, tables: any[]) => {
-      if (tableErr) {
-        console.error('❌ Error checking database tables:', tableErr);
-        db.close();
-        reject(tableErr);
+    const checkMainQuery = `SELECT name FROM sqlite_master WHERE type='table'`;
+    mainDb.all(checkMainQuery, [], (mainErr: any, mainTables: any[]) => {
+      if (mainErr) {
+        console.error('❌ Error checking main database tables:', mainErr);
+        mainDb.close();
+        reject(mainErr);
         return;
       }
       
-      console.log('📋 Raw table query result:', tables);
-      const tableNames = tables.map(t => t.name);
-      console.log('📋 Available tables in database:', tableNames);
+      const mainTableNames = mainTables.map(t => t.name);
+      console.log('📋 Main file tables:', mainTableNames);
       
-      // Check if we have the required tables
-      if (!tableNames.includes('SECTION')) {
-        console.error('❌ Database missing SECTION table. Available tables:', tableNames);
-        db.close();
-        reject(new Error(`Invalid Wincan database: Missing SECTION table. Found tables: ${tableNames.join(', ')}`));
-        return;
+      // If main file doesn't have SECTION but has EQUIPMENT/OPERATOR, it's actually the meta file
+      if (!mainTableNames.includes('SECTION') && (mainTableNames.includes('EQUIPMENT') || mainTableNames.includes('OPERATOR'))) {
+        console.log('🔄 Main file appears to be meta file, swapping file roles');
+        inspectionDbPath = metaFilePath || mainFilePath;
+        configDbPath = mainFilePath;
       }
       
-      // Execute query to get authentic sections with proper JOIN
-      const query = `
-        SELECT s.*, 
-               fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey,
-               s.OBJ_Size1, s.OBJ_Material, s.OBJ_Length, s.OBJ_TimeStamp, s.OBJ_FlowDir
-        FROM SECTION s
-        LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
-        LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
-      `;
+      mainDb.close();
       
-      db.all(query, [], async (err: any, sectionRecords: any[]) => {
-        if (err) {
-          console.error('❌ Error reading SECTION table:', err);
-          db.close();
-          reject(err);
+      // Now open the correct inspection database
+      const inspectionDb = new sqlite3.Database(inspectionDbPath);
+      
+      inspectionDb.all(checkMainQuery, [], (inspErr: any, inspTables: any[]) => {
+        if (inspErr) {
+          console.error('❌ Error checking inspection database tables:', inspErr);
+          inspectionDb.close();
+          reject(inspErr);
           return;
         }
+        
+        const inspTableNames = inspTables.map(t => t.name);
+        console.log('📋 Inspection file tables:', inspTableNames);
+        
+        // Check if we have the required tables
+        if (!inspTableNames.includes('SECTION')) {
+          console.error('❌ Neither database contains SECTION table. Main tables:', mainTableNames, 'Inspection tables:', inspTableNames);
+          inspectionDb.close();
+          reject(new Error(`Invalid Wincan database: Missing SECTION table in both files. Main file tables: ${mainTableNames.join(', ')}, Inspection file tables: ${inspTableNames.join(', ')}`));
+          return;
+        }
+      
+        // Execute query to get authentic sections with proper JOIN
+        const query = `
+          SELECT s.*, 
+                 fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey,
+                 s.OBJ_Size1, s.OBJ_Material, s.OBJ_Length, s.OBJ_TimeStamp, s.OBJ_FlowDir
+          FROM SECTION s
+          LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
+          LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
+        `;
+        
+        inspectionDb.all(query, [], async (err: any, sectionRecords: any[]) => {
+          if (err) {
+            console.error('❌ Error reading SECTION table:', err);
+            inspectionDb.close();
+            reject(err);
+            return;
+          }
         
         // Get observations for each section (exclude finish node codes)
         const observationQuery = `
@@ -218,23 +244,23 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           ORDER BY OBJ_Section_REF, OBJ_PosFrom
         `;
         
-        db.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
-          if (obsErr) {
-            console.error('❌ Error reading SECOBS table:', obsErr);
-            db.close();
-            reject(obsErr);
-            return;
-          }
+          inspectionDb.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
+            if (obsErr) {
+              console.error('❌ Error reading SECOBS table:', obsErr);
+              inspectionDb.close();
+              reject(obsErr);
+              return;
+            }
           
           // Get authentic severity grades from SECSTAT table
           const secstatQuery = `SELECT * FROM SECSTAT`;
           
-          db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
-            if (secErr) {
-              secstatRecords = [];
-            }
-            
-            db.close();
+            inspectionDb.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
+              if (secErr) {
+                secstatRecords = [];
+              }
+              
+              inspectionDb.close();
             
             // Build observation map by section
             const observationMap: { [sectionRef: string]: string[] } = {};
@@ -357,7 +383,8 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
               }
             }
             
-            resolve(authenticSections);
+              resolve(authenticSections);
+            });
           });
         });
       });
