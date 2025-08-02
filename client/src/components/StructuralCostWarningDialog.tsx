@@ -73,13 +73,17 @@ export default function StructuralCostWarningDialog({
     
     switch (selectedOption) {
       case 'leave':
-        // No changes needed, just close
-        console.log('🔄 StructuralCostWarningDialog: Leaving costs as-is, closing dialog');
-        onClose();
+        // Keep current costs but mark as applied for green highlighting
+        const currentCosts = structuralItems.map(item => ({
+          itemNo: item.itemNo,
+          newCost: item.currentCost
+        }));
+        console.log('🔄 StructuralCostWarningDialog: Keeping current costs but marking as applied:', currentCosts);
+        onApply(currentCosts);
         // Only trigger export if this was called from export workflow
         if (isExportWorkflow && onComplete) {
-          console.log('🔄 StructuralCostWarningDialog: Triggering export after leaving costs as-is');
-          onComplete();
+          console.log('🔄 StructuralCostWarningDialog: Triggering export after keeping current costs');
+          setTimeout(() => onComplete(), 300);
         }
         break;
         
