@@ -165,18 +165,40 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
   const sqlite3 = (await import('sqlite3')).default;
   const db = new sqlite3.Database(db3FilePath);
   
-  // Execute query to get authentic sections with proper JOIN
-  const query = `
-    SELECT s.*, 
-           fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey,
-           s.OBJ_Size1, s.OBJ_Material, s.OBJ_Length, s.OBJ_TimeStamp, s.OBJ_FlowDir
-    FROM SECTION s
-    LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
-    LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
-  `;
+  // First, check what tables exist in the database
+  const tableCheckQuery = `SELECT name FROM sqlite_master WHERE type='table'`;
   
   return new Promise((resolve, reject) => {
-    db.all(query, [], async (err: any, sectionRecords: any[]) => {
+    db.all(tableCheckQuery, [], (tableErr: any, tables: any[]) => {
+      if (tableErr) {
+        console.error('❌ Error checking database tables:', tableErr);
+        db.close();
+        reject(tableErr);
+        return;
+      }
+      
+      const tableNames = tables.map(t => t.name);
+      console.log('📋 Available tables in database:', tableNames);
+      
+      // Check if we have the required tables
+      if (!tableNames.includes('SECTION')) {
+        console.error('❌ Database missing SECTION table. Available tables:', tableNames);
+        db.close();
+        reject(new Error(`Invalid Wincan database: Missing SECTION table. Found tables: ${tableNames.join(', ')}`));
+        return;
+      }
+      
+      // Execute query to get authentic sections with proper JOIN
+      const query = `
+        SELECT s.*, 
+               fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey,
+               s.OBJ_Size1, s.OBJ_Material, s.OBJ_Length, s.OBJ_TimeStamp, s.OBJ_FlowDir
+        FROM SECTION s
+        LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
+        LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
+      `;
+      
+      db.all(query, [], async (err: any, sectionRecords: any[]) => {
       if (err) {
         console.error('❌ Error reading SECTION table:', err);
         db.close();
@@ -343,7 +365,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
         });
       });
     });
-  });
 }
 
 // Store authentic sections in database with comprehensive duplicate prevention
