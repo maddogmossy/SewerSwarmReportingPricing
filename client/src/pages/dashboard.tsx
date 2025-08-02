@@ -2286,7 +2286,7 @@ export default function Dashboard() {
       vehicleTravelRatesLength: vehicleTravelRates?.length || 0
     });
 
-    if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations) {
+    if (rawSectionData?.length > 0 && pr2Configurations) {
       try {
         // Transform section data to match validation interface
         const reportSections: ReportSection[] = rawSectionData.map(section => ({
