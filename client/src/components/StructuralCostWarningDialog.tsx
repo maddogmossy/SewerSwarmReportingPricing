@@ -11,6 +11,7 @@ interface StructuralItem {
   defects: string;
   patchCount?: number;
   costPerPatch?: number;
+  isCombinedWork?: boolean;
 }
 
 interface StructuralCostWarningDialogProps {
@@ -199,7 +200,7 @@ export default function StructuralCostWarningDialog({
                       <span className="ml-2 text-gray-600">({item.method})</span>
                       {item.patchCount && (
                         <span className="ml-2 text-orange-600">
-                          {item.patchCount} patch{item.patchCount > 1 ? 'es' : ''}
+                          {item.isCombinedWork ? '1 cut & 2 patches' : `${item.patchCount} patch${item.patchCount > 1 ? 'es' : ''}`}
                         </span>
                       )}
                     </div>

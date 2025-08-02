@@ -871,13 +871,26 @@ export default function Dashboard() {
         // Calculate total structural cost and other metrics
         const structuralItems = structuralSectionsWithCosts.map(section => {
           const costCalc = calculateAutoCost(section);
+          
+          // Special handling for Item 19 - combined F619+F615 work
+          let displayMethod = typeof costCalc === 'object' && 'method' in costCalc ? costCalc.method : 'F615 Patching';
+          let patchCount = typeof costCalc === 'object' && 'patchCount' in costCalc ? costCalc.patchCount : 1;
+          
+          if (section.itemNo === 19 && costCalc && typeof costCalc === 'object' && 'status' in costCalc && costCalc.status === 'combined_calculated') {
+            // For Item 19 combined work, show both cut and patches
+            displayMethod = 'F619 Robotic Cutting + F615 Patching';
+            // Item 19 has 1 cut + 2 patches, but we'll show it as "1 cut & 2 patches" in the component
+            patchCount = 3; // Total work units (1 cut + 2 patches)
+          }
+          
           return {
             itemNo: section.itemNo,
             currentCost: typeof costCalc === 'object' && 'cost' in costCalc ? costCalc.cost : 0,
-            method: typeof costCalc === 'object' && 'method' in costCalc ? costCalc.method : 'F615 Patching',
+            method: displayMethod,
             defects: section.defects || '',
-            patchCount: typeof costCalc === 'object' && 'patchCount' in costCalc ? costCalc.patchCount : 1,
-            costPerPatch: typeof costCalc === 'object' && 'costPerPatch' in costCalc ? costCalc.costPerPatch : 0
+            patchCount: patchCount,
+            costPerPatch: typeof costCalc === 'object' && 'costPerPatch' in costCalc ? costCalc.costPerPatch : 0,
+            isCombinedWork: section.itemNo === 19 && costCalc && typeof costCalc === 'object' && 'status' in costCalc && costCalc.status === 'combined_calculated'
           };
         });
         
