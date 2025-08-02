@@ -406,7 +406,18 @@ export async function registerRoutes(app: Express) {
   // File upload endpoint for database files only
   app.post("/api/upload", upload.single("file"), async (req: Request, res: Response) => {
     try {
+      console.log('🔍 UPLOAD ROUTE - Start processing');
+      console.log('🔍 req.file:', req.file ? {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        path: req.file.path
+      } : 'NO FILE');
+      console.log('🔍 req.body:', req.body);
+      console.log('🔍 req.files:', req.files);
+      
       if (!req.file) {
+        console.log('❌ No file uploaded');
         return res.status(400).json({ error: "No file uploaded" });
       }
 
@@ -527,8 +538,22 @@ export async function registerRoutes(app: Express) {
           // Extract authentic data from database with enhanced debugging
           console.log('🔍 Processing database file:', mainDbPath);
           console.log('🔍 Sector:', req.body.sector || 'utilities');
+          console.log('🔍 File exists:', fs.existsSync(mainDbPath));
           
-          const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+          let sections;
+          try {
+            console.log('🔍 Calling readWincanDatabase...');
+            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+            console.log('✅ readWincanDatabase completed successfully');
+          } catch (readError) {
+            console.error('❌ readWincanDatabase failed:', readError);
+            console.error('❌ Error details:', {
+              message: readError.message,
+              stack: readError.stack,
+              name: readError.name
+            });
+            throw new Error(`Database reading failed: ${readError.message}`);
+          }
           
           console.log('📊 SECSTAT Processing Results:');
           console.log(`📊 Total sections extracted: ${sections.length}`);

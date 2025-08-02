@@ -392,7 +392,13 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
     }
   }
   
-} 
+}
+
+function classifyDefectByMSCC5Standards(observations: string[], sector: string = 'utilities'): { severityGrade: number, defectType: string, recommendations: string, adoptable: string } {
+  // Get available observation codes
+  
+  // Define observation code meanings for reference
+  const observationCodes: { [key: string]: string } = {
     'WL': 'Water level',
     'D': 'Deformation',
     'FC': 'Fracture - circumferential',
