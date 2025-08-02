@@ -3050,6 +3050,36 @@ export default function Dashboard() {
           });
         }
         
+        // SPECIFIC F608 MM4-225 MATH VERIFICATION - Enhanced debugging for 225mm configuration
+        if (matchingPipeSizeKey === '225-2251' && (section.itemNo === 22 || section.itemNo === 13)) {
+          console.log('🧮 F608 MM4-225 MATH VERIFICATION:', {
+            sectionId: section.itemNo,
+            pipeSizeKey: matchingPipeSizeKey,
+            sectionRequirements: {
+              pipeSize: sectionPipeSize,
+              length: sectionLength,
+              debrisPercent: sectionDebrisPercent
+            },
+            mm4_225_Configuration: {
+              totalRows: matchingMM4Data ? matchingMM4Data.length : 0,
+              row1Config: matchingMM4Data && matchingMM4Data[0] ? {
+                blueValue: matchingMM4Data[0].blueValue,
+                greenValue: matchingMM4Data[0].greenValue,
+                purpleDebris: matchingMM4Data[0].purpleDebris,
+                purpleLength: matchingMM4Data[0].purpleLength,
+                expectedMath: `£${matchingMM4Data[0].blueValue || '950'} ÷ ${matchingMM4Data[0].greenValue || '8'} runs = £${(parseFloat(matchingMM4Data[0].blueValue || '950') / parseFloat(matchingMM4Data[0].greenValue || '8')).toFixed(2)} per run`
+              } : null,
+              fromConsoleBuffer: {
+                blueValue: '950',
+                greenValue: '8', 
+                purpleDebris: '20',
+                purpleLength: '99.99',
+                expectedMath: '£950 ÷ 8 runs = £118.75 per run'
+              }
+            }
+          });
+        }
+        
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
           // DEBUG: Special tracking for Item 13 F608 Row 3 calculations AND Item 22 F608 first-time configuration
           if (section.itemNo === 13 || section.itemNo === 22) {
@@ -3117,7 +3147,11 @@ export default function Dashboard() {
                   debrisCheck: `${sectionDebrisPercent}% ≤ ${purpleDebris}% = ${debrisMatch}`,
                   lengthCheck: `${sectionLength}m ≤ ${purpleLength}m = ${lengthMatch}`,
                   rateCheck: `hasValidRate = ${hasValidRate}`
-                }
+                },
+                specialF608_225Check: matchingPipeSizeKey === '225-2251' ? {
+                  expectedCalculation: `£${blueValue} ÷ ${greenValue} runs = £${blueValue > 0 && greenValue > 0 ? (blueValue / greenValue).toFixed(2) : 'N/A'} per run`,
+                  configStatus: `225mm Row ${mm4Row.id} - Blue: £${blueValue}, Green: ${greenValue} runs, Purple Debris: ${purpleDebris}%, Purple Length: ${purpleLength}m`
+                } : undefined
               });
             }
             
