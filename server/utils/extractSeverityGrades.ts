@@ -168,42 +168,51 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
   const gradeMap: Record<number, { structural: number | null, service: number | null }> = {};
   
   try {
-    // First, try to get authentic SECSTAT data with proper GR7216 mapping
+    // First, try to get authentic SECSTAT data with automatic database format detection
     let secstatRows = [];
     try {
-      // Try GR7216 format first (uses STA_Inspection_FK)
-      secstatRows = database.prepare(`
-        SELECT ss.*, si.INS_Section_FK, s.OBJ_Key, 
-               CASE 
-                 WHEN s.OBJ_Key = 'S1.015X' THEN 1
-                 WHEN s.OBJ_Key = 'S1.016X' THEN 2
-                 WHEN s.OBJ_Key = 'S1.017X' THEN 3
-                 ELSE CAST(SUBSTR(s.OBJ_Key, 4, 3) AS INTEGER)
-               END as itemNo
-        FROM SECSTAT ss
-        LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
-        LEFT JOIN SECTION s ON si.INS_Section_FK = s.OBJ_PK
-        WHERE ss.STA_HighestGrade IS NOT NULL
-      `).all();
+      // Check if this is GR7188 format (has SEC_ItemNo column)
+      const hasSecItemNo = database.prepare("PRAGMA table_info(SECTION)").all()
+        .some(col => col.name === 'SEC_ItemNo');
       
-      console.log(`🔍 Found ${secstatRows.length} SECSTAT rows with GR7216 mapping`);
+      if (hasSecItemNo) {
+        // GR7188 format: Uses SEC_ItemNo directly and STA_Inspection_FK linking
+        secstatRows = database.prepare(`
+          SELECT ss.*, si.INS_Section_FK, s.SEC_ItemNo as itemNo, s.SEC_SectionName
+          FROM SECSTAT ss
+          LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
+          LEFT JOIN SECTION s ON si.INS_Section_FK = s.SEC_PK
+          WHERE s.SEC_ItemNo IS NOT NULL AND ss.STA_HighestGrade IS NOT NULL
+          ORDER BY s.SEC_ItemNo, ss.STA_Type
+        `).all();
+        
+        console.log(`🔍 Found ${secstatRows.length} SECSTAT rows with GR7188 format (SEC_ItemNo)`);
+      } else {
+        // GR7216 format: Uses OBJ_Key with sequential mapping and STA_Inspection_FK linking  
+        secstatRows = database.prepare(`
+          SELECT ss.*, si.INS_Section_FK, s.OBJ_Key, 
+                 CASE 
+                   WHEN s.OBJ_Key = 'S1.015X' THEN 1
+                   WHEN s.OBJ_Key = 'S1.016X' THEN 2
+                   WHEN s.OBJ_Key = 'S1.017X' THEN 3
+                   ELSE CAST(SUBSTR(s.OBJ_Key, 4, 3) AS INTEGER)
+                 END as itemNo
+          FROM SECSTAT ss
+          LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
+          LEFT JOIN SECTION s ON si.INS_Section_FK = s.OBJ_PK
+          WHERE ss.STA_HighestGrade IS NOT NULL
+          ORDER BY itemNo, ss.STA_Type
+        `).all();
+        
+        console.log(`🔍 Found ${secstatRows.length} SECSTAT rows with GR7216 format (OBJ_Key)`);
+      }
+      
       if (secstatRows.length > 0) {
         console.log('🔍 Sample SECSTAT data:', secstatRows.slice(0, 2));
       }
     } catch (error) {
-      // Fallback to GR7188 format (uses STA_Section_FK)
-      try {
-        secstatRows = database.prepare(`
-          SELECT ss.*, s.SEC_ItemNo as itemNo
-          FROM SECSTAT ss
-          LEFT JOIN SECTION s ON ss.STA_Section_FK = s.SEC_PK
-          WHERE s.SEC_ItemNo IS NOT NULL AND ss.STA_HighestGrade IS NOT NULL
-        `).all();
-        console.log(`🔍 Using GR7188 SECSTAT mapping, found ${secstatRows.length} rows`);
-      } catch (fallbackError) {
-        console.log('❌ Both SECSTAT mapping methods failed');
-        secstatRows = [];
-      }
+      console.log('❌ SECSTAT extraction failed:', error.message);
+      secstatRows = [];
     }
     
     
