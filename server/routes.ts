@@ -600,7 +600,11 @@ export async function registerRoutes(app: Express) {
           });
           
         } catch (dbError) {
-          console.error("Database processing error:", dbError);
+          console.error("❌ DATABASE PROCESSING ERROR:", dbError);
+          console.error("❌ Error Type:", dbError.constructor.name);
+          console.error("❌ Error Message:", dbError.message);
+          console.error("❌ Error Stack:", dbError.stack);
+          
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
             .set({ extractedData: "failed" })
