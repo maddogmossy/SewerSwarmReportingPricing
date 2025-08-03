@@ -104,9 +104,9 @@ async function formatObservationText(observations: string[], sector: string = 'u
       return false;
     }
     
-    // Keep water level only if belly condition exists that requires excavation
+    // Keep water level only if belly condition exists
     if (isWaterLevel) {
-      return bellyAnalysis.requiresExcavation;
+      return bellyAnalysis.hasBelly;
     }
     
     return true;
