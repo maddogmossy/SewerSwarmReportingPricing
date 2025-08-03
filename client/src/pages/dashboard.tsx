@@ -322,7 +322,7 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
 
   // Generate contextual recommendation based on defect type and PR2 configuration
   if (defectSummary) {
-    if (requiresCleaning(defects || '')) {
+    if (requiresCleaning(defects || '') && !requiresStructuralRepair(defects || '')) {
       // For now, return a simple static recommendation since we need the checkFunction
       // This will be enhanced once we have access to the check function within the Dashboard component
       return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
@@ -1539,7 +1539,7 @@ export default function Dashboard() {
 
           // MSCC5 RULE: Route based on INDIVIDUAL section defectType, not cross-section checking
           // Service defects route to TP1, structural defects route to TP2
-          if (isServiceDefect || (needsCleaning && !isStructuralDefect)) {
+          if (isServiceDefect && !isStructuralDefect) {
             // Check if any CLEANING PR2 configurations exist AND have actual values configured (exclude patching)
             const validConfigurations = repairPricingData?.filter(config => 
               config.categoryId !== 'patching' && isConfigurationProperlyConfigured(config)
