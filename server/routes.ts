@@ -495,12 +495,11 @@ export async function registerRoutes(app: Express) {
           const uploadDirectory = path.dirname(filePath);
           
           
-          // Import validation function
-          const { validateSpecificDb3File } = await import('./db3-validator');
+          // Import validation function (revert to original working logic)
+          const { validateGenericDb3Files } = await import('./db3-validator');
           
-          // Validate that both .db3 and _Meta.db3 files are present for this specific upload
-          const uploadedFileName = req.file.originalname;
-          const validation = validateSpecificDb3File(filePath, uploadedFileName);
+          // Validate that both .db3 and _Meta.db3 files are present
+          const validation = validateGenericDb3Files(uploadDirectory);
           
           if (!validation.valid) {
             // Update status to failed due to missing files
@@ -533,7 +532,7 @@ export async function registerRoutes(app: Express) {
           // Import and use Wincan database reader from backup (working version)
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
           
-          // Use the main database file for processing
+          // Use the main database file for processing (revert to original logic)
           const mainDbPath = validation.files?.main || filePath;
           
           console.log('🔍 VALIDATION RESULTS:', {
