@@ -5,22 +5,20 @@ import { Upload, X, FileText, Database } from "lucide-react";
 import { checkMetaPairing } from "@/utils/loadDb3Files";
 
 interface FileUploadProps {
-  onFileSelect: (files: File[] | null) => void;
+  onFileSelect: (file: File | null) => void;
   selectedFile?: File | null;
-  selectedFiles?: File[];
   accept?: string;
   maxSize?: number;
   className?: string;
   requiresSector?: boolean;
   selectedSector?: string;
   onSectorPrompt?: () => void;
-  onFileSelectedWithoutSector?: (files: File[]) => void;
+  onFileSelectedWithoutSector?: (file: File) => void;
 }
 
 export default function FileUpload({ 
   onFileSelect, 
   selectedFile, 
-  selectedFiles = [],
   accept = ".db,.db3,.pdf",
   maxSize = 50 * 1024 * 1024, // 50MB default
   className = "",
@@ -57,14 +55,15 @@ export default function FileUpload({
         // Check for meta file pairing
         checkMetaPairing(validFiles);
         
-        // Select all valid files for paired upload
+        // For now, just select the first valid file
+        const firstFile = validFiles[0];
         if (requiresSector && !selectedSector) {
           if (onFileSelectedWithoutSector) {
-            onFileSelectedWithoutSector(validFiles);
+            onFileSelectedWithoutSector(firstFile);
           }
           return;
         }
-        onFileSelect(validFiles);
+        onFileSelect(firstFile);
       }
       return;
     }
@@ -84,12 +83,12 @@ export default function FileUpload({
       // Check if sector is required but not selected
       if (requiresSector && !selectedSector) {
         if (onFileSelectedWithoutSector) {
-          onFileSelectedWithoutSector([file]);
+          onFileSelectedWithoutSector(file);
         }
         return;
       }
       
-      onFileSelect([file]);
+      onFileSelect(file);
     }
   }, [onFileSelect, maxSize, requiresSector, selectedSector, onFileSelectedWithoutSector]);
 
@@ -105,14 +104,15 @@ export default function FileUpload({
         // Check for meta file pairing
         checkMetaPairing(validFiles);
         
-        // Select all valid files for paired upload
+        // For now, just select the first valid file
+        const firstFile = validFiles[0];
         if (requiresSector && !selectedSector) {
           if (onFileSelectedWithoutSector) {
-            onFileSelectedWithoutSector(validFiles);
+            onFileSelectedWithoutSector(firstFile);
           }
           return;
         }
-        onFileSelect(validFiles);
+        onFileSelect(firstFile);
       }
       return;
     }
@@ -132,12 +132,12 @@ export default function FileUpload({
       // Check if sector is required but not selected
       if (requiresSector && !selectedSector) {
         if (onFileSelectedWithoutSector) {
-          onFileSelectedWithoutSector([file]);
+          onFileSelectedWithoutSector(file);
         }
         return;
       }
       
-      onFileSelect([file]);
+      onFileSelect(file);
     }
   }, [onFileSelect, maxSize, requiresSector, selectedSector, onFileSelectedWithoutSector]);
 

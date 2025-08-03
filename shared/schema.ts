@@ -82,7 +82,6 @@ export const fileUploads = pgTable("file_uploads", {
   sitePostcode: varchar("site_postcode", { length: 10 }), // Site postcode for travel calculations
   extractedData: text("extracted_data"), // Temporary storage for extracted sections during pause workflow
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Section inspection data table
