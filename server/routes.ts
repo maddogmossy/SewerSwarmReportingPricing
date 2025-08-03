@@ -36,6 +36,7 @@ const upload = multer({
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
   },
+  preservePath: true,
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['.db', '.db3', '.pdf'];
     const ext = path.extname(file.originalname).toLowerCase();
@@ -44,7 +45,16 @@ const upload = multer({
     } else {
       cb(new Error('Only database files (.db, .db3, meta.db3) and PDF files are allowed'));
     }
-  }
+  },
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+      // Preserve original filename to prevent corruption
+      cb(null, file.originalname);
+    }
+  })
 });
 
 // Separate multer configuration for image uploads (logos)
@@ -552,7 +562,23 @@ export async function registerRoutes(app: Express) {
               stack: readError.stack,
               name: readError.name
             });
-            throw new Error(`Database reading failed: ${readError.message}`);
+            
+            // Update file status to failed
+            await db.update(fileUploads)
+              .set({ 
+                status: "failed",
+                extractedData: JSON.stringify({
+                  error: readError.message,
+                  extractionType: "wincan_database_processing_failed"
+                })
+              })
+              .where(eq(fileUploads.id, fileUpload.id));
+            
+            return res.status(500).json({ 
+              error: `Database processing failed: ${readError.message}`,
+              uploadId: fileUpload.id,
+              status: "failed"
+            });
           }
           
           console.log('📊 SECSTAT Processing Results:');
