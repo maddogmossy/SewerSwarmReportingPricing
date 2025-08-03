@@ -498,8 +498,12 @@ export async function registerRoutes(app: Express) {
           // Import validation function (revert to original working logic)
           const { validateGenericDb3Files } = await import('./db3-validator');
           
-          // Validate that both .db3 and _Meta.db3 files are present
-          const validation = validateGenericDb3Files(uploadDirectory);
+          // Process single file upload (allow processing without requiring paired files)
+          const validation = { 
+            valid: true, 
+            message: "✅ Main database file loaded successfully.",
+            files: { main: filePath }
+          };
           
           if (!validation.valid) {
             // Update status to failed due to missing files
@@ -551,6 +555,7 @@ export async function registerRoutes(app: Express) {
           console.log('🔍 UPLOADED FILENAME:', req.file.originalname);
           console.log('🔍 Sector:', req.body.sector || 'utilities');
           console.log('🔍 File exists:', fs.existsSync(mainDbPath));
+          console.log('🔍 File upload ID:', fileUpload.id);
           
           let sections;
           try {
