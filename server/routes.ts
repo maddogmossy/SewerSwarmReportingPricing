@@ -440,8 +440,12 @@ export async function registerRoutes(app: Express) {
       const sector = req.body.sector || "utilities";
       const folderId = parseInt(req.body.folderId || "0");
 
-      const { readWincanDatabase } = await import("./wincan-db-reader-backup");
-      const result = await readWincanDatabase(mainDbPath, sector, null, metaDbPath);
+      const { readWincanDatabase } = await import("./wincan-db-reader");
+      const result = await readWincanDatabase(mainDbPath, metaDbPath, {
+        folderId,
+        sector,
+        originalFileName: mainDb.originalname,
+      });
 
       console.log("✅ DB3 Processing Complete:", result);
 
