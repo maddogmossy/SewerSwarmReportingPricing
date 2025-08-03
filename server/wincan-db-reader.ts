@@ -470,8 +470,16 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     // If no inspection data found, check if this is a Meta.db3 file
     if (sectionData.length === 0) {
       
-      // Check for project information only
-      const participantData = database.prepare("SELECT * FROM PARTICIPANT").all();
+      // Check for project information only if PARTICIPANT table exists
+      let participantData = [];
+      try {
+        const tableExists = database.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='PARTICIPANT'").get();
+        if (tableExists) {
+          participantData = database.prepare("SELECT * FROM PARTICIPANT").all();
+        }
+      } catch (error) {
+        // PARTICIPANT table doesn't exist - this is normal for some database types
+      }
       
       if (participantData.length > 0) {
         const rgStructuresEntry = participantData.find(p => 
