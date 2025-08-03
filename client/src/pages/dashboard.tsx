@@ -1430,6 +1430,18 @@ export default function Dashboard() {
           }
         };
         
+        // Debug severity grades for troubleshooting
+        if (section.itemNo <= 2) {
+          console.log(`🔍 SEVERITY BADGE DEBUG - Item ${section.itemNo}:`, {
+            severityGrades: section.severityGrades,
+            structuralType: typeof section.severityGrades?.structural,
+            serviceType: typeof section.severityGrades?.service,
+            structuralValue: section.severityGrades?.structural,
+            serviceValue: section.severityGrades?.service,
+            defectType: section.defectType
+          });
+        }
+
         return (
           <div className="text-sm text-center space-y-1">
             {/* Structural Grade */}
