@@ -612,6 +612,7 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
+              status: "completed",
               extractedData: JSON.stringify({
                 sectionsCount: sections.length,
                 extractionType: "wincan_database",
