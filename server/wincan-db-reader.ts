@@ -418,7 +418,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         FROM SECINSP si 
         JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
         WHERE obs.OBS_OpCode IS NOT NULL 
-        AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'WL')
+        AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'WL', 'CN', 'JN')
         ORDER BY si.INS_Section_FK, obs.OBS_Distance
       `).all();
       console.log(`🔍 Found ${obsData.length} observation records`);
