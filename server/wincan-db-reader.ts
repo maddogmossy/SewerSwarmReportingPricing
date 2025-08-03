@@ -556,16 +556,12 @@ async function processSectionTable(
     // Extract pipe material with proper mapping for GR7216 format
     let pipeMaterial = extractAuthenticValue(record, ['SEC_Material', 'material', 'pipe_material', 'OBJ_Material']) || 'Unknown';
     
-    // Convert material codes to proper names
-    if (pipeMaterial === 'CO' || pipeMaterial === 'C') {
-      pipeMaterial = 'Concrete';
-    } else if (pipeMaterial === 'PVC' || pipeMaterial === 'P') {
-      pipeMaterial = 'PVC';
-    } else if (pipeMaterial === 'VI' || pipeMaterial === 'V') {
-      pipeMaterial = 'Vitrified Clay';
-    } else if (pipeMaterial === 'PE' || pipeMaterial === 'HDPE') {
-      pipeMaterial = 'HDPE';
-    }
+    // Keep raw material codes as-is unless we have specific mapping requirements
+    // CO is likely a specific pipe material code that should be preserved
+    console.log(`🔍 Raw pipe material for section ${authenticItemNo}: "${pipeMaterial}"`);
+    
+    // Only convert if we have confirmed material code mappings
+    // For now, preserve the authentic database values
     
     // Calculate total length from section length (handle different database schemas)
     const totalLength = record.SEC_Length || record.OBJ_Length || record.OBJ_RealLength || record.OBJ_PipeLength || 0;
