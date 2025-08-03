@@ -693,8 +693,8 @@ export async function registerRoutes(app: Express) {
       const transformedSections = sections.map(section => ({
         ...section,
         severityGrades: {
-          structural: section.defectType === 'structural' ? section.severityGrade : null,
-          service: section.defectType === 'service' ? section.severityGrade : null
+          structural: section.defectType === 'structural' ? parseInt(section.severityGrade) || null : null,
+          service: section.defectType === 'service' ? parseInt(section.severityGrade) || null : null
         }
       }));
       
