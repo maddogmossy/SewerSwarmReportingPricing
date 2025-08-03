@@ -491,16 +491,34 @@ async function processSectionTable(
     console.log(`🔍 Section ${record.OBJ_Key}: Checking section name = "${sectionName}"`);
     
     if (sectionName) {
-      // Try to extract number from section name (e.g., "Item 15" or "S1.015X")
-      const itemMatch = sectionName.match(/(\d+)/);
-      if (itemMatch) {
-        authenticItemNo = parseInt(itemMatch[1]);
-        console.log(`🔍 Extracted item number: ${authenticItemNo} from "${sectionName}"`);
+      // Enhanced extraction for different naming formats
+      if (sectionName.includes('Item')) {
+        // GR7188 format: "Item 15", "Item 19"
+        const itemMatch = sectionName.match(/Item\s+(\d+)/i);
+        if (itemMatch) {
+          authenticItemNo = parseInt(itemMatch[1]);
+          console.log(`🔍 Extracted GR7188 item number: ${authenticItemNo} from "${sectionName}"`);
+        }
+      } else if (sectionName.match(/S\d+\.\d+/)) {
+        // GR7216 format: "S1.015X", "S1.016X" 
+        const sectionMatch = sectionName.match(/S\d+\.(\d+)/);
+        if (sectionMatch) {
+          authenticItemNo = parseInt(sectionMatch[1]); // Extract "015", "016"
+          console.log(`🔍 Extracted GR7216 item number: ${authenticItemNo} from "${sectionName}"`);
+        }
       } else {
-        console.log(`⚠️ No item number found in section name: "${sectionName}"`);
-        // For GR7216-style sections without clear item numbers, use a sequential number
+        // Fallback: extract any number
+        const itemMatch = sectionName.match(/(\d+)/);
+        if (itemMatch) {
+          authenticItemNo = parseInt(itemMatch[1]);
+          console.log(`🔍 Fallback extracted item number: ${authenticItemNo} from "${sectionName}"`);
+        }
+      }
+      
+      // If still no number found, use sequential numbering
+      if (authenticItemNo === 0) {
         authenticItemNo = authenticSections.length + 1;
-        console.log(`🔍 Assigning sequential item number: ${authenticItemNo}`);
+        console.log(`🔍 Using sequential item number: ${authenticItemNo} for "${sectionName}"`);
       }
     } else {
       console.log(`⚠️ No section name available`);
