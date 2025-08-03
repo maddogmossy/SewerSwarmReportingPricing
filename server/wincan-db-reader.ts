@@ -553,7 +553,19 @@ async function processSectionTable(
       pipeSize = 150;
       console.log(`🔍 Using default pipe size 150mm (database value ${pipeSize} seems incorrect)`);
     }
-    const pipeMaterial = extractAuthenticValue(record, ['SEC_Material', 'material', 'pipe_material', 'OBJ_Material']) || 'Unknown';
+    // Extract pipe material with proper mapping for GR7216 format
+    let pipeMaterial = extractAuthenticValue(record, ['SEC_Material', 'material', 'pipe_material', 'OBJ_Material']) || 'Unknown';
+    
+    // Convert material codes to proper names
+    if (pipeMaterial === 'CO' || pipeMaterial === 'C') {
+      pipeMaterial = 'Concrete';
+    } else if (pipeMaterial === 'PVC' || pipeMaterial === 'P') {
+      pipeMaterial = 'PVC';
+    } else if (pipeMaterial === 'VI' || pipeMaterial === 'V') {
+      pipeMaterial = 'Vitrified Clay';
+    } else if (pipeMaterial === 'PE' || pipeMaterial === 'HDPE') {
+      pipeMaterial = 'HDPE';
+    }
     
     // Calculate total length from section length (handle different database schemas)
     const totalLength = record.SEC_Length || record.OBJ_Length || record.OBJ_RealLength || record.OBJ_PipeLength || 0;
@@ -673,10 +685,26 @@ async function processSectionTable(
       }
     }
     
+    // Special handling for sections with no defects (should be grade 0)
+    if (!defectText || defectText.trim() === '' || defectText === 'No service or structural defect found') {
+      severityGrade = 0;
+      defectType = 'service';
+    }
+    
     // Build recommendations and adoptability from SRM grading
     const srmGrading = getSRMGrading(severityGrade, defectType as 'structural' | 'service');
     const recommendations = srmGrading.action_required;
     const adoptable = srmGrading.adoptable ? 'Adoptable' : 'Not adoptable';
+    
+    console.log(`🔍 Section ${authenticItemNo} SRM Grading:`, {
+      severityGrade,
+      defectType,
+      hasDefects: defectText.length > 0,
+      defectText: defectText.substring(0, 100) + '...',
+      recommendations,
+      adoptable,
+      classificationResult: classification
+    });
     
     const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
