@@ -463,9 +463,9 @@ export async function registerRoutes(app: Express) {
             fileSize: req.file.size,
             fileType: req.file.mimetype,
             filePath: req.file.path,
-            // status: "processing", // Remove this field from update
+            status: "processing",
             sector: req.body.sector || existingUpload[0].sector,
-            // folderId: folderId !== null ? folderId : existingUpload[0].folderId, // Remove folderId from update
+            folderId: folderId !== null ? folderId : existingUpload[0].folderId,
             updatedAt: new Date()
           })
           .where(eq(fileUploads.id, existingUpload[0].id))
@@ -479,7 +479,7 @@ export async function registerRoutes(app: Express) {
           fileSize: req.file.size,
           fileType: req.file.mimetype,
           filePath: req.file.path,
-          // status: "processing", // Remove this field from insert
+          status: "processing",
           projectNumber: projectNo,
           visitNumber: visitNumber,
           sector: req.body.sector || "utilities"
