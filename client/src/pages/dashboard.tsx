@@ -858,8 +858,8 @@ export default function Dashboard() {
       setStructuralCostWarningDismissed(false);
     }
 
-    // Always trigger if we have structural sections with valid costs and haven't shown the dialog yet
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed) {
+    // Enhanced Structural Warning System: Always trigger if we have structural sections with valid costs and haven't shown the dialog yet
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);
