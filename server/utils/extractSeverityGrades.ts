@@ -168,20 +168,51 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
   const gradeMap: Record<number, { structural: number | null, service: number | null }> = {};
   
   try {
-    // First, try to get authentic SECSTAT data
-    const secstatRows = database.prepare(`
-      SELECT ss.*, si.INS_Section_FK, s.OBJ_SortOrder 
-      FROM SECSTAT ss
-      LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
-      LEFT JOIN SECTION s ON si.INS_Section_FK = s.OBJ_PK
-      WHERE s.OBJ_SortOrder IS NOT NULL AND ss.STA_HighestGrade IS NOT NULL
-    `).all();
+    // First, try to get authentic SECSTAT data with proper GR7216 mapping
+    let secstatRows = [];
+    try {
+      // Try GR7216 format first (uses STA_Inspection_FK)
+      secstatRows = database.prepare(`
+        SELECT ss.*, si.INS_Section_FK, s.OBJ_Key, 
+               CASE 
+                 WHEN s.OBJ_Key = 'S1.015X' THEN 1
+                 WHEN s.OBJ_Key = 'S1.016X' THEN 2
+                 WHEN s.OBJ_Key = 'S1.017X' THEN 3
+                 ELSE CAST(SUBSTR(s.OBJ_Key, 4, 3) AS INTEGER)
+               END as itemNo
+        FROM SECSTAT ss
+        LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
+        LEFT JOIN SECTION s ON si.INS_Section_FK = s.OBJ_PK
+        WHERE ss.STA_HighestGrade IS NOT NULL
+      `).all();
+      
+      console.log(`🔍 Found ${secstatRows.length} SECSTAT rows with GR7216 mapping`);
+      if (secstatRows.length > 0) {
+        console.log('🔍 Sample SECSTAT data:', secstatRows.slice(0, 2));
+      }
+    } catch (error) {
+      // Fallback to GR7188 format (uses STA_Section_FK)
+      try {
+        secstatRows = database.prepare(`
+          SELECT ss.*, s.SEC_ItemNo as itemNo
+          FROM SECSTAT ss
+          LEFT JOIN SECTION s ON ss.STA_Section_FK = s.SEC_PK
+          WHERE s.SEC_ItemNo IS NOT NULL AND ss.STA_HighestGrade IS NOT NULL
+        `).all();
+        console.log(`🔍 Using GR7188 SECSTAT mapping, found ${secstatRows.length} rows`);
+      } catch (fallbackError) {
+        console.log('❌ Both SECSTAT mapping methods failed');
+        secstatRows = [];
+      }
+    }
     
     
     // Process authentic SECSTAT grades first
     for (const row of secstatRows) {
-      const itemNo = row.OBJ_SortOrder;
+      const itemNo = row.itemNo; // Use the calculated itemNo from the SQL query
       const grades = extractSeverityGradesFromSecstat(row);
+      
+      console.log(`🔍 Processing SECSTAT for item ${itemNo}, type ${row.STA_Type}, grade ${row.STA_HighestGrade}`, grades);
       
       if (itemNo && (grades.structural !== null || grades.service !== null)) {
         if (!gradeMap[itemNo]) {
@@ -190,13 +221,16 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
         
         if (grades.structural !== null) {
           gradeMap[itemNo].structural = grades.structural;
+          console.log(`🔍 Set structural grade ${grades.structural} for item ${itemNo}`);
         }
         if (grades.service !== null) {
           gradeMap[itemNo].service = grades.service;
+          console.log(`🔍 Set service grade ${grades.service} for item ${itemNo}`);
         }
-        
       }
     }
+    
+    console.log(`🔍 Final SECSTAT grade map:`, gradeMap);
     
     // For sections without SECSTAT records, apply enhanced MSCC5 classification
     const allSections = database.prepare(`
