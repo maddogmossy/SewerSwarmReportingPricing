@@ -819,7 +819,6 @@ export default function Dashboard() {
                                     'status' in costCalc &&
                                     (costCalc.status === 'f615_calculated' || 
                                      costCalc.status === 'f615_patching' ||
-                                     costCalc.status === 'f615_insufficient_items' ||
                                      costCalc.status === 'combined_calculated');
       
       console.log(`🔍 STRUCTURAL COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
@@ -859,8 +858,8 @@ export default function Dashboard() {
       setStructuralCostWarningDismissed(false);
     }
 
-    // Enhanced Structural Warning System: Always trigger if we have structural sections with valid costs and haven't shown the dialog yet
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData) {
+    // Always trigger if we have structural sections with valid costs and haven't shown the dialog yet
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);

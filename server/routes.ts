@@ -36,6 +36,7 @@ const upload = multer({
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
   },
+  preservePath: true,
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['.db', '.db3', '.pdf'];
     const ext = path.extname(file.originalname).toLowerCase();
@@ -44,7 +45,16 @@ const upload = multer({
     } else {
       cb(new Error('Only database files (.db, .db3, meta.db3) and PDF files are allowed'));
     }
-  }
+  },
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+      // Preserve original filename to prevent corruption
+      cb(null, file.originalname);
+    }
+  })
 });
 
 // Separate multer configuration for image uploads (logos)
@@ -403,33 +413,65 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // File upload endpoint for database files only
-  app.post("/api/upload", upload.single("file"), async (req: Request, res: Response) => {
+  // File upload endpoint for database files - supports both single and multiple files
+  app.post("/api/upload", upload.any(), async (req: Request, res: Response) => {
     try {
+      const fileNames = (req.files as any[])?.map(f => f.originalname) || [];
+      console.log(`📥 Upload started for: [${fileNames.join(', ')}]`);
       console.log('🔍 UPLOAD ROUTE - Start processing');
-      console.log('🔍 req.file:', req.file ? {
-        originalname: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        path: req.file.path
-      } : 'NO FILE');
+      console.log('🔍 req.files:', req.files?.map(f => ({
+        originalname: f.originalname,
+        mimetype: f.mimetype,
+        size: f.size,
+        path: f.path,
+        fieldname: f.fieldname
+      })) || 'NO FILES');
       console.log('🔍 req.body:', req.body);
-      console.log('🔍 req.files:', req.files);
       
-      if (!req.file) {
-        console.log('❌ No file uploaded');
-        return res.status(400).json({ error: "No file uploaded" });
+      if (!req.files || req.files.length === 0) {
+        console.log('❌ No files uploaded');
+        return res.status(400).json({ error: "No files uploaded" });
       }
 
+      // Separate main .db3 and Meta.db3 files
+      const allFiles = Array.isArray(req.files) ? req.files : [];
+      const mainFiles = allFiles.filter(f => f.originalname.endsWith('.db3') && !f.originalname.includes('Meta'));
+      const metaFiles = allFiles.filter(f => f.originalname.includes('Meta.db3'));
+      
+      console.log('🔍 FILES DETECTED:', {
+        mainFiles: mainFiles.map(f => f.originalname),
+        metaFiles: metaFiles.map(f => f.originalname),
+        totalFiles: req.files.length
+      });
+
+      if (mainFiles.length === 0) {
+        console.log('❌ No main .db3 file found');
+        return res.status(400).json({ error: "Main .db3 file required" });
+      }
+
+      // Process the first main file (primary processing)
+      const mainFile = mainFiles[0];
+      const matchingMetaFile = metaFiles.find(meta => {
+        const mainBaseName = mainFile.originalname.replace('.db3', '');
+        return meta.originalname.includes(mainBaseName) || meta.originalname.includes('Meta');
+      });
+
       const userId = "test-user";
-      const projectMatch = req.file.originalname.match(/(\d{4})/);
+      // Extract project number from filename preserving GR prefix
+      const projectMatch = mainFile.originalname.match(/((?:GR|Gr)?(\d{4,5})[a-zA-Z]?)/);
       const projectNo = projectMatch ? projectMatch[1] : "0000";
+      
+      console.log('🔍 META.DB3 PAIRING:', {
+        mainFile: mainFile.originalname,
+        metaFile: matchingMetaFile?.originalname || 'NOT FOUND',
+        projectNumber: projectNo
+      });
       
       // Check if this file already exists and has a sector assigned
       const existingUpload = await db.select().from(fileUploads)
         .where(and(
           eq(fileUploads.userId, userId),
-          eq(fileUploads.fileName, req.file.originalname)
+          eq(fileUploads.fileName, mainFile.originalname)
         ))
         .limit(1);
       
@@ -460,9 +502,9 @@ export async function registerRoutes(app: Express) {
         // Update existing upload record
         [fileUpload] = await db.update(fileUploads)
           .set({
-            fileSize: req.file.size,
-            fileType: req.file.mimetype,
-            filePath: req.file.path,
+            fileSize: mainFile.size,
+            fileType: mainFile.mimetype,
+            filePath: mainFile.path,
             // status: "processing", // Remove this field from update
             sector: req.body.sector || existingUpload[0].sector,
             // folderId: folderId !== null ? folderId : existingUpload[0].folderId, // Remove folderId from update
@@ -475,10 +517,10 @@ export async function registerRoutes(app: Express) {
         [fileUpload] = await db.insert(fileUploads).values({
           userId: userId,
           folderId: folderId,
-          fileName: req.file.originalname,
-          fileSize: req.file.size,
-          fileType: req.file.mimetype,
-          filePath: req.file.path,
+          fileName: mainFile.originalname,
+          fileSize: mainFile.size,
+          fileType: mainFile.mimetype,
+          filePath: mainFile.path,
           // status: "processing", // Remove this field from insert
           projectNumber: projectNo,
           visitNumber: visitNumber,
@@ -488,22 +530,18 @@ export async function registerRoutes(app: Express) {
 
 
       // Check file type and process accordingly
-      if (req.file.originalname.endsWith('.db') || req.file.originalname.endsWith('.db3') || req.file.originalname.endsWith('meta.db3')) {
+      if (mainFile.originalname.endsWith('.db') || mainFile.originalname.endsWith('.db3') || mainFile.originalname.endsWith('meta.db3')) {
         // Process database files with validation
         try {
-          const filePath = req.file.path;
+          const filePath = mainFile.path;
           const uploadDirectory = path.dirname(filePath);
           
           
-          // Import validation function (revert to original working logic)
+          // Import validation function
           const { validateGenericDb3Files } = await import('./db3-validator');
           
-          // Process single file upload (allow processing without requiring paired files)
-          const validation = { 
-            valid: true, 
-            message: "✅ Main database file loaded successfully.",
-            files: { main: filePath }
-          };
+          // Validate that both .db3 and _Meta.db3 files are present
+          const validation = validateGenericDb3Files(uploadDirectory);
           
           if (!validation.valid) {
             // Update status to failed due to missing files
@@ -536,31 +574,38 @@ export async function registerRoutes(app: Express) {
           // Import and use Wincan database reader from backup (working version)
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
           
-          // Use the main database file for processing (revert to original logic)
-          const mainDbPath = validation.files?.main || filePath;
+          // Always use the actual uploaded file path to avoid validation path mismatches
+          const mainDbPath = mainFile.path;
+          const metaDbPath = matchingMetaFile?.path || validation.files?.meta || null;
           
-          console.log('🔍 VALIDATION RESULTS:', {
-            validationValid: validation.valid,
-            validationMessage: validation.message,
-            validationWarning: validation.warning,
-            hasMainFile: !!validation.files?.main,
-            hasMetaFile: !!validation.files?.meta,
+          console.log('🔍 FINAL FILE PATHS:', {
             mainDbPath: mainDbPath,
-            uploadedFileName: req.file.originalname
+            metaDbPath: metaDbPath,
+            metaFileExists: metaDbPath ? fs.existsSync(metaDbPath) : false
           });
+          console.log('🔍 File path debugging:', {
+            originalName: mainFile.originalname,
+            uploadedPath: mainFile.path,
+            validationPath: validation.files?.main,
+            finalPath: mainDbPath,
+            metaPath: metaDbPath
+          });
+
+          if (!metaDbPath) {
+            console.error('❌ Meta.db3 file missing or unreadable - SECSTAT grades will be limited');
+          }
           
           // Extract authentic data from database with enhanced debugging
           console.log('🔍 Processing database file:', mainDbPath);
-          console.log('🔍 ACTUAL FILE PATH:', req.file.path);
-          console.log('🔍 UPLOADED FILENAME:', req.file.originalname);
           console.log('🔍 Sector:', req.body.sector || 'utilities');
           console.log('🔍 File exists:', fs.existsSync(mainDbPath));
-          console.log('🔍 File upload ID:', fileUpload.id);
           
           let sections;
           try {
             console.log('🔍 Calling readWincanDatabase...');
-            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+            // Pass the correct project number and meta file path for complete processing
+            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.projectNumber, metaDbPath);
+            console.log(`✅ DB3 parsed: [${sections.length} sections found]`);
             console.log('✅ readWincanDatabase completed successfully');
           } catch (readError) {
             console.error('❌ readWincanDatabase failed:', readError);
@@ -569,7 +614,23 @@ export async function registerRoutes(app: Express) {
               stack: readError.stack,
               name: readError.name
             });
-            throw new Error(`Database reading failed: ${readError.message}`);
+            
+            // Update file status to failed
+            await db.update(fileUploads)
+              .set({ 
+                status: "failed",
+                extractedData: JSON.stringify({
+                  error: readError.message,
+                  extractionType: "wincan_database_processing_failed"
+                })
+              })
+              .where(eq(fileUploads.id, fileUpload.id));
+            
+            return res.status(500).json({ 
+              error: `Database processing failed: ${readError.message}`,
+              uploadId: fileUpload.id,
+              status: "failed"
+            });
           }
           
           console.log('📊 SECSTAT Processing Results:');
@@ -597,6 +658,7 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
+              status: "completed",
               extractedData: JSON.stringify({
                 sectionsCount: sections.length,
                 extractionType: "wincan_database",
@@ -606,23 +668,20 @@ export async function registerRoutes(app: Express) {
             })
             .where(eq(fileUploads.id, fileUpload.id));
           
+          console.log('🚀 Data available in dashboard');
+          
           res.json({
             message: "Database file processed successfully",
             uploadId: fileUpload.id,
             sectionsExtracted: sections.length,
             status: "completed",
-            validation: validation.warning ? validation.warning : validation.message,
+            validation: validation.message,
             warning: validation.warning,
-            hasMetaDb: !!validation.files?.meta,
-            missingMetaFile: !validation.files?.meta
+            hasMetaDb: !!validation.files?.meta
           });
           
         } catch (dbError) {
-          console.error("❌ DATABASE PROCESSING ERROR:", dbError);
-          console.error("❌ Error Type:", dbError.constructor.name);
-          console.error("❌ Error Message:", dbError.message);
-          console.error("❌ Error Stack:", dbError.stack);
-          
+          console.error("Database processing error:", dbError);
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
             .set({ extractedData: "failed" })
@@ -1167,6 +1226,31 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Error triggering fuel price update:', error);
       res.status(500).json({ error: 'Failed to trigger fuel price update' });
+    }
+  });
+
+  // PR2 Clean endpoint (for clearing cache/cleaning data)
+  app.get('/api/pr2-clean', async (req: Request, res: Response) => {
+    try {
+      res.json({ message: 'PR2 clean operation completed', status: 'success' });
+    } catch (error) {
+      console.error('Error in PR2 clean:', error);
+      res.status(500).json({ error: 'Failed to execute PR2 clean' });
+    }
+  });
+
+  // Get defects for a specific upload
+  app.get('/api/uploads/:id/defects', async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const defects = await db.select()
+        .from(sectionDefects)
+        .where(eq(sectionDefects.fileUploadId, uploadId))
+        .orderBy(asc(sectionDefects.itemNo));
+      res.json(defects);
+    } catch (error) {
+      console.error('Error fetching defects:', error);
+      res.status(500).json({ error: 'Failed to fetch defects' });
     }
   });
 

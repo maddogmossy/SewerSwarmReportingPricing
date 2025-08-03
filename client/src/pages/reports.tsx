@@ -113,9 +113,7 @@ export default function Reports() {
   // Delete mutation for folders
   const deleteFolderMutation = useMutation({
     mutationFn: async (folderId: number) => {
-      return apiRequest(`/api/folders/${folderId}`, {
-        method: 'DELETE'
-      });
+      return apiRequest('DELETE', `/api/folders/${folderId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
@@ -141,9 +139,7 @@ export default function Reports() {
   // Delete mutation for uploads
   const deleteUploadMutation = useMutation({
     mutationFn: async (uploadId: number) => {
-      return apiRequest(`/api/uploads/${uploadId}`, {
-        method: 'DELETE'
-      });
+      return apiRequest('DELETE', `/api/uploads/${uploadId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
