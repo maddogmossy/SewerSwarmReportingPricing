@@ -827,12 +827,14 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     const buffer = fs.readFileSync(filePath);
     const header = buffer.subarray(0, 16).toString('ascii');
     
+    console.log("🔍 File header check:", header.substring(0, 15));
     if (!header.startsWith('SQLite format')) {
       console.error("❌ CORRUPTED DATABASE FILE DETECTED");
       console.error("📊 File header:", header.replace(/\0/g, '\\0'));
       console.error("🚫 LOCKDOWN: Cannot extract authentic data from corrupted file");
       throw new Error("Database file corrupted during upload - requires fresh upload with fixed multer configuration");
     }
+    console.log("✅ Database file header validation passed");
     
     // Open the database only if verified as valid SQLite
     const database = new Database(filePath, { readonly: true });
