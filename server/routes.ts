@@ -535,6 +535,16 @@ export async function registerRoutes(app: Express) {
           // Use the main database file for processing
           const mainDbPath = validation.files?.main || filePath;
           
+          console.log('🔍 VALIDATION RESULTS:', {
+            validationValid: validation.valid,
+            validationMessage: validation.message,
+            validationWarning: validation.warning,
+            hasMainFile: !!validation.files?.main,
+            hasMetaFile: !!validation.files?.meta,
+            mainDbPath: mainDbPath,
+            uploadedFileName: req.file.originalname
+          });
+          
           // Extract authentic data from database with enhanced debugging
           console.log('🔍 Processing database file:', mainDbPath);
           console.log('🔍 Sector:', req.body.sector || 'utilities');
@@ -594,9 +604,10 @@ export async function registerRoutes(app: Express) {
             uploadId: fileUpload.id,
             sectionsExtracted: sections.length,
             status: "completed",
-            validation: validation.message,
+            validation: validation.warning ? validation.warning : validation.message,
             warning: validation.warning,
-            hasMetaDb: !!validation.files?.meta
+            hasMetaDb: !!validation.files?.meta,
+            missingMetaFile: !validation.files?.meta
           });
           
         } catch (dbError) {
