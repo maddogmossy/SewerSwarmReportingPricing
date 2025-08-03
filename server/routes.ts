@@ -559,7 +559,8 @@ export async function registerRoutes(app: Express) {
           let sections;
           try {
             console.log('🔍 Calling readWincanDatabase...');
-            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
+            // Pass the correct project number from the filename parsing
+            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.projectNumber);
             console.log('✅ readWincanDatabase completed successfully');
           } catch (readError) {
             console.error('❌ readWincanDatabase failed:', readError);

@@ -306,7 +306,7 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             
             const sectionData: WincanSectionData = {
               itemNo: authenticItemNo,
-              projectNo: record.OBJ_Name || 'GR7188',
+              projectNo: projectNumber || record.OBJ_Name || 'GR7188',
               startMH: startMH,
               finishMH: finishMH,
               pipeSize: pipeSize.toString(),
@@ -814,7 +814,7 @@ export interface WincanSectionData {
   defectType?: string; // 'structural' | 'service'
 }
 
-export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities', projectNumber: string | null = null): Promise<WincanSectionData[]> {
   
   try {
     // Check if file exists
@@ -894,7 +894,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       const sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
       
       if (sectionRecords.length > 0) {
-        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
+        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades, projectNumber);
       }
     }
     
@@ -929,7 +929,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
 }
 
 // Process authentic SECTION data with manhole name mapping - ZERO SYNTHETIC DATA
-async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities', severityGrades: Record<number, { structural: number | null, service: number | null }> = {}): Promise<WincanSectionData[]> {
+async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities', severityGrades: Record<number, { structural: number | null, service: number | null }> = {}, projectNumber: string | null = null): Promise<WincanSectionData[]> {
   
   if (!sectionRecords || sectionRecords.length === 0) {
     console.error("❌ No authentic section data found");
@@ -1083,7 +1083,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         
         const serviceSection: WincanSectionData = {
           itemNo: authenticItemNo,
-          projectNo: record.OBJ_Name || 'GR7188',
+          projectNo: projectNumber || record.OBJ_Name || 'GR7188',
           startMH: startMH,
           finishMH: finishMH,
           pipeSize: pipeSize.toString(),
@@ -1121,7 +1121,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         const structuralSection: WincanSectionData = {
           itemNo: authenticItemNo,
           letterSuffix: 'a',
-          projectNo: record.OBJ_Name || 'GR7188',
+          projectNo: projectNumber || record.OBJ_Name || 'GR7188',
           startMH: startMH,
           finishMH: finishMH,
           pipeSize: pipeSize.toString(),
@@ -1187,7 +1187,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       
       const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
-        projectNo: record.OBJ_Name || 'GR7188',
+        projectNo: projectNumber || record.OBJ_Name || 'GR7188',
         startMH: startMH,
         finishMH: finishMH,
         pipeSize: pipeSize.toString(),
