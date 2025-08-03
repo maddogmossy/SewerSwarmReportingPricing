@@ -699,11 +699,18 @@ export async function registerRoutes(app: Express) {
         }
       }));
       
-      console.log('🔍 API SECTIONS - Transformed first section:', transformedSections[0] ? {
+      console.log('🔍 API SECTIONS - Pre-transform raw section:', sections[0] ? {
+        itemNo: sections[0].itemNo,
+        severityGrade: sections[0].severityGrade,
+        defectType: sections[0].defectType,
+        rawSeverityGrades: sections[0].severityGrades
+      } : 'no sections');
+      
+      console.log('🔍 API SECTIONS - Post-transform section:', transformedSections[0] ? {
         itemNo: transformedSections[0].itemNo,
         severityGrade: transformedSections[0].severityGrade,
         defectType: transformedSections[0].defectType,
-        severityGrades: transformedSections[0].severityGrades
+        transformedSeverityGrades: transformedSections[0].severityGrades
       } : 'no sections');
       
       res.json(transformedSections);
