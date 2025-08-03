@@ -739,3 +739,65 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
   }
   return null;
 }
+
+// Store WinCan sections in database - RESTORED FROM BACKUP
+export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
+  
+  // First, clear any existing sections for this upload to prevent accumulation
+  try {
+    const deletedSections = await db.delete(sectionInspections)
+      .where(eq(sectionInspections.fileUploadId, uploadId))
+      .returning();
+  } catch (error) {
+    // Ignore deletion errors - likely no existing sections
+  }
+  
+  // Track processed sections to prevent duplicates within this batch
+  const processedSections = new Set<string>();
+  
+  for (const section of sections) {
+    // Create unique key combining item number and letter suffix
+    const uniqueKey = `${section.itemNo}${section.letterSuffix || ''}`;
+    
+    // Skip if we've already processed this unique combination
+    if (processedSections.has(uniqueKey)) {
+      continue;
+    }
+    
+    try {
+      const insertData = {
+        fileUploadId: uploadId,
+        itemNo: section.itemNo,
+        letterSuffix: section.letterSuffix || null,
+        projectNo: section.projectNo,
+        date: section.inspectionDate,
+        time: section.inspectionTime,
+        startMH: section.startMH,
+        finishMH: section.finishMH,
+        pipeSize: section.pipeSize,
+        pipeMaterial: section.pipeMaterial,
+        totalLength: section.totalLength,
+        lengthSurveyed: section.lengthSurveyed,
+        defects: section.defects,
+        defectType: section.defectType,
+        recommendations: section.recommendations,
+        severityGrade: section.severityGrade,
+        adoptable: section.adoptable,
+        startMHDepth: 'No data',
+        finishMHDepth: 'No data'
+      };
+      
+      // Insert directly without upsert to avoid constraint issues
+      await db.insert(sectionInspections)
+        .values(insertData);
+      
+      processedSections.add(uniqueKey);
+      console.log(`✅ Stored section ${section.itemNo}${section.letterSuffix || ''} successfully`);
+      
+    } catch (error) {
+      console.error(`❌ Error storing section ${section.itemNo}:`, error);
+    }
+  }
+  
+  console.log(`📊 Storage complete: ${processedSections.size} sections stored for upload ${uploadId}`);
+}
