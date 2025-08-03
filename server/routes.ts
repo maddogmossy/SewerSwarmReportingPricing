@@ -413,15 +413,16 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // File upload endpoint for database files - supports multiple files for .db3 + Meta.db3
-  app.post("/api/upload", upload.array("files", 10), async (req: Request, res: Response) => {
+  // File upload endpoint for database files - supports both single and multiple files
+  app.post("/api/upload", upload.any(), async (req: Request, res: Response) => {
     try {
       console.log('🔍 UPLOAD ROUTE - Start processing');
       console.log('🔍 req.files:', req.files?.map(f => ({
         originalname: f.originalname,
         mimetype: f.mimetype,
         size: f.size,
-        path: f.path
+        path: f.path,
+        fieldname: f.fieldname
       })) || 'NO FILES');
       console.log('🔍 req.body:', req.body);
       
@@ -431,8 +432,9 @@ export async function registerRoutes(app: Express) {
       }
 
       // Separate main .db3 and Meta.db3 files
-      const mainFiles = req.files.filter(f => f.originalname.endsWith('.db3') && !f.originalname.includes('Meta'));
-      const metaFiles = req.files.filter(f => f.originalname.includes('Meta.db3'));
+      const allFiles = Array.isArray(req.files) ? req.files : [];
+      const mainFiles = allFiles.filter(f => f.originalname.endsWith('.db3') && !f.originalname.includes('Meta'));
+      const metaFiles = allFiles.filter(f => f.originalname.includes('Meta.db3'));
       
       console.log('🔍 FILES DETECTED:', {
         mainFiles: mainFiles.map(f => f.originalname),
@@ -586,6 +588,10 @@ export async function registerRoutes(app: Express) {
             finalPath: mainDbPath,
             metaPath: metaDbPath
           });
+
+          if (!metaDbPath) {
+            console.error('❌ Meta.db3 file missing or unreadable - SECSTAT grades will be limited');
+          }
           
           // Extract authentic data from database with enhanced debugging
           console.log('🔍 Processing database file:', mainDbPath);
