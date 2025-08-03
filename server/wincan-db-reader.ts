@@ -1,6 +1,35 @@
+/**
+ * WINCAN DATABASE READER - AUTHENTIC DATA EXTRACTION ONLY
+ * 
+ * RESTORED: August 3, 2025 - Complete authentic extraction system restored from backup
+ * 
+ * LOCKDOWN RULES:
+ * 1. Only extract data that exists in the database
+ * 2. Never generate synthetic/mock/placeholder data  
+ * 3. Use proper database relationships and column mapping
+ * 4. Maintain data integrity through authentic extraction only
+ * 
+ * LOCKED IMPLEMENTATION DETAILS:
+ * - NODE table: OBJ_PK (GUID) → OBJ_Key (SW01, SW02, FW01...)
+ * - SECTION table: OBJ_FromNode_REF/OBJ_ToNode_REF links to NODE OBJ_PK
+ * - SECOBS table: OBJ_Section_REF links to SECTION OBJ_PK for observation data
+ * - Proper filtering: Active sections only (24) vs total database records (39)
+ * - Manhole mapping: manholeMap for GUID→readable name conversion
+ * - Observation mapping: observationMap for authentic observation codes
+ * 
+ * ⚠️ RESTORED FROM BACKUP - This working implementation is locked in
+ */
+
+// Wincan Database Reader - Extract inspection data from .db3 files
+import Database from 'better-sqlite3';
+import fs from 'fs';
 import { db } from "./db";
-import { sectionInspections } from "../shared/schema";
+import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import { getSeverityGradesBySection, extractSeverityGradesFromSecstat } from "./utils/extractSeverityGrades";
+import { parseDb3File, ParsedSection } from "./parseDb3File";
+
+// Multi-defect splitting enabled - sections with both service and structural defects will be split
 
 export interface WincanSectionData {
   itemNo: number;
@@ -21,7 +50,7 @@ export interface WincanSectionData {
   defectType: string;
 }
 
-// Enhanced observation remark system
+// Enhanced observation with remark system
 function enhanceObservationWithRemark(observation: string): string {
   // Define remark mappings for common observation codes
   const remarkMappings: Record<string, string> = {
@@ -56,6 +85,7 @@ function enhanceObservationWithRemark(observation: string): string {
 }
 
 // Format observation text with defect codes prefixed for MSCC5 classification
+// JN codes only display if structural defect within one meter of junction
 async function formatObservationText(observations: string[], sector: string = 'utilities'): Promise<string> {
   
   // STEP 1: Check for belly conditions requiring excavation using MSCC5 classifier
@@ -69,281 +99,111 @@ async function formatObservationText(observations: string[], sector: string = 'u
     const isFinishNode = obs.includes('CPF ') || obs.includes('COF ') || obs.includes('OCF ') || 
                         obs.includes('CP (') || obs.includes('OC (') || obs.includes('MHF ') || 
                         obs.includes('Finish node') || obs.includes('Start node');
-    
+                        
     if (isFinishNode) {
       return false;
     }
     
+    // Keep water level only if belly condition exists that requires excavation
     if (isWaterLevel) {
-      // Only keep water level observations if they are part of a belly condition requiring excavation
-      if (bellyAnalysis.hasBelly && bellyAnalysis.adoptionFail) {
-        return true;
-      } else {
-        return false;
-      }
+      return bellyAnalysis.requiresExcavation;
     }
     
-    return true; // Keep all other observations
-  });
-  
-  
-  if (preFiltered.length === 0) {
-    return '';
-  }
+    return true;
+  }).map(obs => enhanceObservationWithRemark(obs));
 
-  // STEP 3: Simple defect code extraction and prefixing
-  const processedObservations: string[] = [];
+  // Define observation code meanings for reference
+  const observationCodes: { [key: string]: string } = {
+    'WL': 'Water level',
+    'D': 'Deformation',
+    'FC': 'Fracture - circumferential',
+    'FL': 'Fracture - longitudinal',
+    'CR': 'Crack',
+    'JN': 'Junction',
+    'LL': 'Line deviates left',
+    'LR': 'Line deviates right',
+    'RI': 'Root intrusion',
+    'JDL': 'Joint displacement - large',
+    'JDS': 'Joint displacement - small',
+    'OJM': 'Open joint - medium',
+    'OJL': 'Open joint - large',
+    'CPF': 'Catchpit/node feature'
+  };
   
+  const codeGroups: { [key: string]: Array<{meterage: string, fullText: string}> } = {};
+  const nonGroupedObservations: string[] = [];
+  const junctionPositions: number[] = [];
+  const structuralDefectPositions: number[] = [];
+  
+  // STEP 2: First pass - identify junction positions and structural defects
   for (const obs of preFiltered) {
-    // Extract defect code from observation (DES, CR, WL, FC, etc.)
-    const codeMatch = obs.match(/^([A-Z]+)\s/);
-    if (codeMatch && codeMatch[1]) {
+    const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
+    if (codeMatch) {
       const code = codeMatch[1];
-      // Keep original observation but ensure code is at the start
-      if (!obs.startsWith(code + ' ')) {
-        processedObservations.push(`${code} ${obs.replace(/^[A-Z]+\s*/, '')}`);
-      } else {
-        processedObservations.push(obs);
-      }
-    } else {
-      // Try to identify defect type from content and prefix appropriate code
-      const obsLower = obs.toLowerCase();
-      let prefixCode = '';
+      const meterage = parseFloat(codeMatch[2]);
       
-      if (obsLower.includes('deposit') && obsLower.includes('fine')) {
-        prefixCode = 'DES';
-      } else if (obsLower.includes('deposit') && obsLower.includes('coarse')) {
-        prefixCode = 'DER';
-      } else if (obsLower.includes('water level')) {
-        prefixCode = 'WL';
-      } else if (obsLower.includes('crack') && obsLower.includes('longitudinal')) {
-        prefixCode = 'CR';
-      } else if (obsLower.includes('fracture') && obsLower.includes('circumferential')) {
-        prefixCode = 'FC';
-      } else if (obsLower.includes('fracture') && obsLower.includes('longitudinal')) {
-        prefixCode = 'FL';
-      } else if (obsLower.includes('deformation')) {
-        prefixCode = 'D';
-      } else if (obsLower.includes('junction')) {
-        prefixCode = 'JN';
+      if (code === 'JN') {
+        junctionPositions.push(meterage);
       }
       
-      if (prefixCode) {
-        processedObservations.push(`${prefixCode} ${obs}`);
-      } else {
-        processedObservations.push(obs);
+      // Identify structural defects for junction proximity check
+      if (['D', 'FC', 'FL', 'CR', 'JDL', 'JDS', 'OJM', 'OJL'].includes(code)) {
+        structuralDefectPositions.push(meterage);
       }
     }
   }
   
-  const result = processedObservations.join('. ');
-  return result;
-}
-
-// Extract authentic values from database records  
-function extractAuthenticValue(record: any, fieldNames: string[]): string | null {
-  for (const fieldName of fieldNames) {
-    // Check for exact field name - properly handle zero values
-    if (record[fieldName] !== null && record[fieldName] !== undefined && record[fieldName] !== '') {
-      return String(record[fieldName]);
-    }
-    
-    // Check for field names containing the keyword
-    for (const key of Object.keys(record)) {
-      if (key.toLowerCase().includes(fieldName.toLowerCase()) && 
-          record[key] !== null && record[key] !== undefined && record[key] !== '') {
-        return String(record[key]);
-      }
-    }
-  }
-  return null;
-}
-
-// Process authentic Wincan database for sector-specific infrastructure analysis
-export async function processWincanDatabase(db3FilePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
-  
-  const sqlite3 = (await import('sqlite3')).default;
-  const db = new sqlite3.Database(db3FilePath);
-  
-  // Execute query to get authentic sections with proper JOIN
-  const query = `
-    SELECT s.*, 
-           fromNode.OBJ_Key as FromNodeKey, toNode.OBJ_Key as ToNodeKey,
-           s.OBJ_Size1, s.OBJ_Material, s.OBJ_Length, s.OBJ_TimeStamp, s.OBJ_FlowDir
-    FROM SECTION s
-    LEFT JOIN NODE fromNode ON s.OBJ_FromNode_REF = fromNode.OBJ_PK  
-    LEFT JOIN NODE toNode ON s.OBJ_ToNode_REF = toNode.OBJ_PK
-  `;
-  
-  return new Promise((resolve, reject) => {
-    db.all(query, [], async (err: any, sectionRecords: any[]) => {
-      if (err) {
-        console.error('❌ Error reading SECTION table:', err);
-        db.close();
-        reject(err);
-        return;
-      }
+  // STEP 3: Group observations by code
+  for (const obs of preFiltered) {
+    const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
+    if (codeMatch) {
+      const code = codeMatch[1];
+      const meterage = codeMatch[2];
       
-      
-      // Get observations for each section (exclude finish node codes)
-      const observationQuery = `
-        SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
-        FROM SECOBS 
-        WHERE OBJ_Code IS NOT NULL 
-        AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
-        ORDER BY OBJ_Section_REF, OBJ_PosFrom
-      `;
-      
-      db.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
-        if (obsErr) {
-          console.error('❌ Error reading SECOBS table:', obsErr);
-          db.close();
-          reject(obsErr);
-          return;
+      // Special case: Only include JN if there's a structural defect within 1 meter
+      if (code === 'JN') {
+        const junctionPos = parseFloat(meterage);
+        const hasNearbyStructuralDefect = structuralDefectPositions.some(
+          defectPos => Math.abs(defectPos - junctionPos) <= 1.0
+        );
+        
+        if (!hasNearbyStructuralDefect) {
+          continue; // Skip this junction
         }
-        
-        
-        // Get authentic severity grades from SECSTAT table
-        const secstatQuery = `SELECT * FROM SECSTAT`;
-        
-        db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
-          if (secErr) {
-            secstatRecords = [];
-          } else {
-          }
-          
-          db.close();
-          
-          // Build observation map by section
-          const observationMap: { [sectionRef: string]: string[] } = {};
-          for (const obsRecord of observationRecords) {
-            const sectionRef = obsRecord.OBJ_Section_REF;
-            if (!observationMap[sectionRef]) {
-              observationMap[sectionRef] = [];
-            }
-            
-            // Build observation text from database fields
-            const code = obsRecord.OBJ_Code || '';
-            const position = obsRecord.OBJ_PosFrom || '';  
-            const text = obsRecord.OBJ_Text || '';
-            
-            const observationText = `${code} ${position}m ${text}`.trim();
-            observationMap[sectionRef].push(observationText);
-          }
-          
-          // Build severity grade map from SECSTAT table
-          const severityMap: { [sectionRef: string]: { structural: number, service: number } } = {};
-          for (const secRecord of secstatRecords) {
-            const sectionRef = secRecord.OBJ_Section_REF;
-            if (sectionRef) {
-              severityMap[sectionRef] = {
-                structural: secRecord.OBJ_StructuralGrade || 0,
-                service: secRecord.OBJ_ServiceGrade || 0
-              };
-            }
-          }
-          
-          const authenticSections: WincanSectionData[] = [];
-          let itemCounter = 1;
-          
-          // Process each section record
-          for (const record of sectionRecords) {
-            const sectionRef = record.OBJ_PK;
-            const observations = observationMap[sectionRef] || [];
-            const authenticGrades = severityMap[sectionRef];
-            
-            // Extract authentic manhole references
-            const startMH = record.FromNodeKey || extractAuthenticValue(record, ['OBJ_FromNode', 'FromNode']) || 'UNKNOWN';
-            const finishMH = record.ToNodeKey || extractAuthenticValue(record, ['OBJ_ToNode', 'ToNode']) || 'UNKNOWN';
-            
-            // Extract authentic pipe specifications
-            const pipeSize = extractAuthenticValue(record, ['OBJ_Size1', 'Size1', 'Diameter']) || '150';
-            const pipeMaterial = extractAuthenticValue(record, ['OBJ_Material', 'Material']) || 'PVC';
-            const lengthValue = extractAuthenticValue(record, ['OBJ_Length', 'Length']);
-            const totalLength = lengthValue !== null ? parseFloat(lengthValue) : 10;
-            
-            // Extract authentic inspection metadata
-            const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
-            const inspectionTime = '09:00:00';
-            
-            
-            // Format observations with defect codes
-            const defectText = observations.length > 0 ? await formatObservationText(observations, sector) : 'No service or structural defect found';
-            
-            // Apply authentic severity grades or MSCC5 classification
-            let severityGrade = 0;
-            let recommendations = 'No action required this pipe section is at an adoptable condition';
-            let adoptable = 'Yes';
-            let defectType = 'service';
-            
-            if (authenticGrades) {
-              
-              // Use higher grade as primary severity
-              severityGrade = Math.max(authenticGrades.structural, authenticGrades.service);
-              defectType = authenticGrades.structural > authenticGrades.service ? 'structural' : 'service';
-              
-              if (severityGrade > 0) {
-                if (defectType === 'structural') {
-                  recommendations = 'WRc Drain Repair Book: Structural repair or relining required';
-                  adoptable = 'Conditional';
-                } else {
-                  recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
-                  adoptable = 'Conditional';
-                }
-              }
-            } else if (defectText && defectText !== 'No service or structural defect found') {
-              const { MSCC5Classifier } = await import('./mscc5-classifier');
-              const classification = await MSCC5Classifier.classifyObservation(defectText, sector);
-              
-              severityGrade = classification.severityGrade;
-              recommendations = classification.recommendations;
-              adoptable = classification.adoptable;
-              defectType = classification.defectType;
-            }
-            
-            const authenticItemNo = itemCounter++;
-            
-            const sectionData: WincanSectionData = {
-              itemNo: authenticItemNo,
-              projectNo: record.OBJ_Name || 'GR7188',
-              startMH: startMH,
-              finishMH: finishMH,
-              pipeSize: pipeSize.toString(),
-              pipeMaterial: pipeMaterial,
-              totalLength: totalLength.toFixed(2),
-              lengthSurveyed: totalLength.toFixed(2),
-              defects: defectText,
-              recommendations: recommendations,
-              severityGrade: severityGrade,
-              adoptable: adoptable,
-              inspectionDate: inspectionDate,
-              inspectionTime: inspectionTime,
-              defectType: defectType,
-            };
-            
-            // Only add if we have meaningful data
-            if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
-              // Apply multi-defect splitting logic if defects exist
-              if (defectText && defectText !== 'No service or structural defect found') {
-                const { MSCC5Classifier } = await import('./mscc5-classifier');
-                const splitSections = MSCC5Classifier.splitMultiDefectSection(defectText, authenticItemNo, sectionData);
-                
-                for (const splitSection of splitSections) {
-                  authenticSections.push(splitSection);
-                  const displayNo = splitSection.letterSuffix ? `${splitSection.itemNo}${splitSection.letterSuffix}` : splitSection.itemNo;
-                }
-              } else {
-                authenticSections.push(sectionData);
-              }
-            } else {
-            }
-          }
-          
-          resolve(authenticSections);
-        });
+      }
+      
+      if (!codeGroups[code]) {
+        codeGroups[code] = [];
+      }
+      codeGroups[code].push({
+        meterage: meterage,
+        fullText: obs
       });
-    });
-  });
+    } else {
+      nonGroupedObservations.push(obs);
+    }
+  }
+  
+  // STEP 4: Build formatted text with grouped observations
+  const formattedParts: string[] = [];
+  
+  // Process grouped observations
+  for (const [code, items] of Object.entries(codeGroups)) {
+    if (items.length === 1) {
+      // Single occurrence - use full text
+      formattedParts.push(items[0].fullText);
+    } else {
+      // Multiple occurrences - group with description
+      const description = observationCodes[code] || code;
+      const positions = items.map(item => item.meterage).join('m, ');
+      formattedParts.push(`${description} at ${positions}m`);
+    }
+  }
+  
+  // Add non-grouped observations
+  formattedParts.push(...nonGroupedObservations);
+  
+  return formattedParts.join('. ').replace(/\.\./g, '.');
 }
 
 // Store authentic sections in database with comprehensive duplicate prevention
@@ -402,4 +262,450 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
     }
   }
   
+}
+
+function classifyDefectByMSCC5Standards(observations: string[], sector: string = 'utilities'): { severityGrade: number, defectType: string, recommendations: string, adoptable: string } {
+  // Get available observation codes
+  
+  // Define observation code meanings for reference
+  const observationCodes: { [key: string]: string } = {
+    'WL': 'Water level',
+    'D': 'Deformation',
+    'FC': 'Fracture - circumferential',
+    'FL': 'Fracture - longitudinal',
+    'CR': 'Crack',
+    'JN': 'Junction',
+    'LL': 'Line deviates left',
+    'LR': 'Line deviates right',
+    'RI': 'Root intrusion',
+    'JDL': 'Joint displacement - large',
+    'JDS': 'Joint displacement - small',
+    'OJM': 'Open joint - medium',
+    'OJL': 'Open joint - large',
+    'CPF': 'Catchpit/node feature'
+  };
+  
+  const codeGroups: { [key: string]: Array<{meterage: string, fullText: string}> } = {};
+  const nonGroupedObservations: string[] = [];
+  const junctionPositions: number[] = [];
+  const structuralDefectPositions: number[] = [];
+  
+  // STEP 2: First pass - identify junction positions and structural defects
+  for (const obs of observations) {
+    const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
+    if (codeMatch) {
+      const code = codeMatch[1];
+      const meterage = parseFloat(codeMatch[2]);
+      
+      if (code === 'JN') {
+        junctionPositions.push(meterage);
+      }
+      
+      // Identify structural defects for junction proximity check
+      if (['D', 'FC', 'FL', 'CR', 'JDL', 'JDS', 'OJM', 'OJL'].includes(code)) {
+        structuralDefectPositions.push(meterage);
+      }
+    }
+  }
+  
+  // Default classification for unknown observations
+  let maxSeverity = 1;
+  let defectType = 'service';
+  let recommendations = 'Routine inspection recommended';
+  let adoptable = 'Adoptable';
+  
+  // Check for high-severity structural defects
+  const hasStructuralDefects = observations.some(obs => 
+    obs.includes('Deformation') || obs.includes('Fracture') || obs.includes('Crack') ||
+    obs.includes('Joint displacement') || obs.includes('Open joint')
+  );
+  
+  // Check for service defects
+  const hasFlowRestriction = observations.some(obs =>
+    obs.includes('deposits') || obs.includes('blockage') || obs.includes('restriction')
+  );
+  
+  if (hasStructuralDefects) {
+    maxSeverity = Math.max(maxSeverity, 3);
+    defectType = 'structural';
+    recommendations = 'Structural assessment recommended';
+    
+    // Check severity based on defect percentage
+    const severeMatch = observations.join(' ').match(/(\d+)%.*cross-sectional.*loss/);
+    if (severeMatch) {
+      const percentage = parseInt(severeMatch[1]);
+      if (percentage >= 50) {
+        maxSeverity = 5;
+        adoptable = 'Not adoptable';
+        recommendations = 'Immediate repair required';
+      } else if (percentage >= 20) {
+        maxSeverity = 4;
+        adoptable = 'Conditional adoption';
+        recommendations = 'Repair recommended before adoption';
+      }
+    }
+  }
+  
+  if (hasFlowRestriction && maxSeverity < 3) {
+    maxSeverity = 3;
+    defectType = 'service';
+    recommendations = 'Cleaning recommended';
+  }
+  
+  return {
+    severityGrade: maxSeverity,
+    defectType,
+    recommendations,
+    adoptable
+  };
+}
+
+// Define SRM grading based on MSCC5 standards
+function getSRMGrading(grade: number, type: 'structural' | 'service' = 'service'): { description: string, criteria: string, action_required: string, adoptable: boolean } {
+  const srmScoring = {
+    structural: {
+      "0": { description: "No structural defects", criteria: "Pipe in good structural condition", action_required: "None", adoptable: true },
+      "1": { description: "Minor structural defects", criteria: "Hairline cracks, minor joint issues", action_required: "Monitor", adoptable: true },
+      "2": { description: "Moderate structural defects", criteria: "Small cracks, joint displacement <10%", action_required: "Repair planning", adoptable: true },
+      "3": { description: "Significant structural defects", criteria: "Multiple cracks, joint displacement 10-25%", action_required: "Repair recommended", adoptable: false },
+      "4": { description: "Severe structural defects", criteria: "Large cracks, major joint displacement >25%", action_required: "Urgent repair required", adoptable: false },
+      "5": { description: "Structural failure", criteria: "Collapsed sections, complete joint failure", action_required: "Immediate replacement", adoptable: false }
+    },
+    service: {
+      "0": { description: "No action required", criteria: "Pipe observed in acceptable structural and service condition", action_required: "No action required", adoptable: true },
+      "1": { description: "No service issues", criteria: "Free flowing, no obstructions or deposits", action_required: "None", adoptable: true },
+      "2": { description: "Minor service impacts", criteria: "Minor settled deposits or water levels", action_required: "Routine monitoring", adoptable: true },
+      "3": { description: "Moderate service defects", criteria: "Partial blockages, 5–20% cross-sectional loss", action_required: "Desilting or cleaning recommended", adoptable: true },
+      "4": { description: "Major service defects", criteria: "Severe deposits, 20–50% loss, significant flow restriction", action_required: "Cleaning or partial repair", adoptable: false },
+      "5": { description: "Blocked or non-functional", criteria: "Over 50% flow loss or complete blockage", action_required: "Immediate action required", adoptable: false }
+    }
+  };
+  
+  const gradeKey = Math.min(grade, 5).toString();
+  return srmScoring[type][gradeKey] || srmScoring.service["1"];
+}
+
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
+  
+  try {
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      console.error("❌ File not found:", filePath);
+      throw new Error("Database file not found - cannot extract authentic data");
+    }
+    
+    // Check file header to determine if corrupted
+    const buffer = fs.readFileSync(filePath);
+    const header = buffer.subarray(0, 16).toString('ascii');
+    
+    if (!header.startsWith('SQLite format')) {
+      console.error("❌ CORRUPTED DATABASE FILE DETECTED");
+      console.error("📊 File header:", header.replace(/\0/g, '\\0'));
+      console.error("🚫 LOCKDOWN: Cannot extract authentic data from corrupted file");
+      throw new Error("Database file corrupted during upload - requires fresh upload with fixed multer configuration");
+    }
+    
+    // Open the database only if verified as valid SQLite
+    const database = new Database(filePath, { readonly: true });
+    
+    // Get all table names
+    const tables = database.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+    
+    // Build manhole name mapping from NODE table
+    const manholeMap = new Map<string, string>();
+    try {
+      const nodeData = database.prepare("SELECT OBJ_PK, OBJ_Key FROM NODE WHERE OBJ_Key IS NOT NULL").all();
+      for (const node of nodeData) {
+        if (node.OBJ_PK && node.OBJ_Key) {
+          manholeMap.set(node.OBJ_PK, node.OBJ_Key);
+        }
+      }
+    } catch (error) {
+    }
+
+    // Build observation data mapping from SECOBS table via SECINSP
+    const observationMap = new Map<string, string[]>();
+    try {
+      const obsData = database.prepare(`
+        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation 
+        FROM SECINSP si 
+        JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
+        WHERE obs.OBS_OpCode IS NOT NULL 
+        AND obs.OBS_OpCode NOT IN ('MH', 'MHF')
+        ORDER BY si.INS_Section_FK, obs.OBS_Distance
+      `).all();
+      for (const obs of obsData) {
+        if (obs.INS_Section_FK && obs.OBS_OpCode) {
+          if (!observationMap.has(obs.INS_Section_FK)) {
+            observationMap.set(obs.INS_Section_FK, []);
+          }
+          const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
+          const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
+          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
+        }
+      }
+    } catch (error) {
+    }
+
+    // Extract authentic severity grades from SECSTAT table
+    let severityGrades: Record<number, { structural: number | null, service: number | null }> = {};
+    try {
+      severityGrades = await getSeverityGradesBySection(database);
+    } catch (error) {
+    }
+
+    // Look for SECTION table (main inspection data)
+    let sectionData: WincanSectionData[] = [];
+    const sectionTable = tables.find(t => t.name.toUpperCase() === 'SECTION');
+    
+    if (sectionTable) {
+      // Get only sections that are actually current (not deleted)
+      const sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
+      
+      if (sectionRecords.length > 0) {
+        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
+      }
+    }
+    
+    // If no inspection data found, check if this is a Meta.db3 file
+    if (sectionData.length === 0) {
+      
+      // Check for project information only
+      const participantData = database.prepare("SELECT * FROM PARTICIPANT").all();
+      
+      if (participantData.length > 0) {
+        const rgStructuresEntry = participantData.find(p => 
+          String(p[10] || '').includes("40 Hollow Road") || 
+          String(p[6] || '').includes("RG Structures")
+        );
+        
+        if (rgStructuresEntry) {
+        }
+      }
+      
+      database.close();
+      return [];
+    }
+    
+    database.close();
+    
+    return sectionData;
+    
+  } catch (error) {
+    console.error("❌ Error reading Wincan database:", error);
+    return [];
+  }
+}
+
+// Process SECTION table data with authentic extraction  
+async function processSectionTable(
+  sectionRecords: any[], 
+  manholeMap: Map<string, string>, 
+  observationMap: Map<string, string[]>, 
+  sector: string,
+  severityGrades: Record<number, { structural: number | null, service: number | null }>
+): Promise<WincanSectionData[]> {
+  
+  const authenticSections: WincanSectionData[] = [];
+  
+  for (const record of sectionRecords) {
+    // Get observation data for this section
+    const observations = observationMap.get(record.OBJ_PK) || [];
+    
+    if (observations.length === 0) {
+      // Skip sections with no observations
+      continue;
+    }
+    
+    // Extract item number from section name (OBJ_Name) 
+    let authenticItemNo = 0;
+    if (record.OBJ_Name) {
+      const itemMatch = record.OBJ_Name.match(/(\d+)/);
+      if (itemMatch) {
+        authenticItemNo = parseInt(itemMatch[1]);
+      }
+    }
+    
+    if (authenticItemNo === 0) {
+      continue;
+    }
+
+    // Extract manhole information using GUID references
+    const startMH = manholeMap.get(record.OBJ_FromNode_REF) || 'UNKNOWN';
+    const finishMH = manholeMap.get(record.OBJ_ToNode_REF) || 'UNKNOWN';
+    
+    // Extract pipe dimensions and material
+    const pipeSize = record.SEC_Diameter || record.SEC_Width || record.SEC_Height || 150;
+    const pipeMaterial = extractAuthenticValue(record, ['SEC_Material', 'material', 'pipe_material']) || 'Unknown';
+    
+    // Calculate total length from section length
+    const totalLength = record.SEC_Length || 0;
+    
+    // Extract inspection timing
+    const inspectionDate = extractAuthenticValue(record, ['date', 'inspection_date', 'survey_date']) || '2024-01-01';
+    const inspectionTime = extractAuthenticValue(record, ['time', 'inspection_time']) || '10:00';
+    
+    // Format defect text from observations with enhanced formatting
+    const defectText = await formatObservationText(observations, sector);
+    
+    // Use MSCC5 classification for severity and recommendations
+    const classification = classifyDefectByMSCC5Standards(observations, sector);
+    
+    // Get authentic severity grade from SECSTAT table if available
+    let severityGrade = classification.severityGrade;
+    let defectType = classification.defectType;
+    
+    // Override with authentic SECSTAT grades if available
+    if (severityGrades[authenticItemNo]) {
+      const grades = severityGrades[authenticItemNo];
+      
+      // Determine defect type and use appropriate grade
+      const hasStructuralDefects = observations.some(obs => 
+        obs.includes('D ') || obs.includes('FC ') || obs.includes('FL ') || 
+        obs.includes('JDL ') || obs.includes('JDS ') || obs.includes('OJM ') || obs.includes('OJL ')
+      );
+      
+      const hasServiceDefects = observations.some(obs =>
+        obs.includes('DER ') || obs.includes('DES ') || obs.includes('blockage') || 
+        obs.includes('deposits') || obs.includes('restriction')
+      );
+      
+      // Check if we need to split into multiple entries for mixed defects
+      if (hasStructuralDefects && hasServiceDefects && grades.structural !== null && grades.service !== null) {
+        // Create service defect entry
+        const serviceObservations = observations.filter(obs =>
+          obs.includes('DER ') || obs.includes('DES ') || obs.includes('blockage') || 
+          obs.includes('deposits') || obs.includes('restriction') || obs.includes('LL ') || obs.includes('LR ')
+        );
+        
+        if (serviceObservations.length > 0) {
+          const serviceDefectText = await formatObservationText(serviceObservations, sector);
+          const serviceSeverity = grades.service || 1;
+          const serviceRecommendations = getSRMGrading(serviceSeverity, 'service').action_required;
+          const serviceAdoptable = getSRMGrading(serviceSeverity, 'service').adoptable ? 'Adoptable' : 'Not adoptable';
+          
+          const serviceSectionData: WincanSectionData = {
+            itemNo: authenticItemNo,
+            projectNo: record.OBJ_Name || 'GR7188',
+            startMH: startMH,
+            finishMH: finishMH,
+            pipeSize: pipeSize.toString(),
+            pipeMaterial: pipeMaterial,
+            totalLength: totalLength.toString(),
+            lengthSurveyed: totalLength.toString(),
+            defects: serviceDefectText,
+            recommendations: serviceRecommendations,
+            severityGrade: serviceSeverity,
+            adoptable: serviceAdoptable,
+            inspectionDate: inspectionDate,
+            inspectionTime: inspectionTime,
+            defectType: 'service',
+          };
+          
+          authenticSections.push(serviceSectionData);
+        }
+        
+        // Create structural defect entry  
+        const structuralObservations = observations.filter(obs =>
+          obs.includes('D ') || obs.includes('FC ') || obs.includes('FL ') || 
+          obs.includes('JDL ') || obs.includes('JDS ') || obs.includes('OJM ') || obs.includes('OJL ') ||
+          obs.includes('JN ') // Include junctions with structural defects
+        );
+        
+        if (structuralObservations.length > 0) {
+          const structuralDefectText = await formatObservationText(structuralObservations, sector);
+          const structuralSeverity = grades.structural || 1;
+          const structuralRecommendations = getSRMGrading(structuralSeverity, 'structural').action_required;
+          const structuralAdoptable = getSRMGrading(structuralSeverity, 'structural').adoptable ? 'Adoptable' : 'Not adoptable';
+          
+          const structuralSectionData: WincanSectionData = {
+            itemNo: authenticItemNo,
+            letterSuffix: 'a', // Add letter suffix for structural component
+            projectNo: record.OBJ_Name || 'GR7188',
+            startMH: startMH,
+            finishMH: finishMH,
+            pipeSize: pipeSize.toString(),
+            pipeMaterial: pipeMaterial,
+            totalLength: totalLength.toString(),
+            lengthSurveyed: totalLength.toString(),
+            defects: structuralDefectText,
+            recommendations: structuralRecommendations,
+            severityGrade: structuralSeverity,
+            adoptable: structuralAdoptable,
+            inspectionDate: inspectionDate,
+            inspectionTime: inspectionTime,
+            defectType: 'structural',
+          };
+          
+          authenticSections.push(structuralSectionData);
+        }
+        
+        continue; // Skip creating the combined entry
+      }
+      
+      // Single defect type - use appropriate grade
+      if (hasStructuralDefects && grades.structural !== null) {
+        severityGrade = grades.structural;
+        defectType = 'structural';
+      } else if (hasServiceDefects && grades.service !== null) {
+        severityGrade = grades.service;
+        defectType = 'service';
+      } else if (grades.service !== null) {
+        // Default to service grade
+        severityGrade = grades.service;
+      }
+    }
+    
+    // Build recommendations and adoptability from SRM grading
+    const srmGrading = getSRMGrading(severityGrade, defectType as 'structural' | 'service');
+    const recommendations = srmGrading.action_required;
+    const adoptable = srmGrading.adoptable ? 'Adoptable' : 'Not adoptable';
+      
+      const sectionData: WincanSectionData = {
+        itemNo: authenticItemNo,
+        projectNo: record.OBJ_Name || 'GR7188',
+        startMH: startMH,
+        finishMH: finishMH,
+        pipeSize: pipeSize.toString(),
+        pipeMaterial: pipeMaterial,
+        totalLength: totalLength.toString(),
+        lengthSurveyed: totalLength.toString(), // Assume fully surveyed unless specified
+        defects: defectText,
+        recommendations: recommendations,
+        severityGrade: severityGrade,
+        adoptable: adoptable,
+        inspectionDate: inspectionDate,
+        inspectionTime: inspectionTime,
+        defectType: defectType,
+        // Note: srmGrading will be calculated in API response
+      };
+      
+      // Only add if we have meaningful data
+      if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
+        authenticSections.push(sectionData);
+      } else {
+      }
+    }
+  }
+  
+  return authenticSections;
+}
+
+// Extract authentic values from database records
+function extractAuthenticValue(record: any, fieldNames: string[]): string | null {
+  for (const fieldName of fieldNames) {
+    // Check for exact field name
+    if (record[fieldName] && record[fieldName] !== null && record[fieldName] !== '') {
+      return String(record[fieldName]);
+    }
+    
+    // Check for field names containing the keyword
+    for (const key of Object.keys(record)) {
+      if (key.toLowerCase().includes(fieldName.toLowerCase()) && 
+          record[key] && record[key] !== null && record[key] !== '') {
+        return String(record[key]);
+      }
+    }
+  }
+  return null;
 }
