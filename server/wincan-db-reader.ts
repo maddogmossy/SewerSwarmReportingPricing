@@ -500,12 +500,18 @@ async function processSectionTable(
           console.log(`🔍 Extracted GR7188 item number: ${authenticItemNo} from "${sectionName}"`);
         }
       } else if (sectionName.match(/S\d+\.\d+/)) {
-        // GR7216 format: "S1.015X", "S1.016X" 
-        const sectionMatch = sectionName.match(/S\d+\.(\d+)/);
-        if (sectionMatch) {
-          authenticItemNo = parseInt(sectionMatch[1]); // Extract "015", "016"
-          console.log(`🔍 Extracted GR7216 item number: ${authenticItemNo} from "${sectionName}"`);
-        }
+        // GR7216 format: "S1.015X", "S1.016X" -> should be sequential items 1, 2
+        // Use sequential numbering based on processing order for this format
+        authenticItemNo = authenticSections.length + 1;
+        console.log(`🔍 Sequential GR7216 item number: ${authenticItemNo} from "${sectionName}"`);
+      } else if (sectionName.match(/^\d+$/)) {
+        // Pure number format
+        authenticItemNo = parseInt(sectionName);
+        console.log(`🔍 Direct number item: ${authenticItemNo} from "${sectionName}"`);
+      } else if (sectionName.startsWith('S') && sectionName.match(/\d+/)) {
+        // Other S-prefixed formats - use sequential
+        authenticItemNo = authenticSections.length + 1; 
+        console.log(`🔍 S-prefix sequential item: ${authenticItemNo} from "${sectionName}"`);
       } else {
         // Fallback: extract any number
         const itemMatch = sectionName.match(/(\d+)/);
