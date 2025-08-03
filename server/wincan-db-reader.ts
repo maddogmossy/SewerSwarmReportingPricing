@@ -418,6 +418,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         FROM SECINSP si 
         JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
         WHERE obs.OBS_OpCode IS NOT NULL 
+        AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'WL')
         ORDER BY si.INS_Section_FK, obs.OBS_Distance
       `).all();
       console.log(`🔍 Found ${obsData.length} observation records`);
@@ -635,7 +636,7 @@ async function processSectionTable(
     const defectText = await formatObservationText(observations, sector);
     
     // Use MSCC5 classification for severity and recommendations
-    const classification = classifyDefectByMSCC5Standards(observations, sector);
+    const classification = await classifyWincanObservations(defectText, sector);
     
     // Get authentic severity grade from SECSTAT table if available
     let severityGrade = classification.severityGrade;
@@ -754,8 +755,11 @@ async function processSectionTable(
       severityGrade = 0;
       defectType = 'service';
       console.log(`🔍 Applied grade 0 override for item ${authenticItemNo} (no observable defects)`);
-    } else if (severityGrades[authenticItemNo]) {
-      console.log(`🔍 Using SECSTAT grades for item ${authenticItemNo} with observable defects`);
+    } else {
+      // Use MSCC5 classification for sections with observable defects
+      severityGrade = classification.severityGrade;
+      defectType = classification.defectType;
+      console.log(`🔍 Using MSCC5 classification for item ${authenticItemNo} with defects: ${defectType} grade ${severityGrade}`);
     }
     
     // Build recommendations using authentic WRc standards instead of generic SRM grading
