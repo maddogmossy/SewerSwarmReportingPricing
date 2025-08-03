@@ -413,34 +413,61 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // File upload endpoint for database files only
-  app.post("/api/upload", upload.single("file"), async (req: Request, res: Response) => {
+  // File upload endpoint for database files - supports multiple files for .db3 + Meta.db3
+  app.post("/api/upload", upload.array("files", 10), async (req: Request, res: Response) => {
     try {
       console.log('🔍 UPLOAD ROUTE - Start processing');
-      console.log('🔍 req.file:', req.file ? {
-        originalname: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        path: req.file.path
-      } : 'NO FILE');
+      console.log('🔍 req.files:', req.files?.map(f => ({
+        originalname: f.originalname,
+        mimetype: f.mimetype,
+        size: f.size,
+        path: f.path
+      })) || 'NO FILES');
       console.log('🔍 req.body:', req.body);
-      console.log('🔍 req.files:', req.files);
       
-      if (!req.file) {
-        console.log('❌ No file uploaded');
-        return res.status(400).json({ error: "No file uploaded" });
+      if (!req.files || req.files.length === 0) {
+        console.log('❌ No files uploaded');
+        return res.status(400).json({ error: "No files uploaded" });
       }
+
+      // Separate main .db3 and Meta.db3 files
+      const mainFiles = req.files.filter(f => f.originalname.endsWith('.db3') && !f.originalname.includes('Meta'));
+      const metaFiles = req.files.filter(f => f.originalname.includes('Meta.db3'));
+      
+      console.log('🔍 FILES DETECTED:', {
+        mainFiles: mainFiles.map(f => f.originalname),
+        metaFiles: metaFiles.map(f => f.originalname),
+        totalFiles: req.files.length
+      });
+
+      if (mainFiles.length === 0) {
+        console.log('❌ No main .db3 file found');
+        return res.status(400).json({ error: "Main .db3 file required" });
+      }
+
+      // Process the first main file (primary processing)
+      const mainFile = mainFiles[0];
+      const matchingMetaFile = metaFiles.find(meta => {
+        const mainBaseName = mainFile.originalname.replace('.db3', '');
+        return meta.originalname.includes(mainBaseName) || meta.originalname.includes('Meta');
+      });
 
       const userId = "test-user";
       // Extract project number from filename preserving GR prefix
-      const projectMatch = req.file.originalname.match(/((?:GR|Gr)?(\d{4,5})[a-zA-Z]?)/);
+      const projectMatch = mainFile.originalname.match(/((?:GR|Gr)?(\d{4,5})[a-zA-Z]?)/);
       const projectNo = projectMatch ? projectMatch[1] : "0000";
+      
+      console.log('🔍 META.DB3 PAIRING:', {
+        mainFile: mainFile.originalname,
+        metaFile: matchingMetaFile?.originalname || 'NOT FOUND',
+        projectNumber: projectNo
+      });
       
       // Check if this file already exists and has a sector assigned
       const existingUpload = await db.select().from(fileUploads)
         .where(and(
           eq(fileUploads.userId, userId),
-          eq(fileUploads.fileName, req.file.originalname)
+          eq(fileUploads.fileName, mainFile.originalname)
         ))
         .limit(1);
       
@@ -471,9 +498,9 @@ export async function registerRoutes(app: Express) {
         // Update existing upload record
         [fileUpload] = await db.update(fileUploads)
           .set({
-            fileSize: req.file.size,
-            fileType: req.file.mimetype,
-            filePath: req.file.path,
+            fileSize: mainFile.size,
+            fileType: mainFile.mimetype,
+            filePath: mainFile.path,
             // status: "processing", // Remove this field from update
             sector: req.body.sector || existingUpload[0].sector,
             // folderId: folderId !== null ? folderId : existingUpload[0].folderId, // Remove folderId from update
