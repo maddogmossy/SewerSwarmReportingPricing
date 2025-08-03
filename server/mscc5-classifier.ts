@@ -165,6 +165,24 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     risk: 'Connection verification required',
     recommended_action: 'Contractor confirmation and cleanse/resurvey required',
     action_type: 2
+  },
+  CXB: {
+    code: 'CXB',
+    description: 'Connection defective, connecting pipe is blocked',
+    type: 'structural',
+    default_grade: 3,
+    risk: 'Structural defect requiring repair to maintain pipe integrity',
+    recommended_action: 'Structural repair or replacement of defective connection',
+    action_type: 1
+  },
+  CN: {
+    code: 'CN',
+    description: 'Connection other than junction',
+    type: 'structural', 
+    default_grade: 2,
+    risk: 'Structural observation requiring assessment',
+    recommended_action: 'Structural assessment and potential repair',
+    action_type: 1
   }
 };
 
