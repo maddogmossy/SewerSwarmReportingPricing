@@ -274,7 +274,7 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
   // Helper function to get PR2 configuration details for dynamic recommendations
   const getPR2ConfigurationDetails = (section: any, pr2Configurations: any[], checkFunction: any): string => {
     if (!pr2Configurations || pr2Configurations.length === 0) {
-      return 'cleanse and survey'; // Default fallback
+      return requiresStructuralRepair(section.defects || '') ? 'structural repair' : 'cleanse and survey'; // Check defect type first
     }
     
     // Find the configuration that this section meets
@@ -283,13 +283,13 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
     );
     
     if (!matchingConfig) {
-      return 'cleanse and survey'; // Default fallback
+      return requiresStructuralRepair(section.defects || '') ? 'structural repair' : 'cleanse and survey'; // Check defect type first
     }
     
     // Dynamic recommendation using PR2 config
     
     // Extract equipment type from category name
-    let equipmentType = 'cleanse and survey';
+    let equipmentType = requiresStructuralRepair(section.defects || '') ? 'structural repair' : 'cleanse and survey';
     if (matchingConfig.categoryName) {
       const categoryName = matchingConfig.categoryName.toLowerCase();
       if (categoryName.includes('cctv') && categoryName.includes('jet vac')) {
@@ -4673,7 +4673,10 @@ export default function Dashboard() {
         }
       }
       
-      // Fallback if no matching configuration found
+      // Fallback if no matching configuration found - check if structural repair needed
+      if (requiresStructuralRepair(defects || '')) {
+        return `To repair ${length} from ${from} to ${to}, ${pipe} addressing ${defectSummary}`;
+      }
       return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
     } else if (defectSummary) {
       // For structural repairs, use defect-specific meterage
