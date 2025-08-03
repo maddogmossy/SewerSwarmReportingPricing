@@ -689,20 +689,23 @@ export async function registerRoutes(app: Express) {
         .where(eq(sectionInspections.fileUploadId, uploadId))
         .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
       
-      // DEBUG: Check for Item 13 variations in API response
-      const item13Sections = sections.filter(s => s.itemNo === 13);
-      if (item13Sections.length > 0) {
-        console.log('🔍 API SECTIONS ENDPOINT - ITEM 13 VARIATIONS:', item13Sections.map(s => ({
-          id: s.id,
-          itemNo: s.itemNo,
-          letterSuffix: s.letterSuffix,
-          defectType: s.defectType,
-          defects: s.defects,
-          databaseSchema: 'item_no=' + s.itemNo + ', letter_suffix=' + s.letterSuffix
-        })));
-      }
+      // Transform sections to include severityGrades structure expected by dashboard
+      const transformedSections = sections.map(section => ({
+        ...section,
+        severityGrades: {
+          structural: section.defectType === 'structural' ? section.severityGrade : null,
+          service: section.defectType === 'service' ? section.severityGrade : null
+        }
+      }));
       
-      res.json(sections);
+      console.log('🔍 API SECTIONS - Transformed first section:', transformedSections[0] ? {
+        itemNo: transformedSections[0].itemNo,
+        severityGrade: transformedSections[0].severityGrade,
+        defectType: transformedSections[0].defectType,
+        severityGrades: transformedSections[0].severityGrades
+      } : 'no sections');
+      
+      res.json(transformedSections);
     } catch (error) {
       console.error("Error fetching sections:", error);
       res.status(500).json({ error: "Failed to fetch sections" });
