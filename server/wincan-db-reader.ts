@@ -660,8 +660,8 @@ async function processSectionTable(
     const srmGrading = getSRMGrading(severityGrade, defectType as 'structural' | 'service');
     const recommendations = srmGrading.action_required;
     const adoptable = srmGrading.adoptable ? 'Adoptable' : 'Not adoptable';
-      
-      const sectionData: WincanSectionData = {
+    
+    const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
         projectNo: record.OBJ_Name || 'GR7188',
         startMH: startMH,
@@ -678,13 +678,11 @@ async function processSectionTable(
         inspectionTime: inspectionTime,
         defectType: defectType,
         // Note: srmGrading will be calculated in API response
-      };
-      
-      // Only add if we have meaningful data
-      if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
-        authenticSections.push(sectionData);
-      } else {
-      }
+    };
+    
+    // Only add if we have meaningful data
+    if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
+      authenticSections.push(sectionData);
     }
   }
   
