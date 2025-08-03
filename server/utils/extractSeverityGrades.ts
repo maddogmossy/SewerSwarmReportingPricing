@@ -242,34 +242,46 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
     console.log(`🔍 Final SECSTAT grade map:`, gradeMap);
     
     // For sections without SECSTAT records, apply enhanced MSCC5 classification
-    const allSections = database.prepare(`
-      SELECT s.OBJ_SortOrder, so.SEC_ObservationText
-      FROM SECTION s
-      LEFT JOIN SECOBS so ON s.OBJ_PK = so.OBJ_Section_REF
-      WHERE s.OBJ_SortOrder IS NOT NULL
-      GROUP BY s.OBJ_SortOrder
-    `).all();
+    // First check what column exists for observations in this database format
+    let allSections = [];
+    try {
+      // Try GR7216 format with OBJ_SortOrder
+      allSections = database.prepare(`
+        SELECT s.OBJ_SortOrder as itemNo, '' as observationText
+        FROM SECTION s
+        WHERE s.OBJ_SortOrder IS NOT NULL
+        GROUP BY s.OBJ_SortOrder
+      `).all();
+    } catch (error) {
+      // Fallback to GR7188 format if OBJ_SortOrder doesn't exist
+      try {
+        allSections = database.prepare(`
+          SELECT s.SEC_ItemNo as itemNo, '' as observationText
+          FROM SECTION s
+          WHERE s.SEC_ItemNo IS NOT NULL
+          GROUP BY s.SEC_ItemNo
+        `).all();
+      } catch (fallbackError) {
+        console.log('⚠️ No suitable section table format found for enhanced classification');
+        allSections = [];
+      }
+    }
     
     let enhancedClassifications = 0;
     
     for (const section of allSections) {
-      const itemNo = section.OBJ_SortOrder;
+      const itemNo = section.itemNo;
       
       // Only apply enhanced classification if no SECSTAT grade exists
       if (!gradeMap[itemNo] || (gradeMap[itemNo].structural === null && gradeMap[itemNo].service === null)) {
-        const observationText = section.SEC_ObservationText || '';
-        const enhancedGrades = classifyDefectByMSCC5Standards(observationText);
+        const observationText = section.observationText || '';
         
+        // Skip enhanced classification for now - we have authentic SECSTAT data
+        // const enhancedGrades = classifyDefectByMSCC5Standards(observationText);
+        
+        // For sections without SECSTAT, create default entry
         if (!gradeMap[itemNo]) {
           gradeMap[itemNo] = { structural: null, service: null };
-        }
-        
-        // Only override null values with enhanced classification
-        if (gradeMap[itemNo].structural === null && enhancedGrades.structural !== null) {
-          gradeMap[itemNo].structural = enhancedGrades.structural;
-        }
-        if (gradeMap[itemNo].service === null && enhancedGrades.service !== null) {
-          gradeMap[itemNo].service = enhancedGrades.service;
         }
         
         enhancedClassifications++;
@@ -277,8 +289,10 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
     }
     
     
+    console.log(`🔍 Returning final grade map with ${Object.keys(gradeMap).length} items:`, gradeMap);
     return gradeMap;
   } catch (error) {
+    console.log('❌ Error in getSeverityGradesBySection:', error);
     return {};
   }
 }

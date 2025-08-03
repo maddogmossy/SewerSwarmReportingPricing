@@ -399,7 +399,9 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     let severityGrades: Record<number, { structural: number | null, service: number | null }> = {};
     try {
       severityGrades = await getSeverityGradesBySection(database);
+      console.log(`🔍 Extracted SECSTAT grades successfully:`, severityGrades);
     } catch (error) {
+      console.log('❌ Failed to extract SECSTAT grades:', error);
     }
 
     // Look for SECTION table (main inspection data)
@@ -419,6 +421,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       
       if (sectionRecords.length > 0) {
         console.log(`🔍 Processing ${sectionRecords.length} section records...`);
+        console.log(`🔍 Passing SECSTAT grades to processSectionTable:`, severityGrades);
         sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
         console.log(`🔍 Processed sections result: ${sectionData.length} sections extracted`);
       }
@@ -581,8 +584,12 @@ async function processSectionTable(
     let defectType = classification.defectType;
     
     // Override with authentic SECSTAT grades if available
+    console.log(`🔍 SECSTAT lookup for item ${authenticItemNo}:`, severityGrades[authenticItemNo]);
+    console.log(`🔍 Available SECSTAT items:`, Object.keys(severityGrades));
+    
     if (severityGrades[authenticItemNo]) {
       const grades = severityGrades[authenticItemNo];
+      console.log(`🔍 Found SECSTAT grades for item ${authenticItemNo}:`, grades);
       
       // Determine defect type and use appropriate grade
       const hasStructuralDefects = observations.some(obs => 
@@ -682,9 +689,13 @@ async function processSectionTable(
     }
     
     // Special handling for sections with no defects (should be grade 0)
-    if (!defectText || defectText.trim() === '' || defectText === 'No service or structural defect found') {
+    // BUT: Only override if no SECSTAT grade exists - preserve authentic SECSTAT grades
+    if ((!defectText || defectText.trim() === '' || defectText === 'No service or structural defect found') && !severityGrades[authenticItemNo]) {
       severityGrade = 0;
       defectType = 'service';
+      console.log(`🔍 Applied grade 0 override for item ${authenticItemNo} (no defects, no SECSTAT)`);
+    } else if (severityGrades[authenticItemNo]) {
+      console.log(`🔍 Preserving SECSTAT grades for item ${authenticItemNo}, even if no observable defects`);
     }
     
     // Build recommendations and adoptability from SRM grading
