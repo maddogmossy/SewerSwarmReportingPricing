@@ -532,8 +532,8 @@ export async function registerRoutes(app: Express) {
           // Import and use Wincan database reader (restored main version)
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
-          // Use the main database file for processing
-          const mainDbPath = validation.files?.main || filePath;
+          // Use the uploaded file for processing
+          const mainDbPath = filePath;
           
           // Extract authentic data from database with enhanced debugging
           console.log('🔍 Processing database file:', mainDbPath);
