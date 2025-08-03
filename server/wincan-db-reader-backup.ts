@@ -893,6 +893,8 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           // Extract additional severity grades from Meta database
           const metaSeverityGrades = await getSeverityGradesBySection(metaDatabase);
           
+          let strCount = 0, serCount = 0, totalEnhanced = 0;
+          
           // Merge Meta severity grades with main grades (Meta takes precedence)
           for (const [sectionId, grades] of Object.entries(metaSeverityGrades)) {
             const numSectionId = parseInt(sectionId);
@@ -903,18 +905,26 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
             // Use Meta grades if available, otherwise keep main grades
             if (grades.structural !== null) {
               severityGrades[numSectionId].structural = grades.structural;
+              strCount++;
+              totalEnhanced++;
             }
             if (grades.service !== null) {
               severityGrades[numSectionId].service = grades.service;
+              serCount++;
+              totalEnhanced++;
             }
           }
           
+          console.log(`✅ SECSTAT: ${strCount} STR, ${serCount} SER entries for ${projectNumber || 'project'}`);
           console.log('✅ Enhanced severity grades with Meta.db3 data');
         } catch (metaError) {
           console.error('⚠️ Error processing Meta.db3 file:', metaError);
+          console.error('⚠️ SECSTAT returned zero rows - Meta.db3 may be corrupted or empty');
         } finally {
           metaDatabase.close();
         }
+      } else {
+        console.error('❌ Meta.db3 file missing or unreadable - SECSTAT grades will be limited');
       }
     } catch (error) {
       console.error('⚠️ Error extracting severity grades:', error);

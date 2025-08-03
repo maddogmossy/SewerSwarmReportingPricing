@@ -513,10 +513,10 @@ export async function registerRoutes(app: Express) {
         [fileUpload] = await db.insert(fileUploads).values({
           userId: userId,
           folderId: folderId,
-          fileName: req.file.originalname,
-          fileSize: req.file.size,
-          fileType: req.file.mimetype,
-          filePath: req.file.path,
+          fileName: mainFile.originalname,
+          fileSize: mainFile.size,
+          fileType: mainFile.mimetype,
+          filePath: mainFile.path,
           // status: "processing", // Remove this field from insert
           projectNumber: projectNo,
           visitNumber: visitNumber,
@@ -526,10 +526,10 @@ export async function registerRoutes(app: Express) {
 
 
       // Check file type and process accordingly
-      if (req.file.originalname.endsWith('.db') || req.file.originalname.endsWith('.db3') || req.file.originalname.endsWith('meta.db3')) {
+      if (mainFile.originalname.endsWith('.db') || mainFile.originalname.endsWith('.db3') || mainFile.originalname.endsWith('meta.db3')) {
         // Process database files with validation
         try {
-          const filePath = req.file.path;
+          const filePath = mainFile.path;
           const uploadDirectory = path.dirname(filePath);
           
           
@@ -571,13 +571,20 @@ export async function registerRoutes(app: Express) {
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
           
           // Always use the actual uploaded file path to avoid validation path mismatches
-          const mainDbPath = req.file.path;
-          const metaDbPath = validation.files?.meta || null;
+          const mainDbPath = mainFile.path;
+          const metaDbPath = matchingMetaFile?.path || validation.files?.meta || null;
+          
+          console.log('🔍 FINAL FILE PATHS:', {
+            mainDbPath: mainDbPath,
+            metaDbPath: metaDbPath,
+            metaFileExists: metaDbPath ? fs.existsSync(metaDbPath) : false
+          });
           console.log('🔍 File path debugging:', {
-            originalName: req.file.originalname,
-            uploadedPath: req.file.path,
+            originalName: mainFile.originalname,
+            uploadedPath: mainFile.path,
             validationPath: validation.files?.main,
-            finalPath: mainDbPath
+            finalPath: mainDbPath,
+            metaPath: metaDbPath
           });
           
           // Extract authentic data from database with enhanced debugging
