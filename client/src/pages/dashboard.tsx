@@ -102,7 +102,7 @@ const requiresStructuralRepair = (defects: string): boolean => {
   
   // PRIORITY 1: Check for structural defects FIRST (safety critical)
   // CRITICAL FIX: Only check for actual defect CODES, not descriptive text
-  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', 'crack', 'fracture'];
+  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', 'CXB', 'CN', 'crack', 'fracture'];
   
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
