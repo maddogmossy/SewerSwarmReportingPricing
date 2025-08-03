@@ -1444,7 +1444,7 @@ export default function Dashboard() {
 
         return (
           <div className="text-sm text-center space-y-1">
-            {/* Structural Grade */}
+            {/* Structural Grade - Always show like GR7188 */}
             {section.severityGrades && typeof section.severityGrades.structural === 'number' && (
               <div className="flex items-center justify-center gap-1">
                 <span className="text-xs text-gray-500">STR</span>
@@ -1454,7 +1454,7 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Service Grade */}
+            {/* Service Grade - Always show like GR7188 */}
             {section.severityGrades && typeof section.severityGrades.service === 'number' && (
               <div className="flex items-center justify-center gap-1">
                 <span className="text-xs text-gray-500">SER</span>

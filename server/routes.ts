@@ -690,11 +690,12 @@ export async function registerRoutes(app: Express) {
         .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
       
       // Transform sections to include severityGrades structure expected by dashboard
+      // Match GR7188 behavior: always show both grades, use 0 for missing grades instead of null
       const transformedSections = sections.map(section => ({
         ...section,
         severityGrades: {
-          structural: section.defectType === 'structural' ? parseInt(section.severityGrade) || null : null,
-          service: section.defectType === 'service' ? parseInt(section.severityGrade) || null : null
+          structural: section.defectType === 'structural' ? parseInt(section.severityGrade) || 0 : 0,
+          service: section.defectType === 'service' ? parseInt(section.severityGrade) || 0 : 0
         }
       }));
       
