@@ -814,7 +814,7 @@ export interface WincanSectionData {
   defectType?: string; // 'structural' | 'service'
 }
 
-export async function readWincanDatabase(filePath: string, sector: string = 'utilities', projectNumber: string | null = null): Promise<WincanSectionData[]> {
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities', projectNumber: string | null = null, metaDbPath: string | null = null): Promise<WincanSectionData[]> {
   
   try {
     // Check if file exists
@@ -878,11 +878,46 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     } catch (error) {
     }
 
-    // Extract authentic severity grades from SECSTAT table
+    // Extract authentic severity grades from SECSTAT table (main db) or Meta.db3
     let severityGrades: Record<number, { structural: number | null, service: number | null }> = {};
     try {
+      // First try to get severity grades from main database
       severityGrades = await getSeverityGradesBySection(database);
+      
+      // If Meta.db3 file is available, enhance severity grades from it
+      if (metaDbPath && fs.existsSync(metaDbPath)) {
+        console.log('🔍 Processing Meta.db3 file for enhanced severity grades:', metaDbPath);
+        const metaDatabase = new Database(metaDbPath);
+        
+        try {
+          // Extract additional severity grades from Meta database
+          const metaSeverityGrades = await getSeverityGradesBySection(metaDatabase);
+          
+          // Merge Meta severity grades with main grades (Meta takes precedence)
+          for (const [sectionId, grades] of Object.entries(metaSeverityGrades)) {
+            const numSectionId = parseInt(sectionId);
+            if (!severityGrades[numSectionId]) {
+              severityGrades[numSectionId] = { structural: null, service: null };
+            }
+            
+            // Use Meta grades if available, otherwise keep main grades
+            if (grades.structural !== null) {
+              severityGrades[numSectionId].structural = grades.structural;
+            }
+            if (grades.service !== null) {
+              severityGrades[numSectionId].service = grades.service;
+            }
+          }
+          
+          console.log('✅ Enhanced severity grades with Meta.db3 data');
+        } catch (metaError) {
+          console.error('⚠️ Error processing Meta.db3 file:', metaError);
+        } finally {
+          metaDatabase.close();
+        }
+      }
     } catch (error) {
+      console.error('⚠️ Error extracting severity grades:', error);
     }
 
     // Look for SECTION table (main inspection data)

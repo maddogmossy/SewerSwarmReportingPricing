@@ -432,7 +432,8 @@ export async function registerRoutes(app: Express) {
       }
 
       const userId = "test-user";
-      const projectMatch = req.file.originalname.match(/(\d{4})/);
+      // Extract project number from filename preserving GR prefix
+      const projectMatch = req.file.originalname.match(/((?:GR|Gr)?(\d{4,5})[a-zA-Z]?)/);
       const projectNo = projectMatch ? projectMatch[1] : "0000";
       
       // Check if this file already exists and has a sector assigned
@@ -542,8 +543,9 @@ export async function registerRoutes(app: Express) {
           // Import and use Wincan database reader from backup (working version)
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
           
-          // Always use the actual uploaded file path to avoid validation path mismatches
-          const mainDbPath = req.file.path;
+          // Use the main database file for processing - prefer validation path when available
+          const mainDbPath = validation.files?.main || req.file.path;
+          const metaDbPath = validation.files?.meta || null;
           console.log('🔍 File path debugging:', {
             originalName: req.file.originalname,
             uploadedPath: req.file.path,
@@ -559,8 +561,8 @@ export async function registerRoutes(app: Express) {
           let sections;
           try {
             console.log('🔍 Calling readWincanDatabase...');
-            // Pass the correct project number from the filename parsing
-            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.projectNumber);
+            // Pass the correct project number and meta file path for complete processing
+            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.projectNumber, metaDbPath);
             console.log('✅ readWincanDatabase completed successfully');
           } catch (readError) {
             console.error('❌ readWincanDatabase failed:', readError);
