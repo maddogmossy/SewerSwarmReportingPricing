@@ -819,6 +819,7 @@ export default function Dashboard() {
                                     'status' in costCalc &&
                                     (costCalc.status === 'f615_calculated' || 
                                      costCalc.status === 'f615_patching' ||
+                                     costCalc.status === 'f615_insufficient_items' ||
                                      costCalc.status === 'combined_calculated');
       
       console.log(`🔍 STRUCTURAL COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
