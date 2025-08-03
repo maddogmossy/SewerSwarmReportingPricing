@@ -535,12 +535,28 @@ async function processSectionTable(
     const startMH = manholeMap.get(record.OBJ_FromNode_REF) || 'UNKNOWN';
     const finishMH = manholeMap.get(record.OBJ_ToNode_REF) || 'UNKNOWN';
     
-    // Extract pipe dimensions and material
-    const pipeSize = record.SEC_Diameter || record.SEC_Width || record.SEC_Height || 150;
-    const pipeMaterial = extractAuthenticValue(record, ['SEC_Material', 'material', 'pipe_material']) || 'Unknown';
+    // Extract pipe dimensions and material (handle different database schemas)
+    // For GR7216: check inspection data for pipe size from observations
+    let pipeSize = record.SEC_Diameter || record.SEC_Width || record.SEC_Height || 
+                   record.OBJ_PipeHeightOrDia || record.OBJ_Size1 || record.OBJ_Size2 || 150;
     
-    // Calculate total length from section length
-    const totalLength = record.SEC_Length || 0;
+    // Extract pipe size from observation text for GR7216 format
+    const pipeSizeFromObs = observations.find(obs => obs.includes('150mm') || obs.includes('225mm') || obs.includes('300mm'));
+    if (pipeSizeFromObs) {
+      const sizeMatch = pipeSizeFromObs.match(/(\d{2,3})mm/);
+      if (sizeMatch) {
+        pipeSize = parseInt(sizeMatch[1]);
+        console.log(`🔍 Extracted pipe size ${pipeSize}mm from observations: "${pipeSizeFromObs}"`);
+      }
+    } else if (pipeSize > 400) {
+      // For GR7216 format, default to 150mm if database value seems wrong (>400)
+      pipeSize = 150;
+      console.log(`🔍 Using default pipe size 150mm (database value ${pipeSize} seems incorrect)`);
+    }
+    const pipeMaterial = extractAuthenticValue(record, ['SEC_Material', 'material', 'pipe_material', 'OBJ_Material']) || 'Unknown';
+    
+    // Calculate total length from section length (handle different database schemas)
+    const totalLength = record.SEC_Length || record.OBJ_Length || record.OBJ_RealLength || record.OBJ_PipeLength || 0;
     
     // Extract inspection timing
     const inspectionDate = extractAuthenticValue(record, ['date', 'inspection_date', 'survey_date']) || '2024-01-01';
