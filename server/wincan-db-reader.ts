@@ -352,7 +352,7 @@ export async function readWincanDatabase(
   metaDbPath: string | null = null,
   options?: { folderId?: number; sector?: string; originalFileName?: string }
 ): Promise<WincanSectionData[]> {
-  const sqlite3 = require("sqlite3").verbose();
+  const sqlite3 = (await import('sqlite3')).default;
   const db = new sqlite3.Database(mainDbPath);
   console.log("📥 Connected to main DB:", mainDbPath);
 
