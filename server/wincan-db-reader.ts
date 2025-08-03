@@ -431,9 +431,12 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         FROM SECINSP si 
         JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
         WHERE obs.OBS_OpCode IS NOT NULL 
-        AND obs.OBS_OpCode NOT IN ('MH', 'MHF')
         ORDER BY si.INS_Section_FK, obs.OBS_Distance
       `).all();
+      console.log(`🔍 Found ${obsData.length} observation records`);
+      if (obsData.length > 0) {
+        console.log('🔍 Sample observations:', obsData.slice(0, 3));
+      }
       for (const obs of obsData) {
         if (obs.INS_Section_FK && obs.OBS_OpCode) {
           if (!observationMap.has(obs.INS_Section_FK)) {
@@ -460,10 +463,19 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     
     if (sectionTable) {
       // Get only sections that are actually current (not deleted)
-      const sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
+      let sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
+      
+      // If no records found with deleted filter, try getting all records
+      if (sectionRecords.length === 0) {
+        console.log('🔍 No sections found with deleted filter, trying all sections...');
+        sectionRecords = database.prepare(`SELECT * FROM SECTION`).all();
+        console.log(`🔍 Found ${sectionRecords.length} total sections`);
+      }
       
       if (sectionRecords.length > 0) {
+        console.log(`🔍 Processing ${sectionRecords.length} section records...`);
         sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
+        console.log(`🔍 Processed sections result: ${sectionData.length} sections extracted`);
       }
     }
     
@@ -520,7 +532,10 @@ async function processSectionTable(
     // Get observation data for this section
     const observations = observationMap.get(record.OBJ_PK) || [];
     
+    console.log(`🔍 Section ${record.OBJ_Key || 'UNKNOWN'}: Found ${observations.length} observations`);
+    
     if (observations.length === 0) {
+      console.log(`⚠️ Skipping section ${record.OBJ_Key || 'UNKNOWN'} with no observations`);
       // Skip sections with no observations
       continue;
     }
