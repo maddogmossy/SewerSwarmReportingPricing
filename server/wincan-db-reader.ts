@@ -540,17 +540,26 @@ async function processSectionTable(
       continue;
     }
     
-    // Extract item number from section name (OBJ_Name) 
+    // Extract item number from section name (try OBJ_Name first, then OBJ_Key) 
     let authenticItemNo = 0;
-    if (record.OBJ_Name) {
-      const itemMatch = record.OBJ_Name.match(/(\d+)/);
+    const sectionName = record.OBJ_Name || record.OBJ_Key;
+    console.log(`🔍 Section ${record.OBJ_Key}: Checking section name = "${sectionName}"`);
+    
+    if (sectionName) {
+      // Try to extract number from section name (e.g., "Item 15" or "S1.015X")
+      const itemMatch = sectionName.match(/(\d+)/);
       if (itemMatch) {
         authenticItemNo = parseInt(itemMatch[1]);
+        console.log(`🔍 Extracted item number: ${authenticItemNo} from "${sectionName}"`);
+      } else {
+        console.log(`⚠️ No item number found in section name: "${sectionName}"`);
+        // For GR7216-style sections without clear item numbers, use a sequential number
+        authenticItemNo = authenticSections.length + 1;
+        console.log(`🔍 Assigning sequential item number: ${authenticItemNo}`);
       }
-    }
-    
-    if (authenticItemNo === 0) {
-      continue;
+    } else {
+      console.log(`⚠️ No section name available`);
+      authenticItemNo = authenticSections.length + 1;
     }
 
     // Extract manhole information using GUID references
@@ -609,7 +618,7 @@ async function processSectionTable(
           
           const serviceSectionData: WincanSectionData = {
             itemNo: authenticItemNo,
-            projectNo: record.OBJ_Name || 'GR7188',
+            projectNo: sectionName || 'GR7216',
             startMH: startMH,
             finishMH: finishMH,
             pipeSize: pipeSize.toString(),
@@ -644,7 +653,7 @@ async function processSectionTable(
           const structuralSectionData: WincanSectionData = {
             itemNo: authenticItemNo,
             letterSuffix: 'a', // Add letter suffix for structural component
-            projectNo: record.OBJ_Name || 'GR7188',
+            projectNo: sectionName || 'GR7216',
             startMH: startMH,
             finishMH: finishMH,
             pipeSize: pipeSize.toString(),
@@ -686,7 +695,7 @@ async function processSectionTable(
     
     const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
-        projectNo: record.OBJ_Name || 'GR7188',
+        projectNo: sectionName || 'GR7216',
         startMH: startMH,
         finishMH: finishMH,
         pipeSize: pipeSize.toString(),
