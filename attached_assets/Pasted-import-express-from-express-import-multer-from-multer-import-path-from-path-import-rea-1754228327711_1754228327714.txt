@@ -1,0 +1,60 @@
+import express from "express";
+import multer from "multer";
+import path from "path";
+import { readWincanDatabase } from "./wincan-db-reader"; // adjust path if needed
+
+const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, file.originalname),
+});
+
+const upload = multer({ storage });
+
+router.post("/api/upload", upload.any(), async (req, res) => {
+  try {
+    console.log("📁 FILES DETECTED:", req.files?.map(f => f.originalname));
+    const files = req.files as Express.Multer.File[];
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    // Find main .db3 and matching _Meta.db3
+    const mainDb = files.find(f => f.originalname.endsWith(".db3") && !f.originalname.toLowerCase().includes("meta"));
+    const metaDb = files.find(f => f.originalname.toLowerCase().includes("meta") && f.originalname.endsWith(".db3"));
+
+    if (!mainDb) {
+      return res.status(400).json({ error: "Main .db3 file not found" });
+    }
+
+    const mainDbPath = path.join("uploads", mainDb.filename);
+    const metaDbPath = metaDb ? path.join("uploads", metaDb.filename) : null;
+
+    console.log("🧩 MAIN DB PATH:", mainDbPath);
+    console.log("🧩 META DB PATH:", metaDbPath || "None");
+
+    const sector = req.body.sector || "utilities";
+    const folderId = parseInt(req.body.folderId || "0");
+
+    const result = await readWincanDatabase(mainDbPath, metaDbPath, {
+      folderId,
+      sector,
+      originalFileName: mainDb.originalname,
+    });
+
+    console.log("✅ DB3 Processing Complete:", result);
+
+    return res.status(200).json({
+      message: "Files processed successfully",
+      processedSections: result?.sections?.length || 0,
+      grades: result?.grades || {},
+    });
+  } catch (error) {
+    console.error("❌ Upload Processing Failed:", error);
+    return res.status(500).json({ error: "File processing failed", details: error.message });
+  }
+});
+
+export default router;
