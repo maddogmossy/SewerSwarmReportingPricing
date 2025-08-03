@@ -109,7 +109,7 @@ const sectors = [
 
 export default function Upload() {
   const { toast } = useToast();
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
 
@@ -174,14 +174,9 @@ export default function Upload() {
   // Keep folders collapsed by default - users can click to expand
 
   const uploadMutation = useMutation({
-    mutationFn: async ({ files, sector, folderId }: { files: File[]; sector: string; folderId: number | null }) => {
+    mutationFn: async ({ file, sector, folderId }: { file: File; sector: string; folderId: number | null }) => {
       const formData = new FormData();
-      
-      // Append all files
-      files.forEach(file => {
-        formData.append('file', file);
-      });
-      
+      formData.append('file', file);
       formData.append('sector', sector);
       if (folderId !== null) {
         formData.append('folderId', folderId.toString());
@@ -197,7 +192,7 @@ export default function Upload() {
           "Existing report has been reprocessed with updated data." :
           "Your file has been uploaded and is being processed.",
       });
-      setSelectedFiles([]);
+      setSelectedFile(null);
       setSelectedSector("");
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       
@@ -223,7 +218,7 @@ export default function Upload() {
   });
 
   const handleUpload = () => {
-    if (selectedFiles.length === 0 || !selectedSector) {
+    if (!selectedFile || !selectedSector) {
       toast({
         title: "Missing Information",
         description: "Please select both a file and applicable sector.",
@@ -231,7 +226,7 @@ export default function Upload() {
       });
       return;
     }
-    uploadMutation.mutate({ files: selectedFiles, sector: selectedSector, folderId: selectedFolderId });
+    uploadMutation.mutate({ file: selectedFile, sector: selectedSector, folderId: selectedFolderId });
   };
 
   const refreshMutation = useMutation({
@@ -283,7 +278,7 @@ export default function Upload() {
       // Reset all upload state to return to sector selection
       setSelectedFolderId(null);
       setSelectedSector("");
-      setSelectedFiles([]);
+      setSelectedFile(null);
       
     },
     onError: (error) => {
@@ -521,21 +516,21 @@ export default function Upload() {
                   <FolderSelector
                     selectedFolderId={selectedFolderId}
                     onFolderSelect={setSelectedFolderId}
-                    fileName={selectedFiles.length > 0 ? selectedFiles.map(f => f.name).join(', ') : undefined}
+                    fileName={selectedFile?.name}
                   />
                 </div>
 
                 {/* File Upload */}
                 <div className="space-y-4">
                   <FileUpload
-                    onFileSelect={setSelectedFiles}
-                    selectedFiles={selectedFiles}
+                    onFileSelect={setSelectedFile}
+                    selectedFile={selectedFile}
                     accept=".db,.db3,.pdf"
                     maxSize={50 * 1024 * 1024} // 50MB
                     requiresSector={false}
                   />
 
-                  {selectedFiles.length > 0 && (
+                  {selectedFile && (
                     <div className="space-y-3">
                       {/* Pause for Review Checkbox */}
 

@@ -191,9 +191,9 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
       
       // Get observations for each section
       const observationQuery = `
-        SELECT OBS_Section_REF, OBS_OpCode, OBS_Distance, OBS_Observation 
+        SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
         FROM SECOBS 
-        ORDER BY OBS_Section_REF, OBS_Distance
+        ORDER BY OBJ_Section_REF, OBJ_PosFrom
       `;
       
       db.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
@@ -219,15 +219,15 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           // Build observation map by section
           const observationMap: { [sectionRef: string]: string[] } = {};
           for (const obsRecord of observationRecords) {
-            const sectionRef = obsRecord.OBS_Section_REF;
+            const sectionRef = obsRecord.OBJ_Section_REF;
             if (!observationMap[sectionRef]) {
               observationMap[sectionRef] = [];
             }
             
             // Build observation text from database fields
-            const code = obsRecord.OBS_OpCode || '';
-            const position = obsRecord.OBS_Distance || '';  
-            const text = obsRecord.OBS_Observation || '';
+            const code = obsRecord.OBJ_Code || '';
+            const position = obsRecord.OBJ_PosFrom || '';  
+            const text = obsRecord.OBJ_Text || '';
             
             const observationText = `${code} ${position}m ${text}`.trim();
             observationMap[sectionRef].push(observationText);
@@ -236,22 +236,12 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           // Build severity grade map from SECSTAT table
           const severityMap: { [sectionRef: string]: { structural: number, service: number } } = {};
           for (const secRecord of secstatRecords) {
-            const sectionRef = secRecord.STA_Inspection_FK;
+            const sectionRef = secRecord.OBJ_Section_REF;
             if (sectionRef) {
-              // Extract grades based on STA_Type and STA_HighestGrade
-              let structural = 0;
-              let service = 0;
-              
-              if (secRecord.STA_Type === 'STR') {
-                structural = secRecord.STA_HighestGrade || 0;
-              } else if (secRecord.STA_Type === 'OPE') {
-                service = secRecord.STA_HighestGrade || 0;
-              } else {
-                // Default to structural if type unknown
-                structural = secRecord.STA_HighestGrade || 0;
-              }
-              
-              severityMap[sectionRef] = { structural, service };
+              severityMap[sectionRef] = {
+                structural: secRecord.OBJ_StructuralGrade || 0,
+                service: secRecord.OBJ_ServiceGrade || 0
+              };
             }
           }
           
@@ -316,7 +306,7 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             
             const sectionData: WincanSectionData = {
               itemNo: authenticItemNo,
-              projectNo: projectNumber || record.OBJ_Name || 'GR7188',
+              projectNo: record.OBJ_Name || 'GR7188',
               startMH: startMH,
               finishMH: finishMH,
               pipeSize: pipeSize.toString(),
@@ -824,7 +814,7 @@ export interface WincanSectionData {
   defectType?: string; // 'structural' | 'service'
 }
 
-export async function readWincanDatabase(filePath: string, sector: string = 'utilities', projectNumber: string | null = null, metaDbPath: string | null = null): Promise<WincanSectionData[]> {
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
   
   try {
     // Check if file exists
@@ -837,14 +827,12 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     const buffer = fs.readFileSync(filePath);
     const header = buffer.subarray(0, 16).toString('ascii');
     
-    console.log("🔍 File header check:", header.substring(0, 15));
     if (!header.startsWith('SQLite format')) {
       console.error("❌ CORRUPTED DATABASE FILE DETECTED");
       console.error("📊 File header:", header.replace(/\0/g, '\\0'));
       console.error("🚫 LOCKDOWN: Cannot extract authentic data from corrupted file");
       throw new Error("Database file corrupted during upload - requires fresh upload with fixed multer configuration");
     }
-    console.log("✅ Database file header validation passed");
     
     // Open the database only if verified as valid SQLite
     const database = new Database(filePath, { readonly: true });
@@ -888,58 +876,11 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     } catch (error) {
     }
 
-    // Extract authentic severity grades from SECSTAT table (main db) or Meta.db3
+    // Extract authentic severity grades from SECSTAT table
     let severityGrades: Record<number, { structural: number | null, service: number | null }> = {};
     try {
-      // First try to get severity grades from main database
       severityGrades = await getSeverityGradesBySection(database);
-      
-      // If Meta.db3 file is available, enhance severity grades from it
-      if (metaDbPath && fs.existsSync(metaDbPath)) {
-        console.log('🔍 Processing Meta.db3 file for enhanced severity grades:', metaDbPath);
-        console.log('✅ MetaDB attached: [available]');
-        const metaDatabase = new Database(metaDbPath);
-        
-        try {
-          // Extract additional severity grades from Meta database
-          const metaSeverityGrades = await getSeverityGradesBySection(metaDatabase);
-          
-          let strCount = 0, serCount = 0, totalEnhanced = 0;
-          
-          // Merge Meta severity grades with main grades (Meta takes precedence)
-          for (const [sectionId, grades] of Object.entries(metaSeverityGrades)) {
-            const numSectionId = parseInt(sectionId);
-            if (!severityGrades[numSectionId]) {
-              severityGrades[numSectionId] = { structural: null, service: null };
-            }
-            
-            // Use Meta grades if available, otherwise keep main grades
-            if (grades.structural !== null) {
-              severityGrades[numSectionId].structural = grades.structural;
-              strCount++;
-              totalEnhanced++;
-            }
-            if (grades.service !== null) {
-              severityGrades[numSectionId].service = grades.service;
-              serCount++;
-              totalEnhanced++;
-            }
-          }
-          
-          console.log(`✅ SECSTAT: ${strCount} STR, ${serCount} SER entries for ${projectNumber || 'project'}`);
-          console.log('✅ Enhanced severity grades with Meta.db3 data');
-        } catch (metaError) {
-          console.error('⚠️ Error processing Meta.db3 file:', metaError);
-          console.error('⚠️ SECSTAT returned zero rows - Meta.db3 may be corrupted or empty');
-        } finally {
-          metaDatabase.close();
-        }
-      } else {
-        console.error('❌ Meta.db3 file missing or unreadable - SECSTAT grades will be limited');
-        console.log('✅ MetaDB attached: [not available]');
-      }
     } catch (error) {
-      console.error('⚠️ Error extracting severity grades:', error);
     }
 
     // Look for SECTION table (main inspection data)
@@ -951,7 +892,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       const sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
       
       if (sectionRecords.length > 0) {
-        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades, projectNumber);
+        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
       }
     }
     
@@ -986,7 +927,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
 }
 
 // Process authentic SECTION data with manhole name mapping - ZERO SYNTHETIC DATA
-async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities', severityGrades: Record<number, { structural: number | null, service: number | null }> = {}, projectNumber: string | null = null): Promise<WincanSectionData[]> {
+async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities', severityGrades: Record<number, { structural: number | null, service: number | null }> = {}): Promise<WincanSectionData[]> {
   
   if (!sectionRecords || sectionRecords.length === 0) {
     console.error("❌ No authentic section data found");
@@ -1140,7 +1081,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         
         const serviceSection: WincanSectionData = {
           itemNo: authenticItemNo,
-          projectNo: projectNumber || record.OBJ_Name || 'GR7188',
+          projectNo: record.OBJ_Name || 'GR7188',
           startMH: startMH,
           finishMH: finishMH,
           pipeSize: pipeSize.toString(),
@@ -1178,7 +1119,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         const structuralSection: WincanSectionData = {
           itemNo: authenticItemNo,
           letterSuffix: 'a',
-          projectNo: projectNumber || record.OBJ_Name || 'GR7188',
+          projectNo: record.OBJ_Name || 'GR7188',
           startMH: startMH,
           finishMH: finishMH,
           pipeSize: pipeSize.toString(),
@@ -1244,7 +1185,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       
       const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
-        projectNo: projectNumber || record.OBJ_Name || 'GR7188',
+        projectNo: record.OBJ_Name || 'GR7188',
         startMH: startMH,
         finishMH: finishMH,
         pipeSize: pipeSize.toString(),

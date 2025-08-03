@@ -187,11 +187,11 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
       
       // Get observations for each section (exclude finish node codes)
       const observationQuery = `
-        SELECT OBS_Section_REF, OBS_OpCode, OBS_Distance, OBS_Observation 
+        SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
         FROM SECOBS 
-        WHERE OBS_OpCode IS NOT NULL 
-        AND OBS_OpCode NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
-        ORDER BY OBS_Section_REF, OBS_Distance
+        WHERE OBJ_Code IS NOT NULL 
+        AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
+        ORDER BY OBJ_Section_REF, OBJ_PosFrom
       `;
       
       db.all(observationQuery, [], async (obsErr: any, observationRecords: any[]) => {
@@ -217,15 +217,15 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           // Build observation map by section
           const observationMap: { [sectionRef: string]: string[] } = {};
           for (const obsRecord of observationRecords) {
-            const sectionRef = obsRecord.OBS_Section_REF;
+            const sectionRef = obsRecord.OBJ_Section_REF;
             if (!observationMap[sectionRef]) {
               observationMap[sectionRef] = [];
             }
             
             // Build observation text from database fields
-            const code = obsRecord.OBS_OpCode || '';
-            const position = obsRecord.OBS_Distance || '';  
-            const text = obsRecord.OBS_Observation || '';
+            const code = obsRecord.OBJ_Code || '';
+            const position = obsRecord.OBJ_PosFrom || '';  
+            const text = obsRecord.OBJ_Text || '';
             
             const observationText = `${code} ${position}m ${text}`.trim();
             observationMap[sectionRef].push(observationText);
@@ -234,22 +234,12 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           // Build severity grade map from SECSTAT table
           const severityMap: { [sectionRef: string]: { structural: number, service: number } } = {};
           for (const secRecord of secstatRecords) {
-            const sectionRef = secRecord.STA_Inspection_FK;
+            const sectionRef = secRecord.OBJ_Section_REF;
             if (sectionRef) {
-              // Extract grades based on STA_Type and STA_HighestGrade
-              let structural = 0;
-              let service = 0;
-              
-              if (secRecord.STA_Type === 'STR') {
-                structural = secRecord.STA_HighestGrade || 0;
-              } else if (secRecord.STA_Type === 'OPE') {
-                service = secRecord.STA_HighestGrade || 0;
-              } else {
-                // Default to structural if type unknown
-                structural = secRecord.STA_HighestGrade || 0;
-              }
-              
-              severityMap[sectionRef] = { structural, service };
+              severityMap[sectionRef] = {
+                structural: secRecord.OBJ_StructuralGrade || 0,
+                service: secRecord.OBJ_ServiceGrade || 0
+              };
             }
           }
           
