@@ -1,5 +1,16 @@
 # Replit Architecture Documentation
 
+## Rev v8.1 - Unified Database Processing Logic (August 2025)
+**Lock-in Checkpoint**: Comprehensive fix for GR7216 database schema differences, ensuring 100% identical processing logic with GR7188 format through enhanced column mapping and sequential item numbering.
+
+### Key Achievements in v8.1:
+- **Unified Database Processing**: Both GR7188 and GR7216 now follow identical observation reading and severity recommendation logic
+- **Enhanced Column Mapping**: Automatic detection and mapping of different database schemas (SEC_* vs OBJ_* columns)
+- **Fixed Item Number Extraction**: GR7216 S1.015X format now correctly maps to items 1,2 instead of 15,16
+- **Corrected Data Extraction**: GR7216 now shows proper lengths (12.16m, 4.11m), pipe sizes (150mm), and manhole references
+- **Authentic Data Preservation**: Eliminated synthetic data issues by using correct database column mapping
+- **Processing Verification**: Comprehensive comparison confirms identical MSCC5 classification, defect detection, and SECSTAT override logic
+
 ## Rev v8.0 - Enhanced Warning System with Visual Feedback (August 2025)
 **Lock-in Checkpoint**: Advanced warning system with intelligent triggering, combined work display, and visual pricing feedback for structural applications.
 
