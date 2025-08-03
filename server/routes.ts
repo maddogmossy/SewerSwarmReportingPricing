@@ -496,10 +496,11 @@ export async function registerRoutes(app: Express) {
           
           
           // Import validation function
-          const { validateGenericDb3Files } = await import('./db3-validator');
+          const { validateSpecificDb3File } = await import('./db3-validator');
           
-          // Validate that both .db3 and _Meta.db3 files are present
-          const validation = validateGenericDb3Files(uploadDirectory);
+          // Validate that both .db3 and _Meta.db3 files are present for this specific upload
+          const uploadedFileName = req.file.originalname;
+          const validation = validateSpecificDb3File(filePath, uploadedFileName);
           
           if (!validation.valid) {
             // Update status to failed due to missing files
@@ -547,6 +548,8 @@ export async function registerRoutes(app: Express) {
           
           // Extract authentic data from database with enhanced debugging
           console.log('🔍 Processing database file:', mainDbPath);
+          console.log('🔍 ACTUAL FILE PATH:', req.file.path);
+          console.log('🔍 UPLOADED FILENAME:', req.file.originalname);
           console.log('🔍 Sector:', req.body.sector || 'utilities');
           console.log('🔍 File exists:', fs.existsSync(mainDbPath));
           
