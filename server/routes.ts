@@ -543,8 +543,8 @@ export async function registerRoutes(app: Express) {
           // Import and use Wincan database reader from backup (working version)
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
           
-          // Use the main database file for processing - prefer validation path when available
-          const mainDbPath = validation.files?.main || req.file.path;
+          // Always use the actual uploaded file path to avoid validation path mismatches
+          const mainDbPath = req.file.path;
           const metaDbPath = validation.files?.meta || null;
           console.log('🔍 File path debugging:', {
             originalName: req.file.originalname,
