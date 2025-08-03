@@ -897,6 +897,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       // If Meta.db3 file is available, enhance severity grades from it
       if (metaDbPath && fs.existsSync(metaDbPath)) {
         console.log('🔍 Processing Meta.db3 file for enhanced severity grades:', metaDbPath);
+        console.log('✅ MetaDB attached: [available]');
         const metaDatabase = new Database(metaDbPath);
         
         try {
@@ -935,6 +936,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         }
       } else {
         console.error('❌ Meta.db3 file missing or unreadable - SECSTAT grades will be limited');
+        console.log('✅ MetaDB attached: [not available]');
       }
     } catch (error) {
       console.error('⚠️ Error extracting severity grades:', error);

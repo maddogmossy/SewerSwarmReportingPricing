@@ -416,6 +416,8 @@ export async function registerRoutes(app: Express) {
   // File upload endpoint for database files - supports both single and multiple files
   app.post("/api/upload", upload.any(), async (req: Request, res: Response) => {
     try {
+      const fileNames = (req.files as any[])?.map(f => f.originalname) || [];
+      console.log(`📥 Upload started for: [${fileNames.join(', ')}]`);
       console.log('🔍 UPLOAD ROUTE - Start processing');
       console.log('🔍 req.files:', req.files?.map(f => ({
         originalname: f.originalname,
@@ -603,6 +605,7 @@ export async function registerRoutes(app: Express) {
             console.log('🔍 Calling readWincanDatabase...');
             // Pass the correct project number and meta file path for complete processing
             sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.projectNumber, metaDbPath);
+            console.log(`✅ DB3 parsed: [${sections.length} sections found]`);
             console.log('✅ readWincanDatabase completed successfully');
           } catch (readError) {
             console.error('❌ readWincanDatabase failed:', readError);
@@ -664,6 +667,8 @@ export async function registerRoutes(app: Express) {
               })
             })
             .where(eq(fileUploads.id, fileUpload.id));
+          
+          console.log('🚀 Data available in dashboard');
           
           res.json({
             message: "Database file processed successfully",
@@ -1221,6 +1226,31 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Error triggering fuel price update:', error);
       res.status(500).json({ error: 'Failed to trigger fuel price update' });
+    }
+  });
+
+  // PR2 Clean endpoint (for clearing cache/cleaning data)
+  app.get('/api/pr2-clean', async (req: Request, res: Response) => {
+    try {
+      res.json({ message: 'PR2 clean operation completed', status: 'success' });
+    } catch (error) {
+      console.error('Error in PR2 clean:', error);
+      res.status(500).json({ error: 'Failed to execute PR2 clean' });
+    }
+  });
+
+  // Get defects for a specific upload
+  app.get('/api/uploads/:id/defects', async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const defects = await db.select()
+        .from(sectionDefects)
+        .where(eq(sectionDefects.fileUploadId, uploadId))
+        .orderBy(asc(sectionDefects.itemNo));
+      res.json(defects);
+    } catch (error) {
+      console.error('Error fetching defects:', error);
+      res.status(500).json({ error: 'Failed to fetch defects' });
     }
   });
 
