@@ -748,14 +748,14 @@ async function processSectionTable(
       }
     }
     
-    // Special handling for sections with no defects (should be grade 0)
-    // BUT: Only override if no SECSTAT grade exists - preserve authentic SECSTAT grades
-    if ((!defectText || defectText.trim() === '' || defectText === 'No service or structural defect found') && !severityGrades[authenticItemNo]) {
+    // Special handling for sections with no defects
+    if (!defectText || defectText.trim() === '' || defectText === 'No service or structural defect found' || defectText === 'No defects recorded') {
+      // If there are no observable defects, the section should be grade 0 regardless of SECSTAT
       severityGrade = 0;
       defectType = 'service';
-      console.log(`🔍 Applied grade 0 override for item ${authenticItemNo} (no defects, no SECSTAT)`);
+      console.log(`🔍 Applied grade 0 override for item ${authenticItemNo} (no observable defects)`);
     } else if (severityGrades[authenticItemNo]) {
-      console.log(`🔍 Preserving SECSTAT grades for item ${authenticItemNo}, even if no observable defects`);
+      console.log(`🔍 Using SECSTAT grades for item ${authenticItemNo} with observable defects`);
     }
     
     // Build recommendations using authentic WRc standards instead of generic SRM grading
