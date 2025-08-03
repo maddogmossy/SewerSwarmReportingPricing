@@ -416,47 +416,328 @@ export async function registerRoutes(app: Express) {
   // File upload endpoint for database files - supports both single and multiple files
   app.post("/api/upload", upload.any(), async (req: Request, res: Response) => {
     try {
-      console.log("📁 FILES DETECTED:", Array.isArray(req.files) ? req.files.map((f: any) => f.originalname) : "NO FILES");
-      const files = req.files as Express.Multer.File[];
-
-      if (!files || files.length === 0) {
+      console.log('🔍 UPLOAD ROUTE - Start processing');
+      console.log('🔍 req.files:', req.files?.map(f => ({
+        originalname: f.originalname,
+        mimetype: f.mimetype,
+        size: f.size,
+        path: f.path,
+        fieldname: f.fieldname
+      })) || 'NO FILES');
+      console.log('🔍 req.body:', req.body);
+      
+      if (!req.files || req.files.length === 0) {
+        console.log('❌ No files uploaded');
         return res.status(400).json({ error: "No files uploaded" });
       }
 
-      // Find main .db3 and matching _Meta.db3
-      const mainDb = files.find(f => f.originalname.endsWith(".db3") && !f.originalname.toLowerCase().includes("meta"));
-      const metaDb = files.find(f => f.originalname.toLowerCase().includes("meta") && f.originalname.endsWith(".db3"));
+      // Separate main .db3 and Meta.db3 files
+      const allFiles = Array.isArray(req.files) ? req.files : [];
+      const mainFiles = allFiles.filter(f => f.originalname.endsWith('.db3') && !f.originalname.includes('Meta'));
+      const metaFiles = allFiles.filter(f => f.originalname.includes('Meta.db3'));
+      
+      console.log('🔍 FILES DETECTED:', {
+        mainFiles: mainFiles.map(f => f.originalname),
+        metaFiles: metaFiles.map(f => f.originalname),
+        totalFiles: req.files.length
+      });
 
-      if (!mainDb) {
-        return res.status(400).json({ error: "Main .db3 file not found" });
+      if (mainFiles.length === 0) {
+        console.log('❌ No main .db3 file found');
+        return res.status(400).json({ error: "Main .db3 file required" });
       }
 
-      const mainDbPath = path.join("uploads", mainDb.filename);
-      const metaDbPath = metaDb ? path.join("uploads", metaDb.filename) : null;
-
-      console.log("🧩 MAIN DB PATH:", mainDbPath);
-      console.log("🧩 META DB PATH:", metaDbPath || "None");
-
-      const sector = req.body.sector || "utilities";
-      const folderId = parseInt(req.body.folderId || "0");
-
-      const { readWincanDatabase } = await import("./wincan-db-reader");
-      const result = await readWincanDatabase(mainDbPath, metaDbPath, {
-        folderId,
-        sector,
-        originalFileName: mainDb.originalname,
+      // Process the first main file (primary processing)
+      const mainFile = mainFiles[0];
+      const matchingMetaFile = metaFiles.find(meta => {
+        const mainBaseName = mainFile.originalname.replace('.db3', '');
+        return meta.originalname.includes(mainBaseName) || meta.originalname.includes('Meta');
       });
 
-      console.log("✅ DB3 Processing Complete:", result);
-
-      return res.status(200).json({
-        message: "Files processed successfully",
-        processedSections: result?.length || 0,
-        sections: result || [],
+      const userId = "test-user";
+      // Extract project number from filename preserving GR prefix
+      const projectMatch = mainFile.originalname.match(/((?:GR|Gr)?(\d{4,5})[a-zA-Z]?)/);
+      const projectNo = projectMatch ? projectMatch[1] : "0000";
+      
+      console.log('🔍 META.DB3 PAIRING:', {
+        mainFile: mainFile.originalname,
+        metaFile: matchingMetaFile?.originalname || 'NOT FOUND',
+        projectNumber: projectNo
       });
+      
+      // Check if this file already exists and has a sector assigned
+      const existingUpload = await db.select().from(fileUploads)
+        .where(and(
+          eq(fileUploads.userId, userId),
+          eq(fileUploads.fileName, mainFile.originalname)
+        ))
+        .limit(1);
+      
+      // If file exists with sector, reprocess it with existing sector instead of requiring selection
+      if (existingUpload.length > 0 && existingUpload[0].sector && !req.body.sector) {
+        req.body.sector = existingUpload[0].sector;
+      }
+      
+      // Handle folder assignment and visit number
+      let folderId = null;
+      let visitNumber = 1;
+      
+      if (req.body.folderId) {
+        folderId = parseInt(req.body.folderId);
+        
+        // Count existing files in this folder to determine visit number
+        const existingFiles = await db.select().from(fileUploads)
+          .where(eq(fileUploads.folderId, folderId));
+        visitNumber = existingFiles.length + 1;
+      } else if (existingUpload.length > 0 && existingUpload[0].folderId) {
+        // Use existing folder if no new folder specified
+        folderId = existingUpload[0].folderId;
+      }
+
+      // Create or update file upload record
+      let fileUpload;
+      if (existingUpload.length > 0) {
+        // Update existing upload record
+        [fileUpload] = await db.update(fileUploads)
+          .set({
+            fileSize: mainFile.size,
+            fileType: mainFile.mimetype,
+            filePath: mainFile.path,
+            // status: "processing", // Remove this field from update
+            sector: req.body.sector || existingUpload[0].sector,
+            // folderId: folderId !== null ? folderId : existingUpload[0].folderId, // Remove folderId from update
+            updatedAt: new Date()
+          })
+          .where(eq(fileUploads.id, existingUpload[0].id))
+          .returning();
+      } else {
+        // Create new upload record
+        [fileUpload] = await db.insert(fileUploads).values({
+          userId: userId,
+          folderId: folderId,
+          fileName: mainFile.originalname,
+          fileSize: mainFile.size,
+          fileType: mainFile.mimetype,
+          filePath: mainFile.path,
+          // status: "processing", // Remove this field from insert
+          projectNumber: projectNo,
+          visitNumber: visitNumber,
+          sector: req.body.sector || "utilities"
+        }).returning();
+      }
+
+
+      // Check file type and process accordingly
+      if (mainFile.originalname.endsWith('.db') || mainFile.originalname.endsWith('.db3') || mainFile.originalname.endsWith('meta.db3')) {
+        // Process database files with validation
+        try {
+          const filePath = mainFile.path;
+          const uploadDirectory = path.dirname(filePath);
+          
+          
+          // Import validation function
+          const { validateGenericDb3Files } = await import('./db3-validator');
+          
+          // Validate that both .db3 and _Meta.db3 files are present
+          const validation = validateGenericDb3Files(uploadDirectory);
+          
+          if (!validation.valid) {
+            // Update status to failed due to missing files
+            await db.update(fileUploads)
+              .set({ 
+                status: "failed",
+                extractedData: JSON.stringify({
+                  error: validation.message,
+                  extractionType: "wincan_database_validation_failed"
+                })
+              })
+              .where(eq(fileUploads.id, fileUpload.id));
+            
+            return res.status(400).json({ 
+              error: validation.message,
+              uploadId: fileUpload.id,
+              status: "failed"
+            });
+          }
+          
+          
+          // Log warning if meta file is missing
+          if (validation.warning) {
+            console.warn(validation.warning);
+          }
+          
+          // Clear any existing sections for this file upload to prevent duplicates
+          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
+          
+          // Import and use Wincan database reader from backup (working version)
+          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader-backup');
+          
+          // Always use the actual uploaded file path to avoid validation path mismatches
+          const mainDbPath = mainFile.path;
+          const metaDbPath = matchingMetaFile?.path || validation.files?.meta || null;
+          
+          console.log('🔍 FINAL FILE PATHS:', {
+            mainDbPath: mainDbPath,
+            metaDbPath: metaDbPath,
+            metaFileExists: metaDbPath ? fs.existsSync(metaDbPath) : false
+          });
+          console.log('🔍 File path debugging:', {
+            originalName: mainFile.originalname,
+            uploadedPath: mainFile.path,
+            validationPath: validation.files?.main,
+            finalPath: mainDbPath,
+            metaPath: metaDbPath
+          });
+
+          if (!metaDbPath) {
+            console.error('❌ Meta.db3 file missing or unreadable - SECSTAT grades will be limited');
+          }
+          
+          // Extract authentic data from database with enhanced debugging
+          console.log('🔍 Processing database file:', mainDbPath);
+          console.log('🔍 Sector:', req.body.sector || 'utilities');
+          console.log('🔍 File exists:', fs.existsSync(mainDbPath));
+          
+          let sections;
+          try {
+            console.log('🔍 Calling readWincanDatabase...');
+            // Pass the correct project number and meta file path for complete processing
+            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.projectNumber, metaDbPath);
+            console.log('✅ readWincanDatabase completed successfully');
+          } catch (readError) {
+            console.error('❌ readWincanDatabase failed:', readError);
+            console.error('❌ Error details:', {
+              message: readError.message,
+              stack: readError.stack,
+              name: readError.name
+            });
+            
+            // Update file status to failed
+            await db.update(fileUploads)
+              .set({ 
+                status: "failed",
+                extractedData: JSON.stringify({
+                  error: readError.message,
+                  extractionType: "wincan_database_processing_failed"
+                })
+              })
+              .where(eq(fileUploads.id, fileUpload.id));
+            
+            return res.status(500).json({ 
+              error: `Database processing failed: ${readError.message}`,
+              uploadId: fileUpload.id,
+              status: "failed"
+            });
+          }
+          
+          console.log('📊 SECSTAT Processing Results:');
+          console.log(`📊 Total sections extracted: ${sections.length}`);
+          
+          // Log severity grade samples for verification
+          const sectionsWithGrades = sections.filter(s => s.severityGrade > 0);
+          console.log(`📊 Sections with severity grades: ${sectionsWithGrades.length}`);
+          
+          if (sectionsWithGrades.length > 0) {
+            console.log('📊 Sample severity data:', sectionsWithGrades.slice(0, 3).map(s => ({
+              item: s.itemNo,
+              severity: s.severityGrade,
+              defectType: s.defectType,
+              defects: s.defects.substring(0, 50) + '...'
+            })));
+          }
+          
+          
+          // Store sections in database
+          if (sections.length > 0) {
+            await storeWincanSections(sections, fileUpload.id);
+          }
+          
+          // Update file upload status to completed
+          await db.update(fileUploads)
+            .set({ 
+              status: "completed",
+              extractedData: JSON.stringify({
+                sectionsCount: sections.length,
+                extractionType: "wincan_database",
+                validationMessage: validation.message,
+                status: "completed"
+              })
+            })
+            .where(eq(fileUploads.id, fileUpload.id));
+          
+          res.json({
+            message: "Database file processed successfully",
+            uploadId: fileUpload.id,
+            sectionsExtracted: sections.length,
+            status: "completed",
+            validation: validation.message,
+            warning: validation.warning,
+            hasMetaDb: !!validation.files?.meta
+          });
+          
+        } catch (dbError) {
+          console.error("Database processing error:", dbError);
+          // Update status to failed since we couldn't extract sections
+          await db.update(fileUploads)
+            .set({ extractedData: "failed" })
+            .where(eq(fileUploads.id, fileUpload.id));
+          
+          throw new Error(`Database processing failed: ${dbError.message}`);
+        }
+      } else if (req.file.originalname.toLowerCase().endsWith('.pdf')) {
+        // Process PDF files
+        try {
+          
+          // Clear any existing sections for this file upload to prevent duplicates
+          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
+          
+          // Import PDF processing functionality
+          const { processPDF } = await import('./pdf-processor');
+          
+          // Process PDF and extract sections
+          const sections = await processPDF(req.file.path, fileUpload.id, req.body.sector || 'utilities');
+          
+          
+          // Update file upload status to completed
+          await db.update(fileUploads)
+            .set({ 
+              extractedData: JSON.stringify({
+                sectionsCount: sections.length,
+                extractionType: "pdf",
+                status: "completed"
+              })
+            })
+            .where(eq(fileUploads.id, fileUpload.id));
+          
+          res.json({
+            message: "PDF file processed successfully",
+            uploadId: fileUpload.id,
+            sectionsExtracted: sections.length,
+            status: "completed"
+          });
+          
+        } catch (pdfError) {
+          console.error("PDF processing error:", pdfError);
+          // Update status to failed since we couldn't extract sections
+          await db.update(fileUploads)
+            .set({ extractedData: "failed" })
+            .where(eq(fileUploads.id, fileUpload.id));
+          
+          throw new Error(`PDF processing failed: ${pdfError.message}`);
+        }
+      } else {
+        // Unsupported file type
+        await db.update(fileUploads)
+          .set({ extractedData: "failed" })
+          .where(eq(fileUploads.id, fileUpload.id));
+        
+        return res.status(400).json({ 
+          error: "Unsupported file type. Only database files (.db, .db3, meta.db3) and PDF files are supported." 
+        });
+      }
     } catch (error) {
-      console.error("❌ Upload Processing Failed:", error);
-      return res.status(500).json({ error: "File processing failed", details: error.message });
+      console.error("Error uploading file:", error);
+      res.status(500).json({ error: "Failed to upload file" });
     }
   });
 
