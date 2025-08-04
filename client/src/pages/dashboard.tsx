@@ -2400,7 +2400,19 @@ export default function Dashboard() {
     : selectedReportIds.length === 1 
       ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
       : completedUploads.length === 1 ? completedUploads[0] 
-      : completedUploads.length > 0 ? completedUploads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] : null; // Auto-select most recent upload by creation date
+      : completedUploads.length > 0 ? (() => {
+          // Check for last used report first
+          const lastUsedReportId = localStorage.getItem('lastUsedReportId');
+          if (lastUsedReportId) {
+            const lastUsedUpload = completedUploads.find(upload => upload.id === parseInt(lastUsedReportId));
+            if (lastUsedUpload) {
+              console.log('🔄 Dashboard restored last used report:', lastUsedReportId);
+              return lastUsedUpload;
+            }
+          }
+          // Fallback to most recent upload by creation date
+          return completedUploads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+        })() : null;
   
   // CRITICAL FIX: If the potential upload exists but has no sections data, ignore it to prevent loops
   // We'll check this after we fetch the section data below
@@ -2431,6 +2443,14 @@ export default function Dashboard() {
       }
     }
   }, [reportId, currentUpload, sectionsLoading]);
+
+  // SAVE LAST USED REPORT: Save current report to localStorage when it changes
+  useEffect(() => {
+    if (currentUpload?.id) {
+      localStorage.setItem('lastUsedReportId', currentUpload.id.toString());
+      console.log('💾 Saved last used report ID:', currentUpload.id);
+    }
+  }, [currentUpload?.id]);
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
