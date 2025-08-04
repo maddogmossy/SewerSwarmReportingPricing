@@ -1,5 +1,14 @@
 # Replit Architecture Documentation
 
+## Rev v8.4 - Uniform WRc MSCC5 Standards Implementation (August 2025)
+**Lock-in Checkpoint**: Implemented uniform recommendation system using WRc MSCC5 + OS20X standards from Drain Repair Book (4th Ed.) with triangle warning system for all service and structural recommendations.
+
+### Key Achievements in v8.4:
+- **Uniform Recommendation System**: All service and structural recommendations now use the original triangle warning system
+- **WRc MSCC5 + OS20X Standards**: Recommendations follow authentic Drain Repair Book (4th Ed.) classifications
+- **Consistent UI Approach**: Removed dual-button system, maintaining single triangle-based approach across all recommendation types
+- **Database Session Persistence**: Maintained GR7188/GR7216 switching with 525mm support
+
 ## Rev v8.3 - Database Session Persistence and 525mm Support (August 2025)
 **Lock-in Checkpoint**: Fixed database switching persistence issue and added comprehensive 525mm pipe size support for both GR7188 and GR7216 processing.
 
@@ -62,6 +71,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
   - CCTV/Jet Vac should be first option with "Primary" badge
 - **Zero Synthetic Data Policy**: NEVER create, suggest, or use mock, placeholder, fallback, or synthetic data.
 - **Mandatory User Approval Rule**: MUST ask/check with user before making any changes.
+- **Uniform Recommendation System**: Use only the triangle warning system for ALL recommendations (service and structural), following WRc MSCC5 + OS20X standards from Drain Repair Book (4th Ed.).
 
 ## System Architecture
 

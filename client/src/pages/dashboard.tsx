@@ -1546,24 +1546,10 @@ export default function Dashboard() {
             );
             
             return (
-              <CleaningOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize || '150',
-                  sector: currentSector.id,
-                  defects: section.defects || '',
-                  itemNo: section.itemNo
-                }}
-              >
-                <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
-                  <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
-                  <div className="text-blue-900 mb-2">{section.recommendations}</div>
-                  {needsCleaning && (
-                    <div className="text-xs text-blue-800 mt-1">
-                      → Click for cleaning pricing options
-                    </div>
-                  )}
-                </div>
-              </CleaningOptionsPopover>
+              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+                <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
+                <div className="text-blue-900 mb-2">{section.recommendations}</div>
+              </div>
             );
           }
         }
