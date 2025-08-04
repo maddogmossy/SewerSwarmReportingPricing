@@ -1039,7 +1039,7 @@ export default function Dashboard() {
         hasStatusProperty: costCalc && typeof costCalc === 'object' && 'status' in costCalc,
         statusValue: costCalc && typeof costCalc === 'object' && 'status' in costCalc ? costCalc.status : 'N/A',
         statusMatches: costCalc && typeof costCalc === 'object' && 'status' in costCalc && 
-                      (costCalc.status === 'f615_calculated' || costCalc.status === 'f615_patching' || costCalc.status === 'combined_calculated')
+                      (costCalc.status === 'f615_calculated' || costCalc.status === 'f615_patching' || costCalc.status === 'combined_calculated' || costCalc.status === 'adjusted_structural_cost')
       });
       
       const hasValidStructuralCost = costCalc && 
@@ -1049,7 +1049,8 @@ export default function Dashboard() {
                                     'status' in costCalc &&
                                     (costCalc.status === 'f615_calculated' || 
                                      costCalc.status === 'f615_patching' ||
-                                     costCalc.status === 'combined_calculated');
+                                     costCalc.status === 'combined_calculated' ||
+                                     costCalc.status === 'adjusted_structural_cost');
       
       console.log(`🔍 STRUCTURAL COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         defectType: section.defectType,
@@ -1814,21 +1815,32 @@ export default function Dashboard() {
         );
       case 'recommendations':
         
-        // FIRST PRIORITY: Show authentic WRC service recommendations immediately
-        // This MUST be checked before any other logic to prevent overrides
+        // FIRST PRIORITY: Check for robotic cutting/structural defects before WRC service recommendations
+        // This prevents Item 19 (robotic cutting + patching) from being misclassified as service
         if (section.recommendations) {
           const rec = section.recommendations.toLowerCase();
-          const isWrcRecommendation = rec.includes('jetting') || 
-                                     rec.includes('water') || 
-                                     rec.includes('pressure') ||
-                                     rec.includes('clear') ||
-                                     rec.includes('blockage') ||
-                                     rec.includes('blocked lateral') ||
-                                     rec.includes('connection') ||
-                                     rec.includes('excavat') ||
-                                     rec.includes('reconnect') ||
-                                     rec.includes('obstruction') ||
-                                     rec.includes('sandbagging');
+          
+          // Check for robotic cutting (structural) FIRST
+          const requiresRoboticCutting = rec.includes('robotic cutting') || 
+                                       rec.includes('id4') ||
+                                       rec.includes('p4');
+          
+          // If robotic cutting required, skip WRC service check and route to structural
+          if (requiresRoboticCutting) {
+            // Skip to structural handling below
+          } else {
+            // Only check WRC service recommendations if NOT robotic cutting
+            const isWrcRecommendation = rec.includes('jetting') || 
+                                       rec.includes('water') || 
+                                       rec.includes('pressure') ||
+                                       rec.includes('clear') ||
+                                       rec.includes('blockage') ||
+                                       rec.includes('blocked lateral') ||
+                                       rec.includes('connection') ||
+                                       rec.includes('excavat') ||
+                                       rec.includes('reconnect') ||
+                                       rec.includes('obstruction') ||
+                                       rec.includes('sandbagging');
           
           console.log('🔍 WRC CHECK - Item', section.itemNo, {
             hasRec: !!section.recommendations,
@@ -1862,6 +1874,7 @@ export default function Dashboard() {
               </CleaningOptionsPopover>
             );
           }
+          } // Close the else block for WRC service check
         }
         
         // Check if section has defects requiring repair (not Grade 0)
