@@ -414,7 +414,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     const observationMap = new Map<string, string[]>();
     try {
       const obsData = database.prepare(`
-        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation 
+        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation, obs.OBS_Remark
         FROM SECINSP si 
         JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
         WHERE obs.OBS_OpCode IS NOT NULL 
@@ -432,7 +432,8 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           }
           const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
           const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
-          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
+          const remark = obs.OBS_Remark ? `: ${obs.OBS_Remark}` : '';
+          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}${remark}`);
         }
       }
     } catch (error) {
