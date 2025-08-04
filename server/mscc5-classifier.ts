@@ -170,8 +170,8 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     code: 'CXB',
     description: 'Connection defective, connecting pipe is blocked',
     type: 'service',
-    default_grade: 1,
-    risk: 'Service defect requiring cleaning to restore flow capacity',
+    default_grade: 4,
+    risk: 'Significant service defect requiring immediate cleaning to restore flow capacity',
     recommended_action: 'High pressure water jetting to clear blockage in connecting pipe',
     action_type: 2
   },
