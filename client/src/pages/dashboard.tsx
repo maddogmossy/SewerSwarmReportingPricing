@@ -144,8 +144,8 @@ const generateWRCServiceInstruction = (section: any): string => {
   const meterageMatches = defects.match(/\d+\.?\d*m/g) || [];
   const meterages = meterageMatches.join(', ');
   
-  // Build dynamic instruction starting with cleansing action
-  let instruction = 'To cleanse and then final survey to remove ';
+  // Build dynamic instruction with cleanse and remove format
+  let instruction = 'To cleanse and remove the ';
   
   if (defectCodes.length > 0) {
     instruction += `${defectCodes.join(', ')} defects identified`;
@@ -160,6 +160,8 @@ const generateWRCServiceInstruction = (section: any): string => {
   if (meterages) {
     instruction += ` at ${meterages}`;
   }
+  
+  instruction += ' and then final survey';
   
   if (totalLength && totalLength !== '0') {
     instruction += `. Section length: ${totalLength}m`;
