@@ -127,6 +127,7 @@ const requiresStructuralRepair = (defects: string): boolean => {
 const generateWRCServiceInstruction = (section: any): string => {
   const defects = section.defects || '';
   const totalLength = section.totalLength || '0';
+  const originalRecommendation = section.recommendations || '';
   
   // Extract defect codes (like DER, DES, DEC, etc.)
   const defectCodes = [];
@@ -144,27 +145,30 @@ const generateWRCServiceInstruction = (section: any): string => {
   const meterageMatches = defects.match(/\d+\.?\d*m/g) || [];
   const meterages = meterageMatches.join(', ');
   
-  // Build dynamic instruction with cleanse and remove format
-  let instruction = 'To cleanse and remove the ';
+  // Build dynamic instruction combining WRC recommendation with site-specific details
+  let instruction = originalRecommendation;
   
+  // Add site-specific details if available
+  let siteDetails = '';
   if (defectCodes.length > 0) {
-    instruction += `${defectCodes.join(', ')} defects identified`;
-  } else {
-    instruction += 'service defects';
+    siteDetails += `${defectCodes.join(', ')} defects`;
   }
   
   if (percentage) {
-    instruction += ` with ${percentage} impact`;
+    siteDetails += siteDetails ? ` with ${percentage} impact` : `${percentage} impact`;
   }
   
   if (meterages) {
-    instruction += ` at ${meterages}`;
+    siteDetails += siteDetails ? ` at ${meterages}` : `at ${meterages}`;
   }
   
-  instruction += ' and then final survey';
-  
   if (totalLength && totalLength !== '0') {
-    instruction += `. Section length: ${totalLength}m`;
+    siteDetails += siteDetails ? `. Section length: ${totalLength}m` : `Section length: ${totalLength}m`;
+  }
+  
+  // Combine WRC recommendation with site details
+  if (siteDetails) {
+    instruction += ` [Site details: ${siteDetails}]`;
   }
   
   return instruction;
