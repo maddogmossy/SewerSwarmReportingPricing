@@ -142,12 +142,12 @@ async function formatObservationText(observations: string[], sector: string = 'u
       const code = codeMatch[1];
       const meterage = parseFloat(codeMatch[2]);
       
-      if (code === 'JN') {
+      if (code === 'JN' || code === 'CN') {
         junctionPositions.push(meterage);
       }
       
       // Identify structural defects for junction proximity check
-      if (['D', 'FC', 'FL', 'CR', 'JDL', 'JDS', 'OJM', 'OJL'].includes(code)) {
+      if (['D', 'FC', 'FL', 'CR', 'JDL', 'JDS', 'OJM', 'OJL', 'CXB'].includes(code)) {
         structuralDefectPositions.push(meterage);
       }
     }
@@ -160,8 +160,8 @@ async function formatObservationText(observations: string[], sector: string = 'u
       const code = codeMatch[1];
       const meterage = codeMatch[2];
       
-      // Special case: Only include JN if there's a structural defect within 1 meter
-      if (code === 'JN') {
+      // Special case: Only include JN or CN if there's a structural defect within 1 meter
+      if (code === 'JN' || code === 'CN') {
         const junctionPos = parseFloat(meterage);
         const hasNearbyStructuralDefect = structuralDefectPositions.some(
           defectPos => Math.abs(defectPos - junctionPos) <= 1.0
