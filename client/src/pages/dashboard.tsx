@@ -3704,17 +3704,23 @@ export default function Dashboard() {
               try {
                 const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
                 const pipeSizeKey = matchingPipeSizeKey;
-                // FIXED: Include F608 prefix to match buffer key format: 608-225-2251-1-purpleDebris
                 const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
-                const bufferKey = `${configPrefix}-${pipeSizeKey}-${rowId}-${field}`;
-                const bufferedValue = buffer[bufferKey] || fallback;
                 
-                // Debug for F608 MM4-225 buffer retrieval issues
+                // CRITICAL FIX: Try both F606 and F608 buffer keys for cross-configuration compatibility
+                const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
+                const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
+                
+                let bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
+                
+                // Debug for Items 21, 22, 23 buffer retrieval issues
                 if (matchingPipeSizeKey === '225-2251' && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23)) {
-                  console.log(`🔍 F608-225 Buffer Retrieval for Item ${section.itemNo}:`, {
+                  console.log(`🔍 Cross-Config Buffer Retrieval for Item ${section.itemNo}:`, {
                     field: field,
-                    bufferKey: bufferKey,
-                    bufferedValue: bufferedValue,
+                    bufferKey608: bufferKey608,
+                    bufferKey606: bufferKey606,
+                    bufferedValue608: buffer[bufferKey608],
+                    bufferedValue606: buffer[bufferKey606],
+                    finalValue: bufferedValue,
                     fallback: fallback,
                     allBufferKeys: Object.keys(buffer).filter(k => k.includes('225-2251'))
                   });
