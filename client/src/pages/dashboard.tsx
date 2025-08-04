@@ -2745,36 +2745,6 @@ export default function Dashboard() {
     }
   }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData, showStructuralCostWarning, structuralCostData]);
 
-  // CRITICAL FIX: Separate warning check effect using sectionData (display data) instead of rawSectionData (API data)
-  useEffect(() => {
-    if (sectionData?.length > 0 && pr2Configurations?.length > 0) {
-      console.log('🔍 DISPLAY DATA WARNING CHECK TRIGGER:', {
-        sectionDataLength: sectionData.length,
-        pr2ConfigsLength: pr2Configurations.length,
-        sampleSections: sectionData.slice(0, 3).map(s => ({
-          itemNo: s.itemNo,
-          defectType: s.defectType
-        }))
-      });
-
-      // Check for service cost completion and trigger warning dialog using display data
-      try {
-        console.log('🔍 TRIGGERING SERVICE COST CHECK with display data:', sectionData.length);
-        checkServiceCostCompletion(sectionData);
-      } catch (error) {
-        console.error('🔧 SERVICE COST CHECK ERROR (display data):', error);
-      }
-
-      // Check for structural cost completion and trigger warning dialog using display data
-      try {
-        console.log('🔍 TRIGGERING STRUCTURAL COST CHECK with display data:', sectionData.length);
-        checkStructuralCostCompletion(sectionData);
-      } catch (error) {
-        console.error('🔧 STRUCTURAL COST CHECK ERROR (display data):', error);
-      }
-    }
-  }, [sectionData, pr2Configurations]);
-
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
 
@@ -5425,7 +5395,35 @@ export default function Dashboard() {
     return meterageA - meterageB;
   });
 
+  // CRITICAL FIX: Warning check effect using sectionData (display data) instead of rawSectionData (API data)
+  useEffect(() => {
+    if (sectionData?.length > 0 && pr2Configurations?.length > 0) {
+      console.log('🔍 DISPLAY DATA WARNING CHECK TRIGGER:', {
+        sectionDataLength: sectionData.length,
+        pr2ConfigsLength: pr2Configurations.length,
+        sampleSections: sectionData.slice(0, 3).map(s => ({
+          itemNo: s.itemNo,
+          defectType: s.defectType
+        }))
+      });
 
+      // Check for service cost completion and trigger warning dialog using display data
+      try {
+        console.log('🔍 TRIGGERING SERVICE COST CHECK with display data:', sectionData.length);
+        checkServiceCostCompletion(sectionData);
+      } catch (error) {
+        console.error('🔧 SERVICE COST CHECK ERROR (display data):', error);
+      }
+
+      // Check for structural cost completion and trigger warning dialog using display data
+      try {
+        console.log('🔍 TRIGGERING STRUCTURAL COST CHECK with display data:', sectionData.length);
+        checkStructuralCostCompletion(sectionData);
+      } catch (error) {
+        console.error('🔧 STRUCTURAL COST CHECK ERROR (display data):', error);
+      }
+    }
+  }, [sectionData, pr2Configurations]);
 
   // Remove debugging code - data is now clean for fresh uploads
 
