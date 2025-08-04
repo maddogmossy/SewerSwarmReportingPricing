@@ -1535,10 +1535,31 @@ export default function Dashboard() {
           
           if (isWrcRecommendation && !section.recommendations.includes('No action required')) {
             console.log('🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item', section.itemNo);
+            
+            // Check if section needs cleaning for F606 link
+            const needsCleaning = section.defects && (
+              section.defects.includes('blocked') || 
+              section.defects.includes('debris') || 
+              section.defects.includes('deposits') ||
+              section.defects.includes('CXB') ||
+              section.defects.includes('connection')
+            );
+            
             return (
               <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
                 <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
-                <div className="text-blue-900">{section.recommendations}</div>
+                <div className="text-blue-900 mb-2">{section.recommendations}</div>
+                {needsCleaning && (
+                  <div 
+                    className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded cursor-pointer transition-colors"
+                    onClick={() => {
+                      console.log('🔍 WRC RECOMMENDATION CLICK - Routing to F606 for Item', section.itemNo);
+                      handleOpenCleaningPricing(section, 'cctv-jet-vac');
+                    }}
+                  >
+                    Configure F606 Pricing
+                  </div>
+                )}
               </div>
             );
           }
