@@ -643,8 +643,14 @@ export default function Dashboard() {
         setTimeout(() => {
           console.log('🔄 Triggering warning checks after equipment priority change');
           if (rawSectionData && rawSectionData.length > 0) {
-            checkServiceCostCompletion(rawSectionData);
-            checkStructuralCostCompletion(rawSectionData);
+            // Force cost recalculation by updating the trigger
+            setCostRecalcTrigger(prev => prev + 1);
+            
+            // Slight delay to allow cost recalculation before checking warnings
+            setTimeout(() => {
+              checkServiceCostCompletion(rawSectionData);
+              checkStructuralCostCompletion(rawSectionData);
+            }, 100);
           }
         }, 200);
       }, 100);
