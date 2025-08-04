@@ -1009,6 +1009,22 @@ export default function Dashboard() {
       
       // Call calculateAutoCost to get cost details
       const costCalc = calculateAutoCost(section);
+      
+      // Deep debug every step of the filter
+      console.log(`🔬 STRUCTURAL FILTER DEBUG - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+        defectType: section.defectType,
+        costCalc: costCalc,
+        costCalcType: typeof costCalc,
+        costCalcIsObject: costCalc && typeof costCalc === 'object',
+        hasCostProperty: costCalc && typeof costCalc === 'object' && 'cost' in costCalc,
+        costValue: costCalc && typeof costCalc === 'object' && 'cost' in costCalc ? costCalc.cost : 'N/A',
+        costGreaterThanZero: costCalc && typeof costCalc === 'object' && 'cost' in costCalc && costCalc.cost > 0,
+        hasStatusProperty: costCalc && typeof costCalc === 'object' && 'status' in costCalc,
+        statusValue: costCalc && typeof costCalc === 'object' && 'status' in costCalc ? costCalc.status : 'N/A',
+        statusMatches: costCalc && typeof costCalc === 'object' && 'status' in costCalc && 
+                      (costCalc.status === 'f615_calculated' || costCalc.status === 'f615_patching' || costCalc.status === 'combined_calculated')
+      });
+      
       const hasValidStructuralCost = costCalc && 
                                     typeof costCalc === 'object' && 
                                     'cost' in costCalc && 
@@ -1028,7 +1044,8 @@ export default function Dashboard() {
           dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
           patchCount: 'patchCount' in costCalc ? costCalc.patchCount : 0
         } : 'no cost calc',
-        hasValidStructuralCost
+        hasValidStructuralCost,
+        FINAL_FILTER_RESULT: hasValidStructuralCost
       });
       
       return hasValidStructuralCost;
