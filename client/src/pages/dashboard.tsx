@@ -4123,7 +4123,9 @@ export default function Dashboard() {
                 cost: totalCost, // Display calculated service cost
                 currency: '£',
                 method: cctvConfig.categoryId === 'cctv-van-pack' ? `F608 Row ${mm4Row.id} Service Cost` : `F606 Row ${mm4Row.id} Service Cost`,
-                status: meetsMinimumRuns ? 'f608_calculated' : 'f608_insufficient_items',
+                status: meetsMinimumRuns 
+                  ? (equipmentPriority === 'f608' ? 'f608_calculated' : 'f606_calculated')
+                  : (equipmentPriority === 'f608' ? 'f608_insufficient_items' : 'f606_insufficient_items'),
                 dayRate: dayRate,
                 runsPerShift: runsPerShift,
                 ratePerRun: ratePerRun,
