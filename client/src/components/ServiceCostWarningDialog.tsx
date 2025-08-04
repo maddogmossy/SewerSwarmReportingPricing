@@ -207,72 +207,54 @@ export default function ServiceCostWarningDialog({
             {/* 3x1 Row Layout */}
             <div className="grid grid-cols-3 gap-4">
               {/* Option 1: Leave as is */}
-              <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                selectedOption === 'leave' 
-                  ? 'border-blue-400 bg-blue-50' 
-                  : 'border-slate-200 hover:border-slate-300'
-              }`}>
-                <label className="flex flex-col gap-2 cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="costOption"
-                      value="leave"
-                      checked={selectedOption === 'leave'}
-                      onChange={(e) => setSelectedOption(e.target.value as 'leave')}
-                    />
-                    <div className="font-medium text-slate-700">Leave costs as calculated</div>
-                  </div>
+              <div 
+                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                  selectedOption === 'leave' 
+                    ? 'border-blue-400 bg-blue-50' 
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+                onClick={() => setSelectedOption('leave')}
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="font-medium text-slate-700">Leave costs as calculated</div>
                   <div className="text-sm text-slate-600">
                     Keep current service costs without adjustment.
                   </div>
-                </label>
+                </div>
               </div>
 
               {/* Option 2: Spread difference (Default - Green) */}
-              <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                selectedOption === 'spread' 
-                  ? 'border-green-400 bg-green-50' 
-                  : 'border-green-200 hover:border-green-300 bg-green-25'
-              }`}>
-                <label className="flex flex-col gap-2 cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="costOption"
-                      value="spread"
-                      checked={selectedOption === 'spread'}
-                      onChange={(e) => setSelectedOption(e.target.value as 'spread')}
-                    />
-                    <div className="font-medium text-green-800">Spread shortfall across items</div>
-                  </div>
+              <div 
+                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                  selectedOption === 'spread' 
+                    ? 'border-green-400 bg-green-50' 
+                    : 'border-green-200 hover:border-green-300 bg-green-25'
+                }`}
+                onClick={() => setSelectedOption('spread')}
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="font-medium text-green-800">Spread shortfall across items</div>
                   <div className="text-sm text-green-700">
                     Add £{(shortfall / serviceItems.length).toFixed(2)} to each service item.
                   </div>
-                </label>
+                </div>
               </div>
 
               {/* Option 3: Manual adjustment */}
-              <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                selectedOption === 'manual' 
-                  ? 'border-blue-400 bg-blue-50' 
-                  : 'border-slate-200 hover:border-slate-300'
-              }`}>
-                <label className="flex flex-col gap-2 cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="costOption"
-                      value="manual"
-                      checked={selectedOption === 'manual'}
-                      onChange={(e) => setSelectedOption(e.target.value as 'manual')}
-                    />
-                    <div className="font-medium text-slate-700">Manual cost adjustment</div>
-                  </div>
+              <div 
+                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                  selectedOption === 'manual' 
+                    ? 'border-blue-400 bg-blue-50' 
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+                onClick={() => setSelectedOption('manual')}
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="font-medium text-slate-700">Manual cost adjustment</div>
                   <div className="text-sm text-slate-600">
                     Manually adjust the cost for each service item.
                   </div>
-                </label>
+                </div>
               </div>
             </div>
 
