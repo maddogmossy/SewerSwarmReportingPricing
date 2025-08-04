@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertTriangle, Calculator, DollarSign } from "lucide-react";
+import { AlertTriangle, Calculator, DollarSign, ChevronDown, ChevronUp } from "lucide-react";
 
 interface ServiceItem {
   itemNo: number;
@@ -38,6 +38,7 @@ export default function ServiceCostWarningDialog({
 }: ServiceCostWarningDialogProps) {
   const [selectedOption, setSelectedOption] = useState<'leave' | 'spread' | 'manual'>('spread');
   const [manualCosts, setManualCosts] = useState<{ [itemNo: number]: string }>({});
+  const [showServiceItems, setShowServiceItems] = useState(false);
 
   // Calculate the shortfall from day rate
   const serviceItemCount = serviceItems.length;
@@ -161,43 +162,42 @@ export default function ServiceCostWarningDialog({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleApply} className="bg-blue-600 hover:bg-blue-700">
-              Apply
-            </Button>
-          </div>
-
-          {/* Service Items Table */}
+          {/* Service Items Dropdown */}
           <div className="space-y-2">
-            <h4 className="font-medium text-slate-700">Service Items</h4>
-            <div className="border border-slate-200 rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-100">
-                  <tr>
-                    <th className="text-left p-3 font-medium">Item</th>
-                    <th className="text-left p-3 font-medium">Current Cost</th>
-                    <th className="text-left p-3 font-medium">Method</th>
-                    <th className="text-left p-3 font-medium">Defects</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {serviceItems.map((item, index) => (
-                    <tr key={item.itemNo} className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                      <td className="p-3 font-medium">{item.itemNo}</td>
-                      <td className="p-3">£{item.currentCost.toFixed(2)}</td>
-                      <td className="p-3 text-slate-600">{item.method}</td>
-                      <td className="p-3 text-slate-600 max-w-xs truncate" title={item.defects}>
-                        {item.defects}
-                      </td>
+            <button
+              onClick={() => setShowServiceItems(!showServiceItems)}
+              className="flex items-center justify-between w-full p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+            >
+              <span className="font-medium text-slate-700">Service Items ({serviceItems.length})</span>
+              {showServiceItems ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+            
+            {showServiceItems && (
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-100">
+                    <tr>
+                      <th className="text-left p-3 font-medium">Item</th>
+                      <th className="text-left p-3 font-medium">Current Cost</th>
+                      <th className="text-left p-3 font-medium">Method</th>
+                      <th className="text-left p-3 font-medium">Defects</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {serviceItems.map((item, index) => (
+                      <tr key={item.itemNo} className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                        <td className="p-3 font-medium">{item.itemNo}</td>
+                        <td className="p-3">£{item.currentCost.toFixed(2)}</td>
+                        <td className="p-3 text-slate-600">{item.method}</td>
+                        <td className="p-3 text-slate-600 max-w-xs truncate" title={item.defects}>
+                          {item.defects}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Options */}
@@ -240,15 +240,6 @@ export default function ServiceCostWarningDialog({
                   <div className="text-sm text-slate-600">
                     Add £{(shortfall / serviceItems.length).toFixed(2)} to each service item to meet minimum shift cost.
                   </div>
-                  {selectedOption === 'spread' && shortfall > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {calculateSpreadCosts().map(item => (
-                        <div key={item.itemNo} className="text-xs text-blue-600">
-                          Item {item.itemNo}: £{serviceItems.find(s => s.itemNo === item.itemNo)?.currentCost.toFixed(2)} → £{item.newCost.toFixed(2)}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </label>
             </div>
@@ -293,6 +284,16 @@ export default function ServiceCostWarningDialog({
                 </div>
               </label>
             </div>
+          </div>
+
+          {/* Action Buttons - Moved to bottom */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleApply} className="bg-blue-600 hover:bg-blue-700">
+              Apply
+            </Button>
           </div>
         </div>
 
