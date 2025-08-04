@@ -949,6 +949,34 @@ export default function Dashboard() {
     setAdjustedStructuralCosts(newAdjustedCosts);
     setAppliedStructuralPricing(newAppliedItems);
     
+    // Save decision to localStorage to prevent repeated warnings
+    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+    const currentEquipmentType = equipmentPriority; // 'f606' or 'f608'
+    
+    if (currentReportId && currentEquipmentType) {
+      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+      
+      const newDecision = {
+        reportId: currentReportId,
+        equipmentType: currentEquipmentType,
+        decisionType: 'structural',
+        appliedCosts: newCosts,
+        timestamp: Date.now()
+      };
+      
+      // Remove any existing structural decision for this report/equipment combination
+      const filteredDecisions = existingDecisions.filter((decision: any) => 
+        !(decision.reportId === currentReportId && 
+          decision.equipmentType === currentEquipmentType && 
+          decision.decisionType === 'structural')
+      );
+      
+      filteredDecisions.push(newDecision);
+      localStorage.setItem('appliedCostDecisions', JSON.stringify(filteredDecisions));
+      
+      console.log('💾 Structural cost decision saved to localStorage:', newDecision);
+    }
+    
     toast({
       title: "Structural Costs Applied",
       description: `Applied structural pricing for ${newCosts.length} items - prices now shown in green`,
