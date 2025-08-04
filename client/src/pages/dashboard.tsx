@@ -1034,9 +1034,9 @@ export default function Dashboard() {
       shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !existingStructuralDecision
     });
 
-    // Reset dismissed state when new data is available (similar to service warning logic)
-    if (structuralSectionsWithCosts.length > 0 && structuralCostWarningDismissed) {
-      console.log('🔄 STRUCTURAL COST WARNING - Resetting dismissed state for new data');
+    // Reset dismissed state when new data is available BUT ONLY if no existing decision
+    if (structuralSectionsWithCosts.length > 0 && structuralCostWarningDismissed && !existingStructuralDecision) {
+      console.log('🔄 STRUCTURAL COST WARNING - Resetting dismissed state for new data (no existing decision)');
       setStructuralCostWarningDismissed(false);
     }
 
