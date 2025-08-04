@@ -1120,8 +1120,8 @@ export default function Dashboard() {
           willTriggerWarning: isStructuralCostBelowDayRate
         });
         
-        // Always show structural warning for user review and potential adjustment
-        if (true) {
+        // Show structural warning only if cost is below day rate and no existing decision
+        if (isStructuralCostBelowDayRate) {
           console.log('🔄 STRUCTURAL COST WARNING - Triggering warning dialog');
           console.log('🔄 STRUCTURAL COST WARNING - Setting dialog data and state');
           
@@ -1205,6 +1205,8 @@ export default function Dashboard() {
       
       console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         defectType: section.defectType,
+        equipmentPriority: equipmentPriority,
+        expectedStatuses: expectedStatuses,
         costCalc: costCalc && typeof costCalc === 'object' ? {
           status: 'status' in costCalc ? costCalc.status : 'unknown',
           cost: 'cost' in costCalc ? costCalc.cost : 0,
@@ -1212,6 +1214,7 @@ export default function Dashboard() {
           dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
           runsPerShift: 'runsPerShift' in costCalc ? costCalc.runsPerShift : 0
         } : 'no cost calc',
+        statusMatch: costCalc && typeof costCalc === 'object' && 'status' in costCalc && expectedStatuses.includes(costCalc.status),
         hasServiceCost
       });
       
@@ -3779,31 +3782,30 @@ export default function Dashboard() {
         row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
       );
       
-      // Selection logic: Check user preference AND configuration status
-      // Priority: User preference (if both are configured) > Configured config > F606 default  
+      // Selection logic: Respect user's equipment priority choice first
+      // Priority: User preference > F606 default > Available config as fallback
       const userPrefersF608 = equipmentPriority === 'f608';
-      const bothConfigured = f608HasValidMM4 && f606Config?.mmData?.mm4Rows?.some((row: any) => 
+      const f606HasValidMM4 = f606Config?.mmData?.mm4Rows?.some((row: any) => 
         row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
       );
       
       let cctvConfig;
       let shouldUpdatePriority = false;
       
-      if (bothConfigured) {
-        // Both are configured - use user preference
-        cctvConfig = userPrefersF608 ? f608Config : f606Config;
-      } else if (f608HasValidMM4) {
-        // Only F608 configured - auto-select F608 and sync equipment priority
+      if (userPrefersF608 && f608Config) {
+        // User chose F608 and it's available
         cctvConfig = f608Config;
-        if (equipmentPriority !== 'f608') {
-          shouldUpdatePriority = true;
-        }
-      } else {
-        // Default to F606 - ensure priority is synced
+      } else if (!userPrefersF608 && f606Config) {
+        // User chose F606 (default) and it's available
         cctvConfig = f606Config;
-        if (equipmentPriority !== 'f606') {
-          shouldUpdatePriority = true;
-        }
+      } else if (f608HasValidMM4 && !f606HasValidMM4) {
+        // Only F608 has valid configuration as fallback
+        cctvConfig = f608Config;
+        console.log('🔄 Using F608 as fallback - F606 not configured');
+      } else {
+        // Default to F606 even if not fully configured
+        cctvConfig = f606Config;
+        console.log('🔄 Using F606 as default - respecting user preference');
       }
       
       // Sync equipment priority with actual selection (only when needed and not recently changed by user)
