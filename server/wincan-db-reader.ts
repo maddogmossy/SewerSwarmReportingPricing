@@ -85,7 +85,7 @@ function enhanceObservationWithRemark(observation: string): string {
 }
 
 // Format observation text with defect codes prefixed for MSCC5 classification
-// JN codes only display if structural defect within one meter of junction
+// JN codes only display if patching defect within 0.7m requires cut access
 async function formatObservationText(observations: string[], sector: string = 'utilities'): Promise<string> {
   
   // STEP 1: Check for belly conditions requiring excavation using MSCC5 classifier
@@ -93,20 +93,24 @@ async function formatObservationText(observations: string[], sector: string = 'u
   const combinedObservations = observations.join(' ');
   const bellyAnalysis = await MSCC5Classifier.analyzeBellyCondition(combinedObservations, sector);
   
-  // STEP 2: Filter water level observations and finish node codes based on belly analysis
+  // STEP 2: Filter observations - remove service/structural codes and finish nodes
   const preFiltered = observations.filter(obs => {
     const isWaterLevel = obs.includes('Water level') || obs.includes('WL ') || obs.includes('WL(');
     const isFinishNode = obs.includes('CPF ') || obs.includes('COF ') || obs.includes('OCF ') || 
                         obs.includes('CP (') || obs.includes('OC (') || obs.includes('MHF ') || 
                         obs.includes('Finish node') || obs.includes('Start node');
                         
-    if (isFinishNode) {
+    // Remove service codes (SER) and structural codes (STR) - these are non-defect observations
+    const isServiceCode = obs.includes('SER ') || obs.includes('SER(');
+    const isStructuralCode = obs.includes('STR ') || obs.includes('STR(');
+                        
+    if (isFinishNode || isServiceCode || isStructuralCode) {
       return false;
     }
     
-    // Keep water level only if belly condition exists
+    // Keep water level only if belly condition exists  
     if (isWaterLevel) {
-      return bellyAnalysis.hasBelly;
+      return bellyAnalysis.hasBelly && bellyAnalysis.adoptionFail;
     }
     
     return true;
@@ -153,22 +157,21 @@ async function formatObservationText(observations: string[], sector: string = 'u
     }
   }
   
-  // STEP 3: Group observations by code
+  // STEP 3: Process observations with junction filtering based on patching requirements
   for (const obs of preFiltered) {
     const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
     if (codeMatch) {
       const code = codeMatch[1];
-      const meterage = codeMatch[2];
+      const meterage = parseFloat(codeMatch[2]);
       
-      // Special case: Only include JN or CN if there's a structural defect within 1 meter
+      // Junction filtering - only include JN/CN if structural defect requiring patches within 0.7m
       if (code === 'JN' || code === 'CN') {
-        const junctionPos = parseFloat(meterage);
-        const hasNearbyStructuralDefect = structuralDefectPositions.some(
-          defectPos => Math.abs(defectPos - junctionPos) <= 1.0
+        const hasNearbyPatchingDefect = structuralDefectPositions.some(
+          defectPos => Math.abs(defectPos - meterage) <= 0.7
         );
         
-        if (!hasNearbyStructuralDefect) {
-          continue; // Skip this junction
+        if (!hasNearbyPatchingDefect) {
+          continue; // Skip junction - no patching needed within 0.7m
         }
       }
       
@@ -176,7 +179,7 @@ async function formatObservationText(observations: string[], sector: string = 'u
         codeGroups[code] = [];
       }
       codeGroups[code].push({
-        meterage: meterage,
+        meterage: codeMatch[2],
         fullText: obs
       });
     } else {
