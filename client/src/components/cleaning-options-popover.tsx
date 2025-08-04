@@ -157,6 +157,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                     console.log('🔄 F606 Button Clicked - Updating priority');
                     setEquipmentPriority('f606');
                     localStorage.setItem('equipmentPriority', 'f606');
+                    localStorage.setItem('lastUserPriorityChange', Date.now().toString());
                     toast({
                       title: "Equipment Priority Updated",
                       description: "F606 CCTV/Jet Vac now has priority for cost calculations",
@@ -180,6 +181,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                     console.log('🔄 F608 Button Clicked - Updating priority');
                     setEquipmentPriority('f608');
                     localStorage.setItem('equipmentPriority', 'f608');
+                    localStorage.setItem('lastUserPriorityChange', Date.now().toString());
                     toast({
                       title: "Equipment Priority Updated", 
                       description: "F608 CCTV/Van Pack now has priority for cost calculations",

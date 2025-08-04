@@ -3600,8 +3600,12 @@ export default function Dashboard() {
         }
       }
       
-      // Sync equipment priority with actual selection (only when needed)
-      if (shouldUpdatePriority) {
+      // Sync equipment priority with actual selection (only when needed and not recently changed by user)
+      const lastUserPriorityChange = localStorage.getItem('lastUserPriorityChange');
+      const timeSinceLastChange = lastUserPriorityChange ? Date.now() - parseInt(lastUserPriorityChange) : 99999;
+      const recentUserChange = timeSinceLastChange < 5000; // 5 seconds grace period
+      
+      if (shouldUpdatePriority && !recentUserChange) {
         const newPriority = cctvConfig?.categoryId === 'cctv-van-pack' ? 'f608' : 'f606';
         setEquipmentPriority(newPriority);
         localStorage.setItem('equipmentPriority', newPriority);
@@ -3609,7 +3613,15 @@ export default function Dashboard() {
           reason: f608HasValidMM4 ? 'F608 has MM4 data configured' : 'F606 default selection',
           previousPriority: equipmentPriority,
           newPriority: newPriority,
-          configUsed: cctvConfig?.categoryId
+          configUsed: cctvConfig?.categoryId,
+          userRecentChange: recentUserChange,
+          timeSinceLastChange: timeSinceLastChange
+        });
+      } else if (shouldUpdatePriority && recentUserChange) {
+        console.log('🚫 Equipment Priority Auto-Sync SKIPPED - Recent user change detected:', {
+          timeSinceLastChange: timeSinceLastChange,
+          userPriority: equipmentPriority,
+          autoSelectWould: cctvConfig?.categoryId === 'cctv-van-pack' ? 'f608' : 'f606'
         });
       }
       
