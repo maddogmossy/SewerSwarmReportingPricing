@@ -807,13 +807,84 @@ export default function Dashboard() {
   };
 
   // Store adjusted service costs in local state
-  const [adjustedServiceCosts, setAdjustedServiceCosts] = useState<Map<number, number>>(new Map());
+  const [adjustedServiceCosts, setAdjustedServiceCosts] = useState<Map<number, number>>(() => {
+    // Restore adjusted service costs from cost decisions
+    try {
+      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+      
+      const serviceDecision = existingDecisions.find((decision: any) => 
+        decision.reportId === currentReportId && 
+        decision.equipmentType === currentEquipmentType && 
+        decision.decisionType === 'service'
+      );
+      
+      if (serviceDecision && serviceDecision.itemDetails) {
+        const costMap = new Map();
+        serviceDecision.itemDetails.forEach((item: any) => {
+          costMap.set(item.itemNo, item.appliedCost);
+        });
+        return costMap;
+      }
+    } catch (error) {
+      console.error('Error restoring adjusted service costs:', error);
+    }
+    return new Map();
+  });
   
   // Store adjusted structural costs in local state
-  const [adjustedStructuralCosts, setAdjustedStructuralCosts] = useState<Map<number, number>>(new Map());
+  const [adjustedStructuralCosts, setAdjustedStructuralCosts] = useState<Map<number, number>>(() => {
+    // Restore adjusted structural costs from cost decisions
+    try {
+      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+      
+      const structuralDecision = existingDecisions.find((decision: any) => 
+        decision.reportId === currentReportId && 
+        decision.equipmentType === currentEquipmentType && 
+        decision.decisionType === 'structural'
+      );
+      
+      if (structuralDecision && structuralDecision.itemDetails) {
+        const costMap = new Map();
+        structuralDecision.itemDetails.forEach((item: any) => {
+          costMap.set(item.itemNo, item.appliedCost);
+        });
+        console.log('🔄 Restoring adjusted structural costs:', Array.from(costMap.entries()), 'from decision:', structuralDecision);
+        return costMap;
+      }
+    } catch (error) {
+      console.error('Error restoring adjusted structural costs:', error);
+    }
+    return new Map();
+  });
   
   // Track which items have structural pricing applied (for green highlighting)
-  const [appliedStructuralPricing, setAppliedStructuralPricing] = useState<Set<number>>(new Set());
+  const [appliedStructuralPricing, setAppliedStructuralPricing] = useState<Set<number>>(() => {
+    // Restore applied structural pricing from cost decisions
+    try {
+      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+      
+      const structuralDecision = existingDecisions.find((decision: any) => 
+        decision.reportId === currentReportId && 
+        decision.equipmentType === currentEquipmentType && 
+        decision.decisionType === 'structural'
+      );
+      
+      if (structuralDecision && structuralDecision.itemDetails) {
+        const appliedItems = structuralDecision.itemDetails.map((item: any) => item.itemNo);
+        console.log('🔄 Restoring applied structural pricing for items:', appliedItems, 'from decision:', structuralDecision);
+        return new Set(appliedItems);
+      }
+    } catch (error) {
+      console.error('Error restoring applied structural pricing:', error);
+    }
+    return new Set();
+  });
 
   // Handler for service cost warning dialog
   const handleServiceCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
