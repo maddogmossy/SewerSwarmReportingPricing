@@ -1555,7 +1555,8 @@ export default function Dashboard() {
                     onClick={() => {
                       console.log('🔍 WRC RECOMMENDATION CLICK - Routing to F606 for Item', section.itemNo);
                       const pipeSize = section.pipeSize || '150';
-                      window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}`;
+                      const reportIdParam = reportId ? `&reportId=${reportId}` : '';
+                      window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}${reportIdParam}`;
                     }}
                   >
                     Configure F606 Pricing

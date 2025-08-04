@@ -168,6 +168,7 @@ export default function PR2ConfigClean() {
   const selectedOptionId = urlParams.get('selectedOption'); // Track which option is selected for editing
   const selectedId = urlParams.get('selectedId'); // Track MMP1 ID selection from dashboard (id1, id2, etc.)
   const autoSelectUtilities = urlParams.get('autoSelectUtilities') === 'true'; // Auto-select utilities tab in MM1
+  const reportId = urlParams.get('reportId'); // Preserve current upload ID for navigation back to dashboard
   const isEditing = !!editId;
   
   // Determine template type based on category
@@ -1303,8 +1304,9 @@ export default function PR2ConfigClean() {
       setPendingRangeValue('');
       setPendingRowId(null);
       
-      // Continue with dashboard navigation
-      setLocation('/dashboard');
+      // Continue with dashboard navigation, preserving reportId if present
+      const dashboardUrl = reportId ? `/dashboard?reportId=${reportId}` : '/dashboard';
+      setLocation(dashboardUrl);
     }, 100);
   };
 
@@ -1800,8 +1802,9 @@ export default function PR2ConfigClean() {
       }
     }
     
-    // No validation issues found, proceed with navigation
-    setLocation('/dashboard');
+    // No validation issues found, proceed with navigation, preserving reportId if present
+    const dashboardUrl = reportId ? `/dashboard?reportId=${reportId}` : '/dashboard';
+    setLocation(dashboardUrl);
   };
 
   // Handle sector toggle for P006a templates
