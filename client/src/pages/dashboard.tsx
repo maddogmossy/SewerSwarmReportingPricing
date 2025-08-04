@@ -1550,17 +1550,31 @@ export default function Dashboard() {
                 <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
                 <div className="text-blue-900 mb-2">{section.recommendations}</div>
                 {needsCleaning && (
-                  <div 
-                    className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded cursor-pointer transition-colors"
-                    onClick={() => {
-                      console.log('🔍 WRC RECOMMENDATION CLICK - Routing to F606 for Item', section.itemNo);
-                      const pipeSize = section.pipeSize || '150';
-                      const reportIdParam = reportId ? `&reportId=${reportId}` : '';
-                      const autoSelectParam = currentSector.id === 'utilities' ? '&autoSelectUtilities=true' : '';
-                      window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}${reportIdParam}${autoSelectParam}`;
-                    }}
-                  >
-                    Configure F606 Pricing
+                  <div className="flex gap-1 mt-1">
+                    <div 
+                      className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded cursor-pointer transition-colors"
+                      onClick={() => {
+                        console.log('🔍 WRC RECOMMENDATION CLICK - Routing to F606 for Item', section.itemNo);
+                        const pipeSize = section.pipeSize || '150';
+                        const reportIdParam = reportId ? `&reportId=${reportId}` : '';
+                        const autoSelectParam = currentSector.id === 'utilities' ? '&autoSelectUtilities=true' : '';
+                        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}${reportIdParam}${autoSelectParam}`;
+                      }}
+                    >
+                      F606 Pricing
+                    </div>
+                    <div 
+                      className="text-xs bg-orange-600 hover:bg-orange-700 text-white px-2 py-1 rounded cursor-pointer transition-colors"
+                      onClick={() => {
+                        console.log('🔍 WRC RECOMMENDATION CLICK - Routing to F608 for Item', section.itemNo);
+                        const pipeSize = section.pipeSize || '150';
+                        const reportIdParam = reportId ? `&reportId=${reportId}` : '';
+                        const autoSelectParam = currentSector.id === 'utilities' ? '&autoSelectUtilities=true' : '';
+                        window.location.href = `/pr2-config-clean?categoryId=cctv-van-pack&sector=${currentSector.id}&pipeSize=${pipeSize}${reportIdParam}${autoSelectParam}`;
+                      }}
+                    >
+                      F608 Pricing
+                    </div>
                   </div>
                 )}
               </div>

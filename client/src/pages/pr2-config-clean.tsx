@@ -918,52 +918,32 @@ export default function PR2ConfigClean() {
 
   // Initialize selectedIds from URL parameter when component loads
   useEffect(() => {
-    if (selectedId && getTemplateType(categoryId || '') === 'MMP1') {
-      setSelectedIds([selectedId]);
-    }
-  }, [selectedId, categoryId]);
-
-  // Auto-select utilities (id1) when autoSelectUtilities is true (run once on mount)
-  useEffect(() => {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const autoSelectParam = urlSearchParams.get('autoSelectUtilities');
+    
     console.log('🔍 AUTO-SELECT DEBUG:', {
       autoSelectUtilities,
       autoSelectParam,
-      autoSelectParamRaw: urlSearchParams.get('autoSelectUtilities'),
+      selectedId,
       categoryId,
       templateType: getTemplateType(categoryId || ''),
-      selectedIds,
       shouldTrigger: autoSelectUtilities && getTemplateType(categoryId || '') === 'MMP1',
-      currentURL: window.location.href,
-      urlParams: window.location.search,
-      allURLParams: Object.fromEntries(urlSearchParams.entries())
+      currentURL: window.location.href
     });
     
-    // Check both the parsed parameter and direct URL parameter
+    // Priority 1: Auto-select utilities (id1) when autoSelectUtilities is true
     const shouldAutoSelect = (autoSelectUtilities || autoSelectParam === 'true') && getTemplateType(categoryId || '') === 'MMP1';
     
     if (shouldAutoSelect) {
       console.log('🎯 AUTO-SELECTING utilities (id1) card due to autoSelectUtilities=true');
-      setSelectedIds(prev => {
-        const current = [...prev];
-        if (!current.includes('id1')) {
-          console.log('✅ Adding id1 to selectedIds:', [...current, 'id1']);
-          return [...current, 'id1'];
-        }
-        console.log('ℹ️ id1 already selected:', current);
-        return current;
-      });
-    } else {
-      console.log('❌ AUTO-SELECT CONDITIONS NOT MET:', {
-        autoSelectUtilities,
-        autoSelectParam,
-        categoryId,
-        templateType: getTemplateType(categoryId || ''),
-        shouldAutoSelect
-      });
+      setSelectedIds(['id1']);
     }
-  }, [autoSelectUtilities, categoryId]); // Removed selectedIds from deps to avoid loop
+    // Priority 2: Use selectedId from URL parameter
+    else if (selectedId && getTemplateType(categoryId || '') === 'MMP1') {
+      console.log('🔧 Setting selectedIds from URL parameter:', selectedId);
+      setSelectedIds([selectedId]);
+    }
+  }, [selectedId, categoryId, autoSelectUtilities]);
 
 
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
