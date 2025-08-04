@@ -992,16 +992,33 @@ export default function Dashboard() {
 
   // Function to check if all structural costs are populated and trigger warning
   const checkStructuralCostCompletion = (sectionData: any[]) => {
-    if (!sectionData || sectionData.length === 0) return;
+    console.log('🚀 STRUCTURAL WARNING CHECK STARTED with data:', {
+      sectionDataLength: sectionData?.length || 0,
+      hasData: !!sectionData,
+      sampleSections: sectionData?.slice(0, 3)?.map(s => ({
+        itemNo: s.itemNo,
+        defectType: s.defectType,
+        letterSuffix: s.letterSuffix
+      }))
+    });
+    
+    if (!sectionData || sectionData.length === 0) {
+      console.log('🚫 STRUCTURAL WARNING CHECK - No section data provided');
+      return;
+    }
 
     // Find all structural sections
     const allStructuralSections = sectionData.filter(section => section.defectType === 'structural');
-    console.log('🔍 STRUCTURAL COST WARNING - All structural sections found:', allStructuralSections.map(s => ({
-      itemNo: s.itemNo,
-      letterSuffix: s.letterSuffix,
-      defectType: s.defectType,
-      defects: s.defects
-    })));
+    console.log('🔍 STRUCTURAL COST WARNING - All structural sections found:', {
+      totalSections: sectionData.length,
+      structuralSectionsCount: allStructuralSections.length,
+      structuralSections: allStructuralSections.map(s => ({
+        itemNo: s.itemNo,
+        letterSuffix: s.letterSuffix,
+        defectType: s.defectType,
+        defects: s.defects?.substring(0, 50)
+      }))
+    });
 
     // Find structural sections with valid F615 costs (for cost warning check)
     const structuralSectionsWithCosts = sectionData.filter(section => {
