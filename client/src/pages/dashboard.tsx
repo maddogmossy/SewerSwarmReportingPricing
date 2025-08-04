@@ -1075,14 +1075,19 @@ export default function Dashboard() {
       shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !existingStructuralDecision
     });
 
-    // Reset dismissed state when new data is available BUT ONLY if no existing decision
+    // Reset dismissed state when new data is available BUT ONLY if no existing decision and equipment priority changed
     if (structuralSectionsWithCosts.length > 0 && structuralCostWarningDismissed && !existingStructuralDecision) {
-      console.log('🔄 STRUCTURAL COST WARNING - Resetting dismissed state for new data (no existing decision)');
-      setStructuralCostWarningDismissed(false);
+      const lastPriorityChange = localStorage.getItem('lastUserPriorityChange');
+      const lastStructuralWarningTime = localStorage.getItem('lastStructuralWarningTime') || '0';
+      
+      if (lastPriorityChange && parseInt(lastPriorityChange) > parseInt(lastStructuralWarningTime)) {
+        console.log('🔄 STRUCTURAL COST WARNING - Resetting dismissed state for equipment priority change');
+        setStructuralCostWarningDismissed(false);
+      }
     }
 
     // Only trigger if we have structural sections with valid costs, haven't shown the dialog yet, and no cost decision exists
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !existingStructuralDecision) {
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed && !existingStructuralDecision) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);
@@ -1163,10 +1168,13 @@ export default function Dashboard() {
           
           console.log('🔄 STRUCTURAL COST WARNING - Warning data:', warningData);
           
-          setStructuralCostData(warningData);
-          setShowStructuralCostWarning(true);
-          
-          console.log('🔄 STRUCTURAL COST WARNING - State set, dialog should now be visible');
+          // Auto-trigger dialog after a short delay to allow costs to render
+          setTimeout(() => {
+            setStructuralCostData(warningData);
+            setShowStructuralCostWarning(true);
+            localStorage.setItem('lastStructuralWarningTime', Date.now().toString());
+            console.log('🔄 STRUCTURAL COST WARNING - State set, dialog should now be visible');
+          }, 1500);
         } else {
           console.log('🔍 STRUCTURAL COST WARNING - Structural costs meet day rate, no warning needed');
         }
@@ -1277,6 +1285,17 @@ export default function Dashboard() {
       shouldTrigger: serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed && !existingServiceDecision
     });
 
+    // Reset dismissed state when new data is available BUT ONLY if no existing decision and equipment priority changed
+    if (serviceSectionsWithCosts.length > 0 && serviceCostWarningDismissed && !existingServiceDecision) {
+      const lastPriorityChange = localStorage.getItem('lastUserPriorityChange');
+      const lastWarningTime = localStorage.getItem('lastServiceWarningTime') || '0';
+      
+      if (lastPriorityChange && parseInt(lastPriorityChange) > parseInt(lastWarningTime)) {
+        console.log('🔄 SERVICE COST WARNING - Resetting dismissed state for equipment priority change');
+        setServiceCostWarningDismissed(false);
+      }
+    }
+
     // Only trigger if we have service items, haven't shown the dialog yet, it hasn't been dismissed, AND no cost decision exists
     if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed && !existingServiceDecision) {
       // Get the first service item's config details for reference
@@ -1342,6 +1361,7 @@ export default function Dashboard() {
           setTimeout(() => {
             setIsExportWorkflow(false); // Not from export workflow
             setShowServiceCostWarning(true);
+            localStorage.setItem('lastServiceWarningTime', Date.now().toString());
           }, 1000);
         } else {
           console.log('🔍 SERVICE COST WARNING - Service costs meet day rate, no warning needed');
