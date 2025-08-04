@@ -162,44 +162,6 @@ export default function ServiceCostWarningDialog({
             </div>
           </div>
 
-          {/* Service Items Dropdown */}
-          <div className="space-y-2">
-            <button
-              onClick={() => setShowServiceItems(!showServiceItems)}
-              className="flex items-center justify-between w-full p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
-            >
-              <span className="font-medium text-slate-700">Service Items ({serviceItems.length})</span>
-              {showServiceItems ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </button>
-            
-            {showServiceItems && (
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-100">
-                    <tr>
-                      <th className="text-left p-3 font-medium">Item</th>
-                      <th className="text-left p-3 font-medium">Current Cost</th>
-                      <th className="text-left p-3 font-medium">Method</th>
-                      <th className="text-left p-3 font-medium">Defects</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {serviceItems.map((item, index) => (
-                      <tr key={item.itemNo} className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                        <td className="p-3 font-medium">{item.itemNo}</td>
-                        <td className="p-3">£{item.currentCost.toFixed(2)}</td>
-                        <td className="p-3 text-slate-600">{item.method}</td>
-                        <td className="p-3 text-slate-600 max-w-xs truncate" title={item.defects}>
-                          {item.defects}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
           {/* Options */}
           <div className="space-y-4">
             <h4 className="font-medium text-slate-700">Choose Action</h4>
@@ -280,6 +242,44 @@ export default function ServiceCostWarningDialog({
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* Service Items Dropdown - Moved below Choose Action */}
+          <div className="space-y-2">
+            <button
+              onClick={() => setShowServiceItems(!showServiceItems)}
+              className="flex items-center justify-between w-full p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+            >
+              <span className="font-medium text-slate-700">Service Items ({serviceItems.length})</span>
+              {showServiceItems ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+            
+            {showServiceItems && (
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-100">
+                    <tr>
+                      <th className="text-left p-3 font-medium">Item</th>
+                      <th className="text-left p-3 font-medium">Current Cost</th>
+                      <th className="text-left p-3 font-medium">Method</th>
+                      <th className="text-left p-3 font-medium">Defects</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {serviceItems.map((item, index) => (
+                      <tr key={item.itemNo} className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                        <td className="p-3 font-medium">{item.itemNo}</td>
+                        <td className="p-3">£{item.currentCost.toFixed(2)}</td>
+                        <td className="p-3 text-slate-600">{item.method}</td>
+                        <td className="p-3 text-slate-600 max-w-xs truncate" title={item.defects}>
+                          {item.defects}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

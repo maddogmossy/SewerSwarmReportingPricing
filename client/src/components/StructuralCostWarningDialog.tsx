@@ -183,45 +183,6 @@ export default function StructuralCostWarningDialog({
             </div>
           </div>
 
-          {/* Structural Items - Collapsible */}
-          <div className="space-y-2">
-            <div 
-              className="flex items-center justify-between cursor-pointer p-2 hover:bg-slate-50 rounded"
-              onClick={() => setShowStructuralItems(!showStructuralItems)}
-            >
-              <h4 className="font-medium text-slate-700">Structural Repair Items ({structuralItems.length})</h4>
-              {showStructuralItems ? (
-                <ChevronUp className="h-4 w-4 text-slate-600" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-slate-600" />
-              )}
-            </div>
-            
-            {showStructuralItems && (
-              <div className="space-y-2 border border-slate-200 rounded-lg p-3 bg-slate-50">
-                {structuralItems.map((item) => (
-                  <div key={item.itemNo} className="bg-white p-3 rounded border text-sm">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <span className="font-medium">Item {item.itemNo}</span>
-                        <span className="ml-2 text-gray-600">({item.method})</span>
-                        {item.patchCount && (
-                          <span className="ml-2 text-orange-600">
-                            {item.isCombinedWork ? '1 cut & 2 patches' : `${item.patchCount} patch${item.patchCount > 1 ? 'es' : ''}`}
-                          </span>
-                        )}
-                      </div>
-                      <span className="font-medium">£{item.currentCost.toFixed(2)}</span>
-                    </div>
-                    <div className="text-gray-600 mt-1 text-xs">
-                      {item.defects.length > 60 ? `${item.defects.substring(0, 60)}...` : item.defects}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Options */}
           <div className="space-y-4">
             <h4 className="font-medium text-slate-700">Choose Action</h4>
@@ -316,6 +277,48 @@ export default function StructuralCostWarningDialog({
                     <span className="font-medium">£{calculateManualTotal().toFixed(2)}</span>
                   </div>
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* Structural Items Dropdown - Moved below Choose Action */}
+          <div className="space-y-2">
+            <button
+              onClick={() => setShowStructuralItems(!showStructuralItems)}
+              className="flex items-center justify-between w-full p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+            >
+              <span className="font-medium text-slate-700">Structural Repair Items ({structuralItems.length})</span>
+              {showStructuralItems ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+            
+            {showStructuralItems && (
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-100">
+                    <tr>
+                      <th className="text-left p-3 font-medium">Item</th>
+                      <th className="text-left p-3 font-medium">Current Cost</th>
+                      <th className="text-left p-3 font-medium">Method</th>
+                      <th className="text-left p-3 font-medium">Patches</th>
+                      <th className="text-left p-3 font-medium">Defects</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {structuralItems.map((item, index) => (
+                      <tr key={item.itemNo} className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                        <td className="p-3 font-medium">{item.itemNo}</td>
+                        <td className="p-3">£{item.currentCost.toFixed(2)}</td>
+                        <td className="p-3 text-slate-600">{item.method}</td>
+                        <td className="p-3 text-orange-600">
+                          {item.isCombinedWork ? '1 cut & 2 patches' : (item.patchCount ? `${item.patchCount} patch${item.patchCount > 1 ? 'es' : ''}` : '1 patch')}
+                        </td>
+                        <td className="p-3 text-slate-600 max-w-xs truncate" title={item.defects}>
+                          {item.defects}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
