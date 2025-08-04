@@ -72,10 +72,14 @@ export default function StructuralCostWarningDialog({
   const handleApply = () => {
     console.log('🔄 StructuralCostWarningDialog: Apply clicked with option:', selectedOption, 'isExportWorkflow:', isExportWorkflow);
     
+    // Get equipment type from localStorage to ensure consistency with dashboard
+    const currentEquipmentType = localStorage.getItem('equipmentPriority') || 
+                                 (configType.toLowerCase().includes('f608') ? 'f608' : 'f606');
+    
     // Save the cost decision to prevent future warnings
     const costDecision = {
       reportId: new URLSearchParams(window.location.search).get('reportId'),
-      equipmentType: configType.toLowerCase().includes('f608') ? 'f608' : 'f606',
+      equipmentType: currentEquipmentType,
       decisionType: 'structural',
       appliedOption: selectedOption,
       timestamp: Date.now(),
@@ -87,6 +91,15 @@ export default function StructuralCostWarningDialog({
                     parseFloat(manualCosts[item.itemNo]) || item.currentCost
       }))
     };
+    
+    console.log('💾 Structural Cost Decision Details:', {
+      reportId: costDecision.reportId,
+      equipmentType: costDecision.equipmentType,
+      configType,
+      currentEquipmentType,
+      decisionType: costDecision.decisionType,
+      appliedOption: costDecision.appliedOption
+    });
     
     // Store the decision in localStorage
     const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');

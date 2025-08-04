@@ -1011,6 +1011,19 @@ export default function Dashboard() {
       decision.decisionType === 'structural'
     );
 
+    console.log('🔍 STRUCTURAL COST WARNING - Decision check details:', {
+      allDecisions: existingDecisions,
+      currentReportId,
+      currentEquipmentType,
+      existingStructuralDecision,
+      decisionMatch: existingDecisions.map((d: any) => ({
+        reportIdMatch: d.reportId === currentReportId,
+        equipmentTypeMatch: d.equipmentType === currentEquipmentType,
+        decisionTypeMatch: d.decisionType === 'structural',
+        decision: d
+      }))
+    });
+
     console.log('🔍 STRUCTURAL COST WARNING - Trigger condition check:', {
       structuralSectionsWithCosts: structuralSectionsWithCosts.length,
       showStructuralCostWarning,
