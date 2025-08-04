@@ -3843,11 +3843,11 @@ export default function Dashboard() {
         f608Available: !!f608Config,
         f608HasValidMM4: f608HasValidMM4,
         userPrefersF608: userPrefersF608,
-        bothConfigured: bothConfigured,
+        f606HasValidMM4: f606HasValidMM4,
         selectedConfig: cctvConfig ? {
           id: cctvConfig.id,
           categoryId: cctvConfig.categoryId,
-          reason: bothConfigured ? `User preference: ${cctvConfig.categoryId}` : 
+          reason: (f606HasValidMM4 && f608HasValidMM4) ? `User preference: ${cctvConfig.categoryId}` : 
                   cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 configured with MM4 data' : 'F606 default selection',
           hasMMData: !!cctvConfig.mmData,
           method: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
