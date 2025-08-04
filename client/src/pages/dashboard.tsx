@@ -123,6 +123,54 @@ const requiresStructuralRepair = (defects: string): boolean => {
   return false;
 };
 
+// Function to generate dynamic WRC service instruction from defect data
+const generateWRCServiceInstruction = (section: any): string => {
+  const defects = section.defects || '';
+  const totalLength = section.totalLength || '0';
+  
+  // Extract defect codes (like DER, DES, DEC, etc.)
+  const defectCodes = [];
+  const codePattern = /\b[A-Z]{2,3}\b/g;
+  const foundCodes = defects.match(codePattern) || [];
+  defectCodes.push(...foundCodes.filter(code => 
+    ['DER', 'DES', 'DEC', 'GRE', 'RO', 'BLO', 'CXB', 'SA'].includes(code)
+  ));
+  
+  // Extract percentage from defects text
+  const percentageMatch = defects.match(/(\d+)%/);
+  const percentage = percentageMatch ? percentageMatch[1] + '%' : '';
+  
+  // Extract specific meterage from defects
+  const meterageMatches = defects.match(/\d+\.?\d*m/g) || [];
+  const meterages = meterageMatches.join(', ');
+  
+  // Build dynamic instruction
+  let instruction = '';
+  
+  if (defectCodes.length > 0) {
+    instruction += `${defectCodes.join(', ')} defects identified`;
+  }
+  
+  if (percentage) {
+    instruction += instruction ? ` with ${percentage} impact` : `${percentage} impact`;
+  }
+  
+  if (meterages) {
+    instruction += instruction ? ` at ${meterages}` : `at ${meterages}`;
+  }
+  
+  if (totalLength && totalLength !== '0') {
+    instruction += instruction ? `. Section length: ${totalLength}m` : `Section length: ${totalLength}m`;
+  }
+  
+  // Add generic instruction if no specific data found
+  if (!instruction) {
+    instruction = 'Service defects requiring cleaning intervention';
+  }
+  
+  return instruction;
+};
+
 
 
 // Function to check if PR2 configuration has actual values configured
@@ -1544,6 +1592,9 @@ export default function Dashboard() {
               section.defects.includes('connection')
             );
             
+            // Generate dynamic site instruction from defect data
+            const dynamicInstruction = generateWRCServiceInstruction(section);
+            
             return (
               <div 
                 className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
@@ -1554,7 +1605,7 @@ export default function Dashboard() {
                 }}
               >
                 <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
-                <div className="text-blue-900 mb-2">{section.recommendations}</div>
+                <div className="text-blue-900 mb-2">{dynamicInstruction}</div>
                 <div className="text-xs text-blue-700 mt-1">→ Click for service pricing options</div>
               </div>
             );
@@ -1648,6 +1699,9 @@ export default function Dashboard() {
               }
             }
             
+            // Generate dynamic site instruction from defect data
+            const dynamicInstruction = generateWRCServiceInstruction(section);
+            
             return (
               <div 
                 className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
@@ -1658,7 +1712,7 @@ export default function Dashboard() {
                 }}
               >
                 <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
-                <div className="text-blue-900 mb-2">{section.recommendations}</div>
+                <div className="text-blue-900 mb-2">{dynamicInstruction}</div>
                 <div className="text-xs text-blue-700 mt-1">→ Click for service pricing options</div>
               </div>
             );
