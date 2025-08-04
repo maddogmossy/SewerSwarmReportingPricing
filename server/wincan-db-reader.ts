@@ -823,6 +823,58 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
   return null;
 }
 
+// MSCC5 Classification function from backup
+async function classifyWincanObservations(observationText: string, sector: string) {
+  let severityGrade = 0;
+  let recommendations = 'No action required pipe observed in acceptable structural and service condition';
+  let adoptable = 'Yes';
+  let defectType: 'structural' | 'service' = 'service';
+  
+  // If no defects text, return Grade 0
+  if (!observationText || observationText.trim() === '' || observationText === 'No defects recorded') {
+    return { 
+      severityGrade: 0, 
+      recommendations: 'No action required this pipe section is at an adoptable condition', 
+      adoptable: 'Yes',
+      defectType: 'service'
+    };
+  }
+  
+  // Extract defect patterns - check for structural defects first
+  const upperText = observationText.toUpperCase();
+  
+  // Check for connection defects (CXB, CN) - structural according to MSCC5
+  if (upperText.includes('CXB') || upperText.includes('CONNECTION DEFECTIVE') || upperText.includes('CONNECTING PIPE') || upperText.includes('CN') || upperText.includes('CONNECTION OTHER')) {
+    defectType = 'structural';
+    severityGrade = 3; // CXB default grade from MSCC5
+    recommendations = 'Structural repair required for defective connections';
+    adoptable = 'Conditional';
+  }
+  // Check for other structural defects
+  else if (upperText.includes('DEFORMATION') || upperText.includes('CRACK') || upperText.includes('FRACTURE') || upperText.includes('JOINT')) {
+    defectType = 'structural';
+    severityGrade = 2;
+    recommendations = 'Structural assessment and repair required';
+    adoptable = 'Conditional';
+  }
+  // Service defects
+  else if (upperText.includes('WATER LEVEL') || upperText.includes('WL')) {
+    defectType = 'service';
+    severityGrade = 1;
+    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+    adoptable = 'Conditional';
+  }
+  else {
+    // Default classification
+    defectType = 'service';
+    severityGrade = 1;
+    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+    adoptable = 'Conditional';
+  }
+  
+  return { severityGrade, recommendations, adoptable, defectType };
+}
+
 // Store WinCan sections in database - RESTORED FROM BACKUP
 export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
   
