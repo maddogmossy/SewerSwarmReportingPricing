@@ -1082,7 +1082,7 @@ export default function Dashboard() {
     }
 
     // Only trigger if we have structural sections with valid costs, haven't shown the dialog yet, and no cost decision exists
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed && !existingStructuralDecision) {
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !existingStructuralDecision) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);
