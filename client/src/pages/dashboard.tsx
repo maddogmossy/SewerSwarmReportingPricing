@@ -1167,15 +1167,19 @@ export default function Dashboard() {
         const totalStructuralCost = structuralItems.reduce((sum, item) => sum + item.currentCost, 0);
         const totalPatchCount = structuralItems.reduce((sum, item) => sum + (item.patchCount || 1), 0);
         
-        // Check if structural cost is below day rate
+        // Check structural cost vs day rate - Enhanced warning system should trigger for BOTH scenarios
         const dayRate = firstCostCalc.dayRate || 0;
         const isStructuralCostBelowDayRate = totalStructuralCost < dayRate;
+        const isStructuralCostAboveDayRate = totalStructuralCost > dayRate;
+        const shouldTriggerStructuralWarning = isStructuralCostBelowDayRate || isStructuralCostAboveDayRate;
         
         console.log('🔍 STRUCTURAL COST WARNING - Cost analysis:', {
           totalStructuralCost,
           dayRate,
           totalPatchCount,
           isStructuralCostBelowDayRate,
+          isStructuralCostAboveDayRate,
+          shouldTriggerStructuralWarning,
           structuralItemsCount: structuralItems.length,
           structuralItemDetails: structuralItems.map(item => ({
             itemNo: item.itemNo,
@@ -1183,12 +1187,13 @@ export default function Dashboard() {
             patchCount: item.patchCount,
             costPerPatch: item.costPerPatch
           })),
-          comparison: `${totalStructuralCost} < ${dayRate} = ${isStructuralCostBelowDayRate}`,
-          willTriggerWarning: isStructuralCostBelowDayRate
+          comparison: `${totalStructuralCost} vs ${dayRate}`,
+          costScenario: isStructuralCostBelowDayRate ? 'Shortfall to minimum' : isStructuralCostAboveDayRate ? 'Excess over minimum' : 'Equals minimum',
+          willTriggerWarning: shouldTriggerStructuralWarning
         });
         
-        // Show structural warning only if cost is below day rate and no existing decision
-        if (isStructuralCostBelowDayRate) {
+        // Show structural warning for BOTH cost scenarios (below OR above day rate) - Enhanced warning system
+        if (shouldTriggerStructuralWarning) {
           console.log('🔄 STRUCTURAL COST WARNING - Triggering warning dialog');
           console.log('🔄 STRUCTURAL COST WARNING - Setting dialog data and state');
           
@@ -1210,7 +1215,7 @@ export default function Dashboard() {
             console.log('🔄 STRUCTURAL COST WARNING - State set, dialog should now be visible');
           }, 1500);
         } else {
-          console.log('🔍 STRUCTURAL COST WARNING - Structural costs meet day rate, no warning needed');
+          console.log('🔍 STRUCTURAL COST WARNING - Structural costs exactly equal day rate, no warning needed');
         }
       }
     }
