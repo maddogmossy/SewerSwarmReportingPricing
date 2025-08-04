@@ -1274,15 +1274,16 @@ export default function Dashboard() {
       // Call calculateAutoCost directly to get the cost object instead of rendered JSX
       const costCalc = calculateAutoCost(section);
       
-      // Dynamic status check based on current equipment priority
-      const expectedStatuses = equipmentPriority === 'f608' 
-        ? ['f608_calculated', 'f608_insufficient_items']
-        : ['f606_calculated', 'f606_insufficient_items'];
+      // Flexible status check - accept any equipment-specific calculated status
+      const validServiceStatuses = [
+        'f606_calculated', 'f606_insufficient_items',
+        'f608_calculated', 'f608_insufficient_items'
+      ];
       
       const hasServiceCost = costCalc && 
                            typeof costCalc === 'object' && 
                            'status' in costCalc &&
-                           expectedStatuses.includes(costCalc.status) && 
+                           validServiceStatuses.includes(costCalc.status) && 
                            costCalc.cost > 0;
       
       console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
