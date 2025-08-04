@@ -1527,10 +1527,19 @@ export default function Dashboard() {
         
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
           // PRIORITY: Show authentic WRC service recommendations directly (no popup needed)
+          console.log('🔍 RECOMMENDATIONS DEBUG - Item', section.itemNo, {
+            recommendations: section.recommendations,
+            hasRecommendations: !!section.recommendations,
+            hasJetting: section.recommendations?.includes('jetting'),
+            hasWaterJetting: section.recommendations?.includes('water jetting'),
+            hasHighPressure: section.recommendations?.includes('High pressure water jetting')
+          });
+          
           if (section.recommendations && 
               (section.recommendations.includes('High pressure water jetting') || 
                section.recommendations.includes('water jetting') ||
                section.recommendations.includes('jetting'))) {
+            console.log('🔍 SHOWING WRC RECOMMENDATION for item', section.itemNo);
             return (
               <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
                 <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
