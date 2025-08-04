@@ -1244,6 +1244,16 @@ export default function Dashboard() {
 
   // Function to render cell content based on column key
   const renderCellContent = (columnKey: string, section: any) => {
+    if (columnKey === 'recommendations') {
+      console.log('🔍 RENDER CELL CONTENT - Item', section.itemNo, {
+        columnKey,
+        hasRecommendations: !!section.recommendations,
+        recommendation: section.recommendations,
+        defectType: section.defectType,
+        severityGrade: section.severityGrade
+      });
+    }
+    
     switch (columnKey) {
       case 'projectNo':
         // MULTI-REPORT SUPPORT: Show project number from section's own report
@@ -6019,6 +6029,7 @@ export default function Dashboard() {
                                   }
                                 `}
                               >
+                                {column.key === 'recommendations' && console.log('🔍 CELL RENDER - Item', section.itemNo, 'recommendations:', section.recommendations)}
                                 {renderCellContent(column.key, section)}
                               </td>
                             );
