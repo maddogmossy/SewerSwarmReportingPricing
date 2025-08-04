@@ -144,28 +144,25 @@ const generateWRCServiceInstruction = (section: any): string => {
   const meterageMatches = defects.match(/\d+\.?\d*m/g) || [];
   const meterages = meterageMatches.join(', ');
   
-  // Build dynamic instruction
-  let instruction = '';
+  // Build dynamic instruction starting with cleansing action
+  let instruction = 'To cleanse and then final survey to remove ';
   
   if (defectCodes.length > 0) {
     instruction += `${defectCodes.join(', ')} defects identified`;
+  } else {
+    instruction += 'service defects';
   }
   
   if (percentage) {
-    instruction += instruction ? ` with ${percentage} impact` : `${percentage} impact`;
+    instruction += ` with ${percentage} impact`;
   }
   
   if (meterages) {
-    instruction += instruction ? ` at ${meterages}` : `at ${meterages}`;
+    instruction += ` at ${meterages}`;
   }
   
   if (totalLength && totalLength !== '0') {
-    instruction += instruction ? `. Section length: ${totalLength}m` : `Section length: ${totalLength}m`;
-  }
-  
-  // Add generic instruction if no specific data found
-  if (!instruction) {
-    instruction = 'Service defects requiring cleaning intervention';
+    instruction += `. Section length: ${totalLength}m`;
   }
   
   return instruction;
