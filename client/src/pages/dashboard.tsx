@@ -2232,18 +2232,6 @@ export default function Dashboard() {
   // We'll check this after we fetch the section data below
   const currentUpload = potentialCurrentUpload;
 
-  // AUTO-NAVIGATION: If no reportId in URL but we have a current upload, navigate to it
-  useEffect(() => {
-    if (!reportId && currentUpload && !sectionsLoading) {
-      // Only navigate if we're not already on the correct URL
-      const currentUrl = window.location.pathname + window.location.search;
-      const targetUrl = `/dashboard?reportId=${currentUpload.id}`;
-      if (currentUrl !== targetUrl) {
-        window.history.replaceState(null, '', targetUrl);
-      }
-    }
-  }, [reportId, currentUpload, sectionsLoading]);
-  
   // FIXED: Removed cache invalidation useEffect that was causing infinite loops
   // Cache invalidation will be handled by React Query automatically
 
@@ -2257,6 +2245,18 @@ export default function Dashboard() {
     refetchOnWindowFocus: true,
     retry: false
   });
+
+  // AUTO-NAVIGATION: If no reportId in URL but we have a current upload, navigate to it
+  useEffect(() => {
+    if (!reportId && currentUpload && !sectionsLoading) {
+      // Only navigate if we're not already on the correct URL
+      const currentUrl = window.location.pathname + window.location.search;
+      const targetUrl = `/dashboard?reportId=${currentUpload.id}`;
+      if (currentUrl !== targetUrl) {
+        window.history.replaceState(null, '', targetUrl);
+      }
+    }
+  }, [reportId, currentUpload, sectionsLoading]);
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
