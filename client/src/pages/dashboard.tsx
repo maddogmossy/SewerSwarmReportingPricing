@@ -1545,9 +1545,17 @@ export default function Dashboard() {
             );
             
             return (
-              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+              <div 
+                className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
+                onClick={() => {
+                  const pipeSize = section.pipeSize?.replace('mm', '') || '150';
+                  // Route to F606 CCTV/Jet Vac configuration for WRC service recommendations
+                  window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`;
+                }}
+              >
                 <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
                 <div className="text-blue-900 mb-2">{section.recommendations}</div>
+                <div className="text-xs text-blue-700 mt-1">→ Click for service pricing options</div>
               </div>
             );
           }
@@ -1641,9 +1649,17 @@ export default function Dashboard() {
             }
             
             return (
-              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+              <div 
+                className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
+                onClick={() => {
+                  const pipeSize = section.pipeSize?.replace('mm', '') || '150';
+                  // Route to F606 CCTV/Jet Vac configuration for general service defects
+                  window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`;
+                }}
+              >
                 <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
                 <div className="text-blue-900 mb-2">{section.recommendations}</div>
+                <div className="text-xs text-blue-700 mt-1">→ Click for service pricing options</div>
               </div>
             );
           } 
@@ -1707,9 +1723,17 @@ export default function Dashboard() {
             }
             
             return (
-              <div className="text-xs max-w-sm bg-orange-50 border-2 border-orange-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+              <div 
+                className="text-xs max-w-sm bg-orange-50 border-2 border-orange-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                onClick={() => {
+                  const pipeSize = section.pipeSize?.replace('mm', '') || '150';
+                  // Route to F615 patching configuration for structural defects
+                  window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`;
+                }}
+              >
                 <div className="font-bold text-orange-800 mb-1">🔧 WRC Structural Recommendation</div>
                 <div className="text-orange-900 mb-2">{section.recommendations}</div>
+                <div className="text-xs text-orange-700 mt-1">→ Click for structural pricing options</div>
               </div>
             );
           }
