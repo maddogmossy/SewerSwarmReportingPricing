@@ -618,6 +618,19 @@ export default function Dashboard() {
       const { newPriority } = event.detail;
       console.log('🔄 Dashboard received equipment priority change:', newPriority);
       setEquipmentPriority(newPriority);
+      
+      // Clear cost decisions when equipment priority changes to trigger new warnings
+      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+      
+      // Remove decisions for this report (since equipment priority changed)
+      const filteredDecisions = existingDecisions.filter((decision: any) => 
+        decision.reportId !== currentReportId
+      );
+      localStorage.setItem('appliedCostDecisions', JSON.stringify(filteredDecisions));
+      
+      console.log('🧹 Cleared cost decisions for report after equipment priority change:', currentReportId);
+      
       // Force sections data to refresh with new priority
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
@@ -916,12 +929,25 @@ export default function Dashboard() {
       structuralCostsCount: structuralSectionsWithCosts.length
     });
 
+    // Check if user has already applied a cost decision for current report and equipment
+    const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+    const currentEquipmentType = equipmentPriority; // 'f606' or 'f608'
+    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+    
+    const existingStructuralDecision = existingDecisions.find((decision: any) => 
+      decision.reportId === currentReportId && 
+      decision.equipmentType === currentEquipmentType && 
+      decision.decisionType === 'structural'
+    );
+
     console.log('🔍 STRUCTURAL COST WARNING - Trigger condition check:', {
       structuralSectionsWithCosts: structuralSectionsWithCosts.length,
       showStructuralCostWarning,
       structuralCostData: !!structuralCostData,
       structuralCostWarningDismissed,
-      shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData
+      existingStructuralDecision: !!existingStructuralDecision,
+      currentEquipmentType,
+      shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !existingStructuralDecision
     });
 
     // Reset dismissed state when new data is available (similar to service warning logic)
@@ -930,8 +956,8 @@ export default function Dashboard() {
       setStructuralCostWarningDismissed(false);
     }
 
-    // Always trigger if we have structural sections with valid costs and haven't shown the dialog yet
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed) {
+    // Only trigger if we have structural sections with valid costs, haven't shown the dialog yet, and no cost decision exists
+    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed && !existingStructuralDecision) {
       // Get the first structural item's config details for reference
       const firstStructuralSection = structuralSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstStructuralSection);
@@ -1096,16 +1122,29 @@ export default function Dashboard() {
       serviceSectionsCount: serviceSectionsWithCosts.length
     });
 
+    // Check if user has already applied a cost decision for current report and equipment
+    const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+    const currentEquipmentType = equipmentPriority; // 'f606' or 'f608'
+    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+    
+    const existingServiceDecision = existingDecisions.find((decision: any) => 
+      decision.reportId === currentReportId && 
+      decision.equipmentType === currentEquipmentType && 
+      decision.decisionType === 'service'
+    );
+
     console.log('🔍 SERVICE COST WARNING - Trigger condition check:', {
       serviceSectionsWithCosts: serviceSectionsWithCosts.length,
       showServiceCostWarning,
       serviceCostData: !!serviceCostData,
       serviceCostWarningDismissed,
-      shouldTrigger: serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed
+      existingServiceDecision: !!existingServiceDecision,
+      currentEquipmentType,
+      shouldTrigger: serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed && !existingServiceDecision
     });
 
-    // Only trigger if we have service items, haven't shown the dialog yet, and it hasn't been dismissed
-    if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed) {
+    // Only trigger if we have service items, haven't shown the dialog yet, it hasn't been dismissed, AND no cost decision exists
+    if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed && !existingServiceDecision) {
       // Get the first service item's config details for reference
       const firstServiceSection = serviceSectionsWithCosts[0];
       const firstCostCalc = calculateAutoCost(firstServiceSection);
@@ -2198,6 +2237,18 @@ export default function Dashboard() {
   const reprocessMutation = useMutation({
     mutationFn: (uploadId: number) => apiRequest("POST", `/api/reprocess/${uploadId}`),
     onSuccess: (data) => {
+      // Clear cost decisions when report is reprocessed to trigger fresh warnings
+      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+      const currentReportId = reportId;
+      
+      // Remove decisions for this report (since report was reprocessed)
+      const filteredDecisions = existingDecisions.filter((decision: any) => 
+        decision.reportId !== currentReportId
+      );
+      localStorage.setItem('appliedCostDecisions', JSON.stringify(filteredDecisions));
+      
+      console.log('🧹 Cleared cost decisions for report after reprocessing:', currentReportId);
+      
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
@@ -2880,6 +2931,18 @@ export default function Dashboard() {
 
   const handleExportReport = useCallback(() => {
     console.log('🔄 Export triggered: Checking for service cost issues first...');
+    
+    // Clear cost decisions to ensure fresh warnings on export
+    const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+    const currentReportId = reportId;
+    
+    // Remove decisions for this report (since user is exporting - they may want to review costs)
+    const filteredDecisions = existingDecisions.filter((decision: any) => 
+      decision.reportId !== currentReportId
+    );
+    localStorage.setItem('appliedCostDecisions', JSON.stringify(filteredDecisions));
+    
+    console.log('🧹 Cleared cost decisions for export to ensure fresh cost review:', currentReportId);
     
     // Reset service cost warning dismissed state and clear existing data
     setServiceCostWarningDismissed(false);

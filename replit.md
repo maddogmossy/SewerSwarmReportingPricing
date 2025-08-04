@@ -1,5 +1,15 @@
 # Replit Architecture Documentation
 
+## Rev v9.1 - Cost Decision Persistence System (August 2025)
+**Lock-in Checkpoint**: Implemented intelligent cost decision persistence system that prevents redundant warning dialogs while ensuring proper cost validation when configuration changes.
+
+### Key Achievements in v9.1:
+- **Cost Decision Persistence**: Service and structural cost warning dialogs now save user decisions to localStorage
+- **Smart Warning Logic**: Warnings only appear when configuration changes, equipment priority switches, or reports are reprocessed
+- **Export Cost Review**: Export process clears saved decisions to ensure fresh cost validation before final export
+- **Seamless User Experience**: Applied costs persist until meaningful changes occur, eliminating repetitive warning dialogs
+- **Comprehensive Decision Tracking**: System tracks equipment type, report ID, decision type, and applied costs for accurate persistence
+
 ## Rev v9.0 - Equipment Selection Popup Functionality Restoration (August 2025)
 **Lock-in Checkpoint**: Successfully restored recommendation card popup functionality with F606/F608 equipment selection dialog. Fixed critical regression where clicking recommendation cards stopped triggering equipment selection popups.
 

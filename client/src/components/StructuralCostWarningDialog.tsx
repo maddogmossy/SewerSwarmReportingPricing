@@ -72,6 +72,32 @@ export default function StructuralCostWarningDialog({
   const handleApply = () => {
     console.log('🔄 StructuralCostWarningDialog: Apply clicked with option:', selectedOption, 'isExportWorkflow:', isExportWorkflow);
     
+    // Save the cost decision to prevent future warnings
+    const costDecision = {
+      reportId: new URLSearchParams(window.location.search).get('reportId'),
+      equipmentType: configType.toLowerCase().includes('f608') ? 'f608' : 'f606',
+      decisionType: 'structural',
+      appliedOption: selectedOption,
+      timestamp: Date.now(),
+      itemDetails: structuralItems.map(item => ({
+        itemNo: item.itemNo,
+        originalCost: item.currentCost,
+        appliedCost: selectedOption === 'leave' ? item.currentCost : 
+                    selectedOption === 'spread' ? calculateSpreadCosts().find(c => c.itemNo === item.itemNo)?.newCost || item.currentCost :
+                    parseFloat(manualCosts[item.itemNo]) || item.currentCost
+      }))
+    };
+    
+    // Store the decision in localStorage
+    const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+    const updatedDecisions = existingDecisions.filter((d: any) => 
+      !(d.reportId === costDecision.reportId && d.equipmentType === costDecision.equipmentType && d.decisionType === costDecision.decisionType)
+    );
+    updatedDecisions.push(costDecision);
+    localStorage.setItem('appliedCostDecisions', JSON.stringify(updatedDecisions));
+    
+    console.log('💾 Saved structural cost decision:', costDecision);
+    
     switch (selectedOption) {
       case 'leave':
         // Keep current costs but mark as applied for green highlighting
