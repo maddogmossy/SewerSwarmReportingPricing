@@ -1554,7 +1554,8 @@ export default function Dashboard() {
                     className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded cursor-pointer transition-colors"
                     onClick={() => {
                       console.log('🔍 WRC RECOMMENDATION CLICK - Routing to F606 for Item', section.itemNo);
-                      handleOpenCleaningPricing(section, 'cctv-jet-vac');
+                      const pipeSize = section.pipeSize || '150';
+                      window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}`;
                     }}
                   >
                     Configure F606 Pricing
