@@ -1,0 +1,201 @@
+
+not available
+﻿
+Console.js:61 🔍 Dashboard PR2 Config Fetch: 
+{sector: 'utilities', sectorName: 'Utilities', queryEnabled: true}
+Console.js:61 Dashboard validation data: 
+{hasAuthenticData: false, rawSectionDataLength: 0, pr2ConfigurationsLength: 0, workCategoriesLength: 0, vehicleTravelRatesLength: 0}
+workspace_iframe.html:1 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:1 Unrecognized feature: 'battery'.
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:1 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:1 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:1 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:1 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:1 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:1 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:1 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:1 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+Console.js:61 🔍 RAW SECTION DATA - ITEM 13 VARIATIONS: 
+[]
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 1: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 4, …}
+Console.js:61 🔍 CELL RENDER - Item 1 recommendations: High pressure water jetting to clear blockage in connecting pipe
+Console.js:61 🔍 RENDER CELL CONTENT - Item 1 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', defectType: 'service', severityGrade: '4'}
+Console.js:61 🔍 WRC CHECK - Item 1 
+{hasRec: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', isWrcRecommendation: true, recLower: 'high pressure water jetting to clear blockage in connecting pipe'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 1
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 2: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 0, …}
+Console.js:61 🔍 CELL RENDER - Item 2 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 2 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 2 
+{hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 Dashboard validation data: 
+{hasAuthenticData: true, rawSectionDataLength: 2, pr2ConfigurationsLength: 0, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 2, defects: 'No defects recorded', totalLength: '4.11', pipeSize: '525', defectType: 'service'}
+Console.js:61 Validation completed: 
+{sectionsLength: 2, configsLength: 0, sampleSection: 1, sampleConfig: undefined}
+Console.js:61 🔍 TRIGGERING SERVICE COST CHECK with sections: 2
+Console.js:61 🔍 SERVICE COST WARNING - All service sections found: 
+(2) [{…}, {…}]
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SERVICE COST WARNING - Item 1: 
+{defectType: 'service', costCalc: 'no cost calc', hasServiceCost: null}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 2, defects: 'No defects recorded', totalLength: '4.11', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SERVICE COST WARNING - Item 2: 
+{defectType: 'service', costCalc: 'no cost calc', hasServiceCost: null}
+Console.js:61 🔍 SERVICE COST WARNING - Service sections with costs: 0
+Console.js:61 🔍 SERVICE COST WARNING - Dialog state: 
+{showServiceCostWarning: false, hasServiceCostData: false, serviceSectionsCount: 0}
+Console.js:61 🔍 SERVICE COST WARNING - Trigger condition check: 
+{serviceSectionsWithCosts: 0, showServiceCostWarning: false, serviceCostData: false, serviceCostWarningDismissed: false, shouldTrigger: false}
+Console.js:61 🔍 TRIGGERING STRUCTURAL COST CHECK with sections: 2
+Console.js:61 🔍 STRUCTURAL CHECK STATES BEFORE: 
+{showStructuralCostWarning: false, structuralCostData: false, structuralCostWarningDismissed: false}
+Console.js:61 🔍 STRUCTURAL COST WARNING - All structural sections found: 
+[]
+Console.js:61 🔍 STRUCTURAL COST WARNING - Structural sections with costs: 0
+Console.js:61 🔍 STRUCTURAL COST WARNING - Dialog state: 
+{showStructuralCostWarning: false, hasStructuralCostData: false, structuralCostsCount: 0}
+Console.js:61 🔍 STRUCTURAL COST WARNING - Trigger condition check: 
+{structuralSectionsWithCosts: 0, showStructuralCostWarning: false, structuralCostData: false, structuralCostWarningDismissed: false, shouldTrigger: false}
+Console.js:61 🔍 STRUCTURAL CHECK STATES AFTER: 
+{showStructuralCostWarning: false, structuralCostData: false}
+Console.js:61 🔍 RAW SECTION DATA - ITEM 13 VARIATIONS: 
+[]
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 1: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 4, …}
+Console.js:61 🔍 CELL RENDER - Item 1 recommendations: High pressure water jetting to clear blockage in connecting pipe
+Console.js:61 🔍 RENDER CELL CONTENT - Item 1 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', defectType: 'service', severityGrade: '4'}
+Console.js:61 🔍 WRC CHECK - Item 1 
+{hasRec: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', isWrcRecommendation: true, recLower: 'high pressure water jetting to clear blockage in connecting pipe'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 1
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 2: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 0, …}
+Console.js:61 🔍 CELL RENDER - Item 2 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 2 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 2 
+{hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 RAW SECTION DATA - ITEM 13 VARIATIONS: 
+[]
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 1: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 4, …}
+Console.js:61 🔍 CELL RENDER - Item 1 recommendations: High pressure water jetting to clear blockage in connecting pipe
+Console.js:61 🔍 RENDER CELL CONTENT - Item 1 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', defectType: 'service', severityGrade: '4'}
+Console.js:61 🔍 WRC CHECK - Item 1 
+{hasRec: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', isWrcRecommendation: true, recLower: 'high pressure water jetting to clear blockage in connecting pipe'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 1
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 2: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 0, …}
+Console.js:61 🔍 CELL RENDER - Item 2 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 2 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 2 
+{hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 Dashboard PR2 Config Response: 
+{responseLength: 11, configs: Array(11)}
+Console.js:61 🔍 RAW SECTION DATA - ITEM 13 VARIATIONS: 
+[]
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 1: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 4, …}
+Console.js:61 🔍 CELL RENDER - Item 1 recommendations: High pressure water jetting to clear blockage in connecting pipe
+Console.js:61 🔍 RENDER CELL CONTENT - Item 1 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', defectType: 'service', severityGrade: '4'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 2: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 0, …}
+Console.js:61 🔍 CELL RENDER - Item 2 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 2 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 2 
+{hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 Dashboard validation data: 
+{hasAuthenticData: true, rawSectionDataLength: 2, pr2ConfigurationsLength: 11, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 2, defects: 'No defects recorded', totalLength: '4.11', pipeSize: '525', defectType: 'service'}
+Console.js:61 Validation completed: 
+{sectionsLength: 2, configsLength: 11, sampleSection: 1, sampleConfig: 'patching'}
+Console.js:61 Structural sections debug: 
+[]
+Console.js:61 TP2 trigger analysis: 
+{totalSections: 2, structuralSections: 0, serviceSections: 2, structuralTriangles: 0, costsAreRed: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 2, defects: 'No defects recorded', totalLength: '4.11', pipeSize: '525', defectType: 'service'}
+Console.js:61 TP2 final trigger decision: 
+{allSectionsConfigured: false, costsAreRed: true, shouldTrigger: false, totalSections: 2, sectionsWithTriangles: 2}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 TP1 configuration analysis: 
+{allSectionsConfigured: false, costsAreRed: true, shouldTrigger: false, totalSections: 2, serviceSections: 2, …}
+Console.js:61 🔍 TRIGGERING SERVICE COST CHECK with sections: 2
+Console.js:61 🔍 SERVICE COST WARNING - All service sections found: 
+(2) [{…}, {…}]
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SERVICE COST WARNING - Item 1: 
+{defectType: 'service', costCalc: 'no cost calc', hasServiceCost: null}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 2, defects: 'No defects recorded', totalLength: '4.11', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SERVICE COST WARNING - Item 2: 
+{defectType: 'service', costCalc: 'no cost calc', hasServiceCost: null}
+Console.js:61 🔍 SERVICE COST WARNING - Service sections with costs: 0
+Console.js:61 🔍 SERVICE COST WARNING - Dialog state: 
+{showServiceCostWarning: false, hasServiceCostData: false, serviceSectionsCount: 0}
+Console.js:61 🔍 SERVICE COST WARNING - Trigger condition check: 
+{serviceSectionsWithCosts: 0, showServiceCostWarning: false, serviceCostData: false, serviceCostWarningDismissed: false, shouldTrigger: false}
+Console.js:61 🔍 TRIGGERING STRUCTURAL COST CHECK with sections: 2
+Console.js:61 🔍 STRUCTURAL CHECK STATES BEFORE: 
+{showStructuralCostWarning: false, structuralCostData: false, structuralCostWarningDismissed: false}
+Console.js:61 🔍 STRUCTURAL COST WARNING - All structural sections found: 
+[]
+Console.js:61 🔍 STRUCTURAL COST WARNING - Structural sections with costs: 0
+Console.js:61 🔍 STRUCTURAL COST WARNING - Dialog state: 
+{showStructuralCostWarning: false, hasStructuralCostData: false, structuralCostsCount: 0}
+Console.js:61 🔍 STRUCTURAL COST WARNING - Trigger condition check: 
+{structuralSectionsWithCosts: 0, showStructuralCostWarning: false, structuralCostData: false, structuralCostWarningDismissed: false, shouldTrigger: false}
+Console.js:61 🔍 STRUCTURAL CHECK STATES AFTER: 
+{showStructuralCostWarning: false, structuralCostData: false}
+Console.js:61 🔍 RAW SECTION DATA - ITEM 13 VARIATIONS: 
+[]
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 1: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 4, …}
+Console.js:61 🔍 CELL RENDER - Item 1 recommendations: High pressure water jetting to clear blockage in connecting pipe
+Console.js:61 🔍 RENDER CELL CONTENT - Item 1 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'High pressure water jetting to clear blockage in connecting pipe', defectType: 'service', severityGrade: '4'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: 
+{itemNo: 1, defects: "CXB 1.75m (Connection defective, connecting pipe is blocked at 2 o'clock, 150mm dia): Sandbagged off", totalLength: '12.16', pipeSize: '525', defectType: 'service'}
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 2: 
+{severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 0, …}
+Console.js:61 🔍 CELL RENDER - Item 2 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 2 
+{columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 2 
+{hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+﻿

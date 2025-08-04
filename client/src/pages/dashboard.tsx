@@ -1510,33 +1510,8 @@ export default function Dashboard() {
         );
       case 'recommendations':
         
-        // Check if section has defects requiring repair (not Grade 0)
-        // Check both old severityGrade field AND new severity_grades JSON for service/structural grades > 0
-        const hasRepairableDefects = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
-          (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
-        
-        // Check if this section has approved repair pricing configuration
-        const approvedRepairStatus = hasApprovedRepairPricing(section);
-        
-
-        
-        // WRc recommendations take priority over generic approved repair descriptions
-        // CRITICAL: SA bung conditions must preserve authentic recommendations (no TP2 override)
-        // Only use approved repair pricing if no WRc recommendations exist AND not SA bung condition
-        if (approvedRepairStatus.hasApproved && approvedRepairStatus.pricingConfig && 
-            (!section.recommendations || (!section.recommendations.includes('WRc') && !section.recommendations.includes('bung')))) {
-          const pricingConfig = approvedRepairStatus.pricingConfig;
-          const repairDescription = pricingConfig.description || "Approved repair configuration available";
-          
-          return (
-            <div className="text-xs max-w-64 p-1 font-medium text-blue-800">
-              {repairDescription}
-            </div>
-          );
-        }
-        
-        // ABSOLUTE PRIORITY: Show authentic WRC service recommendations directly
-        // Check for any WRC-related keywords - make this condition very robust
+        // FIRST PRIORITY: Show authentic WRC service recommendations immediately
+        // This MUST be checked before any other logic to prevent overrides
         if (section.recommendations) {
           const rec = section.recommendations.toLowerCase();
           const isWrcRecommendation = rec.includes('jetting') || 
@@ -1561,6 +1536,29 @@ export default function Dashboard() {
               </div>
             );
           }
+        }
+        
+        // Check if section has defects requiring repair (not Grade 0)
+        // Check both old severityGrade field AND new severity_grades JSON for service/structural grades > 0
+        const hasRepairableDefects = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
+          (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
+        
+        // Check if this section has approved repair pricing configuration
+        const approvedRepairStatus = hasApprovedRepairPricing(section);
+        
+        // WRc recommendations take priority over generic approved repair descriptions
+        // CRITICAL: SA bung conditions must preserve authentic recommendations (no TP2 override)
+        // Only use approved repair pricing if no WRc recommendations exist AND not SA bung condition
+        if (approvedRepairStatus.hasApproved && approvedRepairStatus.pricingConfig && 
+            (!section.recommendations || (!section.recommendations.includes('WRc') && !section.recommendations.includes('bung')))) {
+          const pricingConfig = approvedRepairStatus.pricingConfig;
+          const repairDescription = pricingConfig.description || "Approved repair configuration available";
+          
+          return (
+            <div className="text-xs max-w-64 p-1 font-medium text-blue-800">
+              {repairDescription}
+            </div>
+          );
         }
 
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
