@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -605,11 +605,31 @@ export default function Dashboard() {
   const search = useSearch();
   const urlParams = new URLSearchParams(search);
   const reportId = urlParams.get('reportId');
+  const queryClient = useQueryClient();
   
   // Equipment priority state with localStorage sync
   const [equipmentPriority, setEquipmentPriority] = useState<'f606' | 'f608'>(() => {
     return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
   });
+
+  // Listen for equipment priority changes from popups
+  useEffect(() => {
+    const handleEquipmentPriorityChange = (event: CustomEvent) => {
+      const { newPriority } = event.detail;
+      console.log('🔄 Dashboard received equipment priority change:', newPriority);
+      setEquipmentPriority(newPriority);
+      // Force sections data to refresh with new priority
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
+      }, 100);
+    };
+
+    window.addEventListener('equipmentPriorityChanged', handleEquipmentPriorityChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('equipmentPriorityChanged', handleEquipmentPriorityChange as EventListener);
+    };
+  }, [reportId, queryClient]);
   
   // Force component re-render when equipment priority changes
   const [costRecalcTrigger, setCostRecalcTrigger] = useState(0);
