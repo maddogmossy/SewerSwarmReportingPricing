@@ -631,9 +631,22 @@ export default function Dashboard() {
       
       console.log('🧹 Cleared cost decisions for report after equipment priority change:', currentReportId);
       
+      // Reset warning dialog states to allow fresh warnings
+      setServiceCostWarningDismissed(false);
+      setStructuralCostWarningDismissed(false);
+      
       // Force sections data to refresh with new priority
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
+        
+        // After data refresh, trigger warning checks for new equipment priority
+        setTimeout(() => {
+          console.log('🔄 Triggering warning checks after equipment priority change');
+          if (rawSectionData && rawSectionData.length > 0) {
+            checkServiceCostCompletion(rawSectionData);
+            checkStructuralCostCompletion(rawSectionData);
+          }
+        }, 200);
       }, 100);
     };
 
