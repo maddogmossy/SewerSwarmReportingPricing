@@ -540,11 +540,13 @@ export async function registerRoutes(app: Express) {
           console.log('🔍 Sector:', req.body.sector || 'utilities');
           console.log('🔍 File exists:', fs.existsSync(mainDbPath));
           
-          let sections;
+          let sections, detectedFormat;
           try {
             console.log('🔍 Calling readWincanDatabase...');
-            sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
-            console.log('✅ readWincanDatabase completed successfully');
+            const result = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', uploadId);
+            sections = result.sections;
+            detectedFormat = result.detectedFormat;
+            console.log(`✅ readWincanDatabase completed successfully - Detected format: ${detectedFormat}`);
           } catch (readError) {
             console.error('❌ readWincanDatabase failed:', readError);
             console.error('❌ Error details:', {

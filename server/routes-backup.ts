@@ -1497,7 +1497,8 @@ export async function registerRoutes(app: Express) {
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
           // Extract authentic data from database
-          const sections = await readWincanDatabase(filePath, req.body.sector || 'utilities');
+          const result = await readWincanDatabase(filePath, req.body.sector || 'utilities');
+          const sections = result.sections;
           
           
           // Store sections in database

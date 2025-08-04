@@ -375,7 +375,7 @@ function getAuthenticWRcRecommendations(severityGrade: number, defectType: 'stru
   }
 }
 
-export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities', uploadId?: number): Promise<{ sections: WincanSectionData[], detectedFormat: string }> {
   
   try {
     // Check if file exists
@@ -451,6 +451,9 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       console.log('❌ Failed to extract SECSTAT grades:', error);
     }
 
+    // DETECT DATABASE FORMAT by checking section naming patterns
+    let detectedFormat = 'GR7216'; // Default to GR7216
+    
     // Look for SECTION table (main inspection data)
     let sectionData: WincanSectionData[] = [];
     const sectionTable = tables.find(t => t.name.toUpperCase() === 'SECTION');
@@ -467,6 +470,44 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       }
       
       if (sectionRecords.length > 0) {
+        // DETECT FORMAT by analyzing section naming patterns
+        let gr7188Count = 0;
+        let gr7216Count = 0;
+        
+        for (const record of sectionRecords.slice(0, 10)) { // Check first 10 records
+          const sectionName = record.OBJ_Name || record.OBJ_Key || '';
+          if (sectionName.includes('Item')) {
+            gr7188Count++; // GR7188 format: "Item 15", "Item 19"
+          } else if (sectionName.match(/S\d+\.\d+/)) {
+            gr7216Count++; // GR7216 format: "S1.015X", "S1.016X"
+          }
+        }
+        
+        // Determine format based on majority
+        if (gr7188Count > gr7216Count) {
+          detectedFormat = 'GR7188';
+          console.log(`🔍 DETECTED DATABASE FORMAT: GR7188 (Item-based naming: ${gr7188Count} vs S-format: ${gr7216Count})`);
+        } else {
+          detectedFormat = 'GR7216';
+          console.log(`🔍 DETECTED DATABASE FORMAT: GR7216 (S-based naming: ${gr7216Count} vs Item-format: ${gr7188Count})`);
+        }
+        
+        // PERSIST FORMAT to database if uploadId provided
+        if (uploadId) {
+          try {
+            const { fileUploads } = await import("@shared/schema");
+            const { eq } = await import("drizzle-orm");
+            
+            await db.update(fileUploads)
+              .set({ databaseFormat: detectedFormat })
+              .where(eq(fileUploads.id, uploadId));
+            
+            console.log(`✅ PERSISTED DATABASE FORMAT: ${detectedFormat} for upload ${uploadId}`);
+          } catch (error) {
+            console.error('❌ Failed to persist database format:', error);
+          }
+        }
+        
         console.log(`🔍 Processing ${sectionRecords.length} section records...`);
         console.log(`🔍 Passing SECSTAT grades to processSectionTable:`, severityGrades);
         sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
@@ -499,16 +540,16 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       }
       
       database.close();
-      return [];
+      return { sections: [], detectedFormat: 'GR7216' };
     }
     
     database.close();
     
-    return sectionData;
+    return { sections: sectionData, detectedFormat };
     
   } catch (error) {
     console.error("❌ Error reading Wincan database:", error);
-    return [];
+    return { sections: [], detectedFormat: 'GR7216' };
   }
 }
 
