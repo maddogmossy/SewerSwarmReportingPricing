@@ -10,8 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { DataIntegrityWarning } from "@/components/data-integrity-warning";
-import { RepairOptionsPopover } from "@/components/repair-options-popover";
-import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
+
 import { SectorStandardsDisplay } from "@/components/sector-standards-display";
 import { ReportValidationStatus } from "@/components/ReportValidationStatus";
 import { PatchRepairPricingDialog } from "@/components/PatchRepairPricingDialog";
@@ -1642,42 +1641,10 @@ export default function Dashboard() {
             }
             
             return (
-              <CleaningOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize,
-                  sector: currentSector.id,
-                  recommendations: section.recommendations,
-                  defects: section.defects,
-                  itemNo: section.itemNo,
-                  pipeMaterial: section.pipeMaterial,
-                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth),
-                  totalLength: section.totalLength
-                }}
-                onPricingNeeded={(method, pipeSize, sector) => {
-                  // Category creation is now handled within the CleaningOptionsPopover
-                  // Cleaning pricing needed for method evaluation
-                }}
-                hasLinkedPR2={hasLinkedPR2}
-                configColor={configColor}
-                data-component="cleaning-options-popover"
-                data-section-id={section.itemNo}
-                data-has-config={hasLinkedPR2}
-                data-pipe-size={section.pipeSize}
-                data-sector={currentSector.id}
-              >
-                <div 
-                  className={`text-xs max-w-sm ${statusColor === 'green' && configColor ? 'border-4 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
-                  style={statusColor === 'green' && configColor ? {
-                    backgroundColor: 'white',
-                    borderColor: hexToRgba(configColor, 0.3),
-                    borderWidth: '4px'
-                  } : {}}
-                >
-                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? `${pr2Config.categoryName} (Pricing Window db11)` : 'CLEANSE/SURVEY'}</div>
-                  <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
-                  <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
-                </div>
-              </CleaningOptionsPopover>
+              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+                <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
+                <div className="text-blue-900 mb-2">{section.recommendations}</div>
+              </div>
             );
           } 
           // For structural defects, check for robotic cutting first
@@ -1740,34 +1707,10 @@ export default function Dashboard() {
             }
             
             return (
-              <RepairOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize,
-                  sector: currentSector.id,
-                  recommendations: section.recommendations,
-                  defects: section.defects,
-                  itemNo: section.itemNo,
-                  pipeMaterial: section.pipeMaterial,
-                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth)
-                }}
-                onPricingNeeded={(method, pipeSize, sector) => {
-                  // Repair category creation can be implemented here if needed
-                  // Repair pricing needed for method evaluation
-                }}
-              >
-                <div 
-                  className={`text-xs max-w-sm ${hasTP2Patching && tp2PatchingConfig.categoryColor ? 'border-4 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
-                  style={hasTP2Patching && tp2PatchingConfig.categoryColor ? {
-                    backgroundColor: 'white',
-                    borderColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.3),
-                    borderWidth: '4px'
-                  } : {}}
-                >
-                  <div className="font-bold text-black mb-1">🔧 {titleText}</div>
-                  <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
-                  <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
-                </div>
-              </RepairOptionsPopover>
+              <div className="text-xs max-w-sm bg-orange-50 border-2 border-orange-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+                <div className="font-bold text-orange-800 mb-1">🔧 WRC Structural Recommendation</div>
+                <div className="text-orange-900 mb-2">{section.recommendations}</div>
+              </div>
             );
           }
         } else {
