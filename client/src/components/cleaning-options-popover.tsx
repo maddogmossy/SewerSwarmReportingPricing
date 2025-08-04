@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Video, Monitor } from 'lucide-react';
@@ -30,6 +30,27 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [equipmentPriority, setEquipmentPriority] = useState<'f606' | 'f608'>(() => {
     return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
   });
+  
+  // Sync with localStorage changes (when dashboard auto-updates priority)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newPriority = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+      setEquipmentPriority(newPriority);
+    };
+    
+    // Listen for localStorage changes
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check on component mount in case priority was updated
+    const currentPriority = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+    if (currentPriority !== equipmentPriority) {
+      setEquipmentPriority(currentPriority);
+    }
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [equipmentPriority]);
   
   // Equipment options with dynamic priority ordering
   const equipmentOptions = equipmentPriority === 'f608' ? [
@@ -133,6 +154,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50'
                   }`}
                   onClick={() => {
+                    console.log('🔄 F606 Button Clicked - Updating priority');
                     setEquipmentPriority('f606');
                     localStorage.setItem('equipmentPriority', 'f606');
                     toast({
@@ -155,6 +177,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50'
                   }`}
                   onClick={() => {
+                    console.log('🔄 F608 Button Clicked - Updating priority');
                     setEquipmentPriority('f608');
                     localStorage.setItem('equipmentPriority', 'f608');
                     toast({
