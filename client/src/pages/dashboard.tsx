@@ -3581,15 +3581,36 @@ export default function Dashboard() {
       );
       
       let cctvConfig;
+      let shouldUpdatePriority = false;
+      
       if (bothConfigured) {
         // Both are configured - use user preference
         cctvConfig = userPrefersF608 ? f608Config : f606Config;
       } else if (f608HasValidMM4) {
-        // Only F608 configured
+        // Only F608 configured - auto-select F608 and sync equipment priority
         cctvConfig = f608Config;
+        if (equipmentPriority !== 'f608') {
+          shouldUpdatePriority = true;
+        }
       } else {
-        // Default to F606
+        // Default to F606 - ensure priority is synced
         cctvConfig = f606Config;
+        if (equipmentPriority !== 'f606') {
+          shouldUpdatePriority = true;
+        }
+      }
+      
+      // Sync equipment priority with actual selection (only when needed)
+      if (shouldUpdatePriority) {
+        const newPriority = cctvConfig?.categoryId === 'cctv-van-pack' ? 'f608' : 'f606';
+        setEquipmentPriority(newPriority);
+        localStorage.setItem('equipmentPriority', newPriority);
+        console.log('🔄 Equipment Priority Auto-Sync:', {
+          reason: f608HasValidMM4 ? 'F608 has MM4 data configured' : 'F606 default selection',
+          previousPriority: equipmentPriority,
+          newPriority: newPriority,
+          configUsed: cctvConfig?.categoryId
+        });
       }
       
       // Enhanced logging for Item 22 F608 first-time configuration analysis
