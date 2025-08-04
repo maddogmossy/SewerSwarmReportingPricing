@@ -2995,8 +2995,14 @@ export default function Dashboard() {
     }
     
     // CRITICAL FIX: Check if section meets PR2 range requirements before calculating cost
+    // BUT: For structural defects with WRC recommendations, don't override with PR2 configuration messages
     const meetsRangeRequirements = checkSectionMeetsPR2Requirements(section, tp1Config);
-    if (!meetsRangeRequirements) {
+    const hasWrcRecommendation = section.recommendations && 
+      (section.recommendations.includes('Structural repair required') || 
+       section.recommendations.includes('WRc') || 
+       section.recommendations.includes('repair'));
+    
+    if (!meetsRangeRequirements && !hasWrcRecommendation) {
       // Debug logging to understand why range validation fails
       const debugLength = parseFloat(section.totalLength || '0');
       const debugPipeSize = parseInt(section.pipeSize?.replace(/[^\d]/g, '') || '0');
