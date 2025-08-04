@@ -3625,6 +3625,33 @@ export default function Dashboard() {
           }
         }
         
+        // Enhanced debugging for 525mm pipe size sections (Items 1 and 2 from GR7188)
+        if (sectionPipeSize === '525' || section.itemNo === 1 || section.itemNo === 2) {
+          console.log('🔍 525MM PIPE SIZE DEBUG - Configuration Matching:', {
+            sectionId: section.itemNo,
+            sectionPipeSize: sectionPipeSize,
+            sectionLength: sectionLength,
+            sectionDebrisPercent: sectionDebrisPercent,
+            allConfiguredPipeSizes: Object.keys(mm4DataByPipeSize),
+            matchingPipeSizeKey: matchingPipeSizeKey,
+            matchFound: !!matchingMM4Data,
+            configSource: cctvConfig.categoryId,
+            allPipeSizeDetails: Object.entries(mm4DataByPipeSize).map(([key, data]) => ({
+              pipeSizeKey: key,
+              pipeSize: key.split('-')[0],
+              isMatch: key.split('-')[0] === sectionPipeSize?.replace('mm', ''),
+              rowCount: Array.isArray(data) ? data.length : 0,
+              rows: Array.isArray(data) ? data.map(r => ({
+                id: r.id,
+                blueValue: r.blueValue,
+                greenValue: r.greenValue,
+                purpleDebris: r.purpleDebris,
+                purpleLength: r.purpleLength
+              })) : []
+            }))
+          });
+        }
+        
         // Enhanced debugging for Item 22 - show all pipe size configurations vs section requirements
         if (section.itemNo === 22) {
           console.log('🔍 F608 ALL PIPE SIZE CONFIGURATIONS vs ITEM 22:', {
