@@ -1,5 +1,16 @@
 # Replit Architecture Documentation
 
+## Rev v8.3 - Database Session Persistence and 525mm Support (August 2025)
+**Lock-in Checkpoint**: Fixed database switching persistence issue and added comprehensive 525mm pipe size support for both GR7188 and GR7216 processing.
+
+### Key Achievements in v8.3:
+- **Database Session Persistence**: Fixed critical issue where navigating from dashboard to F606 configuration and back would revert from GR7188 to GR7216
+- **ReportId Parameter Preservation**: F606 configuration page now preserves reportId when navigating back to dashboard
+- **WRC Recommendation Navigation**: Updated WRC recommendation links to preserve reportId when routing to configuration pages
+- **525mm Pipe Size Support**: Added complete 525mm configuration to F606 MM4 database for authentic GR7188 processing
+- **Enhanced 525mm Debugging**: Added comprehensive debugging for 525mm pipe size sections to trace cost calculation flow
+- **Verified Configuration Routing**: GR7216 now correctly directs to F606 MM4-525 configuration (awaiting user pricing input)
+
 ## Rev v8.2 - Complete SECSTAT Severity Grade Unification (August 2025)
 **Lock-in Checkpoint**: Achieved 100% identical severity grade processing between GR7188 and GR7216 through automatic database format detection and unified SECSTAT extraction logic.
 
