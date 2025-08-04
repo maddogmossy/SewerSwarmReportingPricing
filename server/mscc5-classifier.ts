@@ -169,11 +169,11 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
   CXB: {
     code: 'CXB',
     description: 'Connection defective, connecting pipe is blocked',
-    type: 'service', // Default to service - can be overridden based on remarks
+    type: 'structural',
     default_grade: 3,
-    risk: 'Connection verification required - blocked pipe investigation',
-    recommended_action: 'Check integrity of the lateral and determine if the blockage can be removed through cleansing',
-    action_type: 2
+    risk: 'Structural defect requiring repair to maintain pipe integrity',
+    recommended_action: 'Structural repair or replacement of defective connection',
+    action_type: 1
   },
   CN: {
     code: 'CN',
@@ -296,42 +296,6 @@ const SRM_SCORING: SRMScoringData = {
 };
 
 export class MSCC5Classifier {
-  /**
-   * Enhanced CXB classification based on remarks
-   */
-  static classifyCXBDefect(defectText: string): { type: 'service' | 'structural', reason: string } {
-    const lowerText = defectText.toLowerCase();
-    
-    // Service indicators from remarks
-    if (lowerText.includes('bang in connection') || 
-        lowerText.includes('blockage') || 
-        lowerText.includes('blocked') ||
-        lowerText.includes('debris') ||
-        lowerText.includes('remark: bang')) {
-      return {
-        type: 'service',
-        reason: 'Blockage issue requiring cleansing investigation'
-      };
-    }
-    
-    // Structural indicators from remarks
-    if (lowerText.includes('damaged connection') ||
-        lowerText.includes('broken connection') ||
-        lowerText.includes('structural damage') ||
-        lowerText.includes('collapse')) {
-      return {
-        type: 'structural', 
-        reason: 'Connection structural damage requiring repair'
-      };
-    }
-    
-    // Default to service for CXB when unclear
-    return {
-      type: 'service',
-      reason: 'Connection requires investigation through cleansing'
-    };
-  }
-
   /**
    * Analyze water level patterns for belly detection with sector-specific standards
    */

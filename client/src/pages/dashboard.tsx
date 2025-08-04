@@ -102,7 +102,7 @@ const requiresStructuralRepair = (defects: string): boolean => {
   
   // PRIORITY 1: Check for structural defects FIRST (safety critical)
   // CRITICAL FIX: Only check for actual defect CODES, not descriptive text
-  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', 'CXB', 'CN', 'crack', 'fracture'];
+  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', 'crack', 'fracture'];
   
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
@@ -274,7 +274,7 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
   // Helper function to get PR2 configuration details for dynamic recommendations
   const getPR2ConfigurationDetails = (section: any, pr2Configurations: any[], checkFunction: any): string => {
     if (!pr2Configurations || pr2Configurations.length === 0) {
-      return requiresStructuralRepair(section.defects || '') ? 'structural repair' : 'cleanse and survey'; // Check defect type first
+      return 'cleanse and survey'; // Default fallback
     }
     
     // Find the configuration that this section meets
@@ -283,13 +283,13 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
     );
     
     if (!matchingConfig) {
-      return requiresStructuralRepair(section.defects || '') ? 'structural repair' : 'cleanse and survey'; // Check defect type first
+      return 'cleanse and survey'; // Default fallback
     }
     
     // Dynamic recommendation using PR2 config
     
     // Extract equipment type from category name
-    let equipmentType = requiresStructuralRepair(section.defects || '') ? 'structural repair' : 'cleanse and survey';
+    let equipmentType = 'cleanse and survey';
     if (matchingConfig.categoryName) {
       const categoryName = matchingConfig.categoryName.toLowerCase();
       if (categoryName.includes('cctv') && categoryName.includes('jet vac')) {
@@ -322,7 +322,7 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
 
   // Generate contextual recommendation based on defect type and PR2 configuration
   if (defectSummary) {
-    if (requiresCleaning(defects || '') && !requiresStructuralRepair(defects || '')) {
+    if (requiresCleaning(defects || '')) {
       // For now, return a simple static recommendation since we need the checkFunction
       // This will be enhanced once we have access to the check function within the Dashboard component
       return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
@@ -1402,31 +1402,31 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
-        // STR badge colors - optimized for white text on dark backgrounds
+        // STR badge colors - more visible with distinct shades
         const getStrBadgeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return "bg-gray-400";
+          if (grade === null || grade === undefined) return "bg-gray-300";
           switch (grade) {
-            case 0: return 'bg-green-500';     // Medium green with good contrast for white text
-            case 1: return 'bg-green-600';     // Stronger green
-            case 2: return 'bg-yellow-500';    // Medium yellow
-            case 3: return 'bg-orange-500';    // Orange - structural defect indicator
-            case 4: return 'bg-red-500';       // Red - critical structural
-            case 5: return 'bg-red-600';       // Darker red - very high severity
-            default: return 'bg-gray-400';
+            case 0: return 'bg-green-300';     // Medium green - clearly visible
+            case 1: return 'bg-green-400';     // Stronger green - matches LOW SRM
+            case 2: return 'bg-yellow-300';    // Medium yellow - matches MODERATE SRM
+            case 3: return 'bg-orange-300';    // Medium orange - matches HIGH SRM
+            case 4: return 'bg-red-300';       // Medium red - matches CRITICAL SRM
+            case 5: return 'bg-red-400';       // Stronger red - matches EMERGENCY SRM
+            default: return 'bg-gray-300';
           }
         };
         
-        // SER badge colors - optimized for blue service defect theme with white text
+        // SER badge colors - lighter than STR for visual hierarchy
         const getSerBadgeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return "bg-gray-400";
+          if (grade === null || grade === undefined) return "bg-gray-100";
           switch (grade) {
-            case 0: return 'bg-green-500';     // Same green as structural for consistency
-            case 1: return 'bg-blue-400';      // Light blue for service grade 1
-            case 2: return 'bg-blue-500';      // Medium blue for service grade 2
-            case 3: return 'bg-blue-600';      // Darker blue for service grade 3
-            case 4: return 'bg-blue-700';      // Dark blue for service grade 4
-            case 5: return 'bg-blue-800';      // Very dark blue for service grade 5
-            default: return 'bg-gray-400';
+            case 0: return 'bg-green-100';     // Very light green
+            case 1: return 'bg-green-200';     // Light green
+            case 2: return 'bg-yellow-100';    // Very light yellow
+            case 3: return 'bg-orange-100';    // Light orange
+            case 4: return 'bg-red-100';       // Light red
+            case 5: return 'bg-red-200';       // Light red
+            default: return 'bg-gray-100';
           }
         };
         
@@ -1444,40 +1444,22 @@ export default function Dashboard() {
 
         return (
           <div className="text-sm text-center space-y-1">
-            {/* Primary defect type badge - larger and more prominent */}
-            {section.defectType === 'structural' && section.severityGrades && typeof section.severityGrades.structural === 'number' && (
+            {/* Structural Grade - Always show like GR7188 */}
+            {section.severityGrades && typeof section.severityGrades.structural === 'number' && (
               <div className="flex items-center justify-center gap-1">
-                <span className="text-xs text-gray-600 font-medium">STR</span>
-                <span className={`inline-flex items-center justify-center w-7 h-7 text-sm font-bold text-white ${getStrBadgeColor(section.severityGrades.structural)} rounded-full border-2 border-orange-300`}>
+                <span className="text-xs text-gray-500">STR</span>
+                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 ${getStrBadgeColor(section.severityGrades.structural)} rounded-full`}>
                   {section.severityGrades.structural}
-                </span>
-              </div>
-            )}
-            
-            {section.defectType === 'service' && section.severityGrades && typeof section.severityGrades.service === 'number' && (
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-xs text-gray-600 font-medium">SER</span>
-                <span className={`inline-flex items-center justify-center w-7 h-7 text-sm font-bold text-white ${getSerBadgeColor(section.severityGrades.service)} rounded-full border-2 border-blue-300`}>
-                  {section.severityGrades.service}
                 </span>
               </div>
             )}
 
-            {/* Secondary defect type badge - smaller and subdued */}
-            {section.defectType === 'structural' && section.severityGrades && typeof section.severityGrades.service === 'number' && section.severityGrades.service > 0 && (
-              <div className="flex items-center justify-center gap-1 opacity-60">
-                <span className="text-xs text-gray-400">SER</span>
-                <span className={`inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-gray-700 ${getSerBadgeColor(section.severityGrades.service)} rounded-full`}>
+            {/* Service Grade - Always show like GR7188 */}
+            {section.severityGrades && typeof section.severityGrades.service === 'number' && (
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-xs text-gray-500">SER</span>
+                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 ${getSerBadgeColor(section.severityGrades.service)} rounded-full`}>
                   {section.severityGrades.service}
-                </span>
-              </div>
-            )}
-            
-            {section.defectType === 'service' && section.severityGrades && typeof section.severityGrades.structural === 'number' && section.severityGrades.structural > 0 && (
-              <div className="flex items-center justify-center gap-1 opacity-60">
-                <span className="text-xs text-gray-400">STR</span>
-                <span className={`inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-gray-700 ${getStrBadgeColor(section.severityGrades.structural)} rounded-full`}>
-                  {section.severityGrades.structural}
                 </span>
               </div>
             )}
@@ -1557,7 +1539,7 @@ export default function Dashboard() {
 
           // MSCC5 RULE: Route based on INDIVIDUAL section defectType, not cross-section checking
           // Service defects route to TP1, structural defects route to TP2
-          if (isServiceDefect && !isStructuralDefect) {
+          if (isServiceDefect || (needsCleaning && !isStructuralDefect)) {
             // Check if any CLEANING PR2 configurations exist AND have actual values configured (exclude patching)
             const validConfigurations = repairPricingData?.filter(config => 
               config.categoryId !== 'patching' && isConfigurationProperlyConfigured(config)
@@ -4691,10 +4673,7 @@ export default function Dashboard() {
         }
       }
       
-      // Fallback if no matching configuration found - check if structural repair needed
-      if (requiresStructuralRepair(defects || '')) {
-        return `To repair ${length} from ${from} to ${to}, ${pipe} addressing ${defectSummary}`;
-      }
+      // Fallback if no matching configuration found
       return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
     } else if (defectSummary) {
       // For structural repairs, use defect-specific meterage

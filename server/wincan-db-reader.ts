@@ -28,7 +28,6 @@ import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { getSeverityGradesBySection, extractSeverityGradesFromSecstat } from "./utils/extractSeverityGrades";
 import { parseDb3File, ParsedSection } from "./parseDb3File";
-import { MSCC5Classifier } from "./mscc5-classifier";
 
 // Multi-defect splitting enabled - sections with both service and structural defects will be split
 
@@ -419,7 +418,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         FROM SECINSP si 
         JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
         WHERE obs.OBS_OpCode IS NOT NULL 
-        AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'WL', 'CN', 'JN')
+        AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'WL')
         ORDER BY si.INS_Section_FK, obs.OBS_Distance
       `).all();
       console.log(`🔍 Found ${obsData.length} observation records`);
@@ -433,8 +432,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           }
           const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
           const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
-          const remark = obs.OBS_Remark ? ` - Remark: ${obs.OBS_Remark}` : '';
-          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}${remark}`);
+          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
         }
       }
     } catch (error) {
@@ -885,62 +883,4 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
   }
   
   console.log(`📊 Storage complete: ${processedSections.size} sections stored for upload ${uploadId}`);
-}
-
-// Classification function with enhanced CXB remark handling
-async function classifyWincanObservations(observationText: string, sector: string) {
-  let severityGrade = 0;
-  let recommendations = 'No action required pipe observed in acceptable structural and service condition';
-  let adoptable = 'Yes';
-  let defectType: 'structural' | 'service' = 'service';
-  
-  // If no defects text, return Grade 0
-  if (!observationText || observationText.trim() === '') {
-    return { 
-      severityGrade: 0, 
-      recommendations, 
-      adoptable: 'Yes',
-      defectType: 'service'
-    };
-  }
-  
-  const upperText = observationText.toUpperCase();
-  
-  // Enhanced CXB classification with remark consideration
-  if (upperText.includes('CXB ')) {
-    const cxbClassification = MSCC5Classifier.classifyCXBDefect(observationText);
-    defectType = cxbClassification.type;
-    
-    if (cxbClassification.type === 'service') {
-      severityGrade = 3;
-      recommendations = 'WRc Sewer Cleaning Manual: Check integrity of the lateral and determine if the blockage can be removed through cleansing';
-      adoptable = 'Conditional';
-    } else {
-      severityGrade = 3;
-      recommendations = 'WRc Drain Repair Book: Structural repair or relining required';
-      adoptable = 'Conditional';
-    }
-    
-    console.log(`🔍 CXB Classification: ${cxbClassification.type} - ${cxbClassification.reason}`);
-  }
-  // Other defect classifications...
-  else if (upperText.includes('D ') || upperText.includes('DEFORMATION')) {
-    defectType = 'structural';
-    severityGrade = 3;
-    recommendations = 'WRc Drain Repair Book: Structural repair or relining required';
-    adoptable = 'Conditional';
-  }
-  else if (upperText.includes('DER ') || upperText.includes('DES ') || upperText.includes('DEPOSITS')) {
-    defectType = 'service';
-    severityGrade = 3;
-    recommendations = 'WRc Sewer Cleaning Manual: Intensive cleaning and possible intervention required';
-    adoptable = 'Conditional';
-  }
-  
-  return { 
-    severityGrade, 
-    recommendations, 
-    adoptable,
-    defectType
-  };
 }

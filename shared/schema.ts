@@ -104,7 +104,6 @@ export const sectionInspections = pgTable("section_inspections", {
   totalLength: varchar("total_length"),
   lengthSurveyed: varchar("length_surveyed"),
   defects: text("defects"),
-  observations: text("observations"), // Raw observation remarks from wincan database
   defectType: varchar("defect_type"), // 'service', 'structural', or null for mixed/clean sections
   severityGrade: varchar("severity_grade"),
   severityGrades: jsonb("severity_grades"), // {structural: number | null, service: number | null}
