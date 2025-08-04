@@ -1518,7 +1518,13 @@ export default function Dashboard() {
                                      rec.includes('water') || 
                                      rec.includes('pressure') ||
                                      rec.includes('clear') ||
-                                     rec.includes('blockage');
+                                     rec.includes('blockage') ||
+                                     rec.includes('blocked lateral') ||
+                                     rec.includes('connection') ||
+                                     rec.includes('excavat') ||
+                                     rec.includes('reconnect') ||
+                                     rec.includes('obstruction') ||
+                                     rec.includes('sandbagging');
           
           console.log('🔍 WRC CHECK - Item', section.itemNo, {
             hasRec: !!section.recommendations,
