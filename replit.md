@@ -1,5 +1,16 @@
 # Replit Architecture Documentation
 
+## Rev v9.2 - Enhanced Warning System & Item Classification Fixes (August 2025)
+**Lock-in Checkpoint**: Fixed critical Item 19 robotic cutting classification and enhanced both service and structural warning systems to trigger for all cost scenarios.
+
+### Key Achievements in v9.2:
+- **Item 19 Classification Fix**: Robotic cutting + patching (Item 19) now correctly routes to structural recommendations instead of service
+- **WRC Recommendation Priority**: Added robotic cutting check BEFORE WRC service recommendation check to prevent misclassification
+- **Enhanced Warning Triggers**: Both service and structural warnings now trigger for costs above AND below day rate (not just below)
+- **Structural Filter Enhancement**: Added `adjusted_structural_cost` status to valid structural cost filters for post-warning scenarios
+- **Comprehensive Cost Scenarios**: Warning dialogs now show "Excess over minimum" vs "Shortfall to minimum" based on actual cost scenarios
+- **Uniform Warning System**: Both service and structural warnings follow same enhanced triggering logic regardless of day rate status
+
 ## Rev v9.1 - Cost Decision Persistence System (August 2025)
 **Lock-in Checkpoint**: Implemented intelligent cost decision persistence system that prevents redundant warning dialogs while ensuring proper cost validation when configuration changes.
 
