@@ -3321,7 +3321,10 @@ export default function Dashboard() {
       defects: section.defects,
       totalLength: section.totalLength,
       pipeSize: section.pipeSize,
-      defectType: section.defectType
+      defectType: section.defectType,
+      needsCleaning: requiresCleaning(section.defects || ''),
+      isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
+      pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0
     });
     
     // Check for adjusted service costs first
@@ -3513,8 +3516,11 @@ export default function Dashboard() {
     const needsCleaning = requiresCleaning(section.defects || '');
     
     // RESTRICTED CLEANING SECTIONS: Only Items 3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23
+    // SPECIAL CASE: Items 1 and 2 are also allowed for GR7216/GR7188 databases with 525mm pipe sizes
     const restrictedCleaningSections = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23];
-    const isRestrictedSection = restrictedCleaningSections.includes(section.itemNo);
+    const is525mmSection = section.pipeSize === '525' || section.pipeSize === '525mm';
+    const isRestrictedSection = restrictedCleaningSections.includes(section.itemNo) || 
+                               (is525mmSection && (section.itemNo === 1 || section.itemNo === 2));
     
     // Debug cleaning detection - ENHANCED DEBUG for restricted sections only
     if (isRestrictedSection && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 3 || section.itemNo === 10)) {
@@ -3535,6 +3541,15 @@ export default function Dashboard() {
     }
     
     // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections AND service defects only
+    console.log(`🔍 MM4 Processing Check for Item ${section.itemNo}:`, {
+      needsCleaning,
+      pr2ConfigsAvailable: !!pr2Configurations,
+      isRestrictedSection,
+      defectType: section.defectType,
+      pipeSize: section.pipeSize,
+      willProcessMM4: needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service'
+    });
+    
     if (needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service') {
       // DYNAMIC CONFIGURATION SELECTION: Only F606 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
       // F612 (cctv) excluded - CCTV only, not for cleaning service defects
