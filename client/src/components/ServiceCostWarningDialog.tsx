@@ -204,86 +204,102 @@ export default function ServiceCostWarningDialog({
           <div className="space-y-4">
             <h4 className="font-medium text-slate-700">Choose Action</h4>
             
-            {/* Option 1: Leave as is */}
-            <div className="border border-slate-200 rounded-lg p-4">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="costOption"
-                  value="leave"
-                  checked={selectedOption === 'leave'}
-                  onChange={(e) => setSelectedOption(e.target.value as 'leave')}
-                  className="mt-1"
-                />
-                <div>
-                  <div className="font-medium text-slate-700">Leave costs as calculated</div>
-                  <div className="text-sm text-slate-600">
-                    Keep current service costs without adjustment. Total remains £{totalServiceCost.toFixed(2)}.
+            {/* 3x1 Row Layout */}
+            <div className="grid grid-cols-3 gap-4">
+              {/* Option 1: Leave as is */}
+              <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                selectedOption === 'leave' 
+                  ? 'border-blue-400 bg-blue-50' 
+                  : 'border-slate-200 hover:border-slate-300'
+              }`}>
+                <label className="flex flex-col gap-2 cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="costOption"
+                      value="leave"
+                      checked={selectedOption === 'leave'}
+                      onChange={(e) => setSelectedOption(e.target.value as 'leave')}
+                    />
+                    <div className="font-medium text-slate-700">Leave costs as calculated</div>
                   </div>
-                </div>
-              </label>
-            </div>
-
-            {/* Option 2: Spread difference */}
-            <div className="border border-slate-200 rounded-lg p-4">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="costOption"
-                  value="spread"
-                  checked={selectedOption === 'spread'}
-                  onChange={(e) => setSelectedOption(e.target.value as 'spread')}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="font-medium text-slate-700">Spread shortfall across all service items</div>
                   <div className="text-sm text-slate-600">
-                    Add £{(shortfall / serviceItems.length).toFixed(2)} to each service item to meet minimum shift cost.
+                    Keep current service costs without adjustment.
                   </div>
-                </div>
-              </label>
-            </div>
+                </label>
+              </div>
 
-            {/* Option 3: Manual adjustment */}
-            <div className="border border-slate-200 rounded-lg p-4">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="costOption"
-                  value="manual"
-                  checked={selectedOption === 'manual'}
-                  onChange={(e) => setSelectedOption(e.target.value as 'manual')}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="font-medium text-slate-700">Manual cost adjustment</div>
-                  <div className="text-sm text-slate-600 mb-3">
+              {/* Option 2: Spread difference (Default - Green) */}
+              <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                selectedOption === 'spread' 
+                  ? 'border-green-400 bg-green-50' 
+                  : 'border-green-200 hover:border-green-300 bg-green-25'
+              }`}>
+                <label className="flex flex-col gap-2 cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="costOption"
+                      value="spread"
+                      checked={selectedOption === 'spread'}
+                      onChange={(e) => setSelectedOption(e.target.value as 'spread')}
+                    />
+                    <div className="font-medium text-green-800">Spread shortfall across items</div>
+                  </div>
+                  <div className="text-sm text-green-700">
+                    Add £{(shortfall / serviceItems.length).toFixed(2)} to each service item.
+                  </div>
+                </label>
+              </div>
+
+              {/* Option 3: Manual adjustment */}
+              <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                selectedOption === 'manual' 
+                  ? 'border-blue-400 bg-blue-50' 
+                  : 'border-slate-200 hover:border-slate-300'
+              }`}>
+                <label className="flex flex-col gap-2 cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="costOption"
+                      value="manual"
+                      checked={selectedOption === 'manual'}
+                      onChange={(e) => setSelectedOption(e.target.value as 'manual')}
+                    />
+                    <div className="font-medium text-slate-700">Manual cost adjustment</div>
+                  </div>
+                  <div className="text-sm text-slate-600">
                     Manually adjust the cost for each service item.
                   </div>
-                  {selectedOption === 'manual' && (
-                    <div className="space-y-2">
-                      {serviceItems.map(item => (
-                        <div key={item.itemNo} className="flex items-center gap-2">
-                          <span className="text-sm font-medium w-16">Item {item.itemNo}:</span>
-                          <span className="text-sm text-slate-600">£</span>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={manualCosts[item.itemNo] || item.currentCost.toFixed(2)}
-                            onChange={(e) => handleManualCostChange(item.itemNo, e.target.value)}
-                            className="w-24 h-8"
-                          />
-                          <span className="text-xs text-slate-500">
-                            (current: £{item.currentCost.toFixed(2)})
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </label>
+                </label>
+              </div>
             </div>
+
+            {/* Manual Input Fields - Show below when manual is selected */}
+            {selectedOption === 'manual' && (
+              <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                <div className="space-y-2">
+                  {serviceItems.map(item => (
+                    <div key={item.itemNo} className="flex items-center gap-2">
+                      <span className="text-sm font-medium w-16">Item {item.itemNo}:</span>
+                      <span className="text-sm text-slate-600">£</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={manualCosts[item.itemNo] || item.currentCost.toFixed(2)}
+                        onChange={(e) => handleManualCostChange(item.itemNo, e.target.value)}
+                        className="w-24 h-8"
+                      />
+                      <span className="text-xs text-slate-500">
+                        (current: £{item.currentCost.toFixed(2)})
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons - Moved to bottom */}
