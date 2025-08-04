@@ -1,5 +1,15 @@
 # Replit Architecture Documentation
 
+## Rev v9.0 - Equipment Selection Popup Functionality Restoration (August 2025)
+**Lock-in Checkpoint**: Successfully restored recommendation card popup functionality with F606/F608 equipment selection dialog. Fixed critical regression where clicking recommendation cards stopped triggering equipment selection popups.
+
+### Key Achievements in v9.0:
+- **Popup Functionality Restored**: Fixed missing `onPricingNeeded` prop causing recommendation card clicks to fail
+- **Equipment Selection Dialog**: F606 (CCTV/Jet Vac) and F608 (CCTV/Van Pack) selection popup now works correctly
+- **WRC Recommendation Integration**: Service and structural recommendation cards properly trigger equipment selection
+- **Code Quality**: Resolved all LSP diagnostics related to popup component requirements
+- **User Experience**: Maintained existing popup design and functionality without creating new components
+
 ## Rev v8.4 - Uniform WRc MSCC5 Standards Implementation (August 2025)
 **Lock-in Checkpoint**: Implemented uniform recommendation system using WRc MSCC5 + OS20X standards from Drain Repair Book (4th Ed.) with triangle warning system for all service and structural recommendations.
 
