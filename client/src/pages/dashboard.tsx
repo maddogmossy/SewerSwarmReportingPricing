@@ -1368,25 +1368,30 @@ export default function Dashboard() {
 
         const totalServiceCost = serviceItems.reduce((sum, item) => sum + item.currentCost, 0);
         
-        // Check if service cost is below day rate
+        // Check service cost vs day rate - Enhanced warning system should trigger for BOTH scenarios
         const dayRate = firstCostCalc.dayRate || 0;
         const isServiceCostBelowDayRate = totalServiceCost < dayRate;
+        const isServiceCostAboveDayRate = totalServiceCost > dayRate;
+        const shouldTriggerServiceWarning = isServiceCostBelowDayRate || isServiceCostAboveDayRate;
         
         console.log('🔍 SERVICE COST WARNING - Cost analysis:', {
           totalServiceCost,
           dayRate,
           isServiceCostBelowDayRate,
+          isServiceCostAboveDayRate,
+          shouldTriggerServiceWarning,
           serviceItemsCount: serviceItems.length,
           serviceItemDetails: serviceItems.map(item => ({
             itemNo: item.itemNo,
             currentCost: item.currentCost
           })),
-          comparison: `${totalServiceCost} < ${dayRate} = ${isServiceCostBelowDayRate}`,
-          willTriggerWarning: isServiceCostBelowDayRate
+          comparison: `${totalServiceCost} vs ${dayRate}`,
+          costScenario: isServiceCostBelowDayRate ? 'Shortfall to minimum' : isServiceCostAboveDayRate ? 'Excess over minimum' : 'Equals minimum',
+          willTriggerWarning: shouldTriggerServiceWarning
         });
 
-        // Only show warning if service cost is below day rate
-        if (isServiceCostBelowDayRate) {
+        // Show service warning for BOTH cost scenarios (below OR above day rate) - Enhanced warning system
+        if (shouldTriggerServiceWarning) {
           console.log('🔄 SERVICE COST WARNING - Triggering warning dialog');
           
           setServiceCostData({
@@ -1404,7 +1409,7 @@ export default function Dashboard() {
             localStorage.setItem('lastServiceWarningTime', Date.now().toString());
           }, 1000);
         } else {
-          console.log('🔍 SERVICE COST WARNING - Service costs meet day rate, no warning needed');
+          console.log('🔍 SERVICE COST WARNING - Service costs exactly equal day rate, no warning needed');
         }
       }
     }
