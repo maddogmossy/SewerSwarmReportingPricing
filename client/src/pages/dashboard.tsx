@@ -1525,28 +1525,22 @@ export default function Dashboard() {
           );
         }
         
+        // PRIORITY: Show authentic WRC service recommendations directly (no popup needed)
+        // Move this check OUTSIDE the hasRepairableDefects condition to ensure it always shows
+        if (section.recommendations && 
+            (section.recommendations.includes('High pressure water jetting') || 
+             section.recommendations.includes('water jetting') ||
+             section.recommendations.includes('jetting'))) {
+          console.log('🔍 WRC RECOMMENDATION DISPLAY - Item', section.itemNo, section.recommendations);
+          return (
+            <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+              <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
+              <div className="text-blue-900">{section.recommendations}</div>
+            </div>
+          );
+        }
+
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
-          // PRIORITY: Show authentic WRC service recommendations directly (no popup needed)
-          console.log('🔍 RECOMMENDATIONS DEBUG - Item', section.itemNo, {
-            recommendations: section.recommendations,
-            hasRecommendations: !!section.recommendations,
-            hasJetting: section.recommendations?.includes('jetting'),
-            hasWaterJetting: section.recommendations?.includes('water jetting'),
-            hasHighPressure: section.recommendations?.includes('High pressure water jetting')
-          });
-          
-          if (section.recommendations && 
-              (section.recommendations.includes('High pressure water jetting') || 
-               section.recommendations.includes('water jetting') ||
-               section.recommendations.includes('jetting'))) {
-            console.log('🔍 SHOWING WRC RECOMMENDATION for item', section.itemNo);
-            return (
-              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
-                <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
-                <div className="text-blue-900">{section.recommendations}</div>
-              </div>
-            );
-          }
           
           // Check defect type from multi-defect splitting system - use INDIVIDUAL section defectType
           const isServiceDefect = section.defectType === 'service';
