@@ -19,9 +19,10 @@ interface CleaningOptionsPopoverProps {
   onPricingNeeded: (method: string, pipeSize: string, sector: string) => void;
   hasLinkedPR2?: boolean;
   configColor?: string;
+  reportId?: string;
 }
 
-export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
+export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor, reportId }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   
@@ -83,19 +84,23 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
         
         if (selectedConfig) {
           // Route to existing configuration
-          window.location.href = `/pr2-config-clean?id=${selectedConfig.id}&categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true`;
+          const reportParam = reportId ? `&reportId=${reportId}` : '';
+          window.location.href = `/pr2-config-clean?id=${selectedConfig.id}&categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
         } else {
           // Create new configuration
-          window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true`;
+          const reportParam = reportId ? `&reportId=${reportId}` : '';
+          window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
         }
       } else {
         // Fallback to configuration creation
-        window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true`;
+        const reportParam = reportId ? `&reportId=${reportId}` : '';
+        window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
       }
     } catch (error) {
       console.error('Error routing to equipment configuration:', error);
       // Fallback routing
-      window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true`;
+      const reportParam = reportId ? `&reportId=${reportId}` : '';
+      window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
     }
     
     setIsOpen(false);
