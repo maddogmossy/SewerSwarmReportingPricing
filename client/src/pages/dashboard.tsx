@@ -1525,19 +1525,32 @@ export default function Dashboard() {
           );
         }
         
-        // PRIORITY: Show authentic WRC service recommendations directly (no popup needed)
-        // Move this check OUTSIDE the hasRepairableDefects condition to ensure it always shows
-        if (section.recommendations && 
-            (section.recommendations.includes('High pressure water jetting') || 
-             section.recommendations.includes('water jetting') ||
-             section.recommendations.includes('jetting'))) {
-          console.log('🔍 WRC RECOMMENDATION DISPLAY - Item', section.itemNo, section.recommendations);
-          return (
-            <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
-              <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
-              <div className="text-blue-900">{section.recommendations}</div>
-            </div>
-          );
+        // ABSOLUTE PRIORITY: Show authentic WRC service recommendations directly
+        // Check for any WRC-related keywords - make this condition very robust
+        if (section.recommendations) {
+          const rec = section.recommendations.toLowerCase();
+          const isWrcRecommendation = rec.includes('jetting') || 
+                                     rec.includes('water') || 
+                                     rec.includes('pressure') ||
+                                     rec.includes('clear') ||
+                                     rec.includes('blockage');
+          
+          console.log('🔍 WRC CHECK - Item', section.itemNo, {
+            hasRec: !!section.recommendations,
+            recommendation: section.recommendations,
+            isWrcRecommendation,
+            recLower: rec
+          });
+          
+          if (isWrcRecommendation && !section.recommendations.includes('No action required')) {
+            console.log('🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item', section.itemNo);
+            return (
+              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg">
+                <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
+                <div className="text-blue-900">{section.recommendations}</div>
+              </div>
+            );
+          }
         }
 
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
