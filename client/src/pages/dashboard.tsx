@@ -1601,7 +1601,7 @@ export default function Dashboard() {
             const dynamicInstruction = generateWRCServiceInstruction(section);
             
             return (
-              <CleaningOptionsPopover sectionData={{ ...section, sector: currentSector.id }}>
+              <CleaningOptionsPopover sectionData={{ ...section, sector: currentSector.id }} onPricingNeeded={() => {}}>
                 <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
                   <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
                   <div className="text-blue-900 mb-2">{dynamicInstruction}</div>
@@ -1703,7 +1703,7 @@ export default function Dashboard() {
             const dynamicInstruction = generateWRCServiceInstruction(section);
             
             return (
-              <CleaningOptionsPopover sectionData={{ ...section, sector: currentSector.id }}>
+              <CleaningOptionsPopover sectionData={{ ...section, sector: currentSector.id }} onPricingNeeded={() => {}}>
                 <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
                   <div className="font-bold text-blue-800 mb-1">💧 WRC Service Recommendation</div>
                   <div className="text-blue-900 mb-2">{dynamicInstruction}</div>
@@ -1723,7 +1723,7 @@ export default function Dashboard() {
               // Route to P4 robotic cutting page instead of TP2 patching
               
               return (
-                <RepairOptionsPopover sectionData={{ ...section, sector: currentSector.id }}>
+                <RepairOptionsPopover sectionData={{ ...section, sector: currentSector.id }} onPricingNeeded={() => {}}>
                   <div className="text-xs max-w-sm bg-yellow-50 hover:bg-yellow-100 border-2 border-yellow-200 hover:border-yellow-400 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
                     <div className="font-bold text-black mb-1">🤖 TP3 ROBOTIC CUTTING</div>
                     <div className="text-black">{recommendations}</div>
@@ -1768,7 +1768,7 @@ export default function Dashboard() {
             }
             
             return (
-              <RepairOptionsPopover sectionData={{ ...section, sector: currentSector.id }}>
+              <RepairOptionsPopover sectionData={{ ...section, sector: currentSector.id }} onPricingNeeded={() => {}}>
                 <div className="text-xs max-w-sm bg-orange-50 border-2 border-orange-400 p-3 ml-1 mt-1 mr-1 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors">
                   <div className="font-bold text-orange-800 mb-1">🔧 WRC Structural Recommendation</div>
                   <div className="text-orange-900 mb-2">{section.recommendations}</div>
