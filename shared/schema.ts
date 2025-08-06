@@ -81,7 +81,7 @@ export const fileUploads = pgTable("file_uploads", {
   siteAddress: text("site_address"), // Site address for travel calculations
   sitePostcode: varchar("site_postcode", { length: 10 }), // Site postcode for travel calculations
   extractedData: text("extracted_data"), // Temporary storage for extracted sections during pause workflow
-  databaseFormat: varchar("database_format"), // 'GR7188' or 'GR7216' - persists detected format to prevent switching
+  databaseFormat: varchar("database_format"), // 'GR7188', 'GR7188a', or 'GR7216' - persists detected format to prevent switching
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -535,6 +535,7 @@ export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit
 export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

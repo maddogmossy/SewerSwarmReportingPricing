@@ -470,21 +470,27 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       }
       
       if (sectionRecords.length > 0) {
-        // DETECT FORMAT by analyzing section naming patterns
+        // DETECT FORMAT by analyzing section naming patterns with 7188a specificity
         let gr7188Count = 0;
         let gr7216Count = 0;
+        let gr7188aCount = 0; // New: Detect 7188a specifically
         
         for (const record of sectionRecords.slice(0, 10)) { // Check first 10 records
           const sectionName = record.OBJ_Name || record.OBJ_Key || '';
-          if (sectionName.includes('Item')) {
+          if (sectionName.includes('Item') && sectionName.match(/Item\s+\d+a/i)) {
+            gr7188aCount++; // GR7188a format: "Item 1a", "Item 2a", "Item 15a"
+          } else if (sectionName.includes('Item')) {
             gr7188Count++; // GR7188 format: "Item 15", "Item 19"
           } else if (sectionName.match(/S\d+\.\d+/)) {
             gr7216Count++; // GR7216 format: "S1.015X", "S1.016X"
           }
         }
         
-        // Determine format based on majority
-        if (gr7188Count > gr7216Count) {
+        // Determine format with 7188a specificity - 7188a uses same processing as 7188
+        if (gr7188aCount > 0) {
+          detectedFormat = 'GR7188a';
+          console.log(`🔍 DETECTED DATABASE FORMAT: GR7188a (${gr7188aCount} 'a' suffixed items, ${gr7188Count} standard items, ${gr7216Count} S-format)`);
+        } else if (gr7188Count > gr7216Count) {
           detectedFormat = 'GR7188';
           console.log(`🔍 DETECTED DATABASE FORMAT: GR7188 (Item-based naming: ${gr7188Count} vs S-format: ${gr7216Count})`);
         } else {
@@ -510,7 +516,22 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         
         console.log(`🔍 Processing ${sectionRecords.length} section records...`);
         console.log(`🔍 Passing SECSTAT grades to processSectionTable:`, severityGrades);
-        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
+        
+        // Add 7188a-specific debugging for enhanced visibility
+        if (detectedFormat === 'GR7188a') {
+          console.log('🔍 GR7188a PROCESSING DEBUG:');
+          console.log('🔍 Section naming patterns:', sectionRecords.slice(0, 5).map(r => r.OBJ_Name || r.OBJ_Key));
+          console.log('🔍 SECSTAT record count:', Object.keys(severityGrades).length);
+          console.log('🔍 Observation mapping size:', observationMap.size);
+          console.log('🔍 Sample sections for 7188a:', sectionRecords.slice(0, 3).map(r => ({
+            key: r.OBJ_Key,
+            name: r.OBJ_Name,
+            pk: r.OBJ_PK,
+            deleted: r.OBJ_Deleted
+          })));
+        }
+        
+        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades, detectedFormat);
         console.log(`🔍 Processed sections result: ${sectionData.length} sections extracted`);
       }
     }
@@ -559,10 +580,17 @@ async function processSectionTable(
   manholeMap: Map<string, string>, 
   observationMap: Map<string, string[]>, 
   sector: string,
-  severityGrades: Record<number, { structural: number | null, service: number | null }>
+  severityGrades: Record<number, { structural: number | null, service: number | null }>,
+  detectedFormat: string = 'GR7216'
 ): Promise<WincanSectionData[]> {
   
   const authenticSections: WincanSectionData[] = [];
+  
+  // Add format-specific debugging for 7188a processing visibility
+  if (detectedFormat === 'GR7188a') {
+    console.log('🔍 GR7188a UNIFORM PROCESSING: Using same logic as GR7188/GR7216');
+    console.log('🔍 Processing sections with 7188a format detection, but identical workflow');
+  }
   
   for (const record of sectionRecords) {
     // Get observation data for this section
@@ -582,13 +610,14 @@ async function processSectionTable(
     console.log(`🔍 Section ${record.OBJ_Key}: Checking section name = "${sectionName}"`);
     
     if (sectionName) {
-      // Enhanced extraction for different naming formats
+      // Enhanced extraction for different naming formats including 7188a
       if (sectionName.includes('Item')) {
-        // GR7188 format: "Item 15", "Item 19"
-        const itemMatch = sectionName.match(/Item\s+(\d+)/i);
+        // GR7188/GR7188a format: "Item 15", "Item 19", "Item 15a", "Item 19a"
+        const itemMatch = sectionName.match(/Item\s+(\d+)a?/i);
         if (itemMatch) {
           authenticItemNo = parseInt(itemMatch[1]);
-          console.log(`🔍 Extracted GR7188 item number: ${authenticItemNo} from "${sectionName}"`);
+          const formatType = sectionName.includes('a') ? 'GR7188a' : 'GR7188';
+          console.log(`🔍 Extracted ${formatType} item number: ${authenticItemNo} from "${sectionName}"`);
         }
       } else if (sectionName.match(/S\d+\.\d+/)) {
         // GR7216 format: "S1.015X", "S1.016X" -> should be sequential items 1, 2
