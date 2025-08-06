@@ -2453,8 +2453,14 @@ export default function Dashboard() {
   };
 
   const reprocessMutation = useMutation({
-    mutationFn: (uploadId: number) => apiRequest("POST", `/api/reprocess/${uploadId}`),
+    mutationFn: async (uploadId: number) => {
+      console.log('🔄 REPROCESS - Starting reprocess for upload:', uploadId);
+      const response = await apiRequest("POST", `/api/uploads/${uploadId}/reprocess`);
+      return response.json();
+    },
     onSuccess: (data) => {
+      console.log('🔄 REPROCESS - Success:', data);
+      
       // Clear cost decisions when report is reprocessed to trigger fresh warnings
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
       const currentReportId = reportId;
@@ -2467,25 +2473,19 @@ export default function Dashboard() {
       
       console.log('🧹 Cleared cost decisions for report after reprocessing:', currentReportId);
       
+      // Clear all relevant caches and force refresh
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
-      // Force refresh PR2 configurations to show latest pricing rules
       queryClient.invalidateQueries({ queryKey: ['pr2-configs'] });
       queryClient.invalidateQueries({ queryKey: ['pr2-configs', currentSector.id] });
-      // Force refresh all section data
       queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
       queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
-      // Force immediate refetch of section data
-      if (currentUpload?.id) {
-        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-      }
+      
       toast({
-        title: "Report Reprocessed",
-        description: `Report reprocessed - SC codes have been filtered out.`,
+        title: "Reprocess Complete!",
+        description: data.message || `Successfully reprocessed with WRc validation fix`,
       });
-      // Force page reload to ensure fresh data
+      
+      // Force dashboard reload to show fresh data with WRc validation
       setTimeout(() => window.location.reload(), 1000);
     },
     onError: (error) => {

@@ -682,6 +682,77 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Re-process upload: Re-read database files and clear caches
+  app.post("/api/uploads/:id/reprocess", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      console.log(`🔄 REPROCESS - Starting reprocessing for upload ${uploadId}`);
+      
+      // Get the current upload record
+      const upload = await db.select()
+        .from(fileUploads)
+        .where(eq(fileUploads.id, uploadId))
+        .limit(1);
+      
+      if (upload.length === 0) {
+        return res.status(404).json({ error: "Upload not found" });
+      }
+      
+      const currentUpload = upload[0];
+      console.log(`🔄 REPROCESS - Found upload: ${currentUpload.fileName}`);
+      
+      // Clear existing section data for this upload
+      await db.delete(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, uploadId));
+      console.log(`🔄 REPROCESS - Cleared existing section data`);
+      
+      // Re-read the database file using the stored file path
+      const filePath = currentUpload.filePath;
+      if (!filePath || !fs.existsSync(filePath)) {
+        return res.status(400).json({ error: "Original database file not found" });
+      }
+      
+      console.log(`🔄 REPROCESS - Re-reading database file: ${filePath}`);
+      
+      // Process the database file again with WRc validation fix
+      const { readWincanDatabase } = await import('./wincan-db-reader');
+      const sections = await readWincanDatabase(filePath);
+      console.log(`🔄 REPROCESS - Extracted ${sections.length} sections with WRc validation`);
+      
+      // Store the re-processed sections using helper function
+      const { storeWincanSections } = await import('./storage');
+      await storeWincanSections(sections, uploadId);
+      
+      // Update upload status to ensure it appears in dashboard
+      await db.update(fileUploads)
+        .set({ 
+          status: "completed",
+          updatedAt: new Date()
+        })
+        .where(eq(fileUploads.id, uploadId));
+      
+      console.log(`🔄 REPROCESS - Successfully reprocessed ${sections.length} sections`);
+      
+      // Return success with cache-busting headers
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      
+      res.json({ 
+        success: true, 
+        message: `Successfully reprocessed ${sections.length} sections with WRc validation fix`,
+        sectionsCount: sections.length,
+        uploadId: uploadId
+      });
+      
+    } catch (error) {
+      console.error("🔄 REPROCESS - Error:", error);
+      res.status(500).json({ error: "Failed to reprocess upload" });
+    }
+  });
+
   // Get sections for an upload
   app.get("/api/uploads/:id/sections", async (req: Request, res: Response) => {
     try {
