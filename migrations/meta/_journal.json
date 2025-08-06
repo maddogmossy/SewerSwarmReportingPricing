@@ -8,6 +8,13 @@
       "when": 1751015042244,
       "tag": "0000_spicy_golden_guardian",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1754481252979,
+      "tag": "0001_majestic_excalibur",
+      "breakpoints": true
     }
   ]
 }
