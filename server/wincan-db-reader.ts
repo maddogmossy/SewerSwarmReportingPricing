@@ -477,8 +477,10 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         
         for (const record of sectionRecords.slice(0, 10)) { // Check first 10 records
           const sectionName = record.OBJ_Name || record.OBJ_Key || '';
-          if (sectionName.includes('Item') && sectionName.match(/Item\s+\d+a/i)) {
-            gr7188aCount++; // GR7188a format: "Item 1a", "Item 2a", "Item 15a"
+          if (sectionName.match(/^[SF]W\d+[XY]$/)) {
+            gr7188aCount++; // Real GR7188a format: "SW01X", "FW01X", "FW07Y"
+          } else if (sectionName.includes('Item') && sectionName.match(/Item\s+\d+a/i)) {
+            gr7188aCount++; // Alternative GR7188a format: "Item 1a", "Item 2a", "Item 15a"
           } else if (sectionName.includes('Item')) {
             gr7188Count++; // GR7188 format: "Item 15", "Item 19"
           } else if (sectionName.match(/S\d+\.\d+/)) {
@@ -498,21 +500,8 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           console.log(`🔍 DETECTED DATABASE FORMAT: GR7216 (S-based naming: ${gr7216Count} vs Item-format: ${gr7188Count})`);
         }
         
-        // PERSIST FORMAT to database if uploadId provided
-        if (uploadId) {
-          try {
-            const { fileUploads } = await import("@shared/schema");
-            const { eq } = await import("drizzle-orm");
-            
-            await db.update(fileUploads)
-              .set({ databaseFormat: detectedFormat })
-              .where(eq(fileUploads.id, uploadId));
-            
-            console.log(`✅ PERSISTED DATABASE FORMAT: ${detectedFormat} for upload ${uploadId}`);
-          } catch (error) {
-            console.error('❌ Failed to persist database format:', error);
-          }
-        }
+        // Database format detected and logged for debugging
+        console.log(`✅ DATABASE FORMAT DETECTED: ${detectedFormat} for processing`);
         
         console.log(`🔍 Processing ${sectionRecords.length} section records...`);
         console.log(`🔍 Passing SECSTAT grades to processSectionTable:`, severityGrades);
@@ -598,10 +587,10 @@ async function processSectionTable(
     
     console.log(`🔍 Section ${record.OBJ_Key || 'UNKNOWN'}: Found ${observations.length} observations`);
     
+    // Don't skip sections without observations - process them with default classification
     if (observations.length === 0) {
-      console.log(`⚠️ Skipping section ${record.OBJ_Key || 'UNKNOWN'} with no observations`);
-      // Skip sections with no observations
-      continue;
+      console.log(`⚠️ Section ${record.OBJ_Key || 'UNKNOWN'} has no observations - using default classification`);
+      // Continue processing with fallback logic
     }
     
     // Extract item number from section name (try OBJ_Name first, then OBJ_Key) 
@@ -611,7 +600,14 @@ async function processSectionTable(
     
     if (sectionName) {
       // Enhanced extraction for different naming formats including 7188a
-      if (sectionName.includes('Item')) {
+      if (sectionName.match(/^[SF]W\d+[XY]$/)) {
+        // GR7188a alphanumeric format: "SW01X", "FW01X", "FW07Y"
+        const numMatch = sectionName.match(/(\d+)/);
+        if (numMatch) {
+          authenticItemNo = parseInt(numMatch[1]);
+          console.log(`🔍 Extracted GR7188a item number: ${authenticItemNo} from "${sectionName}"`);
+        }
+      } else if (sectionName.includes('Item')) {
         // GR7188/GR7188a format: "Item 15", "Item 19", "Item 15a", "Item 19a"
         const itemMatch = sectionName.match(/Item\s+(\d+)a?/i);
         if (itemMatch) {
@@ -706,11 +702,26 @@ async function processSectionTable(
     
     console.log(`🔍 GR7216 parsed date/time: ${inspectionDate} ${inspectionTime}`);
     
-    // Format defect text from observations with enhanced formatting
-    const defectText = await formatObservationText(observations, sector);
+    // Format defect text from observations with enhanced formatting or use default for sections without observations
+    let defectText: string;
+    let classification: any;
     
-    // Use MSCC5 classification for severity and recommendations
-    const classification = await classifyWincanObservations(defectText, sector);
+    if (observations.length === 0) {
+      // Fallback logic for sections without observations
+      defectText = 'No inspection data recorded';
+      classification = {
+        severityGrade: 0,
+        defectType: 'service',
+        recommendations: 'No action required - no defects recorded',
+        adoptable: 'Yes'
+      };
+      console.log(`🔍 Using default classification for section ${authenticItemNo} - no observations available`);
+    } else {
+      // Standard processing with observations
+      defectText = await formatObservationText(observations, sector);
+      classification = await classifyWincanObservations(defectText, sector);
+      console.log(`🔍 Using observation-based classification for section ${authenticItemNo}`);
+    }
     
     // Get authentic severity grade from SECSTAT table if available
     let severityGrade = classification.severityGrade;
@@ -852,7 +863,7 @@ async function processSectionTable(
     
     const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
-        projectNo: 'GR7216', // Use actual project number, not section name
+        projectNo: detectedFormat || 'GR7216', // Use detected format as project identifier
         startMH: startMH,
         finishMH: finishMH,
         pipeSize: pipeSize.toString(),
