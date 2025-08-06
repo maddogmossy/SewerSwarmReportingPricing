@@ -2538,7 +2538,7 @@ export default function Dashboard() {
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, Date.now()], // Force fresh data every time
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-line-deviation-fix'], // Stable cache key for WRc fix
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
@@ -2569,6 +2569,8 @@ export default function Dashboard() {
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
+  
+  // DEBUG: Log section data status for troubleshooting (moved after variable definitions)
   
   // FIXED: Removed problematic useEffect that was causing infinite loops
   // Static rendering state determination without state or useEffect to prevent dependency issues
