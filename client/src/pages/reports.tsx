@@ -141,9 +141,7 @@ export default function Reports() {
   // Delete mutation for uploads
   const deleteUploadMutation = useMutation({
     mutationFn: async (uploadId: number) => {
-      return apiRequest(`/api/uploads/${uploadId}`, {
-        method: 'DELETE'
-      });
+      return apiRequest('DELETE', `/api/uploads/${uploadId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
