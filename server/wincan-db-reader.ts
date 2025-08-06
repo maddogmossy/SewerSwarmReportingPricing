@@ -564,14 +564,14 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     database.close();
     
     // VALIDATION: Check for sequential numbering gaps and create warnings
-    if (sectionData.length > 0 && detectedFormat === 'GR7188a') {
+    if (sectionData.length > 0) {
       const itemNumbers = sectionData.map(s => s.itemNo).sort((a, b) => a - b);
       const missingItems = [];
-      const expectedRange = Array.from({ length: Math.max(...itemNumbers) }, (_, i) => i + 1);
       
-      for (const expected of expectedRange) {
-        if (!itemNumbers.includes(expected)) {
-          missingItems.push(expected);
+      // Check for gaps in the sequence
+      for (let i = itemNumbers[0]; i <= itemNumbers[itemNumbers.length - 1]; i++) {
+        if (!itemNumbers.includes(i)) {
+          missingItems.push(i);
         }
       }
       
@@ -631,38 +631,9 @@ async function processSectionTable(
     console.log(`🔍 Section ${record.OBJ_Key}: SortOrder=${sortOrder}, Name="${sectionName}"`);
     
     if (detectedFormat === 'GR7188a') {
-      // GR7188a: Authentic mapping from database SortOrder to PDF item numbers
-      // Based on user's PDF: Items 2,4,6,8,9,10,11,12,13,14,15,16,17,18,19 exist
-      // Items 1,3,5,7 are missing from PDF (deleted sections)
-      const gr7188aMapping = [
-        null, // SortOrder 0 (unused)
-        null, // SortOrder 1 → SKIP (Item 1 missing from PDF)
-        2,    // SortOrder 2 → Item 2  
-        null, // SortOrder 3 → SKIP (Item 3 missing from PDF)
-        4,    // SortOrder 4 → Item 4
-        null, // SortOrder 5 → SKIP (Item 5 missing from PDF)
-        6,    // SortOrder 6 → Item 6
-        null, // SortOrder 7 → SKIP (Item 7 missing from PDF)
-        8,    // SortOrder 8 → Item 8
-        9,    // SortOrder 9 → Item 9
-        10,   // SortOrder 10 → Item 10
-        11,   // SortOrder 11 → Item 11
-        12,   // SortOrder 12 → Item 12
-        13,   // SortOrder 13 → Item 13
-        14,   // SortOrder 14 → Item 14
-        15,   // SortOrder 15 → Item 15
-        16,   // SortOrder 16 → Item 16
-        17,   // SortOrder 17 → Item 17
-        18,   // SortOrder 18 → Item 18
-        19,   // SortOrder 19 → Item 19
-      ];
-      
-      authenticItemNo = gr7188aMapping[sortOrder];
-      if (authenticItemNo === null || authenticItemNo === undefined) {
-        console.log(`🔍 GR7188a: Skipping SortOrder ${sortOrder} - item was deleted from PDF`);
-        continue; // Skip this section entirely - it's missing from the authentic PDF
-      }
-      console.log(`🔍 GR7188a: SortOrder ${sortOrder} → Item ${authenticItemNo} (authentic PDF mapping)`);
+      // GR7188a: Use SortOrder directly as item number - database contains authentic sequence
+      authenticItemNo = sortOrder;
+      console.log(`🔍 GR7188a: Using SortOrder ${sortOrder} as Item ${authenticItemNo} (direct mapping)`);
       
     } else if (detectedFormat === 'GR7188' && sectionName && sectionName.includes('Item')) {
       // GR7188 format: Extract from "Item 15", "Item 19", "Item 15a", "Item 19a"
