@@ -543,7 +543,7 @@ export async function registerRoutes(app: Express) {
           let sections, detectedFormat;
           try {
             console.log('🔍 Calling readWincanDatabase...');
-            const result = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', uploadId);
+            const result = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.id);
             sections = result.sections;
             detectedFormat = result.detectedFormat;
             console.log(`✅ readWincanDatabase completed successfully - Detected format: ${detectedFormat}`);
