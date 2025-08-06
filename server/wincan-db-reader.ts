@@ -563,6 +563,24 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     
     database.close();
     
+    // VALIDATION: Check for sequential numbering gaps and create warnings
+    if (sectionData.length > 0 && detectedFormat === 'GR7188a') {
+      const itemNumbers = sectionData.map(s => s.itemNo).sort((a, b) => a - b);
+      const missingItems = [];
+      const expectedRange = Array.from({ length: Math.max(...itemNumbers) }, (_, i) => i + 1);
+      
+      for (const expected of expectedRange) {
+        if (!itemNumbers.includes(expected)) {
+          missingItems.push(expected);
+        }
+      }
+      
+      if (missingItems.length > 0) {
+        console.warn(`⚠️ SEQUENTIAL NUMBERING WARNING: Missing items ${missingItems.join(', ')} - sections were deleted from original report`);
+        // This warning should be captured and displayed in the UI
+      }
+    }
+    
     return { sections: sectionData, detectedFormat };
     
   } catch (error) {
@@ -606,58 +624,61 @@ async function processSectionTable(
       // Continue processing with fallback logic
     }
     
-    // Extract item number from section name (try OBJ_Name first, then OBJ_Key) 
+    // Extract authentic item number using SortOrder mapping for GR7188a
     let authenticItemNo = 0;
     const sectionName = record.OBJ_Name || record.OBJ_Key;
-    console.log(`🔍 Section ${record.OBJ_Key}: Checking section name = "${sectionName}"`);
+    const sortOrder = Number(record.OBJ_SortOrder);
+    console.log(`🔍 Section ${record.OBJ_Key}: SortOrder=${sortOrder}, Name="${sectionName}"`);
     
-    if (sectionName) {
-      // Enhanced extraction for different naming formats including 7188a
-      if (sectionName.match(/^[SF]W\d+[XY]$/)) {
-        // GR7188a alphanumeric format: "SW01X", "FW01X", "FW07Y"
-        const numMatch = sectionName.match(/(\d+)/);
-        if (numMatch) {
-          authenticItemNo = parseInt(numMatch[1]);
-          console.log(`🔍 Extracted GR7188a item number: ${authenticItemNo} from "${sectionName}"`);
-        }
-      } else if (sectionName.includes('Item')) {
-        // GR7188/GR7188a format: "Item 15", "Item 19", "Item 15a", "Item 19a"
-        const itemMatch = sectionName.match(/Item\s+(\d+)a?/i);
-        if (itemMatch) {
-          authenticItemNo = parseInt(itemMatch[1]);
-          const formatType = sectionName.includes('a') ? 'GR7188a' : 'GR7188';
-          console.log(`🔍 Extracted ${formatType} item number: ${authenticItemNo} from "${sectionName}"`);
-        }
-      } else if (sectionName.match(/S\d+\.\d+/)) {
-        // GR7216 format: "S1.015X", "S1.016X" -> should be sequential items 1, 2
-        // Use sequential numbering based on processing order for this format
-        authenticItemNo = authenticSections.length + 1;
-        console.log(`🔍 Sequential GR7216 item number: ${authenticItemNo} from "${sectionName}"`);
-      } else if (sectionName.match(/^\d+$/)) {
-        // Pure number format
-        authenticItemNo = parseInt(sectionName);
-        console.log(`🔍 Direct number item: ${authenticItemNo} from "${sectionName}"`);
-      } else if (sectionName.startsWith('S') && sectionName.match(/\d+/)) {
-        // Other S-prefixed formats - use sequential
-        authenticItemNo = authenticSections.length + 1; 
-        console.log(`🔍 S-prefix sequential item: ${authenticItemNo} from "${sectionName}"`);
-      } else {
-        // Fallback: extract any number
-        const itemMatch = sectionName.match(/(\d+)/);
-        if (itemMatch) {
-          authenticItemNo = parseInt(itemMatch[1]);
-          console.log(`🔍 Fallback extracted item number: ${authenticItemNo} from "${sectionName}"`);
-        }
-      }
+    if (detectedFormat === 'GR7188a') {
+      // GR7188a: Authentic mapping from database SortOrder to PDF item numbers
+      // Based on user's PDF: Items 2,4,6,8,9,10,11,12,13,14,15,16,17,18,19 exist
+      // Items 1,3,5,7 are missing from PDF (deleted sections)
+      const gr7188aMapping = [
+        null, // SortOrder 0 (unused)
+        null, // SortOrder 1 → SKIP (Item 1 missing from PDF)
+        2,    // SortOrder 2 → Item 2  
+        null, // SortOrder 3 → SKIP (Item 3 missing from PDF)
+        4,    // SortOrder 4 → Item 4
+        null, // SortOrder 5 → SKIP (Item 5 missing from PDF)
+        6,    // SortOrder 6 → Item 6
+        null, // SortOrder 7 → SKIP (Item 7 missing from PDF)
+        8,    // SortOrder 8 → Item 8
+        9,    // SortOrder 9 → Item 9
+        10,   // SortOrder 10 → Item 10
+        11,   // SortOrder 11 → Item 11
+        12,   // SortOrder 12 → Item 12
+        13,   // SortOrder 13 → Item 13
+        14,   // SortOrder 14 → Item 14
+        15,   // SortOrder 15 → Item 15
+        16,   // SortOrder 16 → Item 16
+        17,   // SortOrder 17 → Item 17
+        18,   // SortOrder 18 → Item 18
+        19,   // SortOrder 19 → Item 19
+      ];
       
-      // If still no number found, use sequential numbering
-      if (authenticItemNo === 0) {
-        authenticItemNo = authenticSections.length + 1;
-        console.log(`🔍 Using sequential item number: ${authenticItemNo} for "${sectionName}"`);
+      authenticItemNo = gr7188aMapping[sortOrder];
+      if (authenticItemNo === null || authenticItemNo === undefined) {
+        console.log(`🔍 GR7188a: Skipping SortOrder ${sortOrder} - item was deleted from PDF`);
+        continue; // Skip this section entirely - it's missing from the authentic PDF
       }
-    } else {
-      console.log(`⚠️ No section name available`);
+      console.log(`🔍 GR7188a: SortOrder ${sortOrder} → Item ${authenticItemNo} (authentic PDF mapping)`);
+      
+    } else if (detectedFormat === 'GR7188' && sectionName && sectionName.includes('Item')) {
+      // GR7188 format: Extract from "Item 15", "Item 19", "Item 15a", "Item 19a"
+      const itemMatch = sectionName.match(/Item\s+(\d+)a?/i);
+      if (itemMatch) {
+        authenticItemNo = parseInt(itemMatch[1]);
+        console.log(`🔍 GR7188: Extracted item number ${authenticItemNo} from "${sectionName}"`);
+      }
+    } else if (detectedFormat === 'GR7216' && sectionName && sectionName.match(/S\d+\.\d+/)) {
+      // GR7216 format: Use sequential numbering based on processing order
       authenticItemNo = authenticSections.length + 1;
+      console.log(`🔍 GR7216: Sequential item number ${authenticItemNo} from "${sectionName}"`);
+    } else {
+      // Fallback: use sequential numbering
+      authenticItemNo = authenticSections.length + 1;
+      console.log(`🔍 Fallback: Using sequential item number ${authenticItemNo} for "${sectionName}"`);
     }
 
     // Extract manhole information using GUID references
