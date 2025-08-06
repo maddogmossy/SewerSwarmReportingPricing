@@ -417,16 +417,24 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     const observationMap = new Map<string, string[]>();
     try {
       const obsData = database.prepare(`
-        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation, obs.OBS_Remark
+        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation
         FROM SECINSP si 
         JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
         WHERE obs.OBS_OpCode IS NOT NULL 
-        AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'WL')
+        AND obs.OBS_OpCode NOT IN ('MH', 'MHF')
         ORDER BY si.INS_Section_FK, obs.OBS_Distance
       `).all();
       console.log(`🔍 Found ${obsData.length} observation records`);
       if (obsData.length > 0) {
         console.log('🔍 Sample observations:', obsData.slice(0, 3));
+        console.log(`🔍 Observation mapping will contain ${new Set(obsData.map(o => o.INS_Section_FK)).size} unique sections`);
+        console.log(`🔍 Sample section FKs:`, obsData.slice(0, 5).map(o => o.INS_Section_FK));
+      } else {
+        console.log('❌ NO OBSERVATIONS FOUND! Checking if query is correct...');
+        // Debug query by testing parts separately
+        const inspCount = database.prepare("SELECT COUNT(*) as count FROM SECINSP").get();
+        const obsCount = database.prepare("SELECT COUNT(*) as count FROM SECOBS").get();
+        console.log(`🔍 SECINSP records: ${inspCount.count}, SECOBS records: ${obsCount.count}`);
       }
       for (const obs of obsData) {
         if (obs.INS_Section_FK && obs.OBS_OpCode) {
@@ -435,11 +443,11 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           }
           const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
           const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
-          const remark = obs.OBS_Remark ? `: ${obs.OBS_Remark}` : '';
-          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}${remark}`);
+          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
         }
       }
     } catch (error) {
+      console.log('❌ Failed to build observation mapping:', error);
     }
 
     // Extract authentic severity grades from SECSTAT table
@@ -582,10 +590,15 @@ async function processSectionTable(
   }
   
   for (const record of sectionRecords) {
-    // Get observation data for this section
+    // Get observation data for this section - FIXED: Use correct key mapping
     const observations = observationMap.get(record.OBJ_PK) || [];
     
     console.log(`🔍 Section ${record.OBJ_Key || 'UNKNOWN'}: Found ${observations.length} observations`);
+    if (observations.length > 0) {
+      console.log(`🔍 Sample observations for ${record.OBJ_Key}:`, observations.slice(0, 3));
+    } else {
+      console.log(`🔍 DEBUG: Looking for observations with key ${record.OBJ_PK}, available keys:`, Array.from(observationMap.keys()).slice(0, 5));
+    }
     
     // Don't skip sections without observations - process them with default classification
     if (observations.length === 0) {
