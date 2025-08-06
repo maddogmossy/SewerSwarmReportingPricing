@@ -18,6 +18,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **Zero Synthetic Data Policy**: NEVER create, suggest, or use mock, placeholder, fallback, or synthetic data.
 - **Mandatory User Approval Rule**: MUST ask/check with user before making any changes.
 - **Uniform Recommendation System**: Use only the triangle warning system for ALL recommendations (service and structural), following WRc MSCC5 + OS20X standards from Drain Repair Book (4th Ed.).
+- **WRc Classification Standards**: All defect types including line deviations (LL/LR) must be properly recognized and classified according to WRc MSCC5 standards for accurate severity grading and recommendations.
 
 ## System Architecture
 

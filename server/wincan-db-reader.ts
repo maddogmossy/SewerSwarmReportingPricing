@@ -983,8 +983,22 @@ async function classifyWincanObservations(observationText: string, sector: strin
     recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
     adoptable = 'Conditional';
   }
+  // Line deviations (LL, LR) are service defects according to WRc standards
+  else if (upperText.includes('LINE DEVIATES') || upperText.includes('LL ') || upperText.includes('LR ')) {
+    defectType = 'service';
+    severityGrade = 1;
+    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+    adoptable = 'Conditional';
+  }
+  // Root intrusion and deposits are service defects
+  else if (upperText.includes('ROOT') || upperText.includes('DEPOSIT') || upperText.includes('DER') || upperText.includes('DES')) {
+    defectType = 'service';
+    severityGrade = 1;
+    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+    adoptable = 'Conditional';
+  }
   else {
-    // Default classification
+    // Default classification - only for sections with actual defect text
     defectType = 'service';
     severityGrade = 1;
     recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
