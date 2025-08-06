@@ -939,11 +939,19 @@ async function classifyWincanObservations(observationText: string, sector: strin
   // Extract defect patterns - check for structural defects first
   const upperText = observationText.toUpperCase();
   
-  // Check for connection defects (CXB, CN) - structural according to MSCC5
-  if (upperText.includes('CXB') || upperText.includes('CONNECTION DEFECTIVE') || upperText.includes('CONNECTING PIPE') || upperText.includes('CN') || upperText.includes('CONNECTION OTHER')) {
+  // FIXED: Check for connection defects using correct MSCC5 classification
+  if (upperText.includes('CXB') || upperText.includes('CONNECTION DEFECTIVE') || upperText.includes('CONNECTING PIPE')) {
+    // CXB = Connection defective, connecting pipe is blocked - SERVICE defect per MSCC5
+    defectType = 'service';
+    severityGrade = 4; // CXB default grade from MSCC5_DEFECTS
+    recommendations = 'Blocked lateral connection at 2 o\'clock position, likely due to construction-related sandbagging. Recommend access chamber location and remove obstruction via jetting or excavation. Reconnect and confirm flow.';
+    adoptable = 'Conditional';
+  }
+  // CN = Connection other than junction - STRUCTURAL defect per MSCC5  
+  else if (upperText.includes('CN') || upperText.includes('CONNECTION OTHER')) {
     defectType = 'structural';
-    severityGrade = 3; // CXB default grade from MSCC5
-    recommendations = 'Structural repair required for defective connections';
+    severityGrade = 2; // CN default grade from MSCC5_DEFECTS
+    recommendations = 'Structural assessment and potential repair';
     adoptable = 'Conditional';
   }
   // Check for other structural defects
