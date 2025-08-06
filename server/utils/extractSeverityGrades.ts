@@ -168,15 +168,19 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
   const gradeMap: Record<number, { structural: number | null, service: number | null }> = {};
   
   try {
-    // First, try to get authentic SECSTAT data with automatic database format detection
+    // UNIFIED SECSTAT EXTRACTION - Auto-detect schema and use appropriate query
     let secstatRows = [];
     try {
-      // Check if this is GR7188 format (has SEC_ItemNo column)
-      const hasSecItemNo = database.prepare("PRAGMA table_info(SECTION)").all()
-        .some(col => col.name === 'SEC_ItemNo');
+      // Check database schema to determine which columns/tables exist
+      const sectionColumns = database.prepare("PRAGMA table_info(SECTION)").all();
+      const hasSecItemNo = sectionColumns.some(col => col.name === 'SEC_ItemNo');
+      const hasSecPK = sectionColumns.some(col => col.name === 'SEC_PK');
+      const hasObjSortOrder = sectionColumns.some(col => col.name === 'OBJ_SortOrder');
       
-      if (hasSecItemNo) {
-        // GR7188 format: Uses SEC_ItemNo directly and STA_Inspection_FK linking
+      console.log(`🔍 UNIFIED SECSTAT: Schema detection - SEC_ItemNo: ${hasSecItemNo}, SEC_PK: ${hasSecPK}, OBJ_SortOrder: ${hasObjSortOrder}`);
+      
+      if (hasSecItemNo && hasSecPK) {
+        // Schema with SEC_ItemNo (GR7188 style) - use direct mapping
         secstatRows = database.prepare(`
           SELECT ss.*, si.INS_Section_FK, s.SEC_ItemNo as itemNo, s.SEC_SectionName
           FROM SECSTAT ss
@@ -186,16 +190,29 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
           ORDER BY s.SEC_ItemNo, ss.STA_Type
         `).all();
         
-        console.log(`🔍 Found ${secstatRows.length} SECSTAT rows with GR7188 format (SEC_ItemNo)`);
-      } else {
-        // GR7216 format: Uses OBJ_Key with sequential mapping and STA_Inspection_FK linking  
+        console.log(`🔍 UNIFIED SECSTAT: Using SEC_ItemNo approach - Found ${secstatRows.length} rows`);
+        
+      } else if (hasObjSortOrder) {
+        // Schema with OBJ_SortOrder - use this for item mapping
         secstatRows = database.prepare(`
-          SELECT ss.*, si.INS_Section_FK, s.OBJ_Key, 
+          SELECT ss.*, si.INS_Section_FK, s.OBJ_Key, s.OBJ_SortOrder as itemNo
+          FROM SECSTAT ss
+          LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
+          LEFT JOIN SECTION s ON si.INS_Section_FK = s.OBJ_PK
+          WHERE s.OBJ_SortOrder IS NOT NULL AND ss.STA_HighestGrade IS NOT NULL
+          ORDER BY s.OBJ_SortOrder, ss.STA_Type
+        `).all();
+        
+        console.log(`🔍 UNIFIED SECSTAT: Using OBJ_SortOrder approach - Found ${secstatRows.length} rows`);
+        
+      } else {
+        // Fallback: try to extract from OBJ_Key patterns
+        secstatRows = database.prepare(`
+          SELECT ss.*, si.INS_Section_FK, s.OBJ_Key,
                  CASE 
-                   WHEN s.OBJ_Key = 'S1.015X' THEN 1
-                   WHEN s.OBJ_Key = 'S1.016X' THEN 2
-                   WHEN s.OBJ_Key = 'S1.017X' THEN 3
-                   ELSE CAST(SUBSTR(s.OBJ_Key, 4, 3) AS INTEGER)
+                   WHEN s.OBJ_Key LIKE 'S1.%' THEN CAST(SUBSTR(s.OBJ_Key, 4, 3) AS INTEGER) - 14
+                   WHEN s.OBJ_Key LIKE 'Item %' THEN CAST(SUBSTR(s.OBJ_Key, 6) AS INTEGER)
+                   ELSE ROW_NUMBER() OVER (ORDER BY s.OBJ_PK)
                  END as itemNo
           FROM SECSTAT ss
           LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
@@ -204,7 +221,7 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
           ORDER BY itemNo, ss.STA_Type
         `).all();
         
-        console.log(`🔍 Found ${secstatRows.length} SECSTAT rows with GR7216 format (OBJ_Key)`);
+        console.log(`🔍 UNIFIED SECSTAT: Using OBJ_Key pattern approach - Found ${secstatRows.length} rows`);
       }
       
       if (secstatRows.length > 0) {

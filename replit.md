@@ -19,6 +19,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **Mandatory User Approval Rule**: MUST ask/check with user before making any changes.
 - **Uniform Recommendation System**: Use only the triangle warning system for ALL recommendations (service and structural), following WRc MSCC5 + OS20X standards from Drain Repair Book (4th Ed.).
 - **WRc Classification Standards**: All defect types including line deviations (LL/LR) must be properly recognized and classified according to WRc MSCC5 standards for accurate severity grading and recommendations.
+- **Unified Processing Standards**: All database uploads processed with identical logic using priority-based item numbering (SEC_ItemNo → OBJ_SortOrder → pattern extraction → fallback) and automatic schema detection for consistent results across all report formats.
 
 ## System Architecture
 
@@ -45,7 +46,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 
 ### Key Components
 - **Authentication System**: Replit Auth (OpenID Connect) for user management and access control.
-- **File Processing System**: Handles PDF and .db file uploads, including local storage, status tracking, and authentic data extraction from Wincan database files with MSCC5 classification. Processes GR7188, GR7188a, and GR7216 formats uniformly with automatic database format detection and unified SECSTAT extraction.
+- **Unified File Processing System**: Handles PDF and .db file uploads with standardized processing logic that automatically adapts to different database schemas. Uses unified item number assignment, consistent SECSTAT extraction, and uniform WRc MSCC5 classification across all database formats without format-specific detection.
 - **Payment System**: Stripe integration for subscription and pay-per-report pricing, including a trial system.
 - **Database Schema**: Manages Users, Sessions, File Uploads, Subscription Plans, and Report Pricing.
 - **UI Component Architecture**: Standardized UI patterns including:
