@@ -608,19 +608,27 @@ async function processSectionTable(
   }
   
   for (const record of sectionRecords) {
+    const sectionKey = record.OBJ_Key || record.OBJ_Name || 'UNKNOWN';
+    
+    // GR7188a: Filter out NOD_ sections (manholes/nodes) - only process pipe sections
+    if (detectedFormat === 'GR7188a' && sectionKey.startsWith('NOD_')) {
+      console.log(`🔍 GR7188a: Skipping NOD_ section ${sectionKey} - not a pipe section`);
+      continue; // Skip this section entirely
+    }
+    
     // Get observation data for this section - FIXED: Use correct key mapping
     const observations = observationMap.get(record.OBJ_PK) || [];
     
-    console.log(`🔍 Section ${record.OBJ_Key || 'UNKNOWN'}: Found ${observations.length} observations`);
+    console.log(`🔍 Section ${sectionKey}: Found ${observations.length} observations`);
     if (observations.length > 0) {
-      console.log(`🔍 Sample observations for ${record.OBJ_Key}:`, observations.slice(0, 3));
+      console.log(`🔍 Sample observations for ${sectionKey}:`, observations.slice(0, 3));
     } else {
       console.log(`🔍 DEBUG: Looking for observations with key ${record.OBJ_PK}, available keys:`, Array.from(observationMap.keys()).slice(0, 5));
     }
     
     // Don't skip sections without observations - process them with default classification
     if (observations.length === 0) {
-      console.log(`⚠️ Section ${record.OBJ_Key || 'UNKNOWN'} has no observations - using default classification`);
+      console.log(`⚠️ Section ${sectionKey} has no observations - using default classification`);
       // Continue processing with fallback logic
     }
     
