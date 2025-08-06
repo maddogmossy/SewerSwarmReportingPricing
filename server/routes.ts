@@ -719,9 +719,27 @@ export async function registerRoutes(app: Express) {
       const sections = await readWincanDatabase(filePath);
       console.log(`🔄 REPROCESS - Extracted ${sections.length} sections with WRc validation`);
       
-      // Store the re-processed sections using helper function
-      const { storeWincanSections } = await import('./storage');
-      await storeWincanSections(sections, uploadId);
+      // Store the re-processed sections
+      for (const section of sections) {
+        await db.insert(sectionInspections).values({
+          fileUploadId: uploadId,
+          itemNo: section.itemNo,
+          letterSuffix: section.letterSuffix,
+          fromManhole: section.fromManhole,
+          toManhole: section.toManhole,
+          pipeSize: section.pipeSize,
+          totalLength: section.totalLength,
+          defects: section.defects,
+          recommendations: section.recommendations,
+          severityGrade: section.severityGrade,
+          defectType: section.defectType,
+          needsCleaning: section.needsCleaning || false,
+          isRestrictedSection: section.isRestrictedSection || false,
+          pipeAge: section.pipeAge,
+          pipeDescription: section.pipeDescription,
+          inspectionDate: section.inspectionDate
+        });
+      }
       
       // Update upload status to ensure it appears in dashboard
       await db.update(fileUploads)
