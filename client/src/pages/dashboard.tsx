@@ -1289,7 +1289,7 @@ export default function Dashboard() {
       console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         defectType: section.defectType,
         equipmentPriority: equipmentPriority,
-        expectedStatuses: expectedStatuses,
+        validServiceStatuses: validServiceStatuses,
         costCalc: costCalc && typeof costCalc === 'object' ? {
           status: 'status' in costCalc ? costCalc.status : 'unknown',
           cost: 'cost' in costCalc ? costCalc.cost : 0,
@@ -1297,7 +1297,7 @@ export default function Dashboard() {
           dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
           runsPerShift: 'runsPerShift' in costCalc ? costCalc.runsPerShift : 0
         } : 'no cost calc',
-        statusMatch: costCalc && typeof costCalc === 'object' && 'status' in costCalc && expectedStatuses.includes(costCalc.status),
+        statusMatch: costCalc && typeof costCalc === 'object' && 'status' in costCalc && validServiceStatuses.includes(costCalc.status),
         hasServiceCost
       });
       
