@@ -686,13 +686,25 @@ export async function registerRoutes(app: Express) {
   app.get("/api/uploads/:id/sections", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.id);
+      console.log(`🔍 SECTIONS API - Fetching sections for upload ${uploadId}`);
+      
       const sections = await db.select()
         .from(sectionInspections)
         .where(eq(sectionInspections.fileUploadId, uploadId))
         .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
+
+      console.log(`🔍 SECTIONS API - Found ${sections.length} sections total`);
       
+      // Log items 4, 6, 8, 9 specifically to debug the WRc validation fix
+      const targetItems = sections.filter(s => [4, 6, 8, 9].includes(s.itemNo));
+      console.log('🔍 SECTIONS API - Target items with line deviations:', targetItems.map(s => ({
+        itemNo: s.itemNo,
+        defects: s.defects,
+        severityGrade: s.severityGrade,
+        defectType: s.defectType
+      })));
+
       // Transform sections to include severityGrades structure expected by dashboard
-      // Match GR7188 behavior: always show both grades, use 0 for missing grades instead of null
       const transformedSections = sections.map(section => ({
         ...section,
         severityGrades: {
@@ -700,21 +712,14 @@ export async function registerRoutes(app: Express) {
           service: section.defectType === 'service' ? parseInt(section.severityGrade) || 0 : 0
         }
       }));
-      
-      console.log('🔍 API SECTIONS - Pre-transform raw section:', sections[0] ? {
-        itemNo: sections[0].itemNo,
-        severityGrade: sections[0].severityGrade,
-        defectType: sections[0].defectType,
-        rawSeverityGrades: sections[0].severityGrades
-      } : 'no sections');
-      
-      console.log('🔍 API SECTIONS - Post-transform section:', transformedSections[0] ? {
-        itemNo: transformedSections[0].itemNo,
-        severityGrade: transformedSections[0].severityGrade,
-        defectType: transformedSections[0].defectType,
-        transformedSeverityGrades: transformedSections[0].severityGrades
-      } : 'no sections');
-      
+
+      // Clear caching headers to force fresh data
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+
       res.json(transformedSections);
     } catch (error) {
       console.error("Error fetching sections:", error);

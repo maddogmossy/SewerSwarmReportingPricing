@@ -2538,7 +2538,7 @@ export default function Dashboard() {
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-validation-fix-v1'], // Updated cache key for WRc fix
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, Date.now()], // Force fresh data every time
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
