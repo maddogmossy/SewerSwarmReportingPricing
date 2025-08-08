@@ -3682,6 +3682,9 @@ export default function Dashboard() {
     // Add buffer to maximum length (10% buffer for safety margin)
     const bufferedMaxLength = Math.ceil(maxTotalLength * 1.1);
     
+    // Get MM4 data rows first
+    const mm4Rows = mmData.mm4DataByPipeSize[targetPipeSizeKey] || [];
+    
     console.log('🔧 Auto-populating F606 MM4-150 purple length fields:', {
       currentSection: currentSection.itemNo,
       targetPipeSize: '150mm',
@@ -3693,7 +3696,6 @@ export default function Dashboard() {
     });
     
     // Update MM4 data with new purple length values - ALWAYS update to accommodate actual section lengths
-    const mm4Rows = mmData.mm4DataByPipeSize[targetPipeSizeKey] || [];
     const updatedMM4Rows = mm4Rows.map((row: any) => {
       const currentPurpleLength = parseFloat(row.purpleLength || '0');
       const shouldUpdate = currentPurpleLength < maxTotalLength; // Update if current threshold is inadequate
@@ -5540,6 +5542,11 @@ export default function Dashboard() {
       
       if (f606Config && f606Config.mmData) {
         console.log('🔧 Triggering F606 MM4-150 purple length auto-population for', sectionData.length, 'sections');
+        console.log('🔍 First few sections for auto-population:', sectionData.slice(0, 5).map(s => ({
+          itemNo: s.itemNo,
+          pipeSize: s.pipeSize,
+          totalLength: s.totalLength
+        })));
         autoPopulatePurpleLengthFields(f606Config, sectionData[0], sectionData);
       }
     }
