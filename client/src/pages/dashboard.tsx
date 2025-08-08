@@ -2133,7 +2133,14 @@ export default function Dashboard() {
         }
         
         if (hasDefectsRequiringCost) {
-          // DEBUG: Removed console logging to prevent infinite loops
+          // CRITICAL DEBUG: Log every section that enters cost calculation
+          console.log('💰 COST CALCULATION ENTRY:', {
+            itemNo: section.itemNo,
+            letterSuffix: section.letterSuffix,
+            defectType: section.defectType,
+            hasDefectsRequiringCost,
+            defectsPreview: (section.defects || '').substring(0, 50) + '...'
+          });
           
           // Check if this section requires cleaning vs structural repair
           const needsCleaning = requiresCleaning(section.defects || '');
@@ -2143,15 +2150,27 @@ export default function Dashboard() {
           const isServiceDefectForCost = section.defectType === 'service';
           const isStructuralDefectForCost = section.defectType === 'structural';
           
+          console.log('🛤️ ROUTING DECISION:', {
+            itemNo: section.itemNo,
+            isServiceDefectForCost,
+            isStructuralDefectForCost,
+            needsCleaning,
+            needsStructuralRepair,
+            willCallCalculateAutoCost: true
+          });
+          
           let costCalculation;
           if (isStructuralDefectForCost) {
             // Route structural defects (21a, 22a) to TP2/TP3 calculation
+            console.log('🏗️ CALLING calculateAutoCost for STRUCTURAL:', section.itemNo);
             costCalculation = calculateAutoCost(section);
           } else if (isServiceDefectForCost || needsCleaning) {
             // Route service defects to MM4 calculation (with fallback to TP1)
+            console.log('🧹 CALLING calculateAutoCost for SERVICE:', section.itemNo);
             costCalculation = calculateAutoCost(section);
           } else {
             // Fallback to auto cost calculation
+            console.log('🔄 CALLING calculateAutoCost for FALLBACK:', section.itemNo);
             costCalculation = calculateAutoCost(section);
           }
           
