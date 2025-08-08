@@ -727,23 +727,40 @@ async function processSectionTable(
       const grades = severityGrades[authenticItemNo];
       console.log(`🔍 Found SECSTAT grades for item ${authenticItemNo}:`, grades);
       
-      // Determine defect type and use appropriate grade
+      // ENHANCED: Determine defect type based on authentic WinCan observation codes
       const hasStructuralDefects = observations.some(obs => 
         obs.includes('D ') || obs.includes('FC ') || obs.includes('FL ') || 
-        obs.includes('JDL ') || obs.includes('JDS ') || obs.includes('OJM ') || obs.includes('OJL ')
+        obs.includes('JDL ') || obs.includes('JDS ') || obs.includes('JDM ') || // Joint defective medium
+        obs.includes('OJM ') || obs.includes('OJL ') || obs.includes('DEF ') || 
+        obs.includes('CR ') || obs.includes('fracture') || obs.includes('crack')
       );
       
       const hasServiceDefects = observations.some(obs =>
-        obs.includes('DER ') || obs.includes('DES ') || obs.includes('blockage') || 
-        obs.includes('deposits') || obs.includes('restriction')
+        obs.includes('DER ') || obs.includes('DES ') || obs.includes('DEE ') || // Deposits/encrustation
+        obs.includes('blockage') || obs.includes('deposits') || obs.includes('restriction') ||
+        obs.includes('WL ') || obs.includes('ISJ ') || obs.includes('infiltration') || // Water level, infiltration
+        obs.includes('RI ') || obs.includes('root') || obs.includes('LR ') || obs.includes('LL ') // Roots, line deviations
       );
       
       // Check if we need to split into multiple entries for mixed defects
+      console.log(`🔍 MULTI-DEFECT CHECK for Item ${authenticItemNo}:`, {
+        hasStructuralDefects,
+        hasServiceDefects,
+        structuralGrade: grades.structural,
+        serviceGrade: grades.service,
+        sampleObservations: observations.slice(0, 3)
+      });
+      
       if (hasStructuralDefects && hasServiceDefects && grades.structural !== null && grades.service !== null) {
+        console.log(`✅ TRIGGERING MULTI-DEFECT SPLITTING for Item ${authenticItemNo}`);
+        console.log(`🔍 Will create: Service (Grade ${grades.service}) + Structural${grades.structural ? ' (Grade ' + grades.structural + ')' : ''}`);
+        
         // Create service defect entry
         const serviceObservations = observations.filter(obs =>
-          obs.includes('DER ') || obs.includes('DES ') || obs.includes('blockage') || 
-          obs.includes('deposits') || obs.includes('restriction') || obs.includes('LL ') || obs.includes('LR ')
+          obs.includes('DER ') || obs.includes('DES ') || obs.includes('DEE ') || // Deposits/encrustation 
+          obs.includes('blockage') || obs.includes('deposits') || obs.includes('restriction') ||
+          obs.includes('WL ') || obs.includes('ISJ ') || obs.includes('infiltration') || // Water/infiltration
+          obs.includes('RI ') || obs.includes('root') || obs.includes('LL ') || obs.includes('LR ')
         );
         
         if (serviceObservations.length > 0) {
@@ -777,7 +794,9 @@ async function processSectionTable(
         // Create structural defect entry  
         const structuralObservations = observations.filter(obs =>
           obs.includes('D ') || obs.includes('FC ') || obs.includes('FL ') || 
-          obs.includes('JDL ') || obs.includes('JDS ') || obs.includes('OJM ') || obs.includes('OJL ') ||
+          obs.includes('JDL ') || obs.includes('JDS ') || obs.includes('JDM ') || // Joint defects
+          obs.includes('OJM ') || obs.includes('OJL ') || obs.includes('DEF ') ||
+          obs.includes('CR ') || obs.includes('fracture') || obs.includes('crack') ||
           obs.includes('JN ') // Include junctions with structural defects
         );
         
