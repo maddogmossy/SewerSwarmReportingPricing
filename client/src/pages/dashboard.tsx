@@ -2361,6 +2361,17 @@ export default function Dashboard() {
             
             // Fallback: Generic warning triangles for unknown issues
             if (section.defectType === 'service') {
+              // CRITICAL DEBUG: Trace why service sections hit this fallback path
+              console.log('🔵 BLUE TRIANGLE FALLBACK - Service Section:', {
+                itemNo: section.itemNo,
+                defectType: section.defectType,
+                severityGrade: section.severityGrade,
+                hasDefectsRequiringCost,
+                finalHasDefectsRequiringCost: typeof finalHasDefectsRequiringCost !== 'undefined' ? finalHasDefectsRequiringCost : 'UNDEFINED',
+                costCalculation: typeof costCalculation !== 'undefined' ? costCalculation : 'UNDEFINED',
+                reasonForBlueTriangle: 'Service section with no valid cost calculation result'
+              });
+              
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
