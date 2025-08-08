@@ -608,9 +608,9 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
   const queryClient = useQueryClient();
   
-  // Equipment priority state with localStorage sync
+  // Equipment priority state with localStorage sync - FIXED: Default to F608 instead of F606
   const [equipmentPriority, setEquipmentPriority] = useState<'f606' | 'f608'>(() => {
-    return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+    return localStorage.getItem('equipmentPriority') === 'f606' ? 'f606' : 'f608';
   });
 
   // Listen for equipment priority changes from popups
@@ -4306,16 +4306,17 @@ export default function Dashboard() {
         // User chose F608 and it's available
         cctvConfig = f608Config;
       } else if (!userPrefersF608 && f606Config) {
-        // User chose F606 (default) and it's available
+        // User chose F606 explicitly and it's available
         cctvConfig = f606Config;
-      } else if (f608HasValidMM4 && !f606HasValidMM4) {
-        // Only F608 has valid configuration as fallback
+      } else if (f608Config) {
+        // FIXED: Prefer F608 as default when available (was previously defaulting to F606)
         cctvConfig = f608Config;
-        console.log('🔄 Using F608 as fallback - F606 not configured');
+        shouldUpdatePriority = true;
+        console.log('🔄 Using F608 as default - preferred over F606');
       } else {
-        // Default to F606 even if not fully configured
+        // Fallback to F606 only if F608 not available
         cctvConfig = f606Config;
-        console.log('🔄 Using F606 as default - respecting user preference');
+        console.log('🔄 Using F606 as fallback - F608 not available');
       }
       
       // Sync equipment priority with actual selection (only when needed and not recently changed by user)
