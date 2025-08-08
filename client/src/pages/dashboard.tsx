@@ -2815,32 +2815,54 @@ export default function Dashboard() {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
     }
-  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData, showStructuralCostWarning, structuralCostData]);
+  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData, showStructuralCostWarning, structuralCostData, configWarningDismissed]);
 
   // Function to check for configuration warning issues (MM4 outside ranges, day rate missing, etc.)
   const checkConfigurationWarnings = (sections: any[]) => {
     // Don't show if already dismissed or already showing
     if (configWarningDismissed || showConfigWarning) return;
 
-    // Find the first section with a configuration warning
+    // Get current default category from localStorage
+    const currentEquipmentPriority = localStorage.getItem('equipmentPriority') || 'f606';
+    const defaultCategoryId = currentEquipmentPriority === 'f608' ? 'cctv-van-pack' : 'cctv';
+    
+    console.log(`🎯 CHECKING CONFIG WARNINGS for default category: ${currentEquipmentPriority} (${defaultCategoryId})`);
+
+    // Find the first service section with a configuration warning that matches the current default category
     for (const section of sections) {
+      // Only check service sections (structural uses patching config regardless of F606/F608 setting)
+      if (section.defectType !== 'service') continue;
+      
       const costCalc = calculateAutoCost(section);
       
       if (costCalc && 'warningType' in costCalc && costCalc.warningType) {
-        console.log(`🚨 AUTO-TRIGGERING CONFIG WARNING for section ${section.itemNo}:`, {
-          warningType: costCalc.warningType,
-          method: costCalc.method,
-          status: costCalc.status
-        });
+        // Check if this warning is for the currently selected default category
+        const configCategoryId = costCalc.configData?.categoryId;
         
-        // Auto-trigger the configuration warning popup
-        setConfigWarningData({
-          warningType: costCalc.warningType,
-          sectionData: costCalc.sectionData,
-          configData: costCalc.configData
-        });
-        setShowConfigWarning(true);
-        return; // Only show one warning at a time
+        if (configCategoryId === defaultCategoryId) {
+          console.log(`🚨 AUTO-TRIGGERING CONFIG WARNING for section ${section.itemNo} (${currentEquipmentPriority}):`, {
+            warningType: costCalc.warningType,
+            method: costCalc.method,
+            status: costCalc.status,
+            configCategoryId,
+            defaultCategoryId
+          });
+          
+          // Auto-trigger the configuration warning popup
+          setConfigWarningData({
+            warningType: costCalc.warningType as 'day_rate_missing' | 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range' | 'config_missing',
+            sectionData: costCalc.sectionData,
+            configData: costCalc.configData
+          });
+          setShowConfigWarning(true);
+          return; // Only show one warning at a time
+        } else {
+          console.log(`⏭️ SKIPPING CONFIG WARNING for section ${section.itemNo} - different category:`, {
+            configCategoryId,
+            defaultCategoryId,
+            currentPriority: currentEquipmentPriority
+          });
+        }
       }
     }
   };
@@ -7386,6 +7408,11 @@ export default function Dashboard() {
           warningType={configWarningData.warningType}
           sectionData={configWarningData.sectionData}
           configData={configWarningData.configData}
+          onNavigateToConfig={(categoryId) => {
+            console.log(`🔄 NAVIGATING TO CONFIG: ${categoryId}`);
+            // Navigate to PR2 configuration page with the specific category
+            window.location.href = `/pr2-config-clean?sector=${selectedSector}&categoryId=${categoryId}`;
+          }}
         />
       )}
     </div>

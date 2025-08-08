@@ -20,6 +20,7 @@ interface ConfigurationWarningDialogProps {
     maxLength?: number;
     minLength?: number;
   };
+  onNavigateToConfig?: (categoryId: string) => void;
 }
 
 export function ConfigurationWarningDialog({
@@ -27,10 +28,23 @@ export function ConfigurationWarningDialog({
   onClose,
   warningType,
   sectionData,
-  configData
+  configData,
+  onNavigateToConfig
 }: ConfigurationWarningDialogProps) {
   const getWarningContent = () => {
-    const configType = sectionData.defectType === 'service' ? 'F606/F608 Service' : 'F615 Structural';
+    // Determine the specific configuration type based on categoryId 
+    const getSpecificConfigType = () => {
+      if (sectionData.defectType === 'structural') return 'F615 Patching';
+      
+      // For service defects, use the specific category from configData
+      if (configData?.categoryId === 'cctv-van-pack') return 'F608 Van Pack';
+      if (configData?.categoryId === 'cctv') return 'F606 Jet Vac';
+      
+      // Fallback for service defects without specific config
+      return 'F606/F608 Service';
+    };
+    
+    const configType = getSpecificConfigType();
     
     switch (warningType) {
       case 'day_rate_missing':
@@ -43,7 +57,7 @@ export function ConfigurationWarningDialog({
             'Configure the day rate to enable cost calculations',
             'This prevents cost triangles from showing accurate pricing'
           ],
-          action: 'Go to PR2 Config to set day rate'
+          action: `Configure ${configType} day rate`
         };
       
       case 'debris_out_of_range':
@@ -56,7 +70,7 @@ export function ConfigurationWarningDialog({
             `Maximum configured: ${configData?.maxDebris || 'Not set'}%`,
             'Section falls outside MM4 purple debris range'
           ],
-          action: 'Adjust MM4 purple debris range or use manual pricing'
+          action: `Extend ${configType} debris range or add new row`
         };
       
       case 'length_out_of_range':
@@ -69,7 +83,7 @@ export function ConfigurationWarningDialog({
             `Configured range: ${configData?.minLength || 0}m - ${configData?.maxLength || 'Not set'}m`,
             'Section falls outside MM4 purple length range'
           ],
-          action: 'Adjust MM4 purple length range or use manual pricing'
+          action: `Extend ${configType} length range or add new row`
         };
       
       case 'both_out_of_range':
@@ -82,7 +96,7 @@ export function ConfigurationWarningDialog({
             `Length: ${sectionData.totalLength}m (max: ${configData?.maxLength || 'Not set'}m)`,
             'Section falls outside all MM4 configuration ranges'
           ],
-          action: 'Adjust MM4 ranges or use manual pricing'
+          action: `Extend ${configType} ranges or add new row`
         };
       
       case 'config_missing':
@@ -138,7 +152,16 @@ export function ConfigurationWarningDialog({
           
           <div className="flex justify-between items-center pt-2">
             <p className="text-sm text-gray-500">{content.action}</p>
-            <Button onClick={onClose} className="px-6">
+            <Button 
+              onClick={() => {
+                if (onNavigateToConfig && configData?.categoryId) {
+                  // Navigate to the relevant configuration section
+                  onNavigateToConfig(configData.categoryId);
+                }
+                onClose();
+              }} 
+              className="px-6"
+            >
               Got it
             </Button>
           </div>
