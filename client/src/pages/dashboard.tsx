@@ -3857,8 +3857,8 @@ export default function Dashboard() {
       pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0
     });
 
-    // CRITICAL FIX: Validate F606/F608 configuration BEFORE using any MM4 calculations
-    // This prevents old stored database costs from bypassing day rate validation
+    // ENHANCED VALIDATION ORDER: Check MM4 range violations FIRST before day rate validation
+    // This ensures that range issues are detected before day rate issues, providing more accurate warnings
     if (section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0) {
       const needsCleaning = requiresCleaning(section.defects || '');
       const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
@@ -3869,17 +3869,92 @@ export default function Dashboard() {
         const f608Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
         
         // Check current equipment priority
-        const currentConfig = equipmentPriority === 'f608' ? f608Config : f606Config;
+        const cctvConfig = equipmentPriority === 'f608' ? f608Config : f606Config;
         
-        if (currentConfig) {
+        if (cctvConfig) {
+          // PRIORITY 1: CHECK MM4 RANGE VIOLATIONS FIRST
+          // Check if section meets MM4 configuration criteria before checking day rate
+          const sectionPipeSize = parseInt(section.pipeSize?.toString().replace(/mm.*$/i, '') || '0');
+          const sectionLength = parseFloat(section.totalLength?.toString() || '0');
+          const sectionDebrisPercent = extractDebrisPercentageFromDefects(section.defects || '');
+          
+          // Find matching MM4 configurations for this pipe size
+          const matchingPipeSizeKey = findPipeSizeKey(sectionPipeSize, cctvConfig);
+          const matchingMM4Data = cctvConfig?.mm4Configurations?.[matchingPipeSizeKey] || [];
+          
+          // Check if section exceeds MM4 ranges (any row)
+          if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
+            let sectionExceedsAllRanges = true;
+            
+            // Check each MM4 row to see if section fits within any range
+            for (const mm4Row of matchingMM4Data) {
+              const purpleDebris = parseFloat(mm4Row.purpleDebris || '0');
+              const purpleLength = parseFloat(mm4Row.purpleLength || '0');
+              
+              const debrisMatch = sectionDebrisPercent <= purpleDebris;
+              const lengthMatch = sectionLength <= purpleLength;
+              
+              if (debrisMatch && lengthMatch) {
+                sectionExceedsAllRanges = false;
+                break;
+              }
+            }
+            
+            // If section exceeds ALL MM4 ranges, return range warning instead of day rate warning
+            if (sectionExceedsAllRanges) {
+              console.log(`⚠️ PRIORITY WARNING: Section ${section.itemNo} exceeds MM4 ranges (checked before day rate):`, {
+                sectionDebrisPercent,
+                sectionLength,
+                maxDebris: matchingMM4Data[0]?.purpleDebris || 0,
+                maxLength: matchingMM4Data[0]?.purpleLength || 0
+              });
+              
+              // Determine which range is exceeded
+              const debrisExceeded = sectionDebrisPercent > (matchingMM4Data[0]?.purpleDebris || 0);
+              const lengthExceeded = sectionLength > (matchingMM4Data[0]?.purpleLength || 0);
+              
+              let warningType: 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range';
+              if (debrisExceeded && lengthExceeded) {
+                warningType = 'both_out_of_range';
+              } else if (debrisExceeded) {
+                warningType = 'debris_out_of_range';
+              } else {
+                warningType = 'length_out_of_range';
+              }
+              
+              return {
+                cost: 0,
+                currency: '£',
+                method: 'MM4 Outside Ranges',
+                status: 'mm4_outside_ranges',
+                recommendation: 'Section exceeds MM4 configuration ranges (debris % or length)',
+                warningType: warningType,
+                sectionData: {
+                  itemNo: section.itemNo,
+                  defectType: 'service',
+                  pipeSize: section.pipeSize,
+                  totalLength: sectionLength,
+                  debrisPercent: sectionDebrisPercent
+                },
+                configData: {
+                  categoryId: cctvConfig.categoryId,
+                  maxDebris: matchingMM4Data[0]?.purpleDebris || 0,
+                  maxLength: matchingMM4Data[0]?.purpleLength || 0,
+                  minLength: 0
+                }
+              };
+            }
+          }
+          
+          // PRIORITY 2: CHECK DAY RATE ONLY AFTER CONFIRMING MM4 RANGES ARE OK
           // Check if day rate is properly configured in pricingOptions
-          const dayRateOption = currentConfig.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
+          const dayRateOption = cctvConfig.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
           const isDayRateConfigured = dayRateOption?.value && dayRateOption.value.trim() !== '';
           
-          console.log('🔍 F606/F608 Day Rate Validation:', {
+          console.log('🔍 F606/F608 Day Rate Validation (after range check):', {
             itemNo: section.itemNo,
             equipmentPriority: equipmentPriority,
-            configId: currentConfig.id,
+            configId: cctvConfig.id,
             dayRateValue: dayRateOption?.value,
             isDayRateConfigured: isDayRateConfigured,
             willShowBlueTriangle: !isDayRateConfigured
@@ -3892,17 +3967,17 @@ export default function Dashboard() {
               currency: '£',
               method: 'Day Rate Not Configured',
               status: 'day_rate_missing',
-              configType: currentConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+              configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
               warningType: 'day_rate_missing',
               sectionData: {
                 itemNo: section.itemNo,
                 defectType: 'service',
                 pipeSize: section.pipeSize,
                 totalLength: parseFloat(section.totalLength || '0'),
-                debrisPercent: 0 // Will be calculated dynamically
+                debrisPercent: sectionDebrisPercent
               },
               configData: {
-                categoryId: currentConfig.categoryId
+                categoryId: cctvConfig.categoryId
               }
             };
           }
@@ -4579,75 +4654,10 @@ export default function Dashboard() {
             }
           }
           
-          // Section doesn't match MM4 criteria - show warning
-          if (section.itemNo === 3) {
-            console.log(`🔴 ITEM 3 OUTSIDE RANGES DEBUG:`, {
-              itemNo: section.itemNo,
-              sectionDebrisPercent,
-              sectionLength,
-              mm4Configurations: matchingMM4Data.length,
-              allMM4Rows: matchingMM4Data.map(r => ({ 
-                id: r.id, 
-                purpleDebris: r.purpleDebris, 
-                purpleLength: r.purpleLength,
-                blueValue: r.blueValue,
-                greenValue: r.greenValue
-              })),
-              validationResults: matchingMM4Data.map(r => ({
-                rowId: r.id,
-                debrisMatch: sectionDebrisPercent <= parseFloat(r.purpleDebris || '0'),
-                lengthMatch: sectionLength <= parseFloat(r.purpleLength || '0'),
-                hasValidRate: parseFloat(r.blueValue || '0') > 0 && (parseFloat(r.greenValue || '0') > 0 || parseFloat(r.purpleDebris || '0') > 0)
-              })),
-              willReturnOutsideRangesStatus: true
-            });
-          }
-          
-          console.log(`⚠️ Section ${section.itemNo} outside MM4 ranges:`, {
-            sectionDebrisPercent,
-            sectionLength,
-            mm4Configurations: matchingMM4Data.length,
-            firstRowMaxDebris: matchingMM4Data[0]?.purpleDebris || 0,
-            firstRowMaxLength: matchingMM4Data[0]?.purpleLength || 0,
-            debrisExceeded: sectionDebrisPercent > (matchingMM4Data[0]?.purpleDebris || 0),
-            lengthExceeded: sectionLength > (matchingMM4Data[0]?.purpleLength || 0),
-            willReturnWarningWithType: true
-          });
-          
-          // Determine which range is exceeded
-          const debrisExceeded = sectionDebrisPercent > (matchingMM4Data[0]?.purpleDebris || 0);
-          const lengthExceeded = sectionLength > (matchingMM4Data[0]?.purpleLength || 0);
-          
-          let warningType: 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range';
-          if (debrisExceeded && lengthExceeded) {
-            warningType = 'both_out_of_range';
-          } else if (debrisExceeded) {
-            warningType = 'debris_out_of_range';
-          } else {
-            warningType = 'length_out_of_range';
-          }
-          
-          return {
-            cost: 0,
-            currency: '£',
-            method: 'MM4 Outside Ranges',
-            status: 'mm4_outside_ranges',
-            recommendation: 'Section exceeds MM4 configuration ranges (debris % or length)',
-            warningType: warningType,
-            sectionData: {
-              itemNo: section.itemNo,
-              defectType: 'service',
-              pipeSize: section.pipeSize,
-              totalLength: sectionLength,
-              debrisPercent: sectionDebrisPercent
-            },
-            configData: {
-              categoryId: cctvConfig.categoryId,
-              maxDebris: matchingMM4Data[0]?.purpleDebris || 0,
-              maxLength: matchingMM4Data[0]?.purpleLength || 0,
-              minLength: 0
-            }
-          };
+          // If we reach here, section didn't match any MM4 configuration criteria
+          // This should not happen as range validation is now handled at the start of the function
+          console.log(`⚠️ Section ${section.itemNo} - unexpected fallthrough in MM4 validation`);
+          return null;
         }
       }
     }
