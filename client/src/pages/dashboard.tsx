@@ -2106,6 +2106,19 @@ export default function Dashboard() {
         // Check both old severityGrade field AND new severity_grades JSON for service/structural grades > 0
         const hasDefectsRequiringCost = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
           (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
+          
+        // CRITICAL DEBUG: Check service sections specifically
+        if (section.itemNo === 6 || section.itemNo === 8) {
+          console.log('🔍 SERVICE SECTION DEFECTS CHECK:', {
+            itemNo: section.itemNo,
+            severityGrade: section.severityGrade,
+            severityGrades: section.severityGrades,
+            hasDefectsRequiringCost,
+            defectType: section.defectType,
+            defectsText: section.defects,
+            willEnterCostCalculation: hasDefectsRequiringCost
+          });
+        }
         
         // SPECIAL DEBUG FOR ITEM 10 - check severity data
         if (section.itemNo === 10) {
