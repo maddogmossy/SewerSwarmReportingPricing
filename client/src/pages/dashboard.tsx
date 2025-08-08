@@ -3763,6 +3763,67 @@ export default function Dashboard() {
       isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
       pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0
     });
+
+    // CRITICAL FIX: Validate F606/F608 configuration BEFORE using any MM4 calculations
+    // This prevents old stored database costs from bypassing day rate validation
+    if (section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0) {
+      const needsCleaning = requiresCleaning(section.defects || '');
+      const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
+      
+      if (needsCleaning && isRestrictedSection) {
+        // Find F606 and F608 configurations
+        const f606Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
+        const f608Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
+        
+        // Check current equipment priority
+        const currentConfig = equipmentPriority === 'f608' ? f608Config : f606Config;
+        
+        if (currentConfig) {
+          // Check if day rate is properly configured in pricingOptions
+          const dayRateOption = currentConfig.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
+          const isDayRateConfigured = dayRateOption?.value && dayRateOption.value.trim() !== '';
+          
+          console.log('🔍 F606/F608 Day Rate Validation:', {
+            itemNo: section.itemNo,
+            equipmentPriority: equipmentPriority,
+            configId: currentConfig.id,
+            dayRateValue: dayRateOption?.value,
+            isDayRateConfigured: isDayRateConfigured,
+            willShowBlueTriangle: !isDayRateConfigured
+          });
+          
+          // If day rate is not configured, return null to show blue warning triangle
+          if (!isDayRateConfigured) {
+            return null; // This will trigger blue triangle warning
+          }
+        }
+      }
+    }
+
+    // CRITICAL FIX: Also validate F615 structural configurations for day rate
+    if (section.defectType === 'structural' && pr2Configurations && pr2Configurations.length > 0) {
+      // Find F615 patching configuration
+      const f615Config = pr2Configurations.find(config => config.categoryId === 'patching' && config.sector === 'utilities');
+      
+      if (f615Config) {
+        // Check if day rate is properly configured in pricingOptions
+        const dayRateOption = f615Config.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
+        const isDayRateConfigured = dayRateOption?.value && dayRateOption.value.trim() !== '';
+        
+        console.log('🔍 F615 Day Rate Validation:', {
+          itemNo: section.itemNo,
+          configId: f615Config.id,
+          dayRateValue: dayRateOption?.value,
+          isDayRateConfigured: isDayRateConfigured,
+          willShowOrangeTriangle: !isDayRateConfigured
+        });
+        
+        // If day rate is not configured, return null to show orange warning triangle
+        if (!isDayRateConfigured) {
+          return null; // This will trigger orange triangle warning
+        }
+      }
+    }
     
     // Check for adjusted service costs first
     const adjustedServiceCost = adjustedServiceCosts.get(section.itemNo);
