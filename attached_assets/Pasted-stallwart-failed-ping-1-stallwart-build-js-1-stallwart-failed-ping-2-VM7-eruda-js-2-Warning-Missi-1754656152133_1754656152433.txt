@@ -1,0 +1,704 @@
+stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+VM7 eruda.js:2 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ VM7 eruda.js:2
+(anonymous) @ VM129 chunk-FWBUQWZZ.js:335
+commitHookEffectListMount @ VM28 chunk-WERSD76P.js:16915
+commitPassiveMountOnFiber @ VM28 chunk-WERSD76P.js:18156
+commitPassiveMountEffects_complete @ VM28 chunk-WERSD76P.js:18129
+commitPassiveMountEffects_begin @ VM28 chunk-WERSD76P.js:18119
+commitPassiveMountEffects @ VM28 chunk-WERSD76P.js:18109
+flushPassiveEffectsImpl @ VM28 chunk-WERSD76P.js:19490
+flushPassiveEffects @ VM28 chunk-WERSD76P.js:19447
+commitRootImpl @ VM28 chunk-WERSD76P.js:19416
+commitRoot @ VM28 chunk-WERSD76P.js:19277
+performSyncWorkOnRoot @ VM28 chunk-WERSD76P.js:18895
+flushSyncCallbacks @ VM28 chunk-WERSD76P.js:9119
+(anonymous) @ VM28 chunk-WERSD76P.js:18627Understand this warning
+stallwart.build.js:1 stallwart: failed ping 1
+Console.js:61 🔍 MM4 Data for key "100-1001": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "100-1001": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM4 Data for key "100-1001": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 📄 Using fallback value for 606-100-1001-1-blueValue: ""
+Console.js:61 🔍 MM4 Data for key "100-1001": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 📄 Using fallback value for 606-100-1001-1-greenValue: ""
+Console.js:61 🔍 MM4 Data for key "100-1001": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 📄 Using fallback value for 606-100-1001-1-purpleDebris: ""
+Console.js:61 📄 Using fallback value for 606-100-1001-1-purpleLength: ""
+Console.js:61 🔍 AUTO-SELECT DEBUG: {autoSelectUtilities: true, autoSelectParam: 'true', selectedId: null, categoryId: 'cctv-jet-vac', templateType: 'MMP1', …}
+Console.js:61 🎯 AUTO-SELECTING utilities (id1) card due to autoSelectUtilities=true
+Console.js:61 🎯 Auto-selecting pipe size 150mm from URL parameter
+Console.js:61 🔄 Switching pipe size from 100mm to 150mm
+Console.js:61 📊 Current MM4 data before switch: {}
+Console.js:61 📊 Current MM5 data before switch (independent): [{…}]
+Console.js:61 ✅ Switched to 150mm with CONSISTENT ID: 1501
+Console.js:61 🔍 Will now load data for key: 150-1501
+Console.js:61 💾 Saved MM5 data to localStorage: [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: ""
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: ""
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: ""
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: ""
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": [{…}]
+Console.js:61 📊 All MM4 data by pipe size: {}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔄 Loading MM4/MM5 data from backend: {sector: 'utilities', mm4Rows: Array(2), mm5Data: Array(1), mm5Rows: Array(1), mm1Colors: '#E083C2', …}
+Console.js:61 🔍 MM4 Backend Data Analysis:
+Console.js:61   - mm4DataByPipeSize exists: true
+Console.js:61   - mm4Rows exists: true
+Console.js:61   - selectedPipeSizeForMM4: 150
+Console.js:61   - selectedPipeSizeId: 1501
+Console.js:61 🔍 Local data check:
+Console.js:61   - hasLocalMM4Data: false
+Console.js:61   - hasLocalMM5Data: false
+Console.js:61 🔍 Buffer check:
+Console.js:61   - hasActiveBufferValues: true
+Console.js:61   - hasBufferForCurrentPipeSize: false
+Console.js:61   - hasLocalMM4ForCurrentPipeSize: false
+Console.js:61   - currentPipeSizeKey: 150-1501
+Console.js:61   - buffer contents: {606-150-1501-1-greenValue: '30', 606-225-2251-1-purpleDebris: '20', 606-225-2251-1-purpleLength: '99.99', 606-525-5251-1-greenValue: '5', 606-525-5251-1-purpleDebris: '10', …}
+Console.js:61 📥 Setting MM4 pipe-size data: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 ✅ MM4 data should now be loaded in storage
+Console.js:61 ✅ Loaded MM5 independent data (cleaned): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: "1850"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 📄 Using fallback value for 606-150-1501-2-greenValue: "20"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleLength: "15" (persisted)
+Console.js:61 💾 Saved MM5 data to localStorage: [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: "1850"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 📄 Using fallback value for 606-150-1501-2-greenValue: "20"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleLength: "15" (persisted)
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: "1850"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 📄 Using fallback value for 606-150-1501-2-greenValue: "20"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleLength: "15" (persisted)
+workspace_iframe.html:1 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+2stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 .99 Validation Check - Row 1: {bufferKey: '606-150-1501-1-purpleLength', bufferedValue: '10.99', storedValue: '10', actualValue: '10.99', needsValidation: false}
+Console.js:61 🔍 .99 Validation Check - Row 2: {bufferKey: '606-150-1501-2-purpleLength', bufferedValue: '15', storedValue: '15', actualValue: '15', needsValidation: true}
+Console.js:61 ⚠️ .99 Validation triggered for Row 2 with value "15"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: "1850"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 📄 Using fallback value for 606-150-1501-2-greenValue: "20"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleLength: "15" (persisted)
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 3
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔄 Updating row 2 purpleLength from "15" to "15.99"
+Console.js:61 🔧 Updated buffer for 606-150-1501-2-purpleLength: "15.99"
+Console.js:61 🔧 Full buffer after update: {606-150-1501-1-greenValue: '30', 606-225-2251-1-purpleDebris: '20', 606-225-2251-1-purpleLength: '99.99', 606-525-5251-1-greenValue: '5', 606-525-5251-1-purpleDebris: '10', …}
+Console.js:61 🔧 Updated MM4 storage to sync with buffer for row 2
+Console.js:61 ✅ Updated MM4 data: (2) [{…}, {…}]
+Console.js:61 ✅ Updated storage for key 150-1501: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: "1850"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 📄 Using fallback value for 606-150-1501-2-greenValue: "20"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleLength: "15.99" (persisted)
+Console.js:61 ✅ Triggering IMMEDIATE backend save for .99 update - row 2
+Console.js:61 ✅ Final state update completed for row 2
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 📄 Using fallback value for 606-150-1501-1-blueValue: "1850"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-greenValue: "30" (persisted)
+Console.js:61 📄 Using fallback value for 606-150-1501-2-greenValue: "20"
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-1-purpleLength: "10.99" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleDebris: "30" (persisted)
+Console.js:61 🔒 Using buffered value for 606-150-1501-2-purpleLength: "15.99" (persisted)
+Console.js:61 🔍 Dashboard PR2 Config Fetch: {sector: 'utilities', sectorName: 'Utilities', queryEnabled: true}
+Console.js:61 Dashboard validation data: {hasAuthenticData: false, rawSectionDataLength: 0, pr2ConfigurationsLength: 0, workCategoriesLength: 0, vehicleTravelRatesLength: 0}
+Console.js:61 🔍 MM4 Data for key "150-1501": (2) [{…}, {…}]
+Console.js:61 📊 All MM4 data by pipe size: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 💾 Auto-save MM4 Data Analysis:
+Console.js:61   - pipeSizeKey: 150-1501
+Console.js:61   - current MM4 data: (2) [{…}, {…}]
+Console.js:61   - all MM4 storage: {150-1501: Array(2), 225-2251: Array(1), 525-5251: Array(1)}
+Console.js:61 🔍 CRITICAL - Checking purpleLength values before backend save:
+Console.js:61    Row 1: purpleLength="10" (length: 2 chars)
+Console.js:61    Row 2: purpleLength="15" (length: 2 chars)
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🚀 FINAL DATA BEING SENT TO BACKEND: {
+  "selectedPipeSize": "150",
+  "selectedPipeSizeId": 1501,
+  "mm1Colors": "#E083C2",
+  "mm2IdData": [],
+  "mm3CustomPipeSizes": [],
+  "mm4DataByPipeSize": {
+    "150-1501": [
+      {
+        "id": 1,
+        "blueValue": "1850",
+        "greenValue": "3",
+        "purpleDebris": "30",
+        "purpleLength": "10"
+      },
+      {
+        "id": 2,
+        "blueValue": "1850",
+        "greenValue": "20",
+        "purpleDebris": "30",
+        "purpleLength": "15"
+      }
+    ],
+    "225-2251": [
+      {
+        "id": 1,
+        "blueValue": "1850",
+        "greenValue": "18",
+        "purpleDebris": "",
+        "purpleLength": "99.9"
+      }
+    ],
+    "525-5251": [
+      {
+        "id": 1,
+        "blueValue": "1850",
+        "greenValue": "5",
+        "purpleDebris": "",
+        "purpleLength": "99.9"
+      }
+    ]
+  },
+  "mm5Data": [
+    {
+      "id": 1,
+      "costPerMile": "",
+      "vehicleWeight": ""
+    }
+  ],
+  "mm4Rows": [
+    {
+      "id": 1,
+      "blueValue": "1850",
+      "greenValue": "3",
+      "purpleDebris": "30",
+      "purpleLength": "10"
+    },
+    {
+      "id": 2,
+      "blueValue": "1850",
+      "greenValue": "20",
+      "purpleDebris": "30",
+      "purpleLength": "15"
+    }
+  ],
+  "mm5Rows": [
+    {
+      "id": 1,
+      "costPerMile": "",
+      "vehicleWeight": ""
+    }
+  ],
+  "categoryId": "cctv-jet-vac",
+  "sector": "utilities",
+  "timestamp": 1754656080396,
+  "pipeSizeKey": "150-1501"
+}
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 🔍 MM5 Data (independent): [{…}]
+Console.js:61 💾 MM Data being saved to backend: {selectedPipeSize: '150', selectedPipeSizeId: 1501, mm1Colors: '#E083C2', mm2IdData: Array(0), mm3CustomPipeSizes: Array(0), …}
+Console.js:61 💾 Saved last used report ID: 83
+Console.js:61 🔍 RAW SECTION DATA - ITEM 13 VARIATIONS: (2) [{…}, {…}]
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 1: {severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 0, …}
+Console.js:61 🔍 CELL RENDER - Item 1 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 1 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 1 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 2: {severityGrades: {…}, structuralType: 'number', serviceType: 'number', structuralValue: 0, serviceValue: 0, …}
+Console.js:61 🔍 CELL RENDER - Item 2 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 2 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 2 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 3 recommendations: WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 3 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 3 {hasRec: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', isWrcRecommendation: true, recLower: 'wrc drain repair book: jet-vac cleaning for materi…zle, post-clean cctv verification survey required'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 3
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 3: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 3, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 4 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 4 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 4 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 5 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 5 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 5 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 6 recommendations: WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 6 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 6 {hasRec: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', isWrcRecommendation: true, recLower: 'wrc drain repair book: jet-vac cleaning for materi…zle, post-clean cctv verification survey required'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 6
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 6: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 6, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 7 recommendations: WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 7 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 7 {hasRec: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', isWrcRecommendation: true, recLower: 'wrc drain repair book: jet-vac cleaning for materi…zle, post-clean cctv verification survey required'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 7
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 7: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 7, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 8 recommendations: WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 8 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 8 {hasRec: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', isWrcRecommendation: true, recLower: 'wrc drain repair book: jet-vac cleaning for materi…zle, post-clean cctv verification survey required'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 8
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 8: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 8, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 9 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 9 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 9 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 10 recommendations: WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 10 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 10 {hasRec: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', isWrcRecommendation: true, recLower: 'wrc drain repair book: jet-vac cleaning for materi…zle, post-clean cctv verification survey required'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 10
+Console.js:61 🎯 ITEM 10 SEVERITY CHECK: {itemNo: 10, severityGrade: '3', severityGrades: {…}, hasDefectsRequiringCost: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 10: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 10, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 11 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 11 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 11 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 12 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 12 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 12 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 13 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 13 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required', defectType: 'service', severityGrade: '4'}
+Console.js:61 🔍 WRC CHECK - Item 13 {hasRec: true, recommendation: 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required', isWrcRecommendation: false, recLower: 'wrc sewer cleaning manual: standard cleaning and maintenance required'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Processing Check for Item 13: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 ENHANCED MM4 Dynamic Config Selection: {sectionId: 13, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 13 recommendations: WRc Drain Repair Book: Structural repair or relining required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 13 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Structural repair or relining required', defectType: 'structural', severityGrade: '1'}
+Console.js:61 🔍 WRC CHECK - Item 13 {hasRec: true, recommendation: 'WRc Drain Repair Book: Structural repair or relining required', isWrcRecommendation: false, recLower: 'wrc drain repair book: structural repair or relining required'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural', …}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🔍 MM4 Processing Check for Item 13: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '150', …}
+Console.js:61 🎯 ITEM 13 F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', isRestrictedSection: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 🔍 CELL RENDER - Item 14 recommendations: WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 14 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 14 {hasRec: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', isWrcRecommendation: true, recLower: 'wrc drain repair book: jet-vac cleaning for materi…zle, post-clean cctv verification survey required'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 14
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 14: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 14, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 15 recommendations: Contractor to confirm the bung has been removed and requires cleansing and survey once removed
+Console.js:61 🔍 RENDER CELL CONTENT - Item 15 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'Contractor to confirm the bung has been removed and requires cleansing and survey once removed', defectType: 'service', severityGrade: '2'}
+Console.js:61 🔍 WRC CHECK - Item 15 {hasRec: true, recommendation: 'Contractor to confirm the bung has been removed and requires cleansing and survey once removed', isWrcRecommendation: false, recLower: 'contractor to confirm the bung has been removed and requires cleansing and survey once removed'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 15: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 15, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 16 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 16 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 16 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 17 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 17 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 17 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 18 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 18 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 18 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 🔍 CELL RENDER - Item 19 recommendations: WRc Drain Repair Book: Junction within 1m of deformation requires robotic cutting (ID4) to reopen connection at 26.38m and install 150mm patches at 26.47m, 58.97m
+Console.js:61 🔍 RENDER CELL CONTENT - Item 19 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Junction within 1m of defor…6.38m and install 150mm patches at 26.47m, 58.97m', defectType: 'structural', severityGrade: '2'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural', …}
+Console.js:61 🔍 MM4 Processing Check for Item 19: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'structural', pipeSize: '150', …}
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', recommendations: 'WRc Drain Repair Book: Junction within 1m of defor…6.38m and install 150mm patches at 26.47m, 58.97m', hasRoboticCuttingInRecommendations: true, hasID4InRecommendations: true, …}
+Console.js:61 🔍 CELL RENDER - Item 20 recommendations: WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation
+Console.js:61 🔍 RENDER CELL CONTENT - Item 20 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation', defectType: 'structural', severityGrade: '2'}
+Console.js:61 🔍 WRC CHECK - Item 20 {hasRec: true, recommendation: 'WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation', isWrcRecommendation: false, recLower: 'wrc drain repair book: local patch lining (glass mat or silicate) recommended for minor deformation'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural', …}
+Console.js:61 🔍 MM4 Processing Check for Item 20: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '300', …}
+Console.js:61 🎯 ITEM 20 F615 ROUTING DEBUG: {itemNo: 20, letterSuffix: null, defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', isRestrictedSection: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 20, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '300', …}
+Console.js:61 🔍 CELL RENDER - Item 21 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 21 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 21 {hasRec: true, recommendation: 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required', isWrcRecommendation: false, recLower: 'wrc sewer cleaning manual: standard cleaning and maintenance required'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service', …}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 21: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '225', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 21, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 21 recommendations: WRc Drain Repair Book: Structural repair or relining required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 21 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Structural repair or relining required', defectType: 'structural', severityGrade: '1'}
+Console.js:61 🔍 WRC CHECK - Item 21 {hasRec: true, recommendation: 'WRc Drain Repair Book: Structural repair or relining required', isWrcRecommendation: false, recLower: 'wrc drain repair book: structural repair or relining required'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural', …}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 21: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '225', …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 CELL RENDER - Item 22 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 22 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 22 {hasRec: true, recommendation: 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required', isWrcRecommendation: false, recLower: 'wrc sewer cleaning manual: standard cleaning and maintenance required'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service', …}
+Console.js:61 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 22: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '225', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 ENHANCED MM4 Dynamic Config Selection: {sectionId: 22, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 22 recommendations: WRc Drain Repair Book: Structural repair or relining required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 22 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Structural repair or relining required', defectType: 'structural', severityGrade: '2'}
+Console.js:61 🔍 WRC CHECK - Item 22 {hasRec: true, recommendation: 'WRc Drain Repair Book: Structural repair or relining required', isWrcRecommendation: false, recLower: 'wrc drain repair book: structural repair or relining required'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural', …}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 MM4 Processing Check for Item 22: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '225', …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 CELL RENDER - Item 23 recommendations: WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 23 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', defectType: 'service', severityGrade: '3'}
+Console.js:61 🔍 WRC CHECK - Item 23 {hasRec: true, recommendation: 'WRc Drain Repair Book: Jet-vac cleaning for materi…zle, post-clean CCTV verification survey required', isWrcRecommendation: true, recLower: 'wrc drain repair book: jet-vac cleaning for materi…zle, post-clean cctv verification survey required'}
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 23
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service', …}
+Console.js:61 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 23: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '225', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 23, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 CELL RENDER - Item 24 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 24 {columnKey: 'recommendations', hasRecommendations: true, recommendation: 'No action required this pipe section is at an adoptable condition', defectType: 'service', severityGrade: '0'}
+Console.js:61 🔍 WRC CHECK - Item 24 {hasRec: true, recommendation: 'No action required this pipe section is at an adoptable condition', isWrcRecommendation: false, recLower: 'no action required this pipe section is at an adoptable condition'}
+Console.js:61 Dashboard validation data: {hasAuthenticData: true, rawSectionDataLength: 27, pr2ConfigurationsLength: 0, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 1: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 2, defects: 'No service or structural defect found', totalLength: '19.02', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 2: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 3: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 3, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 4, defects: 'No service or structural defect found', totalLength: '19.93', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 4: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 5, defects: 'No service or structural defect found', totalLength: '21.11', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 5: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 6: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 6, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 7: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 7, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 8: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 8, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 9, defects: 'Line deviates left at 1.87m', totalLength: '2.59', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 9: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 10: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 10, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 11, defects: 'No service or structural defect found', totalLength: '58', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 11: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 12, defects: 'Line deviates left at 4.79m. Line deviates right at 17.43m', totalLength: '18.78', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 12: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural', …}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🔍 MM4 Processing Check for Item 13: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '150', …}
+Console.js:61 🎯 ITEM 13 F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', isRestrictedSection: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Processing Check for Item 13: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 ENHANCED MM4 Dynamic Config Selection: {sectionId: 13, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 14: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 14, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 15: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 15, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 16, defects: 'No service or structural defect found', totalLength: '23.27', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 16: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 17, defects: 'No service or structural defect found', totalLength: '21.69', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 17: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 18, defects: 'No service or structural defect found', totalLength: '13.29', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 18: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural', …}
+Console.js:61 🔍 MM4 Processing Check for Item 19: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'structural', pipeSize: '150', …}
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', recommendations: 'WRc Drain Repair Book: Junction within 1m of defor…6.38m and install 150mm patches at 26.47m, 58.97m', hasRoboticCuttingInRecommendations: true, hasID4InRecommendations: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural', …}
+Console.js:61 🔍 MM4 Processing Check for Item 20: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '300', …}
+Console.js:61 🎯 ITEM 20 F615 ROUTING DEBUG: {itemNo: 20, letterSuffix: null, defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', isRestrictedSection: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 20, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '300', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural', …}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 21: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '225', …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service', …}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 21: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '225', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 21, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural', …}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 MM4 Processing Check for Item 22: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'structural', pipeSize: '225', …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: false, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service', …}
+Console.js:61 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 22: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '225', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 ENHANCED MM4 Dynamic Config Selection: {sectionId: 22, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service', …}
+Console.js:61 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 23: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '225', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 23, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 24, defects: 'LU 2.33m (Line deviates up)', totalLength: '6.86', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 24: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 Validation completed: {sectionsLength: 27, configsLength: 0, sampleSection: 1, sampleConfig: undefined}
+Console.js:61 🔍 TRIGGERING SERVICE COST CHECK with sections: 27
+Console.js:61 🔍 SERVICE COST WARNING - All service sections found: (22) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 1: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 1: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 2, defects: 'No service or structural defect found', totalLength: '19.02', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 2: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 2: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 3: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 3, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 3: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 4, defects: 'No service or structural defect found', totalLength: '19.93', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 4: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 4: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 5, defects: 'No service or structural defect found', totalLength: '21.11', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 5: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 5: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 6: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 6, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 6: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 7: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 7, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 7: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 8: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 8, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 8: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 9, defects: 'Line deviates left at 1.87m', totalLength: '2.59', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 9: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 9: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 10: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 10, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 10: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 11, defects: 'No service or structural defect found', totalLength: '58', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 11: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 11: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 12, defects: 'Line deviates left at 4.79m. Line deviates right at 17.43m', totalLength: '18.78', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 12: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 12: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Processing Check for Item 13: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 ENHANCED MM4 Dynamic Config Selection: {sectionId: 13, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 13: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 14: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 14, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 14: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 15: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 15, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 15: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 16, defects: 'No service or structural defect found', totalLength: '23.27', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 16: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 16: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 17, defects: 'No service or structural defect found', totalLength: '21.69', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 17: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 17: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 18, defects: 'No service or structural defect found', totalLength: '13.29', pipeSize: '150', defectType: 'service', …}
+Console.js:61 🔍 MM4 Processing Check for Item 18: {needsCleaning: false, pr2ConfigsAvailable: true, isRestrictedSection: false, defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 18: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service', …}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Processing Check for Item 21: {needsCleaning: true, pr2ConfigsAvailable: true, isRestrictedSection: true, defectType: 'service', pipeSize: '225', …}
+Console.js:61 🔄 Using F606 as default - respecting user preference
+Console.js:61 🔍 MM4 Dynamic Config Selection: {sectionId: 21, needsCleaning: true, f606Available: false, f608Available: false, f608HasValidMM4: undefined, …}
+Console.js:61 🔍 SERVICE COST WARNING - Item 21: {defectType: 'service', equipmentPriority: 'f606', validServiceStatuses: Array(4), costCalc: 'no cost calc', statusMatch: null, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service', …}

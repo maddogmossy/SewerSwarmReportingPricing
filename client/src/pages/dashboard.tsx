@@ -4053,11 +4053,14 @@ export default function Dashboard() {
       }
       
       // Enhanced logging for Item 22 F608 first-time configuration analysis
-      const enhancedLogging = section.itemNo === 22 || section.itemNo === 13;
+      const enhancedLogging = section.itemNo === 22 || section.itemNo === 13 || section.itemNo === 3;
       
       console.log(enhancedLogging ? '🔍 ENHANCED MM4 Dynamic Config Selection:' : '🔍 MM4 Dynamic Config Selection:', {
+        CRITICAL_F606_VS_F608_ROUTING: section.itemNo === 3 ? 'Item 3 should use F608 for MM4 validation, not F606' : 'Normal routing',
         sectionId: section.itemNo,
         needsCleaning,
+        f606Config: f606Config ? { id: f606Config.id, categoryId: f606Config.categoryId, hasMMData: !!f606Config.mmData } : null,
+        f608Config: f608Config ? { id: f608Config.id, categoryId: f608Config.categoryId, hasMMData: !!f608Config.mmData } : null,
         f606Available: !!f606Config,
         f608Available: !!f608Config,
         f608HasValidMM4: f608HasValidMM4,
