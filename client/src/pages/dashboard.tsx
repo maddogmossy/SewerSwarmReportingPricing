@@ -18,6 +18,7 @@ import { ValidationWarningPopup } from "@/components/ValidationWarningPopup";
 import { useValidationWarnings } from "@/hooks/useValidationWarnings";
 import ServiceCostWarningDialog from "@/components/ServiceCostWarningDialog";
 import StructuralCostWarningDialog from "@/components/StructuralCostWarningDialog";
+import { ConfigurationWarningDialog } from "@/components/ConfigurationWarningDialog";
 import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
 import { RepairOptionsPopover } from "@/components/repair-options-popover";
 import { validateReportExportReadiness, ValidationResult, ReportSection, TravelInfo } from "@shared/report-validation";
@@ -798,6 +799,14 @@ export default function Dashboard() {
     minPatches: number;
     totalStructuralCost: number;
     configType: string;
+  } | null>(null);
+  
+  // Configuration Warning Dialog State
+  const [showConfigWarning, setShowConfigWarning] = useState(false);
+  const [configWarningData, setConfigWarningData] = useState<{
+    warningType: 'day_rate_missing' | 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range' | 'config_missing';
+    sectionData: any;
+    configData?: any;
   } | null>(null);
 
   // Handler for opening patch pricing dialog
@@ -2272,9 +2281,31 @@ export default function Dashboard() {
               );
             }
           } else {
-            // Show warning triangle when no pricing is configured
-            // CRITICAL FIX: Use defectType field directly instead of legacy defect pattern matching
-            // This ensures triangle color matches the multi-defect splitting classification
+            // Show warning triangle when no pricing is configured with specific error details
+            // Check if costCalculation has specific warning information
+            if (costCalculation && 'warningType' in costCalculation) {
+              // Show clickable warning triangle with detailed information
+              const triangleColor = section.defectType === 'service' ? "text-blue-500" : "text-orange-500";
+              
+              return (
+                <div 
+                  className={`flex items-center justify-center p-1 rounded cursor-pointer hover:bg-gray-50 transition-colors`}
+                  title={`Click for configuration details: ${costCalculation.method}`}
+                  onClick={() => {
+                    setConfigWarningData({
+                      warningType: costCalculation.warningType,
+                      sectionData: costCalculation.sectionData,
+                      configData: costCalculation.configData
+                    });
+                    setShowConfigWarning(true);
+                  }}
+                >
+                  <TriangleAlert className={`h-4 w-4 ${triangleColor}`} />
+                </div>
+              );
+            }
+            
+            // Fallback: Generic warning triangles for unknown issues
             if (section.defectType === 'service') {
               return (
                 <div 
@@ -3792,9 +3823,26 @@ export default function Dashboard() {
             willShowBlueTriangle: !isDayRateConfigured
           });
           
-          // If day rate is not configured, return null to show blue warning triangle
+          // If day rate is not configured, return specific error information
           if (!isDayRateConfigured) {
-            return null; // This will trigger blue triangle warning
+            return {
+              cost: 0,
+              currency: '£',
+              method: 'Day Rate Not Configured',
+              status: 'day_rate_missing',
+              configType: currentConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+              warningType: 'day_rate_missing',
+              sectionData: {
+                itemNo: section.itemNo,
+                defectType: 'service',
+                pipeSize: section.pipeSize,
+                totalLength: parseFloat(section.totalLength || '0'),
+                debrisPercent: 0 // Will be calculated dynamically
+              },
+              configData: {
+                categoryId: currentConfig.categoryId
+              }
+            };
           }
         }
       }
@@ -3818,9 +3866,26 @@ export default function Dashboard() {
           willShowOrangeTriangle: !isDayRateConfigured
         });
         
-        // If day rate is not configured, return null to show orange warning triangle
+        // If day rate is not configured, return specific error information  
         if (!isDayRateConfigured) {
-          return null; // This will trigger orange triangle warning
+          return {
+            cost: 0,
+            currency: '£',
+            method: 'Day Rate Not Configured',
+            status: 'day_rate_missing',
+            configType: 'F615 Patching',
+            warningType: 'day_rate_missing',
+            sectionData: {
+              itemNo: section.itemNo,
+              defectType: 'structural',
+              pipeSize: section.pipeSize,
+              totalLength: parseFloat(section.totalLength || '0'),
+              debrisPercent: 0
+            },
+            configData: {
+              categoryId: f615Config.categoryId
+            }
+          };
         }
       }
     }
@@ -4476,12 +4541,39 @@ export default function Dashboard() {
             mm4Configurations: matchingMM4Data.length
           });
           
+          // Determine which range is exceeded
+          const debrisExceeded = sectionDebrisPercent > (matchingMM4Data[0]?.purpleDebris || 0);
+          const lengthExceeded = sectionLength > (matchingMM4Data[0]?.purpleLength || 0);
+          
+          let warningType: 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range';
+          if (debrisExceeded && lengthExceeded) {
+            warningType = 'both_out_of_range';
+          } else if (debrisExceeded) {
+            warningType = 'debris_out_of_range';
+          } else {
+            warningType = 'length_out_of_range';
+          }
+          
           return {
             cost: 0,
             currency: '£',
             method: 'MM4 Outside Ranges',
             status: 'mm4_outside_ranges',
-            recommendation: 'Section exceeds MM4 configuration ranges (debris % or length)'
+            recommendation: 'Section exceeds MM4 configuration ranges (debris % or length)',
+            warningType: warningType,
+            sectionData: {
+              itemNo: section.itemNo,
+              defectType: 'service',
+              pipeSize: section.pipeSize,
+              totalLength: sectionLength,
+              debrisPercent: sectionDebrisPercent
+            },
+            configData: {
+              categoryId: cctvConfig.categoryId,
+              maxDebris: matchingMM4Data[0]?.purpleDebris || 0,
+              maxLength: matchingMM4Data[0]?.purpleLength || 0,
+              minLength: 0
+            }
           };
         }
       }
@@ -7234,6 +7326,20 @@ export default function Dashboard() {
             console.log('🔄 Structural Cost Warning Dialog: onComplete called - triggering export');
             performExport();
           }}
+        />
+      )}
+
+      {/* Configuration Warning Dialog */}
+      {configWarningData && (
+        <ConfigurationWarningDialog
+          isOpen={showConfigWarning}
+          onClose={() => {
+            setShowConfigWarning(false);
+            setConfigWarningData(null);
+          }}
+          warningType={configWarningData.warningType}
+          sectionData={configWarningData.sectionData}
+          configData={configWarningData.configData}
         />
       )}
     </div>
