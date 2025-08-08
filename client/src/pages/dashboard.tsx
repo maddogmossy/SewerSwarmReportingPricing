@@ -3876,11 +3876,23 @@ export default function Dashboard() {
           // Check if section meets MM4 configuration criteria before checking day rate
           const sectionPipeSize = parseInt(section.pipeSize?.toString().replace(/mm.*$/i, '') || '0');
           const sectionLength = parseFloat(section.totalLength?.toString() || '0');
-          const sectionDebrisPercent = extractDebrisPercentageFromDefects(section.defects || '');
+          const sectionDebrisPercent = extractDebrisPercentage(section.defects || '');
           
           // Find matching MM4 configurations for this pipe size
-          const matchingPipeSizeKey = findPipeSizeKey(sectionPipeSize, cctvConfig);
-          const matchingMM4Data = cctvConfig?.mm4Configurations?.[matchingPipeSizeKey] || [];
+          const mm4DataByPipeSize = cctvConfig?.mmData?.mm4DataByPipeSize || {};
+          let matchingMM4Data: any = [];
+          let matchingPipeSizeKey = '';
+          
+          // Try to find exact pipe size match (e.g., "150-1501")
+          for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
+            const [keyPipeSize] = pipeSizeKey.split('-');
+            
+            if (keyPipeSize === sectionPipeSize?.toString().replace('mm', '')) {
+              matchingMM4Data = mm4Data;
+              matchingPipeSizeKey = pipeSizeKey;
+              break;
+            }
+          }
           
           // Check if section exceeds MM4 ranges (any row)
           if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
