@@ -3905,12 +3905,27 @@ export default function Dashboard() {
         pr2ConfigsCount: pr2Configurations ? pr2Configurations.length : 0,
         needsCleaning: requiresCleaning(section.defects || ''),
         isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
-        shouldTriggerValidation: section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0 && requiresCleaning(section.defects || '') && [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo)
+        shouldTriggerValidation: section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0 && requiresCleaning(section.defects || '') && [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
+        defectsText: section.defects
       });
+      
+      // FORCE EARLY RETURN TO DEBUG: Let's see if this log appears for service sections
+      if (section.itemNo === 6 || section.itemNo === 8) {
+        console.log('🚨 DEBUGGING: Service section reached calculateAutoCost but validation logic may be skipped!');
+      }
     }
 
     // ENHANCED VALIDATION ORDER: Check MM4 range violations FIRST before day rate validation
     // This ensures that range issues are detected before day rate issues, providing more accurate warnings
+    console.log('🔍 PRE-SERVICE VALIDATION CHECK:', {
+      itemNo: section.itemNo,
+      defectType: section.defectType,
+      isServiceType: section.defectType === 'service',
+      pr2ConfigsExists: !!pr2Configurations,
+      pr2ConfigsLength: pr2Configurations ? pr2Configurations.length : 0,
+      willEnterServiceValidation: section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0
+    });
+    
     if (section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0) {
       const needsCleaning = requiresCleaning(section.defects || '');
       const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
