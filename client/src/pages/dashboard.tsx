@@ -4255,8 +4255,8 @@ export default function Dashboard() {
             // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
             const hasValidRate = (blueValue > 0 && greenValue > 0) || (blueValue > 0 && purpleDebris > 0) || (greenValue > 0 && purpleDebris > 0);
             
-            // DEBUG: Item 13 Row 3 and Items 21-23 validation tracking
-            if ((section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
+            // DEBUG: Item 3 and Item 13 Row 3 and Items 21-23 validation tracking
+            if (section.itemNo === 3 || (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
               console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION:`, {
                 itemNo: section.itemNo,
                 rowId: mm4Row.id,
@@ -4362,6 +4362,31 @@ export default function Dashboard() {
           }
           
           // Section doesn't match MM4 criteria - show warning
+          if (section.itemNo === 3) {
+            console.log(`🔴 ITEM 3 OUTSIDE RANGES DEBUG:`, {
+              itemNo: section.itemNo,
+              sectionDebrisPercent,
+              sectionLength,
+              mm4Configurations: matchingMM4Data.length,
+              allMM4Rows: matchingMM4Data.map(r => ({ 
+                id: r.id, 
+                purpleDebris: r.purpleDebris, 
+                purpleLength: r.purpleLength,
+                blueValue: r.blueValue,
+                greenValue: r.greenValue
+              })),
+              validationResults: matchingMM4Data.map(r => ({
+                rowId: r.id,
+                debrisMatch: sectionDebrisPercent <= parseFloat(r.purpleDebris || '0'),
+                lengthMatch: sectionLength <= parseFloat(r.purpleLength || '0'),
+                hasValidRate: (parseFloat(r.blueValue || '0') > 0 && parseFloat(r.greenValue || '0') > 0) || 
+                             (parseFloat(r.blueValue || '0') > 0 && parseFloat(r.purpleDebris || '0') > 0) || 
+                             (parseFloat(r.greenValue || '0') > 0 && parseFloat(r.purpleDebris || '0') > 0)
+              })),
+              willReturnOutsideRangesStatus: true
+            });
+          }
+          
           console.log('⚠️ Section outside MM4 ranges:', {
             sectionDebrisPercent,
             sectionLength,
