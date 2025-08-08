@@ -2282,16 +2282,23 @@ export default function Dashboard() {
             }
           } else {
             // Show warning triangle when no pricing is configured with specific error details
-            // Check if costCalculation has specific warning information
-            if (costCalculation && 'warningType' in costCalculation) {
+            // First check if costCalculation has specific warning information
+            if (costCalculation && 'warningType' in costCalculation && costCalculation.warningType) {
               // Show clickable warning triangle with detailed information
               const triangleColor = section.defectType === 'service' ? "text-blue-500" : "text-orange-500";
+              
+              console.log(`🟡 SHOWING CLICKABLE WARNING TRIANGLE for section ${section.itemNo}:`, {
+                warningType: costCalculation.warningType,
+                method: costCalculation.method,
+                status: costCalculation.status
+              });
               
               return (
                 <div 
                   className={`flex items-center justify-center p-1 rounded cursor-pointer hover:bg-gray-50 transition-colors`}
                   title={`Click for configuration details: ${costCalculation.method}`}
                   onClick={() => {
+                    console.log(`🎯 CLICKED WARNING TRIANGLE for section ${section.itemNo}:`, costCalculation);
                     setConfigWarningData({
                       warningType: costCalculation.warningType,
                       sectionData: costCalculation.sectionData,
@@ -4392,13 +4399,17 @@ export default function Dashboard() {
             // Check if section matches this MM4 configuration criteria
             const debrisMatch = sectionDebrisPercent <= purpleDebris;
             const lengthMatch = sectionLength <= purpleLength;
+            
+            // TEMPORARY TEST: Force Item 3 to fail length check to test warning system
+            const isTestingWarnings = section.itemNo === 3;
+            const adjustedLengthMatch = isTestingWarnings ? false : lengthMatch;
             // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
             // CRITICAL FIX: Always require blueValue (day rate) for valid cost calculation - without it, show blue triangle
             const hasValidRate = blueValue > 0 && (greenValue > 0 || purpleDebris > 0);
             
             // DEBUG: Item 3 and Item 13 Row 3 and Items 21-23 validation tracking
             if (section.itemNo === 3 || (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
-              console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION:`, {
+              console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION [${section.itemNo === 3 ? 'FOCUSED' : 'NORMAL'}]:`, {
                 CRITICAL_STATUS_CHECK: 'This log shows validation results before cost calculation',
                 itemNo: section.itemNo,
                 rowId: mm4Row.id,
@@ -4417,6 +4428,7 @@ export default function Dashboard() {
                 validationBreakdown: {
                   debrisCheck: `${sectionDebrisPercent}% ≤ ${purpleDebris}% = ${debrisMatch}`,
                   lengthCheck: `${sectionLength}m ≤ ${purpleLength}m = ${lengthMatch}`,
+                  adjustedLengthCheck: isTestingWarnings ? `FORCED FALSE for Item 3 testing` : `Same as lengthCheck`,
                   rateCheck: `hasValidRate = ${hasValidRate}`
                 },
                 rawMM4RowData: {
@@ -4432,7 +4444,8 @@ export default function Dashboard() {
               });
             }
             
-            if (debrisMatch && lengthMatch && hasValidRate) {
+            if (debrisMatch && adjustedLengthMatch && hasValidRate) {
+              // Section matches MM4 criteria - calculate cost
               // F606/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
               // Blue value = day rate (e.g., £1850 per day) - can be inherited from Row 1
               // Green value = runs per shift (e.g., 22 runs) - Row 2 specific
@@ -4535,10 +4548,15 @@ export default function Dashboard() {
             });
           }
           
-          console.log('⚠️ Section outside MM4 ranges:', {
+          console.log(`⚠️ Section ${section.itemNo} outside MM4 ranges:`, {
             sectionDebrisPercent,
             sectionLength,
-            mm4Configurations: matchingMM4Data.length
+            mm4Configurations: matchingMM4Data.length,
+            firstRowMaxDebris: matchingMM4Data[0]?.purpleDebris || 0,
+            firstRowMaxLength: matchingMM4Data[0]?.purpleLength || 0,
+            debrisExceeded: sectionDebrisPercent > (matchingMM4Data[0]?.purpleDebris || 0),
+            lengthExceeded: sectionLength > (matchingMM4Data[0]?.purpleLength || 0),
+            willReturnWarningWithType: true
           });
           
           // Determine which range is exceeded
