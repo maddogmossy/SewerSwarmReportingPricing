@@ -2110,6 +2110,31 @@ export default function Dashboard() {
         // TEMPORARY DEBUG: Force all service sections 3,6,8 to enter cost calculation to bypass severity issue
         const forceServiceCalculation = section.defectType === 'service' && [3,6,8].includes(section.itemNo);
         const finalHasDefectsRequiringCost = hasDefectsRequiringCost || forceServiceCalculation;
+        
+        // CRITICAL DEBUG: Force service item debugging to ALWAYS appear with alert
+        if (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8) {
+          const debugInfo = {
+            itemNo: section.itemNo,
+            defectType: section.defectType,
+            severityGrade: section.severityGrade,
+            hasDefectsRequiringCost,
+            forceServiceCalculation,
+            finalHasDefectsRequiringCost,
+            willEnterCostLogic: finalHasDefectsRequiringCost,
+            defects: section.defects?.substring(0, 60)
+          };
+          console.error(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
+          console.warn(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
+          console.log(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
+          
+          // Also force to localStorage to debug visibility issue  
+          try {
+            localStorage.setItem(`debug_section_${section.itemNo}`, JSON.stringify({
+              timestamp: Date.now(),
+              ...debugInfo
+            }));
+          } catch(e) {}
+        }
           
         // CRITICAL DEBUG: Check service sections specifically - ITEM 3 FIRST
         if (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8) {
@@ -2763,6 +2788,26 @@ export default function Dashboard() {
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
+  
+  // FORCE DEBUG: Log every single time this component renders
+  console.warn('🚨 DASHBOARD COMPONENT RENDER - FORCED LOG:', {
+    timestamp: Date.now(),
+    currentUploadId: currentUpload?.id,
+    sectionsLoading,
+    rawSectionDataExists: !!rawSectionData,
+    rawSectionDataLength: rawSectionData?.length || 0,
+    hasAuthenticData,
+    sectionsError: sectionsError?.message || 'no error',
+    queryEnabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"))
+  });
+  
+  // IMMEDIATE SECTION DATA CHECK
+  if (rawSectionData && rawSectionData.length > 0) {
+    console.warn('🔍 SECTIONS DATA FOUND:', {
+      sectionsCount: rawSectionData.length,
+      serviceItems: rawSectionData.filter(s => s.defectType === 'service' && [3,6,8].includes(s.itemNo))
+    });
+  }
   
   // DEBUG: Log section data status for troubleshooting (moved after variable definitions)
   
