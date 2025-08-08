@@ -2112,11 +2112,16 @@ export default function Dashboard() {
           console.log('🔍 SERVICE SECTION DEFECTS CHECK:', {
             itemNo: section.itemNo,
             severityGrade: section.severityGrade,
+            severityGradeType: typeof section.severityGrade,
             severityGrades: section.severityGrades,
+            severityGradesType: typeof section.severityGrades,
             hasDefectsRequiringCost,
             defectType: section.defectType,
-            defectsText: section.defects,
-            willEnterCostCalculation: hasDefectsRequiringCost
+            defectsText: section.defects?.substring(0, 100),
+            cost: section.cost,
+            willEnterCostCalculation: hasDefectsRequiringCost,
+            severityGradeCheck: section.severityGrade !== "0" && section.severityGrade !== 0,
+            severityGradesCheck: section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0)
           });
         }
         
