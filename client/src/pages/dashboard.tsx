@@ -2768,6 +2768,19 @@ export default function Dashboard() {
           sampleConfig: pr2Configurations[0]?.categoryId
         });
         
+        // Check for configuration warnings (MM4 outside ranges, day rate missing, etc.)
+        try {
+          console.log('🔍 TRIGGERING CONFIG WARNING CHECK with sections:', rawSectionData.length);
+          console.log('🔍 CONFIG CHECK STATES BEFORE:', {
+            configWarningDismissed,
+            showConfigWarning,
+            configWarningData: !!configWarningData
+          });
+          checkConfigurationWarnings(rawSectionData);
+        } catch (error) {
+          console.error('🔧 CONFIG WARNING CHECK ERROR:', error);
+        }
+        
         try {
           checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
         } catch (error) {
@@ -2803,13 +2816,6 @@ export default function Dashboard() {
           });
         } catch (error) {
           console.error('🔧 STRUCTURAL COST CHECK ERROR:', error);
-        }
-        
-        // Check for configuration warnings (MM4 outside ranges, day rate missing, etc.)
-        try {
-          checkConfigurationWarnings(rawSectionData);
-        } catch (error) {
-          console.error('🔧 CONFIG WARNING CHECK ERROR:', error);
         }
       } catch (error) {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
@@ -7411,7 +7417,7 @@ export default function Dashboard() {
           onNavigateToConfig={(categoryId) => {
             console.log(`🔄 NAVIGATING TO CONFIG: ${categoryId}`);
             // Navigate to PR2 configuration page with the specific category
-            window.location.href = `/pr2-config-clean?sector=${selectedSector}&categoryId=${categoryId}`;
+            window.location.href = `/pr2-config-clean?sector=utilities&categoryId=${categoryId}`;
           }}
         />
       )}
