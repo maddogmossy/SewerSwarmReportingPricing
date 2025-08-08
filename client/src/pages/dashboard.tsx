@@ -3906,8 +3906,24 @@ export default function Dashboard() {
         const f606Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
         const f608Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
         
-        // Check current equipment priority
+        // Check current equipment priority - CACHE CLEARING TEST
+        console.log('🔍 EQUIPMENT PRIORITY DEBUG:', {
+          equipmentPriority,
+          localStorage_equipmentPriority: localStorage.getItem('equipmentPriority'),
+          f606Available: !!f606Config,
+          f608Available: !!f608Config,
+          f606Id: f606Config?.id,
+          f608Id: f608Config?.id
+        });
+        
         const cctvConfig = equipmentPriority === 'f608' ? f608Config : f606Config;
+        
+        console.log('🔍 SELECTED EQUIPMENT CONFIG:', {
+          selectedConfig: cctvConfig?.id,
+          selectedCategoryId: cctvConfig?.categoryId,
+          wouldUseF606: equipmentPriority !== 'f608',
+          f606PurpleLengths: f606Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
+        });
         
         if (cctvConfig) {
           // PRIORITY 1: CHECK MM4 RANGE VIOLATIONS FIRST
@@ -3936,6 +3952,19 @@ export default function Dashboard() {
           if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
             let sectionExceedsAllRanges = true;
             
+            console.log('🔍 RANGE VALIDATION START:', {
+              equipmentConfig: cctvConfig?.categoryId,
+              itemNo: section.itemNo,
+              sectionLength,
+              sectionDebrisPercent,
+              mm4DataLength: matchingMM4Data.length,
+              mm4Rows: matchingMM4Data.map(row => ({
+                id: row.id,
+                purpleLength: row.purpleLength,
+                purpleDebris: row.purpleDebris
+              }))
+            });
+            
             // Check each MM4 row to see if section fits within any range
             for (const mm4Row of matchingMM4Data) {
               const purpleDebris = parseFloat(mm4Row.purpleDebris || '0');
@@ -3943,6 +3972,17 @@ export default function Dashboard() {
               
               const debrisMatch = sectionDebrisPercent <= purpleDebris;
               const lengthMatch = sectionLength <= purpleLength;
+              
+              console.log('🔍 RANGE CHECK ROW:', {
+                rowId: mm4Row.id,
+                purpleLength,
+                purpleDebris,
+                sectionLength,
+                sectionDebrisPercent,
+                lengthMatch,
+                debrisMatch,
+                bothMatch: debrisMatch && lengthMatch
+              });
               
               if (debrisMatch && lengthMatch) {
                 sectionExceedsAllRanges = false;
