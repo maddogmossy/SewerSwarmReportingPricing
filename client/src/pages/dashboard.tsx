@@ -808,6 +808,7 @@ export default function Dashboard() {
     sectionData: any;
     configData?: any;
   } | null>(null);
+  const [configWarningDismissed, setConfigWarningDismissed] = useState(false);
 
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
@@ -2284,10 +2285,10 @@ export default function Dashboard() {
             // Show warning triangle when no pricing is configured with specific error details
             // First check if costCalculation has specific warning information
             if (costCalculation && 'warningType' in costCalculation && costCalculation.warningType) {
-              // Show clickable warning triangle with detailed information
+              // Show regular warning triangle (configuration popup will auto-trigger)
               const triangleColor = section.defectType === 'service' ? "text-blue-500" : "text-orange-500";
               
-              console.log(`🟡 SHOWING CLICKABLE WARNING TRIANGLE for section ${section.itemNo}:`, {
+              console.log(`🟡 SHOWING WARNING TRIANGLE for section ${section.itemNo}:`, {
                 warningType: costCalculation.warningType,
                 method: costCalculation.method,
                 status: costCalculation.status
@@ -2295,17 +2296,8 @@ export default function Dashboard() {
               
               return (
                 <div 
-                  className={`flex items-center justify-center p-1 rounded cursor-pointer hover:bg-gray-50 transition-colors`}
-                  title={`Click for configuration details: ${costCalculation.method}`}
-                  onClick={() => {
-                    console.log(`🎯 CLICKED WARNING TRIANGLE for section ${section.itemNo}:`, costCalculation);
-                    setConfigWarningData({
-                      warningType: costCalculation.warningType,
-                      sectionData: costCalculation.sectionData,
-                      configData: costCalculation.configData
-                    });
-                    setShowConfigWarning(true);
-                  }}
+                  className={`flex items-center justify-center p-1 rounded`}
+                  title={`Configuration issue: ${costCalculation.method}`}
                 >
                   <TriangleAlert className={`h-4 w-4 ${triangleColor}`} />
                 </div>
@@ -2812,11 +2804,46 @@ export default function Dashboard() {
         } catch (error) {
           console.error('🔧 STRUCTURAL COST CHECK ERROR:', error);
         }
+        
+        // Check for configuration warnings (MM4 outside ranges, day rate missing, etc.)
+        try {
+          checkConfigurationWarnings(rawSectionData);
+        } catch (error) {
+          console.error('🔧 CONFIG WARNING CHECK ERROR:', error);
+        }
       } catch (error) {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
     }
   }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData, showStructuralCostWarning, structuralCostData]);
+
+  // Function to check for configuration warning issues (MM4 outside ranges, day rate missing, etc.)
+  const checkConfigurationWarnings = (sections: any[]) => {
+    // Don't show if already dismissed or already showing
+    if (configWarningDismissed || showConfigWarning) return;
+
+    // Find the first section with a configuration warning
+    for (const section of sections) {
+      const costCalc = calculateAutoCost(section);
+      
+      if (costCalc && 'warningType' in costCalc && costCalc.warningType) {
+        console.log(`🚨 AUTO-TRIGGERING CONFIG WARNING for section ${section.itemNo}:`, {
+          warningType: costCalc.warningType,
+          method: costCalc.method,
+          status: costCalc.status
+        });
+        
+        // Auto-trigger the configuration warning popup
+        setConfigWarningData({
+          warningType: costCalc.warningType,
+          sectionData: costCalc.sectionData,
+          configData: costCalc.configData
+        });
+        setShowConfigWarning(true);
+        return; // Only show one warning at a time
+      }
+    }
+  };
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
@@ -7354,6 +7381,7 @@ export default function Dashboard() {
           onClose={() => {
             setShowConfigWarning(false);
             setConfigWarningData(null);
+            setConfigWarningDismissed(true);
           }}
           warningType={configWarningData.warningType}
           sectionData={configWarningData.sectionData}
