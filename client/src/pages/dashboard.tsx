@@ -2712,13 +2712,34 @@ export default function Dashboard() {
     retry: false
   });
   
-  // CRITICAL DEBUG: Check if sections data is loading properly
-  console.log('📋 DASHBOARD SECTIONS DATA:', {
-    currentUploadId: currentUpload?.id,
-    rawSectionDataLength: rawSectionData.length,
-    serviceItems: rawSectionData.filter(s => s.defectType === 'service' && [3,6,8].includes(s.itemNo)).map(s => ({itemNo: s.itemNo, severityGrade: s.severityGrade, defectType: s.defectType})),
-    item3Data: rawSectionData.find(s => s.itemNo === 3)
-  });
+  // CRITICAL DEBUG: Check if sections data is loading properly - FORCE IMMEDIATE LOG
+  if (rawSectionData.length > 0) {
+    const serviceItems = rawSectionData.filter(s => s.defectType === 'service' && [3,6,8].includes(s.itemNo));
+    console.log('📋 DASHBOARD SECTIONS DATA - FOUND SECTIONS:', {
+      currentUploadId: currentUpload?.id,
+      rawSectionDataLength: rawSectionData.length,
+      serviceItemsCount: serviceItems.length,
+      serviceItemsDetails: serviceItems.map(s => ({
+        itemNo: s.itemNo, 
+        severityGrade: s.severityGrade, 
+        defectType: s.defectType,
+        defects: s.defects?.substring(0, 50)
+      })),
+      item3Exists: !!rawSectionData.find(s => s.itemNo === 3),
+      item3Data: rawSectionData.find(s => s.itemNo === 3) ? {
+        itemNo: 3,
+        severityGrade: rawSectionData.find(s => s.itemNo === 3).severityGrade,
+        defectType: rawSectionData.find(s => s.itemNo === 3).defectType
+      } : 'NOT_FOUND'
+    });
+  } else {
+    console.log('📋 DASHBOARD SECTIONS DATA - NO SECTIONS LOADED:', {
+      currentUploadId: currentUpload?.id,
+      sectionsLoading,
+      sectionsError,
+      rawSectionDataLength: rawSectionData.length
+    });
+  }
 
   // AUTO-NAVIGATION: If no reportId in URL but we have a current upload, navigate to it
   useEffect(() => {
