@@ -1590,8 +1590,11 @@ export default function PR2ConfigClean() {
         }
         // Don't create new configurations during auto-save - only update existing ones
         
-        // Invalidate queries to refresh data
+        // Invalidate ALL queries to refresh data across the entire app
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
+        queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs  
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
         
       } catch (error) {
         console.error('Auto-save failed:', error);
@@ -1631,8 +1634,11 @@ export default function PR2ConfigClean() {
               mmData: mmData
             });
             
-            // Invalidate queries to update category card display
+            // Invalidate ALL queries to update category card display and dashboard validation
             queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+            queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
+            queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs
+            queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
             
           } catch (error) {
             console.error('MM2 immediate save failed:', error);
@@ -1828,8 +1834,11 @@ export default function PR2ConfigClean() {
               mmData: mmData
             });
             
-            // Invalidate queries to update category card display
+            // Invalidate ALL queries to update category card display and dashboard validation
             queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+            queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
+            queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs  
+            queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
             
           } catch (error) {
             console.error('MM2 custom save failed:', error);
@@ -1847,7 +1856,11 @@ export default function PR2ConfigClean() {
       return await apiRequest('PUT', `/api/pr2-clean/${editId}`, data);
     },
     onSuccess: () => {
+      // Invalidate ALL queries to ensure dashboard validation updates immediately
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
+      queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
     }
   });
 
@@ -3437,8 +3450,11 @@ export default function PR2ConfigClean() {
       setIsSaving(true);
       await apiRequest('DELETE', `/api/pr2-clean/${editId}`);
       
-      // Invalidate cache
+      // Invalidate ALL cache entries to ensure dashboard validation updates immediately
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
+      queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
       
       // Navigate back to pricing page
       setLocation(`/pr2-pricing?sector=${sector}`);
@@ -3604,7 +3620,11 @@ export default function PR2ConfigClean() {
             sector={sector} 
             editId={editId ? parseInt(editId) : undefined}
             onSave={() => {
+              // MMP1 Template - Comprehensive cache invalidation to ensure dashboard validation updates immediately
               queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+              queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
+              queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs
+              queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
             }}
           />
         )}
@@ -3616,7 +3636,11 @@ export default function PR2ConfigClean() {
             sector={sector} 
             editId={editId ? parseInt(editId) : undefined}
             onSave={() => {
+              // MMP2 Template - Comprehensive cache invalidation to ensure dashboard validation updates immediately
               queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+              queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
+              queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs
+              queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
             }}
           />
         )}
