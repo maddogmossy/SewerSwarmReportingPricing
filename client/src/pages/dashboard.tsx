@@ -4264,7 +4264,8 @@ export default function Dashboard() {
             const debrisMatch = sectionDebrisPercent <= purpleDebris;
             const lengthMatch = sectionLength <= purpleLength;
             // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
-            const hasValidRate = (blueValue > 0 && greenValue > 0) || (blueValue > 0 && purpleDebris > 0) || (greenValue > 0 && purpleDebris > 0);
+            // CRITICAL FIX: Always require blueValue (day rate) for valid cost calculation - without it, show blue triangle
+            const hasValidRate = blueValue > 0 && (greenValue > 0 || purpleDebris > 0);
             
             // DEBUG: Item 3 and Item 13 Row 3 and Items 21-23 validation tracking
             if (section.itemNo === 3 || (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
@@ -4399,9 +4400,7 @@ export default function Dashboard() {
                 rowId: r.id,
                 debrisMatch: sectionDebrisPercent <= parseFloat(r.purpleDebris || '0'),
                 lengthMatch: sectionLength <= parseFloat(r.purpleLength || '0'),
-                hasValidRate: (parseFloat(r.blueValue || '0') > 0 && parseFloat(r.greenValue || '0') > 0) || 
-                             (parseFloat(r.blueValue || '0') > 0 && parseFloat(r.purpleDebris || '0') > 0) || 
-                             (parseFloat(r.greenValue || '0') > 0 && parseFloat(r.purpleDebris || '0') > 0)
+                hasValidRate: parseFloat(r.blueValue || '0') > 0 && (parseFloat(r.greenValue || '0') > 0 || parseFloat(r.purpleDebris || '0') > 0)
               })),
               willReturnOutsideRangesStatus: true
             });
