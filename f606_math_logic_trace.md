@@ -8,6 +8,15 @@
 
 ## SERVICE SECTIONS DATA:
 
+### Item 3: (FIRST SERVICE SECTION - KEY FOR CONFIGURATION)
+- **Defects:** "DES Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. DER Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m"
+- **Length:** 30.24m
+- **Debris:** 5% (extracted from defects text)
+- **Pipe Size:** 150mm
+- **Severity Grade:** "3" (service defect)  
+- **Defect Type:** "service"
+- **Severity Grades:** `{"service": 3, "structural": 0}`
+
 ### Item 6:
 - **Defects:** "DER Settled deposits, coarse, 5% cross-sectional area loss at 8.1m, 9.26m, 27.13m. Line deviates left at 33.34m"
 - **Length:** ~33.34m (from defects text)
@@ -27,6 +36,7 @@
 ## VALIDATION CHECKS:
 
 ### Range Validation:
+- **Item 3:** 30.24m < 99m ✓, 5% < 35% ✓ = **WITHIN RANGE** ⭐ KEY SECTION
 - Item 6: 33.34m < 99m ✓, 5% < 35% ✓ = **WITHIN RANGE**
 - Item 8: 11.35m < 99m ✓, 5% < 35% ✓ = **WITHIN RANGE**
 
@@ -38,6 +48,7 @@
 
 ### Formula: (Day Rate ÷ Runs per shift) × Section Length
 - **Cost per run:** £1950 ÷ 30 = £65 per run
+- **Item 3:** £65 × (30.24m run factor) = estimated £65-130 ⭐ **KEY CALCULATION**
 - **Item 6:** £65 × (33.34m run factor) = estimated £65-130
 - **Item 8:** £65 × (11.35m run factor) = estimated £65
 

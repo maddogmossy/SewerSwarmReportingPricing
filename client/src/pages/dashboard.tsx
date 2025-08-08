@@ -2107,8 +2107,8 @@ export default function Dashboard() {
         const hasDefectsRequiringCost = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
           (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
           
-        // CRITICAL DEBUG: Check service sections specifically
-        if (section.itemNo === 6 || section.itemNo === 8) {
+        // CRITICAL DEBUG: Check service sections specifically - ITEM 3 FIRST
+        if (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8) {
           console.log('🔍 SERVICE SECTION DEFECTS CHECK:', {
             itemNo: section.itemNo,
             severityGrade: section.severityGrade,
