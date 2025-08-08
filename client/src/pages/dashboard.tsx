@@ -3643,6 +3643,101 @@ export default function Dashboard() {
     };
   };
 
+  // AUTO-POPULATE F606 MM4-150 PURPLE LENGTH FIELDS BASED ON DASHBOARD TOTAL LENGTHS
+  const autoPopulatePurpleLengthFields = (cctvConfig: any, currentSection: any, allSections: any[]) => {
+    if (!cctvConfig?.mmData?.mm4DataByPipeSize) {
+      return;
+    }
+    
+    const mmData = cctvConfig.mmData;
+    const sectionPipeSize = currentSection.pipeSize?.replace('mm', '');
+    
+    // Find matching 150mm pipe size configuration (F606 MM4-150 target)
+    const targetPipeSizeKey = Object.keys(mmData.mm4DataByPipeSize).find(key => 
+      key.split('-')[0] === '150'
+    );
+    
+    if (!targetPipeSizeKey) {
+      console.log('🔍 Auto-populate: No 150mm MM4 configuration found, skipping purple length update');
+      return;
+    }
+    
+    // Calculate maximum total length from dashboard sections for this pipe size
+    const maxTotalLength = Math.max(
+      ...allSections
+        .filter(section => 
+          section.pipeSize?.replace('mm', '') === sectionPipeSize &&
+          section.totalLength &&
+          parseFloat(section.totalLength) > 0
+        )
+        .map(section => parseFloat(section.totalLength) || 0),
+      0
+    );
+    
+    if (maxTotalLength <= 0) {
+      console.log('🔍 Auto-populate: No valid total lengths found for pipe size', sectionPipeSize);
+      return;
+    }
+    
+    // Add buffer to maximum length (10% buffer for safety margin)
+    const bufferedMaxLength = Math.ceil(maxTotalLength * 1.1);
+    
+    console.log('🔧 Auto-populating F606 MM4-150 purple length fields:', {
+      currentSection: currentSection.itemNo,
+      pipeSizeDetected: sectionPipeSize,
+      maxTotalLengthDetected: maxTotalLength,
+      bufferedMaxLength: bufferedMaxLength,
+      targetConfigurationKey: targetPipeSizeKey,
+      willUpdatePurpleLength: true
+    });
+    
+    // Update MM4 data with new purple length values
+    const mm4Rows = mmData.mm4DataByPipeSize[targetPipeSizeKey] || [];
+    const updatedMM4Rows = mm4Rows.map((row: any) => ({
+      ...row,
+      purpleLength: row.purpleLength && parseFloat(row.purpleLength) > 0 
+        ? row.purpleLength // Keep existing value if already configured
+        : bufferedMaxLength.toString() // Auto-populate with detected maximum
+    }));
+    
+    // Update the configuration
+    const updatedMmData = {
+      ...mmData,
+      mm4DataByPipeSize: {
+        ...mmData.mm4DataByPipeSize,
+        [targetPipeSizeKey]: updatedMM4Rows
+      }
+    };
+    
+    // Save updated configuration to backend (async without await to avoid blocking)
+    fetch(`/api/pr2-configurations/${cctvConfig.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        mmData: updatedMmData
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      console.log('✅ Successfully auto-populated F606 MM4-150 purple length fields:', {
+        configurationId: cctvConfig.id,
+        updatedRows: updatedMM4Rows.length,
+        newPurpleLength: bufferedMaxLength
+      });
+      
+      // Invalidate cache to refresh configurations
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] });
+    })
+    .catch(error => {
+      console.error('❌ Failed to auto-populate purple length fields:', error);
+    });
+  };
+
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
     console.log('🔍 MM4 Cost Calculation Called for Section:', {
@@ -5426,6 +5521,21 @@ export default function Dashboard() {
     const meterageB = getMeterageFromDefects(b.defects || "");
     return meterageA - meterageB;
   });
+
+  // AUTO-POPULATE F606 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
+  useEffect(() => {
+    if (sectionData?.length > 0 && pr2Configurations?.length > 0) {
+      // Trigger auto-population for F606 configurations
+      const f606Config = pr2Configurations.find(config => 
+        config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
+      );
+      
+      if (f606Config && f606Config.mmData) {
+        console.log('🔧 Triggering F606 MM4-150 purple length auto-population for', sectionData.length, 'sections');
+        autoPopulatePurpleLengthFields(f606Config, sectionData[0], sectionData);
+      }
+    }
+  }, [sectionData, pr2Configurations, currentSector.id]);
 
   // CRITICAL FIX: Warning check effect using sectionData (display data) instead of rawSectionData (API data)
   useEffect(() => {

@@ -21,6 +21,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **WRc Classification Standards**: All defect types including line deviations (LL/LR) must be properly recognized and classified according to WRc MSCC5 standards for accurate severity grading and recommendations.
 - **Critical CXB Classification Fix**: CXB (Connection defective, connecting pipe is blocked) is definitively classified as SERVICE defect (Grade 4) per MSCC5 standards, NOT structural. Hardcoded overrides that classify CXB as structural have been removed.
 - **Unified Processing Standards**: All database uploads processed with identical logic using priority-based item numbering (SEC_ItemNo → OBJ_SortOrder → pattern extraction → fallback) and automatic schema detection for consistent results across all report formats.
+- **F606 MM4-150 Auto-Population Fix**: Implemented automatic population of purple length range fields in F606 configurations based on detected maximum total lengths from dashboard sections, with 10% safety buffer for proper cost calculation linking.
 
 ## System Architecture
 
