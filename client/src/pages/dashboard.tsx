@@ -7415,9 +7415,17 @@ export default function Dashboard() {
           sectionData={configWarningData.sectionData}
           configData={configWarningData.configData}
           onNavigateToConfig={(categoryId) => {
-            console.log(`🔄 NAVIGATING TO CONFIG: ${categoryId}`);
-            // Navigate to PR2 configuration page with the specific category
-            window.location.href = `/pr2-config-clean?sector=utilities&categoryId=${categoryId}`;
+            console.log(`🔄 NAVIGATING TO CONFIG: ${categoryId}`, {
+              sectionData: configWarningData.sectionData,
+              pipeSize: configWarningData.sectionData?.pipeSize
+            });
+            
+            // Get the pipe size from the warning data to navigate to the correct MM4 section
+            const pipeSize = configWarningData.sectionData?.pipeSize || '150';
+            const cleanPipeSize = pipeSize.toString().replace('mm', '');
+            
+            // Navigate to PR2 configuration page with the specific category and pipe size
+            window.location.href = `/pr2-config-clean?sector=utilities&categoryId=${categoryId}&pipeSize=${cleanPipeSize}`;
           }}
         />
       )}
