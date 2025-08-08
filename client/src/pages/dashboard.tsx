@@ -3662,11 +3662,11 @@ export default function Dashboard() {
       return;
     }
     
-    // Calculate maximum total length from dashboard sections for this pipe size
+    // Calculate maximum total length from dashboard sections for 150mm pipes (target configuration)
     const maxTotalLength = Math.max(
       ...allSections
         .filter(section => 
-          section.pipeSize?.replace('mm', '') === sectionPipeSize &&
+          section.pipeSize?.replace('mm', '') === '150' &&
           section.totalLength &&
           parseFloat(section.totalLength) > 0
         )
@@ -3684,21 +3684,27 @@ export default function Dashboard() {
     
     console.log('🔧 Auto-populating F606 MM4-150 purple length fields:', {
       currentSection: currentSection.itemNo,
-      pipeSizeDetected: sectionPipeSize,
+      targetPipeSize: '150mm',
       maxTotalLengthDetected: maxTotalLength,
       bufferedMaxLength: bufferedMaxLength,
       targetConfigurationKey: targetPipeSizeKey,
+      existingPurpleLengths: mm4Rows.map((row: any) => row.purpleLength),
       willUpdatePurpleLength: true
     });
     
-    // Update MM4 data with new purple length values
+    // Update MM4 data with new purple length values - ALWAYS update to accommodate actual section lengths
     const mm4Rows = mmData.mm4DataByPipeSize[targetPipeSizeKey] || [];
-    const updatedMM4Rows = mm4Rows.map((row: any) => ({
-      ...row,
-      purpleLength: row.purpleLength && parseFloat(row.purpleLength) > 0 
-        ? row.purpleLength // Keep existing value if already configured
-        : bufferedMaxLength.toString() // Auto-populate with detected maximum
-    }));
+    const updatedMM4Rows = mm4Rows.map((row: any) => {
+      const currentPurpleLength = parseFloat(row.purpleLength || '0');
+      const shouldUpdate = currentPurpleLength < maxTotalLength; // Update if current threshold is inadequate
+      
+      return {
+        ...row,
+        purpleLength: shouldUpdate 
+          ? bufferedMaxLength.toString() // Update to accommodate actual lengths
+          : row.purpleLength // Keep existing value if already adequate
+      };
+    });
     
     // Update the configuration
     const updatedMmData = {
@@ -3727,7 +3733,9 @@ export default function Dashboard() {
       console.log('✅ Successfully auto-populated F606 MM4-150 purple length fields:', {
         configurationId: cctvConfig.id,
         updatedRows: updatedMM4Rows.length,
-        newPurpleLength: bufferedMaxLength
+        newPurpleLength: bufferedMaxLength,
+        beforeUpdate: mm4Rows.map(row => ({id: row.id, purpleLength: row.purpleLength})),
+        afterUpdate: updatedMM4Rows.map(row => ({id: row.id, purpleLength: row.purpleLength}))
       });
       
       // Invalidate cache to refresh configurations
