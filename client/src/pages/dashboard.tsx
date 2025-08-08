@@ -2211,7 +2211,7 @@ export default function Dashboard() {
           // Check if this is a valid cost calculation (not a failed configuration)
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
             costCalculation.cost > 0 && 
-            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status);
+            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status);
           
           if (isValidCostCalculation) {
             // Special handling for adjusted service costs - always show in green
@@ -2808,7 +2808,7 @@ export default function Dashboard() {
       const showsTriangle = !costCalculation || 
                            costCalculation === null || 
                            (costCalculation.cost === 0 && 
-                            ['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status));
+                            ['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status));
       
       return showsTriangle;
     });
@@ -2846,7 +2846,7 @@ export default function Dashboard() {
     // Don't trigger for unconfigured prices (triangles) - only for configured prices that are below minimum
     const allSectionsHaveCompletePricing = sectionData.every(section => {
       const costCalc = calculateAutoCost(section);
-      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(costCalc.status);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items', 'mm4_outside_ranges'].includes(costCalc.status);
     });
     
     console.log('TP2 final trigger decision:', {
@@ -2856,7 +2856,7 @@ export default function Dashboard() {
       totalSections: sectionData.length,
       sectionsWithTriangles: sectionData.filter(s => {
         const calc = calculateAutoCost(s);
-        return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(calc.status);
+        return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items', 'mm4_outside_ranges'].includes(calc.status);
       }).length
     });
     
@@ -2930,7 +2930,7 @@ export default function Dashboard() {
     // Only trigger TP1 warning when ALL sections have complete pricing AND costs are red
     const allSectionsHaveCompletePricing = sections.every(section => {
       const costCalc = calculateAutoCost(section);
-      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(costCalc.status);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items', 'mm4_outside_ranges'].includes(costCalc.status);
     });
 
     // Debug TP1 sections
