@@ -3934,6 +3934,10 @@ export default function Dashboard() {
                 warningType = 'length_out_of_range';
               }
               
+              // Get the actual day rate for display purposes (even though section is out of range)
+              const dayRateOption = cctvConfig.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
+              const actualDayRate = dayRateOption?.value ? parseFloat(dayRateOption.value) : 0;
+              
               return {
                 cost: 0,
                 currency: '£',
@@ -3952,7 +3956,8 @@ export default function Dashboard() {
                   categoryId: cctvConfig.categoryId,
                   maxDebris: matchingMM4Data[0]?.purpleDebris || 0,
                   maxLength: matchingMM4Data[0]?.purpleLength || 0,
-                  minLength: 0
+                  minLength: 0,
+                  actualDayRate: actualDayRate // Include actual day rate for display
                 }
               };
             }

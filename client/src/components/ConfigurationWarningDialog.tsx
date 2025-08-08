@@ -19,6 +19,7 @@ interface ConfigurationWarningDialogProps {
     maxDebris?: number;
     maxLength?: number;
     minLength?: number;
+    actualDayRate?: number;
   };
   onNavigateToConfig?: (categoryId: string) => void;
 }
@@ -74,6 +75,10 @@ export function ConfigurationWarningDialog({
         };
       
       case 'length_out_of_range':
+        const dayRateDisplay = configData?.actualDayRate && configData.actualDayRate > 0 
+          ? `Day rate configured: £${configData.actualDayRate}`
+          : 'Day rate: Not configured';
+        
         return {
           title: `Length Out of Range`,
           icon: <AlertTriangle className="h-6 w-6 text-amber-600" />,
@@ -81,7 +86,8 @@ export function ConfigurationWarningDialog({
           details: [
             `Current length: ${sectionData.totalLength}m`,
             `Configured range: ${configData?.minLength || 0}m - ${configData?.maxLength || 'Not set'}m`,
-            'Section falls outside MM4 purple length range'
+            'Section falls outside MM4 purple length range',
+            dayRateDisplay
           ],
           action: `Extend ${configType} length range or add new row`
         };
