@@ -2203,6 +2203,18 @@ export default function Dashboard() {
             // Route service defects to MM4 calculation (with fallback to TP1)
             console.log('🧹 CALLING calculateAutoCost for SERVICE:', section.itemNo);
             costCalculation = calculateAutoCost(section);
+            
+            // CRITICAL DEBUG: Check what calculateAutoCost returns for service sections
+            console.log('📊 SERVICE COST CALCULATION RESULT:', {
+              itemNo: section.itemNo,
+              costCalculation: costCalculation,
+              costCalculationType: typeof costCalculation,
+              hasCost: costCalculation && 'cost' in costCalculation,
+              costValue: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
+              status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
+              method: costCalculation && 'method' in costCalculation ? costCalculation.method : 'NO_METHOD',
+              isF606Result: costCalculation && 'method' in costCalculation && costCalculation.method?.includes('F606')
+            });
           } else {
             // Fallback to auto cost calculation
             console.log('🔄 CALLING calculateAutoCost for FALLBACK:', section.itemNo);
@@ -2277,6 +2289,22 @@ export default function Dashboard() {
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
             costCalculation.cost > 0 && 
             !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status);
+            
+          // CRITICAL DEBUG: Check validation logic for service sections specifically
+          if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
+            console.log('🔍 SERVICE COST VALIDATION CHECK:', {
+              itemNo: section.itemNo,
+              costCalculation: costCalculation ? 'EXISTS' : 'NULL',
+              hasCostProperty: costCalculation && 'cost' in costCalculation,
+              costValue: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
+              costGreaterThanZero: costCalculation && 'cost' in costCalculation && costCalculation.cost > 0,
+              status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
+              statusNotInExcludeList: costCalculation && 'status' in costCalculation ? 
+                !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status) : false,
+              isValidCostCalculation,
+              willShowCost: isValidCostCalculation ? 'YES_COST' : 'BLUE_TRIANGLE'
+            });
+          }
           
           if (isValidCostCalculation) {
             // Special handling for adjusted service costs - always show in green
