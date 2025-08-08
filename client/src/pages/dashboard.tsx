@@ -608,9 +608,10 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
   const queryClient = useQueryClient();
   
-  // Equipment priority state with localStorage sync - FIXED: Default to F608 instead of F606
+  // Equipment priority state with localStorage sync - TESTING: Force F606 default to test length validation
   const [equipmentPriority, setEquipmentPriority] = useState<'f606' | 'f608'>(() => {
-    return localStorage.getItem('equipmentPriority') === 'f606' ? 'f606' : 'f608';
+    // TESTING: Force F606 as default to trigger length warnings (F606 has 10m, 15m limits)
+    return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
   });
 
   // Listen for equipment priority changes from popups
@@ -3892,8 +3893,21 @@ export default function Dashboard() {
       defectType: section.defectType,
       needsCleaning: requiresCleaning(section.defects || ''),
       isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
-      pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0
+      pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0,
+      currentEquipmentPriority: equipmentPriority
     });
+    
+    // CRITICAL DEBUG: Force logging for service sections to understand why validation not triggering
+    if (section.defectType === 'service') {
+      console.log('🔍 SERVICE SECTION VALIDATION TRACE:', {
+        itemNo: section.itemNo,
+        willEnterServiceValidation: true,
+        pr2ConfigsCount: pr2Configurations ? pr2Configurations.length : 0,
+        needsCleaning: requiresCleaning(section.defects || ''),
+        isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
+        shouldTriggerValidation: section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0 && requiresCleaning(section.defects || '') && [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo)
+      });
+    }
 
     // ENHANCED VALIDATION ORDER: Check MM4 range violations FIRST before day rate validation
     // This ensures that range issues are detected before day rate issues, providing more accurate warnings
@@ -3981,7 +3995,9 @@ export default function Dashboard() {
                 sectionDebrisPercent,
                 lengthMatch,
                 debrisMatch,
-                bothMatch: debrisMatch && lengthMatch
+                bothMatch: debrisMatch && lengthMatch,
+                lengthExceeded: sectionLength > purpleLength,
+                debrisExceeded: sectionDebrisPercent > purpleDebris
               });
               
               if (debrisMatch && lengthMatch) {
