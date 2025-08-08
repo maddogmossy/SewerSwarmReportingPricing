@@ -2273,31 +2273,34 @@ export default function Dashboard() {
             }
           } else {
             // Show warning triangle when no pricing is configured
-            if (needsCleaning && !needsStructuralRepair) {
+            // CRITICAL FIX: Use defectType field directly instead of legacy defect pattern matching
+            // This ensures triangle color matches the multi-defect splitting classification
+            if (section.defectType === 'service') {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
-                  title="Pricing not configured - Use recommendation box to set up cleaning costs"
+                  title="Service pricing not configured - Use recommendation box to set up cleaning costs"
                 >
                   <TriangleAlert className="h-4 w-4 text-blue-500" />
                 </div>
               );
-            } else if (needsStructuralRepair) {
+            } else if (section.defectType === 'structural') {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
-                  title="Pricing not configured - Use recommendation box to set up TP2 patching costs"
+                  title="Structural pricing not configured - Use recommendation box to set up TP2 patching costs"
                 >
                   <TriangleAlert className="h-4 w-4 text-orange-500" />
                 </div>
               );
             } else {
+              // Fallback for unknown defect types (should rarely happen with proper classification)
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
                   title="Pricing not configured - Use recommendation box to set up repair costs"
                 >
-                  <TriangleAlert className="h-4 w-4 text-orange-500" />
+                  <TriangleAlert className="h-4 w-4 text-gray-500" />
                 </div>
               );
             }
