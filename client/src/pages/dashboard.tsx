@@ -4268,6 +4268,7 @@ export default function Dashboard() {
                 sectionLength: sectionLength,
                 purpleLength: purpleLength,
                 lengthMatch: lengthMatch,
+                CRITICAL_LENGTH_COMPARISON: `${sectionLength}m vs ${purpleLength}m = ${lengthMatch ? 'PASS' : 'FAIL'}`,
                 blueValue: blueValue,
                 greenValue: greenValue,
                 hasValidRate: hasValidRate,
@@ -4276,6 +4277,12 @@ export default function Dashboard() {
                   debrisCheck: `${sectionDebrisPercent}% ≤ ${purpleDebris}% = ${debrisMatch}`,
                   lengthCheck: `${sectionLength}m ≤ ${purpleLength}m = ${lengthMatch}`,
                   rateCheck: `hasValidRate = ${hasValidRate}`
+                },
+                rawMM4RowData: {
+                  id: mm4Row.id,
+                  originalPurpleLength: mm4Row.purpleLength,
+                  parsedPurpleLength: purpleLength,
+                  bufferedPurpleLength: getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0')
                 },
                 specialF608_225Check: matchingPipeSizeKey === '225-2251' ? {
                   expectedCalculation: `£${blueValue} ÷ ${greenValue} runs = £${blueValue > 0 && greenValue > 0 ? (blueValue / greenValue).toFixed(2) : 'N/A'} per run`,
