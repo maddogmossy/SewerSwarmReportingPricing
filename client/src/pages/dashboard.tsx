@@ -2488,25 +2488,63 @@ export default function Dashboard() {
   const reprocessMutation = useMutation({
     mutationFn: (uploadId: number) => apiRequest("POST", `/api/reprocess/${uploadId}`),
     onSuccess: (data) => {
-      // Clear cost decisions when report is reprocessed to trigger fresh warnings
-      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-      const currentReportId = reportId;
+      // COMPREHENSIVE CACHE CLEARING: Clear all cached configuration data
+      const clearAllConfigurationCache = () => {
+        // Clear cost decisions when report is reprocessed to trigger fresh warnings
+        const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+        const currentReportId = reportId;
+        
+        // Remove decisions for this report (since report was reprocessed)
+        const filteredDecisions = existingDecisions.filter((decision: any) => 
+          decision.reportId !== currentReportId
+        );
+        localStorage.setItem('appliedCostDecisions', JSON.stringify(filteredDecisions));
+        
+        // CRITICAL FIX: Clear all buffered MM4/MM5 configuration data that prevents reading updated values
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (
+            key.includes('bufferedValues') ||
+            key.includes('mm4DataByPipeSize') ||
+            key.includes('mm5Data') ||
+            key.includes('pricingOptionsBuffer') ||
+            key.includes('configFormData') ||
+            key.includes('-blueValue') ||
+            key.includes('-greenValue') ||
+            key.includes('-purpleDebris') ||
+            key.includes('-purpleLength') ||
+            key.includes('equipmentPriority') ||
+            key.includes('lastUserPriorityChange')
+          )) {
+            keysToRemove.push(key);
+          }
+        }
+        
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        console.log('🧹 COMPREHENSIVE CACHE CLEAR:', {
+          clearedCostDecisions: true,
+          clearedBufferedValues: keysToRemove.length,
+          removedKeys: keysToRemove,
+          reportId: currentReportId
+        });
+      };
       
-      // Remove decisions for this report (since report was reprocessed)
-      const filteredDecisions = existingDecisions.filter((decision: any) => 
-        decision.reportId !== currentReportId
-      );
-      localStorage.setItem('appliedCostDecisions', JSON.stringify(filteredDecisions));
+      clearAllConfigurationCache();
       
-      console.log('🧹 Cleared cost decisions for report after reprocessing:', currentReportId);
-      
+      // COMPREHENSIVE QUERY CACHE INVALIDATION: Ensure all configuration data is refetched
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
       queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
-      // Force refresh PR2 configurations to show latest pricing rules
       queryClient.invalidateQueries({ queryKey: ['pr2-configs'] });
       queryClient.invalidateQueries({ queryKey: ['pr2-configs', currentSector.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      
+      // Force clear React Query cache entirely to prevent any stale configuration data
+      queryClient.clear();
       // Force refresh all section data
       queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
       queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
