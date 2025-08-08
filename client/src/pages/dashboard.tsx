@@ -3992,6 +3992,14 @@ export default function Dashboard() {
         config.sector === currentSector.id
       );
       
+      console.log(`🔍 CRITICAL CONFIG DETECTION - Item ${section.itemNo}:`, {
+        allPR2Configs: pr2Configurations.length,
+        cctvConfigsFound: cctvConfigs.length,
+        cctvConfigDetails: cctvConfigs.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })),
+        currentSector: currentSector.id,
+        filteringFor: ['cctv-van-pack', 'cctv-jet-vac']
+      });
+      
       // DEFAULT PRIORITY: F606 (cctv-jet-vac) is default, but F608 (cctv-van-pack) takes priority if configured
       const f606Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
       const f608Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-van-pack');
