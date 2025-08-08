@@ -2150,6 +2150,17 @@ export default function Dashboard() {
           }
         }
         
+        // FRONTEND DEBUG: Show what's happening for ALL service sections (even if not entering cost calc)
+        if (section.defectType === 'service' && (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8)) {
+          console.log('🔧 SERVICE SECTION FRONTEND LOGIC:', {
+            itemNo: section.itemNo,
+            defectType: section.defectType,
+            hasDefectsRequiringCost,
+            willEnterCostLogic: hasDefectsRequiringCost,
+            fallbackPath: !hasDefectsRequiringCost ? 'BLUE_TRIANGLE_FALLBACK' : 'NORMAL_COST_CALC'
+          });
+        }
+
         if (hasDefectsRequiringCost) {
           // CRITICAL DEBUG: Log every section that enters cost calculation
           console.log('💰 COST CALCULATION ENTRY:', {
