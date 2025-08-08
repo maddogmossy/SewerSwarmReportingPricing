@@ -3036,7 +3036,7 @@ export default function Dashboard() {
 
     // Get current default category from localStorage
     const currentEquipmentPriority = localStorage.getItem('equipmentPriority') || 'f606';
-    const defaultCategoryId = currentEquipmentPriority === 'f608' ? 'cctv-van-pack' : 'cctv';
+    const defaultCategoryId = currentEquipmentPriority === 'f608' ? 'cctv-van-pack' : 'cctv-jet-vac';
     
     console.log(`🎯 CHECKING CONFIG WARNINGS for default category: ${currentEquipmentPriority} (${defaultCategoryId})`);
 
@@ -3218,7 +3218,7 @@ export default function Dashboard() {
 
     // Find TP1 cleaning configurations for current sector
     const tp1Configs = configurations.filter(config => 
-      config.categoryId === 'cctv' && config.sector === currentSector.id
+      config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
     );
 
     if (tp1Configs.length === 0) {
@@ -3374,7 +3374,7 @@ export default function Dashboard() {
     if (needsCleaning) {
       // Check for cleaning configuration
       return pr2Configurations.some(config => 
-        config.categoryId?.includes('cctv') && isConfigurationProperlyConfigured(config)
+        config.categoryId === 'cctv-jet-vac' && isConfigurationProperlyConfigured(config)
       );
     }
     
@@ -3423,7 +3423,7 @@ export default function Dashboard() {
     try {
       // Find the relevant configuration
       const configId = defectType === 'service' 
-        ? pr2Configurations.find(c => c.categoryId?.includes('cctv'))?.id
+        ? pr2Configurations.find(c => c.categoryId === 'cctv-jet-vac')?.id
         : pr2Configurations.find(c => c.categoryId === 'patching')?.id;
 
       if (configId) {
@@ -3578,7 +3578,7 @@ export default function Dashboard() {
   const calculateTP1CleaningCost = (section: any) => {
     // Find TP1 CCTV configuration for this sector
     const tp1Config = pr2Configurations?.find(config => 
-      config.categoryId === 'cctv' && 
+      config.categoryId === 'cctv-jet-vac' && 
       config.sector === currentSector.id
     );
     
@@ -6464,7 +6464,7 @@ export default function Dashboard() {
     // MIGRATION FIX: Use DB8 green window quantityOptions instead of DB9 orange window minQuantityOptions
     let minQuantity = 25; // Default minimum from DB8 green window
     pr2Configurations.forEach(config => {
-      if (config.categoryId === 'cctv' && config.quantityOptions) {
+      if (config.categoryId === 'cctv-jet-vac' && config.quantityOptions) {
         const quantityOptions = config.quantityOptions || [];
         const quantityOption = quantityOptions.find((opt: any) => 
           opt.label?.toLowerCase().includes('runs per shift') && opt.enabled && opt.value
@@ -7652,7 +7652,7 @@ export default function Dashboard() {
             <Button
               onClick={() => {
                 // Navigate to configuration page based on type
-                const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv' : 'patching';
+                const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv-jet-vac' : 'patching';
                 const routeUrl = categoryId === 'patching' 
                   ? `/pr2-config-clean?id=615&categoryId=${categoryId}&sector=${currentSector.id}&pipeSize=150&autoSelectUtilities=true`
                   : `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}`;
