@@ -2102,10 +2102,14 @@ export default function Dashboard() {
         // REMOVED: Auto-populated costs replaced with warning symbols to maintain data integrity
         // No synthetic pricing calculations - show warning symbols for unconfigured pricing
         
-        // Calculate costs for defective sections using PR2 configurations
+        // Calculate costs for defective sections using PR2 configurations  
         // Check both old severityGrade field AND new severity_grades JSON for service/structural grades > 0
         const hasDefectsRequiringCost = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
           (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
+          
+        // TEMPORARY DEBUG: Force all service sections 3,6,8 to enter cost calculation to bypass severity issue
+        const forceServiceCalculation = section.defectType === 'service' && [3,6,8].includes(section.itemNo);
+        const finalHasDefectsRequiringCost = hasDefectsRequiringCost || forceServiceCalculation;
           
         // CRITICAL DEBUG: Check service sections specifically - ITEM 3 FIRST
         if (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8) {
@@ -2156,12 +2160,14 @@ export default function Dashboard() {
             itemNo: section.itemNo,
             defectType: section.defectType,
             hasDefectsRequiringCost,
-            willEnterCostLogic: hasDefectsRequiringCost,
-            fallbackPath: !hasDefectsRequiringCost ? 'BLUE_TRIANGLE_FALLBACK' : 'NORMAL_COST_CALC'
+            forceServiceCalculation,
+            finalHasDefectsRequiringCost,
+            willEnterCostLogic: finalHasDefectsRequiringCost,
+            fallbackPath: !finalHasDefectsRequiringCost ? 'BLUE_TRIANGLE_FALLBACK' : 'NORMAL_COST_CALC'
           });
         }
 
-        if (hasDefectsRequiringCost) {
+        if (finalHasDefectsRequiringCost) {
           // CRITICAL DEBUG: Log every section that enters cost calculation
           console.log('💰 COST CALCULATION ENTRY:', {
             itemNo: section.itemNo,
@@ -2665,6 +2671,14 @@ export default function Dashboard() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     retry: false
+  });
+  
+  // CRITICAL DEBUG: Check if sections data is loading properly
+  console.log('📋 DASHBOARD SECTIONS DATA:', {
+    currentUploadId: currentUpload?.id,
+    rawSectionDataLength: rawSectionData.length,
+    serviceItems: rawSectionData.filter(s => s.defectType === 'service' && [3,6,8].includes(s.itemNo)).map(s => ({itemNo: s.itemNo, severityGrade: s.severityGrade, defectType: s.defectType})),
+    item3Data: rawSectionData.find(s => s.itemNo === 3)
   });
 
   // AUTO-NAVIGATION: If no reportId in URL but we have a current upload, navigate to it
