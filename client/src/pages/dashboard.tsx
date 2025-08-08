@@ -4258,6 +4258,7 @@ export default function Dashboard() {
             // DEBUG: Item 3 and Item 13 Row 3 and Items 21-23 validation tracking
             if (section.itemNo === 3 || (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
               console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION:`, {
+                CRITICAL_STATUS_CHECK: 'This log shows validation results before cost calculation',
                 itemNo: section.itemNo,
                 rowId: mm4Row.id,
                 sectionPipeSize: sectionPipeSize,
@@ -4314,6 +4315,7 @@ export default function Dashboard() {
               const logLevel = isSpecialTracking ? `🎯 ITEM ${section.itemNo} ROW ${mm4Row.id} FINAL CALCULATION` : `✅ F608 Multi-Row Cost Calculation (Row ${mm4Row.id})`;
               
               console.log(logLevel, {
+                CRITICAL_FINAL_STATUS: 'This shows the final status returned for cost display',
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
