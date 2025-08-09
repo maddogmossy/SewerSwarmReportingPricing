@@ -367,13 +367,15 @@ export default function PR2Pricing() {
     if (existingConfig) {
       // For P-number configs, use original categoryId for proper template detection, but edit the P-number config
       const urlCategoryId = existingConfig.categoryId.startsWith('P') ? categoryId : existingConfig.categoryId;
-      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${urlCategoryId}&edit=${existingConfig.id}`);
+      // **CRITICAL FIX**: Add autoSelectUtilities=true for consistent sector highlighting
+      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${urlCategoryId}&edit=${existingConfig.id}&autoSelectUtilities=true`);
       return;
     }
     
     // Special handling for van-pack - allow direct creation of MMP1 template
     if (categoryId === 'van-pack') {
-      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}`);
+      // **CRITICAL FIX**: Add autoSelectUtilities=true for consistent sector highlighting
+      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&autoSelectUtilities=true`);
       return;
     }
     
@@ -576,9 +578,9 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => {
                           if (existingConfig) {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`);
                           } else {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Jet Vac Configuration`)}`);
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&autoSelectUtilities=true&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Jet Vac Configuration`)}`);
                           }
                         }}
                       >
@@ -628,9 +630,9 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => {
                           if (existingConfig) {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`);
                           } else {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&autoSelectUtilities=true&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
                           }
                         }}
                       >

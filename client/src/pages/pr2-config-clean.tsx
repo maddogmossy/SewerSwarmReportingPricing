@@ -2320,9 +2320,16 @@ export default function PR2ConfigClean() {
           if (!hasLocalMM4ForCurrentPipeSize) {
             // Load MM4/MM5 data from pipe-size-specific storage or legacy format
             if (config.mmData.mm4DataByPipeSize) {
-              console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
-              setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
-              console.log('✅ MM4 data should now be loaded in storage');
+              console.log('📥 Backend MM4 data received:', config.mmData.mm4DataByPipeSize);
+              // **CRITICAL FIX**: Only set if backend has actual data, don't overwrite localStorage with empty objects
+              const hasBackendData = Object.keys(config.mmData.mm4DataByPipeSize).length > 0;
+              if (hasBackendData) {
+                console.log('📥 Setting MM4 pipe-size data from backend');
+                setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
+                console.log('✅ MM4 data loaded from backend');
+              } else {
+                console.log('🔒 Backend has empty MM4 data, preserving localStorage values');
+              }
             } else if (config.mmData.mm4Rows) {
               // Legacy format - store under current pipe size key
               const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
