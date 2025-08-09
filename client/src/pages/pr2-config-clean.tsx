@@ -241,7 +241,7 @@ export default function PR2ConfigClean() {
       } catch (error: any) {
         // If configuration not found (404), check for deleted F606 and redirect to F690
         if (error.message && error.message.includes('404')) {
-          if (editId === '606' || editId === 606) {
+          if (editId === '606' || editId === 606 || Number(editId) === 606) {
             // F606 was replaced by F690 - redirect to F690 configuration
             const newUrl = `/pr2-config-clean?edit=690&categoryId=cctv-jet-vac&sector=${sector}`;
             console.log('🔄 Redirecting deleted F606 to F690:', { from: editId, to: 690, newUrl });
