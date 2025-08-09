@@ -97,10 +97,6 @@ export default function PR2Pricing() {
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
   
-  // Debug: Log current sector and configurations
-  console.log(`🔍 Current Sector: ${sector}, Available configs:`, pr2Configurations.map(c => ({id: c.id, categoryId: c.categoryId, hasColor: !!c.categoryColor})));
-
-  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -134,6 +130,9 @@ export default function PR2Pricing() {
 
   // Ensure pr2Configurations is always an array
   const pr2Configurations = Array.isArray(pr2ConfigurationsRaw) ? pr2ConfigurationsRaw : [];
+  
+  // Debug: Log current sector and configurations (AFTER initialization)
+  console.log(`🔍 Current Sector: ${sector}, Available configs:`, pr2Configurations.map(c => ({id: c.id, categoryId: c.categoryId, hasColor: !!c.categoryColor})));
   
   // Ensure standardCategoriesFromDB is always an array and handle potential errors
   const validStandardCategories = Array.isArray(standardCategoriesFromDB) ? standardCategoriesFromDB : [];
