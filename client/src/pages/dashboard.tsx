@@ -4555,23 +4555,22 @@ export default function Dashboard() {
       // Manual tests removed - cleaning detection working correctly
     }
     
-    // CRITICAL FIX: Allow MM4 processing for both service AND structural sections that need cleaning
-    // Structural items (21, 22, 23) can have both structural costs (F615) AND service costs (F606/F608)
-    const willProcessMM4 = needsCleaning && pr2Configurations && isRestrictedSection;
-    
+    // RESTORED: Separate handling for service vs structural sections
+    // Service sections: Process MM4 for cleaning if they need it
+    // Structural sections: Use F615 patching cost calculation
     console.log(`🔍 MM4 Processing Check for Item ${section.itemNo}:`, {
       needsCleaning,
       pr2ConfigsAvailable: !!pr2Configurations,
       isRestrictedSection,
       defectType: section.defectType,
       pipeSize: section.pipeSize,
-      willProcessMM4: willProcessMM4,
-      CRITICAL_FIX: section.defectType === 'structural' ? 'Structural items can now get service costs too' : 'Standard service processing'
+      willProcessServiceMM4: section.defectType === 'service' && needsCleaning && pr2Configurations && isRestrictedSection,
+      willProcessStructuralF615: section.defectType === 'structural'
     });
     
-    // CRITICAL FIX: Use the new willProcessMM4 logic that allows both service and structural items
-    if (willProcessMM4) {
-      // DYNAMIC CONFIGURATION SELECTION: Only F606 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
+    // FIXED: Only process MM4 for SERVICE sections that need cleaning
+    if (section.defectType === 'service' && needsCleaning && pr2Configurations && isRestrictedSection) {
+      // SERVICE SECTION MM4 PROCESSING: Only F606 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
       // F612 (cctv) excluded - CCTV only, not for cleaning service defects
       const cctvConfigs = pr2Configurations.filter((config: any) => 
         ['cctv-van-pack', 'cctv-jet-vac'].includes(config.categoryId) && 
