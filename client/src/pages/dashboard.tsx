@@ -7655,7 +7655,7 @@ export default function Dashboard() {
                 const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv-jet-vac' : 'patching';
                 const routeUrl = categoryId === 'patching' 
                   ? `/pr2-config-clean?id=615&categoryId=${categoryId}&sector=${currentSector.id}&pipeSize=150&autoSelectUtilities=true`
-                  : `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}`;
+                  : `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}&autoSelectUtilities=true`;
                 window.location.href = routeUrl;
               }}
               className="bg-amber-600 hover:bg-amber-700 text-white"
@@ -7736,7 +7736,8 @@ export default function Dashboard() {
             const targetSector = sector || currentSector?.id || 'utilities';
             
             // Navigate to PR2 configuration page with the specific category, sector and pipe size
-            window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}`;
+            // **CRITICAL FIX**: Add autoSelectUtilities=true to ensure sector highlighting works
+            window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
           }}
         />
       )}
