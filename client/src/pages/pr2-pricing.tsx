@@ -766,7 +766,7 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: (existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor) || '#e5e7eb',
+                          borderColor: existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor || '#e5e7eb',
                           backgroundColor: (existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor)
                             ? hexToRgba(existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor, 0.1) 
                             : 'white'
