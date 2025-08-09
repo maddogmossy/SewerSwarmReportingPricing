@@ -7716,20 +7716,27 @@ export default function Dashboard() {
             setConfigWarningDismissed(true);
           }}
           warningType={configWarningData.warningType}
-          sectionData={configWarningData.sectionData}
+          sectionData={{
+            ...configWarningData.sectionData,
+            sector: currentSector?.id || 'utilities'
+          }}
           configData={configWarningData.configData}
-          onNavigateToConfig={(categoryId) => {
+          onNavigateToConfig={(categoryId, sector) => {
             console.log(`🔄 NAVIGATING TO CONFIG: ${categoryId}`, {
               sectionData: configWarningData.sectionData,
-              pipeSize: configWarningData.sectionData?.pipeSize
+              pipeSize: configWarningData.sectionData?.pipeSize,
+              sector: sector || currentSector?.id || 'utilities'
             });
             
             // Get the pipe size from the warning data to navigate to the correct MM4 section
             const pipeSize = configWarningData.sectionData?.pipeSize || '150';
             const cleanPipeSize = pipeSize.toString().replace('mm', '');
             
-            // Navigate to PR2 configuration page with the specific category and pipe size
-            window.location.href = `/pr2-config-clean?sector=utilities&categoryId=${categoryId}&pipeSize=${cleanPipeSize}`;
+            // Use sector from parameter, or current sector, or fallback to utilities
+            const targetSector = sector || currentSector?.id || 'utilities';
+            
+            // Navigate to PR2 configuration page with the specific category, sector and pipe size
+            window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}`;
           }}
         />
       )}

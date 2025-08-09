@@ -13,6 +13,7 @@ interface ConfigurationWarningDialogProps {
     pipeSize: string;
     totalLength: number;
     debrisPercent: number;
+    sector?: string; // Add sector to sectionData
   };
   configData?: {
     categoryId: string;
@@ -21,7 +22,7 @@ interface ConfigurationWarningDialogProps {
     minLength?: number;
     actualDayRate?: number;
   };
-  onNavigateToConfig?: (categoryId: string) => void;
+  onNavigateToConfig?: (categoryId: string, sector?: string) => void; // Add sector parameter
 }
 
 export function ConfigurationWarningDialog({
@@ -162,8 +163,8 @@ export function ConfigurationWarningDialog({
             <Button 
               onClick={() => {
                 if (onNavigateToConfig && configData?.categoryId) {
-                  // Navigate to the relevant configuration section
-                  onNavigateToConfig(configData.categoryId);
+                  // Navigate to the relevant configuration section with sector context
+                  onNavigateToConfig(configData.categoryId, sectionData.sector);
                 }
                 onClose();
               }} 
