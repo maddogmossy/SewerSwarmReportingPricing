@@ -2852,7 +2852,16 @@ export default function Dashboard() {
       const data = await response.json();
       console.log('🔍 Dashboard PR2 Config Response:', { 
         responseLength: data.length, 
-        configs: data.map((c: any) => ({ id: c.id, categoryId: c.categoryId, sector: c.sector }))
+        configs: data.map((c: any) => ({ 
+          id: c.id, 
+          categoryId: c.categoryId, 
+          sector: c.sector,
+          hasMmData: !!c.mm_data,
+          mmDataKeys: c.mm_data ? Object.keys(c.mm_data) : [],
+          mm4RowsExists: !!c.mm_data?.mm4Rows,
+          mm4RowsLength: c.mm_data?.mm4Rows?.length || 0,
+          blueValue: c.mm_data?.mm4Rows?.[0]?.blueValue || 'missing'
+        }))
       });
       return data;
     },
@@ -3762,11 +3771,9 @@ export default function Dashboard() {
     if (pr2Configurations && pr2Configurations.length > 0) {
       const p26Config = pr2Configurations.find(config => config.categoryId === 'P26');
       if (p26Config && p26Config.pricingOptions) {
-        const dayRateOption = p26Config.pricingOptions.find((opt: any) => 
-          opt.id === 'db7_day_rate' && opt.value
-        );
-        if (dayRateOption && dayRateOption.value) {
-          dayRate = parseFloat(dayRateOption.value) || 1650;
+        const dayRateValue = p26Config.mm_data?.mm4Rows?.[0]?.blueValue;
+        if (dayRateValue) {
+          dayRate = parseFloat(dayRateValue) || 0;
         }
       }
     }
@@ -4232,8 +4239,8 @@ export default function Dashboard() {
               }
               
               // Get the actual day rate for display purposes (even though section is out of range)
-              const dayRateOption = cctvConfig.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
-              const actualDayRate = dayRateOption?.value ? parseFloat(dayRateOption.value) : 0;
+              const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
+              const actualDayRate = dayRateValue ? parseFloat(dayRateValue) : 0;
               
               return {
                 cost: 0,
@@ -4261,15 +4268,15 @@ export default function Dashboard() {
           }
           
           // PRIORITY 2: CHECK DAY RATE ONLY AFTER CONFIRMING MM4 RANGES ARE OK
-          // Check if day rate is properly configured in pricingOptions
-          const dayRateOption = cctvConfig.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
-          const isDayRateConfigured = dayRateOption?.value && dayRateOption.value.trim() !== '';
+          // Check if day rate is properly configured in MM4 blue value (single source of truth)
+          const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
+          const isDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
           
           console.log('🔍 F606/F608 Day Rate Validation (after range check):', {
             itemNo: section.itemNo,
             equipmentPriority: equipmentPriority,
             configId: cctvConfig.id,
-            dayRateValue: dayRateOption?.value,
+            dayRateValue: dayRateValue,
             isDayRateConfigured: isDayRateConfigured,
             willShowBlueTriangle: !isDayRateConfigured
           });
@@ -4305,16 +4312,21 @@ export default function Dashboard() {
       const f615Config = pr2Configurations.find(config => config.categoryId === 'patching' && config.sector === 'utilities');
       
       if (f615Config) {
-        // Check if day rate is properly configured in pricingOptions
-        const dayRateOption = f615Config.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
-        const isDayRateConfigured = dayRateOption?.value && dayRateOption.value.trim() !== '';
+        // Check if day rate is properly configured in MM4 blue value (single source of truth)
+        const dayRateValue = f615Config.mm_data?.mm4Rows?.[0]?.blueValue;
+        const isDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
         
         console.log('🔍 F615 Day Rate Validation:', {
           itemNo: section.itemNo,
           configId: f615Config.id,
-          dayRateValue: dayRateOption?.value,
+          dayRateValue: dayRateValue,
           isDayRateConfigured: isDayRateConfigured,
-          willShowOrangeTriangle: !isDayRateConfigured
+          willShowOrangeTriangle: !isDayRateConfigured,
+          mm4DataExists: !!f615Config.mm_data,
+          mm4RowsExists: !!f615Config.mm_data?.mm4Rows,
+          mm4RowsLength: f615Config.mm_data?.mm4Rows?.length || 0,
+          firstRowBlueValue: f615Config.mm_data?.mm4Rows?.[0]?.blueValue,
+          fullMM4Data: f615Config.mm_data?.mm4Rows?.[0]
         });
         
         // If day rate is not configured, return specific error information  
