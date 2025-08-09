@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    DEV_ID_LIST?: string[];
+  }
+}
+
 export function DevLabel({ id, position = "bottom-right" }: { id: string; position?: "bottom-right" | "top-right" }) {
   if (typeof window !== "undefined") {
     if (!window.DEV_ID_LIST) window.DEV_ID_LIST = [];
