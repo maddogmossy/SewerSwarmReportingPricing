@@ -2315,19 +2315,34 @@ export default function Dashboard() {
             costCalculation.cost > 0 && 
             !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status);
             
-          // CRITICAL DEBUG: Check validation logic for service sections specifically
+          // 🔍 DASHBOARD TRIANGLE ANALYSIS: Check what makes service sections show triangles
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
-            console.log('🔍 SERVICE COST VALIDATION CHECK:', {
+            const excludedStatuses = ['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges', 'day_rate_missing'];
+            console.log('🔍 DASHBOARD TRIANGLE LOGIC - Service Section Analysis:', {
               itemNo: section.itemNo,
-              costCalculation: costCalculation ? 'EXISTS' : 'NULL',
-              hasCostProperty: costCalculation && 'cost' in costCalculation,
-              costValue: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
-              costGreaterThanZero: costCalculation && 'cost' in costCalculation && costCalculation.cost > 0,
-              status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
-              statusNotInExcludeList: costCalculation && 'status' in costCalculation ? 
-                !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status) : false,
-              isValidCostCalculation,
-              willShowCost: isValidCostCalculation ? 'YES_COST' : 'BLUE_TRIANGLE'
+              costCalculation: costCalculation ? {
+                exists: 'YES',
+                cost: costCalculation.cost || 0,
+                status: costCalculation.status || 'NO_STATUS',
+                method: costCalculation.method || 'NO_METHOD',
+                warningType: costCalculation.warningType || null,
+                configType: costCalculation.configType || null
+              } : 'NULL_RESULT',
+              validationChecks: {
+                hasCostProperty: costCalculation && 'cost' in costCalculation,
+                costGreaterThanZero: costCalculation && 'cost' in costCalculation && costCalculation.cost > 0,
+                statusNotInExcludeList: costCalculation && 'status' in costCalculation ? 
+                  !excludedStatuses.includes(costCalculation.status) : false,
+                isValidCostCalculation
+              },
+              finalDecision: isValidCostCalculation ? 'SHOW_COST' : 'SHOW_TRIANGLE',
+              triangleReason: !isValidCostCalculation ? (
+                !costCalculation ? 'NULL_CALCULATION' :
+                !('cost' in costCalculation) ? 'NO_COST_PROPERTY' :
+                costCalculation.cost <= 0 ? 'ZERO_COST' :
+                excludedStatuses.includes(costCalculation.status) ? `EXCLUDED_STATUS_${costCalculation.status}` :
+                'UNKNOWN_REASON'
+              ) : null
             });
           }
           
@@ -4320,13 +4335,30 @@ export default function Dashboard() {
           const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
           const isDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
           
-          console.log('🔍 F690/F608 Day Rate Validation (after range check):', {
+          // 🔍 F690 MM4-150 CONFIGURATION ANALYSIS: Trace exact blocking issue
+          console.log('🔍 F690 MM4-150 CONFIGURATION DEEP DIVE:', {
             itemNo: section.itemNo,
             equipmentPriority: equipmentPriority,
             configId: cctvConfig.id,
-            dayRateValue: dayRateValue,
-            isDayRateConfigured: isDayRateConfigured,
-            willShowBlueTriangle: !isDayRateConfigured
+            categoryId: cctvConfig.categoryId,
+            configName: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
+            mm4DataStructure: {
+              hasMmData: !!cctvConfig.mm_data,
+              hasMm4Rows: !!(cctvConfig.mm_data?.mm4Rows),
+              mm4RowsCount: cctvConfig.mm_data?.mm4Rows?.length || 0,
+              firstRowData: cctvConfig.mm_data?.mm4Rows?.[0] || null
+            },
+            dayRateAnalysis: {
+              rawDayRateValue: dayRateValue,
+              dayRateType: typeof dayRateValue,
+              dayRateLength: dayRateValue?.length || 0,
+              dayRateTrimmed: dayRateValue?.trim(),
+              isDayRateConfigured: isDayRateConfigured,
+              parseResult: dayRateValue ? parseFloat(dayRateValue) : 'NO_VALUE'
+            },
+            blockingFactor: !isDayRateConfigured ? 'DAY_RATE_MISSING' : 'RANGE_CHECK_PASSED',
+            willReturnError: !isDayRateConfigured,
+            errorStatus: !isDayRateConfigured ? 'day_rate_missing' : null
           });
           
           // If day rate is not configured, return specific error information
