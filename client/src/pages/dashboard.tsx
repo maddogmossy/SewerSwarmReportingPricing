@@ -356,10 +356,8 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
       }
     }
     
-    // Get additional configuration details
-    const dayRate = matchingConfig.pricingOptions?.find(opt => 
-      opt.label?.toLowerCase().includes('day rate')
-    )?.value;
+    // Get additional configuration details - READ FROM MM4 BLUE VALUE ONLY
+    const dayRate = matchingConfig.mm_data?.mm4Rows?.[0]?.blueValue;
     
     const runsPerShift = matchingConfig.quantityOptions?.find(opt => 
       opt.label?.toLowerCase().includes('runs per shift')
@@ -2287,12 +2285,10 @@ export default function Dashboard() {
               const p26Config = pr2Configurations.find(config => 
                 config.categoryId === 'P26'
               );
-              if (p26Config && p26Config.pricingOptions) {
-                const dayRateOption = p26Config.pricingOptions.find((opt: any) => 
-                  opt.id === 'db7_day_rate'
-                );
-                if (dayRateOption && dayRateOption.value) {
-                  dayRate = parseFloat(dayRateOption.value) || 0; // No synthetic fallback
+              if (p26Config) {
+                const dayRateValue = p26Config.mm_data?.mm4Rows?.[0]?.blueValue;
+                if (dayRateValue) {
+                  dayRate = parseFloat(dayRateValue) || 0; // No synthetic fallback
                 }
               }
             }
@@ -3603,10 +3599,9 @@ export default function Dashboard() {
     
     // Skip isConfigurationProperlyConfigured check for now - let's debug the actual values
     
-    // Extract day rate from TP1 configuration
-    const dayRateOption = tp1Config.pricingOptions?.find((option: any) => 
-      option.label?.toLowerCase().includes('day rate') && option.value && option.value.trim() !== ''
-    );
+    // Extract day rate from TP1 configuration - READ FROM MM4 BLUE VALUE ONLY
+    const dayRateValue = tp1Config.mm_data?.mm4Rows?.[0]?.blueValue;
+    const dayRateOption = dayRateValue ? { value: dayRateValue } : null;
     
     // CRITICAL FIX: Check meterage rule to determine if "Runs 2" should be used instead of standard "Runs per Shift"
     // Define meterage rule logic directly in TP1 function

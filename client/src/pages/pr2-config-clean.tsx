@@ -374,8 +374,8 @@ export default function PR2ConfigClean() {
         
         // Blue Window - Central Day Rate for all pipe sizes
         pricingOptions: [
-          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' },
-          { id: 'db7_day_rate', label: 'DB7 Day Rate', enabled: true, value: '1650' }
+          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '' },
+          { id: 'db7_day_rate', label: 'DB7 Day Rate', enabled: true, value: '' }
         ],
         
         // Green Window - Multiple pipe size configurations
@@ -415,7 +415,7 @@ export default function PR2ConfigClean() {
         categoryColor: '#ffffff', // Default white color - user must assign color
         pipeSize: pipeSize || '',
         pricingOptions: [
-          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
+          // Day rate now comes from MM4 blue value only - no dual storage
         ],
         quantityOptions: [
           { id: 'quantity_runs', label: 'No Per Shift', enabled: true, value: '' }

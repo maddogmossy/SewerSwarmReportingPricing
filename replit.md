@@ -24,6 +24,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **F606 MM4-150 Auto-Population Fix**: Implemented automatic population of purple length range fields in F606 configurations based on detected maximum total lengths from dashboard sections, with 10% safety buffer for proper cost calculation linking.
 - **Navigation Defaults**: System must always default to Utilities sector first (P003→P012 for CCTV). Dashboard entry should preserve report sector context.
 - **Multi-Sector Price Copying**: Sector cards support Ctrl+Click for selecting multiple sectors for price copying functionality across highlighted sectors.
+- **Single Source Day Rate System**: Eliminated dual storage confusion by migrating all day rates from `pricing_options` to MM4 blue values only. System now reads day rates exclusively from `mm_data.mm4Rows[0].blueValue` preventing synchronization issues and ensuring UI-driven pricing consistency.
 
 ## System Architecture
 
