@@ -80,23 +80,35 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     setMm5Data([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
     console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector}`);
     
-    // Auto-select sector in MM1 after clearing
+    // **ENHANCED MM1 SECTOR AUTO-HIGHLIGHTING** - Fix navigation from P003
     setTimeout(() => {
       const sectorToIdMapping = {
         'utilities': 'id1',
-        'adoption': 'id2',
+        'adoption': 'id2', 
         'highways': 'id3',
         'insurance': 'id4',
         'construction': 'id5',
         'domestic': 'id6'
       };
       
-      const correspondingId = sectorToIdMapping[sector];
+      const correspondingId = sectorToIdMapping[sector as keyof typeof sectorToIdMapping];
       if (correspondingId) {
-        console.log(`🎯 Auto-selecting MM1 sector: ${sector} → ${correspondingId}`);
+        console.log(`🎯 AUTO-SELECT DEBUG:`, {
+          autoSelectUtilities: sector === 'utilities',
+          autoSelectParam: correspondingId,
+          selectedId: correspondingId,
+          categoryId,
+          templateType: 'MMP1',
+          shouldTrigger: true,
+          currentURL: window.location.href
+        });
+        
+        // Force sector selection regardless of URL params or existing state
         setSelectedIds([correspondingId]);
+        setIdsWithConfig(prev => [...new Set([...prev, correspondingId])]);
+        console.log(`✅ MM1 sector auto-highlighted: ${sector} → ${correspondingId}`);
       }
-    }, 100);
+    }, 200); // Increased delay to ensure it runs after all other effects
   }, [sector, categoryId]);
 
   // Auto-save functionality
