@@ -405,12 +405,45 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   };
 
   // MM2 Color picker auto-save (independent from MM1 ID selection)
-  const handleMM1ColorChange = (color: string) => {
+  const handleMM1ColorChange = async (color: string) => {
     setHasUserChanges(true);
     setSelectedColor(color);
     setCustomColor(color);
-    queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-    triggerAutoSave();
+    
+    // Save immediately and THEN invalidate queries for instant P003 card color update
+    const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+    
+    try {
+      const mmData = {
+        selectedPipeSize: selectedPipeSizeForMM4,
+        selectedPipeSizeId: selectedPipeSizeId,
+        mm1Colors: color, // Use the new color immediately
+        mm2IdData: selectedIds,
+        mm3CustomPipeSizes: customPipeSizes,
+        mm4DataByPipeSize: mm4DataByPipeSize,
+        mm5Data: mm5Data
+      };
+
+      if (editId) {
+        const response = await fetch(`/api/pr2-clean/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryColor: color, // Update both categoryColor and mmData
+            mmData: mmData,
+            sector: sector
+          })
+        });
+        if (!response.ok) throw new Error('Color save failed');
+      }
+      
+      // ONLY invalidate after successful save
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      console.log(`🎨 MM2 Color updated immediately: ${color}`);
+    } catch (error) {
+      console.error('Error saving MM2 color:', error);
+    }
   };
 
   // Pipe size management
