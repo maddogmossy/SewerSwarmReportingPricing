@@ -675,6 +675,42 @@ export default function PR2Pricing() {
                       return true;
                     }
                     
+                    // **CRITICAL FIX**: P-number mapping for categories
+                    const P_NUMBER_MAPPING = {
+                      'utilities': { 
+                        'cctv': 'P012', 
+                        'cctv-jet-vac': 'P006', 
+                        'cctv-van-pack': 'P008', 
+                        'patching': 'P015',
+                        'jet-vac': 'P010',
+                        'van-pack': 'P011'
+                      },
+                      'adoption': { 
+                        'cctv': 'P112', 
+                        'cctv-jet-vac': 'P106', 
+                        'cctv-van-pack': 'P108', 
+                        'patching': 'P115',
+                        'jet-vac': 'P110',
+                        'van-pack': 'P111'
+                      },
+                      'highways': { 
+                        'cctv': 'P212', 
+                        'cctv-jet-vac': 'P206', 
+                        'cctv-van-pack': 'P208', 
+                        'patching': 'P215',
+                        'jet-vac': 'P210',
+                        'van-pack': 'P211'
+                      }
+                    };
+                    
+                    const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+                    const expectedPNumber = sectorMapping?.[category.id as keyof typeof sectorMapping];
+                    
+                    // Check for P-number match first (HIGHEST PRIORITY)
+                    if (expectedPNumber && config.categoryId === expectedPNumber) {
+                      return true;
+                    }
+                    
                     // Legacy exact match for cctv-jet-vac
                     if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
                     
