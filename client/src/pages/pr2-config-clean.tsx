@@ -177,10 +177,24 @@ export default function PR2ConfigClean() {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
-    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'patching' || categoryId === 'van-pack' || categoryId === 'jet-vac' || categoryId === 'cctv-cleansing-root-cutting' || categoryId === 'cctv' || categoryId === 'directional-water-cutter') {
-      return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, Patching, Van Pack, Jet Vac, CCTV/Cleansing/Root Cutting, CCTV, and Directional Water Cutter use MMP1 template with 5 placeholder UI cards
     } else if ((categoryId?.includes('-p006a') && categoryId !== 'patching-p006a')) {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
+    } else if (
+      // F-Series Equipment Configurations (All use MMP1 template)
+      categoryId === 'cctv-jet-vac' ||           // F606 - CCTV + Jet Vac
+      categoryId === 'cctv-van-pack' ||          // F608 - CCTV + Van Pack  
+      categoryId === 'cctv-cleansing-root-cutting' || // F611 - CCTV + Cleansing + Root Cutting
+      categoryId === 'cctv' ||                   // F612 - CCTV only
+      categoryId === 'directional-water-cutter' || // F614 - Directional Water Cutter
+      categoryId === 'patching' ||               // F615 - Patching
+      categoryId === 'f-robot-cutting' ||        // F619 - Robotic Cutting
+      // Individual Equipment Types
+      categoryId === 'van-pack' ||               // Van Pack only
+      categoryId === 'jet-vac' ||                // Jet Vac only  
+      // Test Configuration
+      categoryId === 'test-card'                 // Test Card
+    ) {
+      return 'MMP1'; // F-Series equipment and individual configurations use MMP1 template
     } else {
       // Default to MMP1 for any uncategorized templates
       return 'MMP1';
