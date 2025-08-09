@@ -3055,15 +3055,47 @@ export default function Dashboard() {
     
     console.log(`🎯 CHECKING CONFIG WARNINGS for default category: ${currentEquipmentPriority} (${defaultCategoryId})`);
 
-    // Find the first service section with a configuration warning that matches the current default category
-    for (const section of sections) {
-      // Only check service sections (structural uses patching config regardless of F690/F608 setting)
-      if (section.defectType !== 'service') continue;
+    // FIXED: Only check service sections that would actually use the selected F690/F608 configuration
+    const targetConfig = pr2Configurations?.find(config => config.categoryId === defaultCategoryId);
+    if (!targetConfig) {
+      console.log(`❌ No ${defaultCategoryId} configuration found - skipping warning checks`);
+      return;
+    }
+
+    // Filter sections to only those that would use this specific configuration
+    const relevantServiceSections = sections.filter(section => {
+      // Must be service type
+      if (section.defectType !== 'service') return false;
       
+      // Must need cleaning to use F690/F608
+      const needsCleaning = requiresCleaning(section.defects || '');
+      if (!needsCleaning) return false;
+      
+      // Must be in restricted item range that uses CCTV configurations
+      const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
+      if (!isRestrictedSection) return false;
+      
+      // Check if pipe size is supported by this configuration
+      const sectionPipeSize = section.pipeSize?.toString().replace(/mm.*$/i, '') || '0';
+      const mm4DataByPipeSize = targetConfig?.mmData?.mm4DataByPipeSize || {};
+      const hasPipeSizeSupport = Object.keys(mm4DataByPipeSize).some(key => key.startsWith(sectionPipeSize + '-'));
+      
+      return hasPipeSizeSupport;
+    });
+
+    console.log(`🔍 FILTERED SERVICE SECTIONS for ${defaultCategoryId}:`, {
+      totalSections: sections.length,
+      serviceSections: sections.filter(s => s.defectType === 'service').length,
+      relevantSections: relevantServiceSections.length,
+      itemNumbers: relevantServiceSections.map(s => s.itemNo)
+    });
+
+    // Check only the filtered relevant sections
+    for (const section of relevantServiceSections) {
       const costCalc = calculateAutoCost(section);
       
       if (costCalc && 'warningType' in costCalc && costCalc.warningType) {
-        // Check if this warning is for the currently selected default category
+        // Verify this warning is indeed for our target configuration
         const configCategoryId = costCalc.configData?.categoryId;
         
         if (configCategoryId === defaultCategoryId) {
@@ -3072,7 +3104,8 @@ export default function Dashboard() {
             method: costCalc.method,
             status: costCalc.status,
             configCategoryId,
-            defaultCategoryId
+            defaultCategoryId,
+            pipeSize: section.pipeSize
           });
           
           // Auto-trigger the configuration warning popup
@@ -3083,15 +3116,13 @@ export default function Dashboard() {
           });
           setShowConfigWarning(true);
           return; // Only show one warning at a time
-        } else {
-          console.log(`⏭️ SKIPPING CONFIG WARNING for section ${section.itemNo} - different category:`, {
-            configCategoryId,
-            defaultCategoryId,
-            currentPriority: currentEquipmentPriority
-          });
         }
+      } else {
+        console.log(`✅ Section ${section.itemNo} has no config warnings for ${defaultCategoryId}`);
       }
     }
+    
+    console.log(`✅ No config warnings found for ${defaultCategoryId} in ${relevantServiceSections.length} relevant sections`);
   };
 
   // Function to detect TP2 configuration issues and trigger validation warnings
