@@ -2136,15 +2136,6 @@ export default function Dashboard() {
               usingF690: true
             } : null
           });
-          console.log(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
-          
-          // Also force to localStorage to debug visibility issue  
-          try {
-            localStorage.setItem(`debug_section_${section.itemNo}`, JSON.stringify({
-              timestamp: Date.now(),
-              ...debugInfo
-            }));
-          } catch(e) {}
         }
           
         // CRITICAL DEBUG: Check service sections specifically - ITEM 3 FIRST
