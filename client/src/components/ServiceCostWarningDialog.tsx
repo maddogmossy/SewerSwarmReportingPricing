@@ -66,7 +66,7 @@ export default function ServiceCostWarningDialog({
     
     // Get equipment type from localStorage to ensure consistency with dashboard
     const currentEquipmentType = localStorage.getItem('equipmentPriority') || 
-                                 (configType.toLowerCase().includes('f608') ? 'f608' : 'f606');
+                                 (configType.toLowerCase().includes('f608') ? 'f608' : 'f690');
     
     // Save the cost decision to prevent future warnings
     const costDecision = {

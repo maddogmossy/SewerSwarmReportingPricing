@@ -606,10 +606,16 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
   const queryClient = useQueryClient();
   
-  // Equipment priority state with localStorage sync - TESTING: Force F606 default to test length validation
-  const [equipmentPriority, setEquipmentPriority] = useState<'f606' | 'f608'>(() => {
-    // TESTING: Force F606 as default to trigger length warnings (F606 has 10m, 15m limits)
-    return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+  // Equipment priority state with localStorage sync - F690 replaces F690
+  const [equipmentPriority, setEquipmentPriority] = useState<'f690' | 'f608'>(() => {
+    // Updated: F690 replaces F690 as default after configuration migration
+    const stored = localStorage.getItem('equipmentPriority');
+    if (stored === 'f690') {
+      // Auto-migrate old f690 preference to f690
+      localStorage.setItem('equipmentPriority', 'f690');
+      return 'f690';
+    }
+    return stored === 'f608' ? 'f608' : 'f690';
   });
 
   // Listen for equipment priority changes from popups
@@ -840,7 +846,7 @@ export default function Dashboard() {
     try {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
       const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
       
       const serviceDecision = existingDecisions.find((decision: any) => 
         decision.reportId === currentReportId && 
@@ -867,7 +873,7 @@ export default function Dashboard() {
     try {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
       const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
       
       const structuralDecision = existingDecisions.find((decision: any) => 
         decision.reportId === currentReportId && 
@@ -895,7 +901,7 @@ export default function Dashboard() {
     try {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
       const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f606';
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
       
       const structuralDecision = existingDecisions.find((decision: any) => 
         decision.reportId === currentReportId && 
@@ -966,7 +972,7 @@ export default function Dashboard() {
     
     // Save decision to localStorage to prevent repeated warnings
     const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-    const currentEquipmentType = equipmentPriority; // 'f606' or 'f608'
+    const currentEquipmentType = equipmentPriority; // 'f690' or 'f608'
     
     if (currentReportId && currentEquipmentType) {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
@@ -1097,7 +1103,7 @@ export default function Dashboard() {
     
     // Check if user has already applied a cost decision for current report and equipment
     const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-    const currentEquipmentType = equipmentPriority; // 'f606' or 'f608'
+    const currentEquipmentType = equipmentPriority; // 'f690' or 'f608'
     const currentReportId = new URLSearchParams(window.location.search).get('reportId');
     
     const existingStructuralDecision = existingDecisions.find((decision: any) => 
@@ -1289,7 +1295,7 @@ export default function Dashboard() {
       
       // Flexible status check - accept any equipment-specific calculated status
       const validServiceStatuses = [
-        'f606_calculated', 'f606_insufficient_items',
+        'f690_calculated', 'f690_insufficient_items',
         'f608_calculated', 'f608_insufficient_items'
       ];
       
@@ -1326,7 +1332,7 @@ export default function Dashboard() {
 
     // Check if user has already applied a cost decision for current report and equipment
     const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-    const currentEquipmentType = equipmentPriority; // 'f606' or 'f608'
+    const currentEquipmentType = equipmentPriority; // 'f690' or 'f608'
     const currentReportId = new URLSearchParams(window.location.search).get('reportId');
     
     const existingServiceDecision = existingDecisions.find((decision: any) => 
@@ -1877,7 +1883,7 @@ export default function Dashboard() {
           if (isWrcRecommendation && !section.recommendations.includes('No action required')) {
             console.log('🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item', section.itemNo);
             
-            // Check if section needs cleaning for F606 link
+            // Check if section needs cleaning for F690 link
             const needsCleaning = section.defects && (
               section.defects.includes('blocked') || 
               section.defects.includes('debris') || 
@@ -2240,7 +2246,7 @@ export default function Dashboard() {
               costValue: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
               status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
               method: costCalculation && 'method' in costCalculation ? costCalculation.method : 'NO_METHOD',
-              isF606Result: costCalculation && 'method' in costCalculation && costCalculation.method?.includes('F606')
+              isF690Result: costCalculation && 'method' in costCalculation && costCalculation.method?.includes('F690')
             });
           } else {
             // Fallback to auto cost calculation
@@ -3044,14 +3050,14 @@ export default function Dashboard() {
     if (configWarningDismissed || showConfigWarning) return;
 
     // Get current default category from localStorage
-    const currentEquipmentPriority = localStorage.getItem('equipmentPriority') || 'f606';
+    const currentEquipmentPriority = localStorage.getItem('equipmentPriority') || 'f690';
     const defaultCategoryId = currentEquipmentPriority === 'f608' ? 'cctv-van-pack' : 'cctv-jet-vac';
     
     console.log(`🎯 CHECKING CONFIG WARNINGS for default category: ${currentEquipmentPriority} (${defaultCategoryId})`);
 
     // Find the first service section with a configuration warning that matches the current default category
     for (const section of sections) {
-      // Only check service sections (structural uses patching config regardless of F606/F608 setting)
+      // Only check service sections (structural uses patching config regardless of F690/F608 setting)
       if (section.defectType !== 'service') continue;
       
       const costCalc = calculateAutoCost(section);
@@ -3951,7 +3957,7 @@ export default function Dashboard() {
     };
   };
 
-  // AUTO-POPULATE F606 MM4-150 PURPLE LENGTH FIELDS BASED ON DASHBOARD TOTAL LENGTHS
+  // AUTO-POPULATE F690 MM4-150 PURPLE LENGTH FIELDS BASED ON DASHBOARD TOTAL LENGTHS
   const autoPopulatePurpleLengthFields = (cctvConfig: any, currentSection: any, allSections: any[]) => {
     if (!cctvConfig?.mmData?.mm4DataByPipeSize) {
       return;
@@ -3960,7 +3966,7 @@ export default function Dashboard() {
     const mmData = cctvConfig.mmData;
     const sectionPipeSize = currentSection.pipeSize?.replace('mm', '');
     
-    // Find matching 150mm pipe size configuration (F606 MM4-150 target)
+    // Find matching 150mm pipe size configuration (F690 MM4-150 target)
     const targetPipeSizeKey = Object.keys(mmData.mm4DataByPipeSize).find(key => 
       key.split('-')[0] === '150'
     );
@@ -3993,7 +3999,7 @@ export default function Dashboard() {
     // Get MM4 data rows first
     const mm4Rows = mmData.mm4DataByPipeSize[targetPipeSizeKey] || [];
     
-    console.log('🔧 Auto-populating F606 MM4-150 purple length fields:', {
+    console.log('🔧 Auto-populating F690 MM4-150 purple length fields:', {
       currentSection: currentSection.itemNo,
       targetPipeSize: '150mm',
       maxTotalLengthDetected: maxTotalLength,
@@ -4040,7 +4046,7 @@ export default function Dashboard() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      console.log('✅ Successfully auto-populated F606 MM4-150 purple length fields:', {
+      console.log('✅ Successfully auto-populated F690 MM4-150 purple length fields:', {
         configurationId: cctvConfig.id,
         updatedRows: updatedMM4Rows.length,
         newPurpleLength: bufferedMaxLength,
@@ -4104,27 +4110,27 @@ export default function Dashboard() {
       const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
       
       if (needsCleaning && isRestrictedSection) {
-        // Find F606 and F608 configurations
-        const f606Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
+        // Find F690 and F608 configurations
+        const f690Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
         const f608Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
         
         // Check current equipment priority - CACHE CLEARING TEST
         console.log('🔍 EQUIPMENT PRIORITY DEBUG:', {
           equipmentPriority,
           localStorage_equipmentPriority: localStorage.getItem('equipmentPriority'),
-          f606Available: !!f606Config,
+          f690Available: !!f690Config,
           f608Available: !!f608Config,
-          f606Id: f606Config?.id,
+          f690Id: f690Config?.id,
           f608Id: f608Config?.id
         });
         
-        const cctvConfig = equipmentPriority === 'f608' ? f608Config : f606Config;
+        const cctvConfig = equipmentPriority === 'f608' ? f608Config : f690Config;
         
         console.log('🔍 SELECTED EQUIPMENT CONFIG:', {
           selectedConfig: cctvConfig?.id,
           selectedCategoryId: cctvConfig?.categoryId,
-          wouldUseF606: equipmentPriority !== 'f608',
-          f606PurpleLengths: f606Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
+          wouldUseF690: equipmentPriority !== 'f608',
+          f690PurpleLengths: f690Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
         });
         
         if (cctvConfig) {
@@ -4272,7 +4278,7 @@ export default function Dashboard() {
           const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
           const isDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
           
-          console.log('🔍 F606/F608 Day Rate Validation (after range check):', {
+          console.log('🔍 F690/F608 Day Rate Validation (after range check):', {
             itemNo: section.itemNo,
             equipmentPriority: equipmentPriority,
             configId: cctvConfig.id,
@@ -4288,7 +4294,7 @@ export default function Dashboard() {
               currency: '£',
               method: 'Day Rate Not Configured',
               status: 'day_rate_missing',
-              configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+              configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
               warningType: 'day_rate_missing',
               sectionData: {
                 itemNo: section.itemNo,
@@ -4403,7 +4409,7 @@ export default function Dashboard() {
           defects: section.defects,
           isExpectedService: section.defectType === 'service',
           hasServiceCodes: ['DER', 'DES', 'WL', 'RI', 'OB', 'SA'].some(code => section.defects?.includes(code)),
-          shouldRouteToF606: section.defectType === 'service'
+          shouldRouteToF690: section.defectType === 'service'
         });
       }
     }
@@ -4581,7 +4587,7 @@ export default function Dashboard() {
     
     // FIXED: Only process MM4 for SERVICE sections that need cleaning
     if (section.defectType === 'service' && needsCleaning && pr2Configurations && isRestrictedSection) {
-      // SERVICE SECTION MM4 PROCESSING: Only F606 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
+      // SERVICE SECTION MM4 PROCESSING: Only F690 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
       // F612 (cctv) excluded - CCTV only, not for cleaning service defects
       const cctvConfigs = pr2Configurations.filter((config: any) => 
         ['cctv-van-pack', 'cctv-jet-vac'].includes(config.categoryId) && 
@@ -4596,8 +4602,8 @@ export default function Dashboard() {
         filteringFor: ['cctv-van-pack', 'cctv-jet-vac']
       });
       
-      // DEFAULT PRIORITY: F606 (cctv-jet-vac) is default, but F608 (cctv-van-pack) takes priority if configured
-      const f606Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
+      // DEFAULT PRIORITY: F690 (cctv-jet-vac) is default, but F608 (cctv-van-pack) takes priority if configured
+      const f690Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
       const f608Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-van-pack');
       
       // Check if F608 has valid MM4 data (user configured it)
@@ -4606,9 +4612,9 @@ export default function Dashboard() {
       );
       
       // Selection logic: Respect user's equipment priority choice first
-      // Priority: User preference > F606 default > Available config as fallback
+      // Priority: User preference > F690 default > Available config as fallback
       const userPrefersF608 = equipmentPriority === 'f608';
-      const f606HasValidMM4 = f606Config?.mmData?.mm4Rows?.some((row: any) => 
+      const f690HasValidMM4 = f690Config?.mmData?.mm4Rows?.some((row: any) => 
         row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
       );
       
@@ -4618,18 +4624,18 @@ export default function Dashboard() {
       if (userPrefersF608 && f608Config) {
         // User chose F608 and it's available
         cctvConfig = f608Config;
-      } else if (!userPrefersF608 && f606Config) {
-        // User chose F606 explicitly and it's available
-        cctvConfig = f606Config;
+      } else if (!userPrefersF608 && f690Config) {
+        // User chose F690 explicitly and it's available
+        cctvConfig = f690Config;
       } else if (f608Config) {
-        // FIXED: Prefer F608 as default when available (was previously defaulting to F606)
+        // FIXED: Prefer F608 as default when available (was previously defaulting to F690)
         cctvConfig = f608Config;
         shouldUpdatePriority = true;
-        console.log('🔄 Using F608 as default - preferred over F606');
+        console.log('🔄 Using F608 as default - preferred over F690');
       } else {
-        // Fallback to F606 only if F608 not available
-        cctvConfig = f606Config;
-        console.log('🔄 Using F606 as fallback - F608 not available');
+        // Fallback to F690 only if F608 not available
+        cctvConfig = f690Config;
+        console.log('🔄 Using F690 as fallback - F608 not available');
       }
       
       // Sync equipment priority with actual selection (only when needed and not recently changed by user)
@@ -4638,11 +4644,11 @@ export default function Dashboard() {
       const recentUserChange = timeSinceLastChange < 5000; // 5 seconds grace period
       
       if (shouldUpdatePriority && !recentUserChange) {
-        const newPriority = cctvConfig?.categoryId === 'cctv-van-pack' ? 'f608' : 'f606';
+        const newPriority = cctvConfig?.categoryId === 'cctv-van-pack' ? 'f608' : 'f690';
         setEquipmentPriority(newPriority);
         localStorage.setItem('equipmentPriority', newPriority);
         console.log('🔄 Equipment Priority Auto-Sync:', {
-          reason: f608HasValidMM4 ? 'F608 has MM4 data configured' : 'F606 default selection',
+          reason: f608HasValidMM4 ? 'F608 has MM4 data configured' : 'F690 default selection',
           previousPriority: equipmentPriority,
           newPriority: newPriority,
           configUsed: cctvConfig?.categoryId,
@@ -4653,7 +4659,7 @@ export default function Dashboard() {
         console.log('🚫 Equipment Priority Auto-Sync SKIPPED - Recent user change detected:', {
           timeSinceLastChange: timeSinceLastChange,
           userPriority: equipmentPriority,
-          autoSelectWould: cctvConfig?.categoryId === 'cctv-van-pack' ? 'f608' : 'f606'
+          autoSelectWould: cctvConfig?.categoryId === 'cctv-van-pack' ? 'f608' : 'f690'
         });
       }
       
@@ -4661,23 +4667,23 @@ export default function Dashboard() {
       const enhancedLogging = section.itemNo === 22 || section.itemNo === 13 || section.itemNo === 3;
       
       console.log(enhancedLogging ? '🔍 ENHANCED MM4 Dynamic Config Selection:' : '🔍 MM4 Dynamic Config Selection:', {
-        CRITICAL_F606_VS_F608_ROUTING: section.itemNo === 3 ? 'Item 3 should use F608 for MM4 validation, not F606' : 'Normal routing',
+        CRITICAL_F690_VS_F608_ROUTING: section.itemNo === 3 ? 'Item 3 should use F608 for MM4 validation, not F690' : 'Normal routing',
         sectionId: section.itemNo,
         needsCleaning,
-        f606Config: f606Config ? { id: f606Config.id, categoryId: f606Config.categoryId, hasMMData: !!f606Config.mmData } : null,
+        f690Config: f690Config ? { id: f690Config.id, categoryId: f690Config.categoryId, hasMMData: !!f690Config.mmData } : null,
         f608Config: f608Config ? { id: f608Config.id, categoryId: f608Config.categoryId, hasMMData: !!f608Config.mmData } : null,
-        f606Available: !!f606Config,
+        f690Available: !!f690Config,
         f608Available: !!f608Config,
         f608HasValidMM4: f608HasValidMM4,
         userPrefersF608: userPrefersF608,
-        f606HasValidMM4: f606HasValidMM4,
+        f690HasValidMM4: f690HasValidMM4,
         selectedConfig: cctvConfig ? {
           id: cctvConfig.id,
           categoryId: cctvConfig.categoryId,
-          reason: (f606HasValidMM4 && f608HasValidMM4) ? `User preference: ${cctvConfig.categoryId}` : 
-                  cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 configured with MM4 data' : 'F606 default selection',
+          reason: (f690HasValidMM4 && f608HasValidMM4) ? `User preference: ${cctvConfig.categoryId}` : 
+                  cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 configured with MM4 data' : 'F690 default selection',
           hasMMData: !!cctvConfig.mmData,
-          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
           allConfiguredPipeSizes: enhancedLogging && cctvConfig.mmData ? Object.keys(cctvConfig.mmData.mm4DataByPipeSize || {}) : undefined
         } : null,
         currentSector: currentSector.id
@@ -4826,12 +4832,12 @@ export default function Dashboard() {
                 const pipeSizeKey = matchingPipeSizeKey;
                 const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
                 
-                // EQUIPMENT PRIORITY FIX: Respect equipment priority order - F606 first by default
+                // EQUIPMENT PRIORITY FIX: Respect equipment priority order - F690 first by default
                 const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
                 const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
                 
-                // Priority: F606 default, F608 only if explicitly chosen
-                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'f606';
+                // Priority: F690 default, F608 only if explicitly chosen
+                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'f690';
                 let bufferedValue;
                 if (equipmentPriority === 'f608') {
                   bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
@@ -4885,12 +4891,12 @@ export default function Dashboard() {
                 purpleLengthFromBuffer: getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'),
                 lengthMatch: lengthMatch,
                 bufferKeys: {
-                  f606Key: `606-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
+                  f690Key: `606-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
                   f608Key: `608-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`
                 },
                 matchingPipeSizeKey: matchingPipeSizeKey,
                 cctvConfigCategoryId: cctvConfig.categoryId,
-                equipmentPriority: localStorage.getItem('equipmentPriority') || 'f606',
+                equipmentPriority: localStorage.getItem('equipmentPriority') || 'f690',
                 RAW_COMPARISON: `30.24m section vs ${purpleLength}m config = ${lengthMatch ? 'PASS' : 'FAIL - CAUSES POPUP'}`
               });
             }
@@ -4934,7 +4940,7 @@ export default function Dashboard() {
             
             if (debrisMatch && adjustedLengthMatch && hasValidRate) {
               // Section matches MM4 criteria - calculate cost
-              // F606/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
+              // F690/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
               // Blue value = day rate (e.g., £1850 per day) - can be inherited from Row 1
               // Green value = runs per shift (e.g., 22 runs) - Row 2 specific
               
@@ -4977,7 +4983,7 @@ export default function Dashboard() {
                 minimumQuantity: greenValue, // Required minimum from green window
                 debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
                 lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`,
-                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
                 inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0,
                 expectedCalculation: `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run`,
                 allPipeSizeConfigs: isSpecialTracking ? Object.keys(mmData.mm4DataByPipeSize || {}) : undefined
@@ -4994,10 +5000,10 @@ export default function Dashboard() {
               return {
                 cost: totalCost, // Display calculated service cost
                 currency: '£',
-                method: cctvConfig.categoryId === 'cctv-van-pack' ? `F608 Row ${mm4Row.id} Service Cost` : `F606 Row ${mm4Row.id} Service Cost`,
+                method: cctvConfig.categoryId === 'cctv-van-pack' ? `F608 Row ${mm4Row.id} Service Cost` : `F690 Row ${mm4Row.id} Service Cost`,
                 status: meetsMinimumRuns 
-                  ? (equipmentPriority === 'f608' ? 'f608_calculated' : 'f606_calculated')
-                  : (equipmentPriority === 'f608' ? 'f608_insufficient_items' : 'f606_insufficient_items'),
+                  ? (equipmentPriority === 'f608' ? 'f608_calculated' : 'f690_calculated')
+                  : (equipmentPriority === 'f608' ? 'f608_insufficient_items' : 'f690_insufficient_items'),
                 dayRate: dayRate,
                 runsPerShift: runsPerShift,
                 ratePerRun: ratePerRun,
@@ -5006,8 +5012,8 @@ export default function Dashboard() {
                 totalServiceItems: totalServiceItems,
                 meetsMinimumRuns: meetsMinimumRuns,
                 mm4RowUsed: mm4Row.id,
-                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F606 Jet Vac',
-                recommendation: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'F608' : 'F606'} Row ${mm4Row.id}: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
+                recommendation: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'F608' : 'F690'} Row ${mm4Row.id}: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
               };
             }
           }
@@ -6173,22 +6179,22 @@ export default function Dashboard() {
     return meterageA - meterageB;
   });
 
-  // AUTO-POPULATE F606 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
+  // AUTO-POPULATE F690 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
   useEffect(() => {
     if (sectionData?.length > 0 && pr2Configurations?.length > 0) {
-      // Trigger auto-population for F606 configurations
-      const f606Config = pr2Configurations.find(config => 
+      // Trigger auto-population for F690 configurations
+      const f690Config = pr2Configurations.find(config => 
         config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
       );
       
-      if (f606Config && f606Config.mmData) {
-        console.log('🔧 Triggering F606 MM4-150 purple length auto-population for', sectionData.length, 'sections');
+      if (f690Config && f690Config.mmData) {
+        console.log('🔧 Triggering F690 MM4-150 purple length auto-population for', sectionData.length, 'sections');
         console.log('🔍 Auto-population disabled to preserve user-configured MM4 values:', sectionData.slice(0, 5).map(s => ({
           itemNo: s.itemNo,
           pipeSize: s.pipeSize,
           totalLength: s.totalLength
         })));
-        // DISABLED: autoPopulatePurpleLengthFields(f606Config, sectionData[0], sectionData);
+        // DISABLED: autoPopulatePurpleLengthFields(f690Config, sectionData[0], sectionData);
         // This was overriding user-configured MM4 purple values with auto-calculated ones
       }
     }

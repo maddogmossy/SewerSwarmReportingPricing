@@ -239,8 +239,16 @@ export default function PR2ConfigClean() {
         const data = await response.json();
         return data;
       } catch (error: any) {
-        // If configuration not found (404), redirect to create mode
+        // If configuration not found (404), check for deleted F606 and redirect to F690
         if (error.message && error.message.includes('404')) {
+          if (editId === '606' || editId === 606) {
+            // F606 was replaced by F690 - redirect to F690 configuration
+            const newUrl = `/pr2-config-clean?edit=690&categoryId=cctv-jet-vac&sector=${sector}`;
+            console.log('🔄 Redirecting deleted F606 to F690:', { from: editId, to: 690, newUrl });
+            setLocation(newUrl);
+            return null;
+          }
+          // For other 404s, redirect to create mode
           const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}`;
           setLocation(newUrl);
           return null;
@@ -275,7 +283,7 @@ export default function PR2ConfigClean() {
         'van-pack': `${formattedSize} Van Pack Configuration`,
         'jet-vac': `${formattedSize} Jet Vac Configuration`,
         'cctv-van-pack': `${formattedSize} F608 CCTV Van Pack Configuration`,
-        'cctv-jet-vac': `${formattedSize} F606 CCTV Jet Vac Configuration`,
+        'cctv-jet-vac': `${formattedSize} F690 CCTV Jet Vac Configuration`,
         'cctv-cleansing-root-cutting': `${formattedSize} F611 CCTV Cleansing Root Cutting Configuration`,
         'directional-water-cutter': `${formattedSize} F614 Directional Water Cutter Configuration`,
         'ambient-lining': `${formattedSize} F620 Ambient Lining Configuration`,

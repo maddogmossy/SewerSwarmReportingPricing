@@ -40,11 +40,11 @@ export function ConfigurationWarningDialog({
       
       // For service defects, use the specific category from configData with correct F-series mapping
       if (configData?.categoryId === 'cctv-van-pack') return 'F608 CCTV/Van Pack';
-      if (configData?.categoryId === 'cctv-jet-vac') return 'F606 CCTV/Jet Vac';
+      if (configData?.categoryId === 'cctv-jet-vac') return 'F690 CCTV/Jet Vac';
       if (configData?.categoryId === 'cctv') return 'F612 CCTV';
       
       // Fallback for service defects without specific config
-      return 'F606/F608/F612 Service';
+      return 'F690/F608/F612 Service';
     };
     
     const configType = getSpecificConfigType();
