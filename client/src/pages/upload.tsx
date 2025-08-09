@@ -394,8 +394,8 @@ export default function Upload() {
                 <h3 className="font-medium">Select Applicable Sector</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {sectors.map((sector) => {
-                    // Apply dynamic styling from sector profiles
-                    const activeProfile = sectorProfiles[sector.id];
+                    // Don't apply profile styling for highlighting - use default sector colors only
+                    const activeProfile = null;
                     
                     // Color mapping for all sectors
                     const getColorFromName = (colorName: string) => {
