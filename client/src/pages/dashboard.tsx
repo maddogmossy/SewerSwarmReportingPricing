@@ -4867,6 +4867,27 @@ export default function Dashboard() {
             // CRITICAL FIX: Always require blueValue (day rate) for valid cost calculation - without it, show blue triangle
             const hasValidRate = blueValue > 0 && (greenValue > 0 || purpleDebris > 0);
             
+            // CRITICAL DEBUG: Item 3 length validation to fix "Length Out of Range" popup
+            if (section.itemNo === 3) {
+              console.log(`🚨 ITEM 3 LENGTH DEBUGGING:`, {
+                POPUP_ISSUE: 'Item 3 shows Length Out of Range - diagnosing',
+                itemNo: section.itemNo,
+                sectionLength: sectionLength,
+                purpleLength: purpleLength,
+                purpleLengthFromMM4Row: mm4Row.purpleLength,
+                purpleLengthFromBuffer: getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'),
+                lengthMatch: lengthMatch,
+                bufferKeys: {
+                  f606Key: `606-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
+                  f608Key: `608-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`
+                },
+                matchingPipeSizeKey: matchingPipeSizeKey,
+                cctvConfigCategoryId: cctvConfig.categoryId,
+                equipmentPriority: localStorage.getItem('equipmentPriority') || 'f606',
+                RAW_COMPARISON: `30.24m section vs ${purpleLength}m config = ${lengthMatch ? 'PASS' : 'FAIL - CAUSES POPUP'}`
+              });
+            }
+            
             // DEBUG: Item 3 and Item 13 Row 3 and Items 21-23 validation tracking
             if (section.itemNo === 3 || (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
               console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION [${section.itemNo === 3 ? 'FOCUSED' : 'NORMAL'}]:`, {
