@@ -106,15 +106,24 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           mm5Data: mm5Data
         };
 
-        // Dynamic naming based on category with template classification
+        // Clean category display names matching card definitions
         const getCategoryDisplayName = () => {
-          if (categoryId === 'test-card') return 'MMP1-BGP Template (F605)';
-          if (categoryId === 'patching') return 'MMP1-BGP Template (F607)';
-          if (categoryId === 'cctv-jet-vac') return 'MMP1-BGP Template (F606)';
-          if (categoryId === 'cctv-van-pack') return 'MMP1-BGP Template (F608)';
-          if (categoryId === 'van-pack') return 'MMP1-BGP Template (F609)';
-          if (categoryId === 'cctv') return 'MMP1-BG Template (F612)';
-          return 'MMP1 Template';
+          if (categoryId === 'cctv') return 'CCTV';
+          if (categoryId === 'van-pack') return 'Van Pack';
+          if (categoryId === 'jet-vac') return 'Jet Vac';
+          if (categoryId === 'cctv-van-pack') return 'CCTV/Van Pack';
+          if (categoryId === 'cctv-jet-vac') return 'CCTV/Jet Vac';
+          if (categoryId === 'cctv-cleansing-root-cutting') return 'CCTV/Cleansing/Root Cutting';
+          if (categoryId === 'directional-water-cutter') return 'Directional Water Cutter';
+          if (categoryId === 'patching') return 'Patching';
+          if (categoryId === 'ambient-lining') return 'Ambient Lining';
+          if (categoryId === 'hot-cure-lining') return 'Hot Cure Lining';
+          if (categoryId === 'uv-lining') return 'UV Lining';
+          if (categoryId === 'f-robot-cutting') return 'Robotic Cutting';
+          if (categoryId === 'excavation') return 'Excavation';
+          if (categoryId === 'tankering') return 'Tankering';
+          if (categoryId === 'test-card') return 'Test Card';
+          return 'Configuration';
         };
 
         const getCategoryDescription = () => {

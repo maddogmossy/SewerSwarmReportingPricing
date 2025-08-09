@@ -3547,7 +3547,30 @@ export default function PR2ConfigClean() {
                 className="text-2xl font-bold text-gray-900"
                 data-component="page-title"
               >
-                {formData.categoryName ? `${formData.categoryName} - Price Configuration` : 'TP1 - Configuration'}
+                {(() => {
+                  // Use clean category names from card definitions, not database categoryName
+                  const getCategoryDisplayName = () => {
+                    if (categoryId === 'cctv') return 'CCTV';
+                    if (categoryId === 'van-pack') return 'Van Pack';
+                    if (categoryId === 'jet-vac') return 'Jet Vac';
+                    if (categoryId === 'cctv-van-pack') return 'CCTV/Van Pack';
+                    if (categoryId === 'cctv-jet-vac') return 'CCTV/Jet Vac';
+                    if (categoryId === 'cctv-cleansing-root-cutting') return 'CCTV/Cleansing/Root Cutting';
+                    if (categoryId === 'directional-water-cutter') return 'Directional Water Cutter';
+                    if (categoryId === 'patching') return 'Patching';
+                    if (categoryId === 'ambient-lining') return 'Ambient Lining';
+                    if (categoryId === 'hot-cure-lining') return 'Hot Cure Lining';
+                    if (categoryId === 'uv-lining') return 'UV Lining';
+                    if (categoryId === 'f-robot-cutting') return 'Robotic Cutting';
+                    if (categoryId === 'excavation') return 'Excavation';
+                    if (categoryId === 'tankering') return 'Tankering';
+                    if (categoryId === 'test-card') return 'Test Card';
+                    return formData.categoryName || 'Configuration';
+                  };
+                  
+                  const displayName = getCategoryDisplayName();
+                  return `${displayName} - Price Configuration`;
+                })()}
               </h1>
               
               {/* Template Information Display */}
