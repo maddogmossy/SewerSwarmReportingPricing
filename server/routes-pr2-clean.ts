@@ -156,11 +156,108 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       const sector = req.query.sector as string;
       const categoryId = req.query.categoryId as string;
       
+      // Helper function to generate P-number for categoryId lookups
+      const generatePNumber = (categoryId: string, sector: string): string => {
+        const P_NUMBER_MAPPING = {
+          'utilities': { 
+            'cctv': 'P012', 
+            'cctv-jet-vac': 'P006', 
+            'cctv-van-pack': 'P008', 
+            'patching': 'P015',
+            'jet-vac': 'P010',
+            'van-pack': 'P011',
+            'directional-water-cutter': 'P014',
+            'ambient-lining': 'P020',
+            'hot-cure-lining': 'P021',
+            'uv-lining': 'P022',
+            'excavation': 'P023',
+            'tankering': 'P024'
+          },
+          'adoption': { 
+            'cctv': 'P112', 
+            'cctv-jet-vac': 'P106', 
+            'cctv-van-pack': 'P108', 
+            'patching': 'P115',
+            'jet-vac': 'P110',
+            'van-pack': 'P111',
+            'directional-water-cutter': 'P114',
+            'ambient-lining': 'P120',
+            'hot-cure-lining': 'P121',
+            'uv-lining': 'P122',
+            'excavation': 'P123',
+            'tankering': 'P124'
+          },
+          'highways': { 
+            'cctv': 'P212', 
+            'cctv-jet-vac': 'P206', 
+            'cctv-van-pack': 'P208', 
+            'patching': 'P215',
+            'jet-vac': 'P210',
+            'van-pack': 'P211',
+            'directional-water-cutter': 'P214',
+            'ambient-lining': 'P220',
+            'hot-cure-lining': 'P221',
+            'uv-lining': 'P222',
+            'excavation': 'P223',
+            'tankering': 'P224'
+          },
+          'insurance': { 
+            'cctv': 'P312', 
+            'cctv-jet-vac': 'P306', 
+            'cctv-van-pack': 'P308', 
+            'patching': 'P315',
+            'jet-vac': 'P310',
+            'van-pack': 'P311',
+            'directional-water-cutter': 'P314',
+            'ambient-lining': 'P320',
+            'hot-cure-lining': 'P321',
+            'uv-lining': 'P322',
+            'excavation': 'P323',
+            'tankering': 'P324'
+          },
+          'construction': { 
+            'cctv': 'P412', 
+            'cctv-jet-vac': 'P406', 
+            'cctv-van-pack': 'P408', 
+            'patching': 'P415',
+            'jet-vac': 'P410',
+            'van-pack': 'P411',
+            'directional-water-cutter': 'P414',
+            'ambient-lining': 'P420',
+            'hot-cure-lining': 'P421',
+            'uv-lining': 'P422',
+            'excavation': 'P423',
+            'tankering': 'P424'
+          },
+          'domestic': { 
+            'cctv': 'P512', 
+            'cctv-jet-vac': 'P506', 
+            'cctv-van-pack': 'P508', 
+            'patching': 'P515',
+            'jet-vac': 'P510',
+            'van-pack': 'P511',
+            'directional-water-cutter': 'P514',
+            'ambient-lining': 'P520',
+            'hot-cure-lining': 'P521',
+            'uv-lining': 'P522',
+            'excavation': 'P523',
+            'tankering': 'P524'
+          }
+        };
+
+        // Get P-number for this sector and category, or fallback to original categoryId
+        const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+        return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
+      };
+      
       // API request logging removed
       
       let configurations;
       if (sector && categoryId) {
-        // Filter by userId, sector, and categoryId using single sector field
+        // Use P-number system for sector-specific lookup
+        const sectorSpecificCategoryId = generatePNumber(categoryId, sector);
+        
+        // Filter by userId, sector, and P-number categoryId using single sector field
         // Filtering logging removed
         try {
           configurations = await db
@@ -168,7 +265,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
             .from(pr2Configurations)
             .where(and(
               eq(pr2Configurations.userId, "test-user"),
-              eq(pr2Configurations.categoryId, categoryId),
+              eq(pr2Configurations.categoryId, sectorSpecificCategoryId),
               eq(pr2Configurations.sector, sector)
             ));
         } catch (queryError) {
@@ -176,7 +273,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           throw queryError;
         }
       } else if (categoryId) {
-        // Filter by userId and categoryId only
+        // Filter by userId and categoryId only (search all sectors for this category)
         // Filtering logging removed
         configurations = await db
           .select()
@@ -392,11 +489,107 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         mmData
       } = req.body;
 
+      // Generate sector-specific P-number for categoryId to ensure data isolation
+      const generatePNumber = (categoryId: string, sector: string): string => {
+        const P_NUMBER_MAPPING = {
+          'utilities': { 
+            'cctv': 'P012', 
+            'cctv-jet-vac': 'P006', 
+            'cctv-van-pack': 'P008', 
+            'patching': 'P015',
+            'jet-vac': 'P010',
+            'van-pack': 'P011',
+            'directional-water-cutter': 'P014',
+            'ambient-lining': 'P020',
+            'hot-cure-lining': 'P021',
+            'uv-lining': 'P022',
+            'excavation': 'P023',
+            'tankering': 'P024'
+          },
+          'adoption': { 
+            'cctv': 'P112', 
+            'cctv-jet-vac': 'P106', 
+            'cctv-van-pack': 'P108', 
+            'patching': 'P115',
+            'jet-vac': 'P110',
+            'van-pack': 'P111',
+            'directional-water-cutter': 'P114',
+            'ambient-lining': 'P120',
+            'hot-cure-lining': 'P121',
+            'uv-lining': 'P122',
+            'excavation': 'P123',
+            'tankering': 'P124'
+          },
+          'highways': { 
+            'cctv': 'P212', 
+            'cctv-jet-vac': 'P206', 
+            'cctv-van-pack': 'P208', 
+            'patching': 'P215',
+            'jet-vac': 'P210',
+            'van-pack': 'P211',
+            'directional-water-cutter': 'P214',
+            'ambient-lining': 'P220',
+            'hot-cure-lining': 'P221',
+            'uv-lining': 'P222',
+            'excavation': 'P223',
+            'tankering': 'P224'
+          },
+          'insurance': { 
+            'cctv': 'P312', 
+            'cctv-jet-vac': 'P306', 
+            'cctv-van-pack': 'P308', 
+            'patching': 'P315',
+            'jet-vac': 'P310',
+            'van-pack': 'P311',
+            'directional-water-cutter': 'P314',
+            'ambient-lining': 'P320',
+            'hot-cure-lining': 'P321',
+            'uv-lining': 'P322',
+            'excavation': 'P323',
+            'tankering': 'P324'
+          },
+          'construction': { 
+            'cctv': 'P412', 
+            'cctv-jet-vac': 'P406', 
+            'cctv-van-pack': 'P408', 
+            'patching': 'P415',
+            'jet-vac': 'P410',
+            'van-pack': 'P411',
+            'directional-water-cutter': 'P414',
+            'ambient-lining': 'P420',
+            'hot-cure-lining': 'P421',
+            'uv-lining': 'P422',
+            'excavation': 'P423',
+            'tankering': 'P424'
+          },
+          'domestic': { 
+            'cctv': 'P512', 
+            'cctv-jet-vac': 'P506', 
+            'cctv-van-pack': 'P508', 
+            'patching': 'P515',
+            'jet-vac': 'P510',
+            'van-pack': 'P511',
+            'directional-water-cutter': 'P514',
+            'ambient-lining': 'P520',
+            'hot-cure-lining': 'P521',
+            'uv-lining': 'P522',
+            'excavation': 'P523',
+            'tankering': 'P524'
+          }
+        };
+
+        // Get P-number for this sector and category, or fallback to original categoryId
+        const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+        return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
+      };
+
+      const sectorSpecificCategoryId = generatePNumber(req.body.categoryId || "clean-" + Date.now(), sector || 'utilities');
+
       const [newConfig] = await db
         .insert(pr2Configurations)
         .values({
           userId: "test-user",
-          categoryId: req.body.categoryId || "clean-" + Date.now(),
+          categoryId: sectorSpecificCategoryId, // Use P-number instead of raw categoryId
           categoryName: categoryName || 'New Clean Configuration',
           pipeSize: req.body.pipeSize || '150', // Default to 150mm if not specified
           description: description || 'Clean PR2 configuration',
