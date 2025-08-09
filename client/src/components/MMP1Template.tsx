@@ -44,7 +44,7 @@ const UK_PIPE_SIZES = [
 ];
 
 export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1TemplateProps) {
-  // State management
+  // State management - Initialize empty to prevent persistent highlighting
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
   const [customPipeSizes, setCustomPipeSizes] = useState<number[]>([]);
@@ -67,6 +67,18 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const [showRangeWarning, setShowRangeWarning] = useState<boolean>(false);
   const [pendingRangeValue, setPendingRangeValue] = useState<string>('');
   const [pendingRowId, setPendingRowId] = useState<number | null>(null);
+
+  // SECTOR INDEPENDENCE: Clear selectedIds and reset states when sector or category changes
+  useEffect(() => {
+    console.log(`🔧 SECTOR INDEPENDENCE: Clearing selections for sector=${sector} categoryId=${categoryId}`);
+    // Always start fresh to prevent cross-contamination between sectors
+    setSelectedIds([]);
+    setIdsWithConfig([]);
+    // Reset MM4/MM5 data to defaults for new sector context
+    setMm4DataByPipeSize({});
+    setMm5Data([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
+    console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector}`);
+  }, [sector, categoryId]);
 
   // Auto-save functionality
   const triggerAutoSave = useCallback(() => {

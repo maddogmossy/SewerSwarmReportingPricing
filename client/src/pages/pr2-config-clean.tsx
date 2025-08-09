@@ -2384,9 +2384,11 @@ export default function PR2ConfigClean() {
           if (config.mmData.mm3CustomPipeSizes) {
             setCustomPipeSizes(config.mmData.mm3CustomPipeSizes);
           }
-          if (config.mmData.mm2IdData) {
-            setSelectedIds(config.mmData.mm2IdData);
-          }
+          // SECTOR INDEPENDENCE FIX: Don't load previous selections to prevent unwanted highlighting
+          // Each sector should start fresh without cross-contamination
+          // if (config.mmData.mm2IdData) {
+          //   setSelectedIds(config.mmData.mm2IdData);
+          // }
           
           // Load patching green window data for F615 only if we don't have local data
           if (config.mmData.patchingGreenData && categoryId === 'patching') {
@@ -3548,6 +3550,120 @@ export default function PR2ConfigClean() {
                 data-component="page-title"
               >
                 {(() => {
+                  // P-Series Page Identification System
+                  const getPSeriesNumber = (sector: string, categoryId: string): string => {
+                    const sectorPageMap: Record<string, Record<string, string>> = {
+                      'utilities': {
+                        'cctv-jet-vac': 'P006',        // F606 - CCTV/Jet Vac
+                        'cctv-van-pack': 'P008',       // F608 - CCTV/Van Pack  
+                        'cctv-cleansing-root-cutting': 'P011', // F611 - CCTV/Cleansing/Root Cutting
+                        'cctv': 'P012',                // F612 - CCTV only
+                        'directional-water-cutter': 'P014', // F614 - Directional Water Cutter
+                        'patching': 'P015',            // F615 - Patching
+                        'f-robot-cutting': 'P019',     // F619 - Robotic Cutting
+                        'ambient-lining': 'P020',      // F620 - Ambient Lining
+                        'hot-cure-lining': 'P021',     // F621 - Hot Cure Lining
+                        'uv-lining': 'P022',           // F622 - UV Lining
+                        'excavation': 'P023',          // F623 - Excavation
+                        'tankering': 'P024',           // F624 - Tankering
+                        'van-pack': 'P026',            // Van Pack only
+                        'jet-vac': 'P027',             // Jet Vac only
+                      },
+                      'adoption': {
+                        'cctv-jet-vac': 'P106',        // F606 - CCTV/Jet Vac
+                        'cctv-van-pack': 'P108',       // F608 - CCTV/Van Pack
+                        'cctv-cleansing-root-cutting': 'P111', // F611 - CCTV/Cleansing/Root Cutting
+                        'cctv': 'P112',                // F612 - CCTV only
+                        'directional-water-cutter': 'P114', // F614 - Directional Water Cutter
+                        'patching': 'P115',            // F615 - Patching
+                        'f-robot-cutting': 'P119',     // F619 - Robotic Cutting
+                        'ambient-lining': 'P120',      // F620 - Ambient Lining
+                        'hot-cure-lining': 'P121',     // F621 - Hot Cure Lining
+                        'uv-lining': 'P122',           // F622 - UV Lining
+                        'excavation': 'P123',          // F623 - Excavation
+                        'tankering': 'P124',           // F624 - Tankering
+                      },
+                      'highways': {
+                        'cctv-jet-vac': 'P206',        // F606 - CCTV/Jet Vac
+                        'cctv-van-pack': 'P208',       // F608 - CCTV/Van Pack
+                        'cctv-cleansing-root-cutting': 'P211', // F611 - CCTV/Cleansing/Root Cutting
+                        'cctv': 'P212',                // F612 - CCTV only
+                        'directional-water-cutter': 'P214', // F614 - Directional Water Cutter
+                        'patching': 'P215',            // F615 - Patching
+                        'f-robot-cutting': 'P219',     // F619 - Robotic Cutting
+                        'ambient-lining': 'P220',      // F620 - Ambient Lining
+                        'hot-cure-lining': 'P221',     // F621 - Hot Cure Lining
+                        'uv-lining': 'P222',           // F622 - UV Lining
+                        'excavation': 'P223',          // F623 - Excavation
+                        'tankering': 'P224',           // F624 - Tankering
+                      },
+                      'insurance': {
+                        'cctv-jet-vac': 'P306',        // F606 - CCTV/Jet Vac
+                        'cctv-van-pack': 'P308',       // F608 - CCTV/Van Pack
+                        'cctv-cleansing-root-cutting': 'P311', // F611 - CCTV/Cleansing/Root Cutting
+                        'cctv': 'P312',                // F612 - CCTV only
+                        'directional-water-cutter': 'P314', // F614 - Directional Water Cutter
+                        'patching': 'P315',            // F615 - Patching
+                        'f-robot-cutting': 'P319',     // F619 - Robotic Cutting
+                        'ambient-lining': 'P320',      // F620 - Ambient Lining
+                        'hot-cure-lining': 'P321',     // F621 - Hot Cure Lining
+                        'uv-lining': 'P322',           // F622 - UV Lining
+                        'excavation': 'P323',          // F623 - Excavation
+                        'tankering': 'P324',           // F624 - Tankering
+                      },
+                      'construction': {
+                        'cctv-jet-vac': 'P406',        // F606 - CCTV/Jet Vac
+                        'cctv-van-pack': 'P408',       // F608 - CCTV/Van Pack
+                        'cctv-cleansing-root-cutting': 'P411', // F611 - CCTV/Cleansing/Root Cutting
+                        'cctv': 'P412',                // F612 - CCTV only
+                        'directional-water-cutter': 'P414', // F614 - Directional Water Cutter
+                        'patching': 'P415',            // F615 - Patching
+                        'f-robot-cutting': 'P419',     // F619 - Robotic Cutting
+                        'ambient-lining': 'P420',      // F620 - Ambient Lining
+                        'hot-cure-lining': 'P421',     // F621 - Hot Cure Lining
+                        'uv-lining': 'P422',           // F622 - UV Lining
+                        'excavation': 'P423',          // F623 - Excavation
+                        'tankering': 'P424',           // F624 - Tankering
+                      },
+                      'domestic': {
+                        'cctv-jet-vac': 'P506',        // F606 - CCTV/Jet Vac
+                        'cctv-van-pack': 'P508',       // F608 - CCTV/Van Pack
+                        'cctv-cleansing-root-cutting': 'P511', // F611 - CCTV/Cleansing/Root Cutting
+                        'cctv': 'P512',                // F612 - CCTV only
+                        'directional-water-cutter': 'P514', // F614 - Directional Water Cutter
+                        'patching': 'P515',            // F615 - Patching
+                        'f-robot-cutting': 'P519',     // F619 - Robotic Cutting
+                        'ambient-lining': 'P520',      // F620 - Ambient Lining
+                        'hot-cure-lining': 'P521',     // F621 - Hot Cure Lining
+                        'uv-lining': 'P522',           // F622 - UV Lining
+                        'excavation': 'P523',          // F623 - Excavation
+                        'tankering': 'P524',           // F624 - Tankering
+                      }
+                    };
+                    
+                    return sectorPageMap[sector]?.[categoryId] || 'P000';
+                  };
+
+                  // Get F-Series number from categoryId
+                  const getFSeriesNumber = (categoryId: string): string => {
+                    const fSeriesMap: Record<string, string> = {
+                      'cctv-jet-vac': 'F606',
+                      'cctv-van-pack': 'F608', 
+                      'cctv-cleansing-root-cutting': 'F611',
+                      'cctv': 'F612',
+                      'directional-water-cutter': 'F614',
+                      'patching': 'F615',
+                      'f-robot-cutting': 'F619',
+                      'ambient-lining': 'F620',
+                      'hot-cure-lining': 'F621',
+                      'uv-lining': 'F622',
+                      'excavation': 'F623',
+                      'tankering': 'F624',
+                    };
+                    
+                    return fSeriesMap[categoryId] || 'F000';
+                  };
+
                   // Use clean category names from card definitions, not database categoryName
                   const getCategoryDisplayName = () => {
                     if (categoryId === 'cctv') return 'CCTV';
@@ -3568,8 +3684,12 @@ export default function PR2ConfigClean() {
                     return formData.categoryName || 'Configuration';
                   };
                   
+                  const pNumber = getPSeriesNumber(sector, categoryId || '');
+                  const fNumber = getFSeriesNumber(categoryId || '');
                   const displayName = getCategoryDisplayName();
-                  return `${displayName} - Price Configuration`;
+                  
+                  // Create comprehensive page title with P-Series identification
+                  return `${pNumber}-${sector.charAt(0).toUpperCase() + sector.slice(1)} | ${fNumber} - ${displayName} Price Configuration`;
                 })()}
               </h1>
               
