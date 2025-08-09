@@ -2121,6 +2121,7 @@ export default function Dashboard() {
         
         // CRITICAL DEBUG: Force service item debugging to ALWAYS appear with alert
         if (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8) {
+          const autoCostResult = calculateAutoCost(section);
           const debugInfo = {
             itemNo: section.itemNo,
             defectType: section.defectType,
@@ -2129,10 +2130,17 @@ export default function Dashboard() {
             forceServiceCalculation,
             finalHasDefectsRequiringCost,
             willEnterCostLogic: finalHasDefectsRequiringCost,
-            defects: section.defects?.substring(0, 60)
+            defects: section.defects?.substring(0, 60),
+            autoCostResult: autoCostResult ? {
+              cost: autoCostResult.cost || 0,
+              status: autoCostResult.status || 'unknown',
+              method: autoCostResult.method || 'none',
+              warningType: autoCostResult.warningType || null,
+              hasWarning: 'warningType' in autoCostResult
+            } : null
           };
-          console.error(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
-          console.warn(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
+          console.error(`🔥 SERVICE SECTION ${section.itemNo} - COST TRACE:`, debugInfo);
+          console.warn(`🔥 SERVICE SECTION ${section.itemNo} - COST TRACE:`, debugInfo);
           console.log(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
           
           // Also force to localStorage to debug visibility issue  
