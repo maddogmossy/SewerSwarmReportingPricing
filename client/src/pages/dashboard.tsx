@@ -3062,7 +3062,7 @@ export default function Dashboard() {
       return;
     }
 
-    // Filter sections to only those that would use this specific configuration
+    // Filter sections to only those that match the specific pipe size configured in F690 MM4 data
     const relevantServiceSections = sections.filter(section => {
       // Must be service type
       if (section.defectType !== 'service') return false;
@@ -3075,12 +3075,29 @@ export default function Dashboard() {
       const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
       if (!isRestrictedSection) return false;
       
-      // Check if pipe size is supported by this configuration
+      // PRECISE FILTERING: Only check sections with pipe sizes that have MM4 data in F690 configuration
       const sectionPipeSize = section.pipeSize?.toString().replace(/mm.*$/i, '') || '0';
       const mm4DataByPipeSize = targetConfig?.mmData?.mm4DataByPipeSize || {};
-      const hasPipeSizeSupport = Object.keys(mm4DataByPipeSize).some(key => key.startsWith(sectionPipeSize + '-'));
       
-      return hasPipeSizeSupport;
+      // Find exact pipe size key match (e.g., "150-1501" for 150mm)
+      const exactPipeSizeKey = Object.keys(mm4DataByPipeSize).find(key => 
+        key.startsWith(sectionPipeSize + '-')
+      );
+      
+      if (!exactPipeSizeKey) {
+        console.log(`⏭️ SKIPPING section ${section.itemNo} - pipe size ${sectionPipeSize}mm not configured in ${defaultCategoryId}`);
+        return false;
+      }
+      
+      // Verify MM4 data exists for this pipe size
+      const mm4Data = mm4DataByPipeSize[exactPipeSizeKey];
+      if (!mm4Data || !Array.isArray(mm4Data) || mm4Data.length === 0) {
+        console.log(`⏭️ SKIPPING section ${section.itemNo} - no MM4 data for pipe size ${sectionPipeSize}mm in ${defaultCategoryId}`);
+        return false;
+      }
+      
+      console.log(`✅ CHECKING section ${section.itemNo} - pipe size ${sectionPipeSize}mm has MM4 data in ${defaultCategoryId}`);
+      return true;
     });
 
     console.log(`🔍 FILTERED SERVICE SECTIONS for ${defaultCategoryId}:`, {
