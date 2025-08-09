@@ -762,7 +762,7 @@ export default function PR2ConfigClean() {
       console.log('🔍 ROUTING DEBUG - Auto-creation disabled, only finding existing configs');
       
       // For patching category, ALWAYS route to F615 (id=615) - PRESERVE autoSelectUtilities parameter
-      if (categoryId === 'patching' && !editingId) {
+      if (categoryId === 'patching' && !editId) {
         console.log('🎯 PATCHING CATEGORY - Checking if we need to redirect to F615');
         const currentParams = new URLSearchParams(window.location.search);
         const hasId = currentParams.get('id') === '615';
@@ -3547,7 +3547,7 @@ export default function PR2ConfigClean() {
                 className="text-2xl font-bold text-gray-900"
                 data-component="page-title"
               >
-                Edit {formData.categoryName || 'TP1 - Configuration'}
+                {formData.categoryName || 'TP1 - Configuration'}
               </h1>
               
               {/* Template Information Display */}
@@ -3558,32 +3558,27 @@ export default function PR2ConfigClean() {
                     {(() => {
                       const templateType = getTemplateType(categoryId || '');
                       if (templateType === 'P006') {
-                        return `P006 Template (F${editId || 'Unknown'})`;
+                        return `P006 Template`;
                       } else if (templateType === 'P006a') {
-                        return `P006a Template (F${editId || 'Unknown'})`;
+                        return `P006a Template`;
                       } else if (templateType === 'P26') {
-                        return `P26 Template (F${editId || 'Unknown'})`;
+                        return `P26 Template`;
                       } else if (templateType === 'MMP1') {
-                        return `MMP1 Template - Page F${editId || 'Unknown'}`;
+                        // F612 CCTV uses MMP1-BG (no purple fields)
+                        if (categoryId === 'cctv') {
+                          return `MMP1-BG Template`;
+                        }
+                        // All other MMP1 categories use MMP1-BGP (with purple fields)
+                        return `MMP1-BGP Template`;
                       } else if (templateType === 'MMP2') {
-                        return `MMP2 Template - Page F${editId || 'Unknown'}`;
+                        return `MMP2 Template`;
                       } else {
-                        return `TP1 Template - Page F${editId || 'Unknown'}`;
+                        return `TP1 Template`;
                       }
                     })()}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">Category ID:</span>
-                  <span className="px-2 py-1 bg-gray-100 text-gray-800 text-sm font-mono rounded">
-                    {categoryId || 'Unknown'}
-                  </span>
-                </div>
               </div>
-              
-              <p className="text-gray-600 mt-2">
-                {formData.description || 'Configure pricing options for this category'}
-              </p>
             </div>
           
           {/* Right side - Navigation buttons */}
