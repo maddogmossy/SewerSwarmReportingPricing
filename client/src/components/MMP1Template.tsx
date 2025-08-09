@@ -51,7 +51,14 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const [customPipeSizes, setCustomPipeSizes] = useState<number[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>('#D4D4D4');
   const [customColor, setCustomColor] = useState<string>('#D4D4D4');
-  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>({});
+  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>(() => {
+    try {
+      const saved = localStorage.getItem('mm4DataByPipeSize');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
   const [mm5Data, setMm5Data] = useState<any[]>([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
   const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
   const [inputBuffer, setInputBuffer] = useState<Record<string, string>>(() => {
@@ -75,10 +82,9 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     // Always start fresh to prevent cross-contamination between sectors
     setSelectedIds([]);
     setIdsWithConfig([]);
-    // Reset MM4/MM5 data to defaults for new sector context
-    setMm4DataByPipeSize({});
-    setMm5Data([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
-    console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector}`);
+    // **CRITICAL FIX**: DO NOT clear MM4 data - preserve localStorage values
+    // setMm4DataByPipeSize({}); // REMOVED - was destroying saved MM4 data
+    console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector} (MM4 data preserved)`);
   }, [sector, categoryId]);
 
   // **SEPARATE EFFECT FOR MM1 SECTOR AUTO-HIGHLIGHTING** - Runs after page initialization
