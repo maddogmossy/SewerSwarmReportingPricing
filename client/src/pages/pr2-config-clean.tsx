@@ -296,7 +296,7 @@ export default function PR2ConfigClean() {
       'van-pack': 'Van Pack Configuration',
       'jet-vac': 'Jet Vac Configuration',
       'cctv-van-pack': 'F608 CCTV Van Pack Configuration',
-      'cctv-jet-vac': 'F606 CCTV Jet Vac Configuration',
+      'cctv-jet-vac': 'F690 CCTV Jet Vac Configuration',
       'cctv-cleansing-root-cutting': 'F611 CCTV Cleansing Root Cutting Configuration',
       'directional-water-cutter': 'F614 Directional Water Cutter Configuration',
       'ambient-lining': 'F620 Ambient Lining Configuration',
