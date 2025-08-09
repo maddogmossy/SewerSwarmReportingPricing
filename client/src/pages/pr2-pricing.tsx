@@ -292,10 +292,48 @@ export default function PR2Pricing() {
       });
     }
 
-    // If no P006 or P006a template found, check for direct matches (FALLBACK)
+    // If no P006 or P006a template found, check for P-number matches (SECTOR-SPECIFIC)
     if (!existingConfig) {
+      // Generate expected P-number for this sector and category
+      const generateExpectedPNumber = (categoryId: string, sector: string): string => {
+        const P_NUMBER_MAPPING = {
+          'utilities': { 
+            'cctv': 'P012', 
+            'cctv-jet-vac': 'P006', 
+            'cctv-van-pack': 'P008', 
+            'patching': 'P015',
+            'jet-vac': 'P010',
+            'van-pack': 'P011'
+          },
+          'adoption': { 
+            'cctv': 'P112', 
+            'cctv-jet-vac': 'P106', 
+            'cctv-van-pack': 'P108', 
+            'patching': 'P115',
+            'jet-vac': 'P110',
+            'van-pack': 'P111'
+          },
+          'highways': { 
+            'cctv': 'P212', 
+            'cctv-jet-vac': 'P206', 
+            'cctv-van-pack': 'P208', 
+            'patching': 'P215',
+            'jet-vac': 'P210',
+            'van-pack': 'P211'
+          }
+        };
+        
+        const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+        return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
+      };
+
+      const expectedPNumber = generateExpectedPNumber(categoryId, sector);
+      
       existingConfig = pr2Configurations.find(config => {
-        // Direct category ID match
+        // P-number match (PRIORITY)
+        if (config.categoryId === expectedPNumber) return true;
+        
+        // Direct category ID match (FALLBACK)
         if (config.categoryId === categoryId) return true;
         
         // Legacy matches
@@ -327,9 +365,9 @@ export default function PR2Pricing() {
     
     // If configuration exists, navigate to edit mode
     if (existingConfig) {
-      // Use the actual config's categoryId instead of the requested categoryId for proper template detection
-      const actualCategoryId = existingConfig.categoryId;
-      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${actualCategoryId}&edit=${existingConfig.id}`);
+      // For P-number configs, use original categoryId for proper template detection, but edit the P-number config
+      const urlCategoryId = existingConfig.categoryId.startsWith('P') ? categoryId : existingConfig.categoryId;
+      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${urlCategoryId}&edit=${existingConfig.id}`);
       return;
     }
     
