@@ -3507,7 +3507,7 @@ export default function PR2ConfigClean() {
   if (isAutoCreating) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 relative flex items-center justify-center">
-        <DevLabel id="P005" position="top-right" />
+        <DevLabel id={editId ? `F${editId}-Loading` : 'F-Loading'} position="top-right" />
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <h2 className="text-xl font-semibold text-gray-900">Loading Configuration...</h2>
@@ -3526,19 +3526,19 @@ export default function PR2ConfigClean() {
       data-sector={sector}
       data-is-editing={isEditing}
     >
-      <DevLabel id="MMP1" position="top-right" />
+      <DevLabel id={editId ? `F${editId}` : 'F-Config'} position="top-right" />
       <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              {/* MMP1 Large Identifier for Test Card */}
+              {/* F-Series Large Identifier for Test Card */}
               {categoryId === 'test-card' && getTemplateType(categoryId || '') === 'MMP1' && (
                 <div className="mb-4">
                   <h1 className="text-6xl font-bold text-green-600 mb-2" style={{ fontSize: '4rem', lineHeight: '1' }}>
-                    MMP1
+                    {editId ? `F${editId}` : 'F-Config'}
                   </h1>
                   <p className="text-xl text-gray-700 font-semibold">
-                    New Template with 5 Placeholder UI Cards
+                    MMP1 Template with 5 Placeholder UI Cards
                   </p>
                 </div>
               )}
@@ -3564,11 +3564,11 @@ export default function PR2ConfigClean() {
                       } else if (templateType === 'P26') {
                         return `P26 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'MMP1') {
-                        return `MMP1 Template (F${editId || 'Unknown'})`;
+                        return `MMP1 Template - Page F${editId || 'Unknown'}`;
                       } else if (templateType === 'MMP2') {
-                        return `MMP2 Template (F${editId || 'Unknown'})`;
+                        return `MMP2 Template - Page F${editId || 'Unknown'}`;
                       } else {
-                        return `TP1 Template (F${editId || 'Unknown'})`;
+                        return `TP1 Template - Page F${editId || 'Unknown'}`;
                       }
                     })()}
                   </span>
