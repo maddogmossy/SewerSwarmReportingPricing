@@ -79,9 +79,12 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     setMm4DataByPipeSize({});
     setMm5Data([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
     console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector}`);
-    
-    // **ENHANCED MM1 SECTOR AUTO-HIGHLIGHTING** - Fix navigation from P003
-    setTimeout(() => {
+  }, [sector, categoryId]);
+
+  // **SEPARATE EFFECT FOR MM1 SECTOR AUTO-HIGHLIGHTING** - Runs after page initialization
+  useEffect(() => {
+    // Wait longer to ensure page-level URL processing is complete
+    const timeoutId = setTimeout(() => {
       const sectorToIdMapping = {
         'utilities': 'id1',
         'adoption': 'id2', 
@@ -100,15 +103,18 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           categoryId,
           templateType: 'MMP1',
           shouldTrigger: true,
-          currentURL: window.location.href
+          currentURL: window.location.href,
+          delayedExecution: true
         });
         
-        // Force sector selection regardless of URL params or existing state
+        // **FORCE SECTOR SELECTION** - This should run after page URL processing
         setSelectedIds([correspondingId]);
         setIdsWithConfig(prev => [...new Set([...prev, correspondingId])]);
         console.log(`✅ MM1 sector auto-highlighted: ${sector} → ${correspondingId}`);
       }
-    }, 200); // Increased delay to ensure it runs after all other effects
+    }, 500); // Longer delay to ensure it runs AFTER page-level useEffects
+
+    return () => clearTimeout(timeoutId);
   }, [sector, categoryId]);
 
   // Auto-save functionality
