@@ -92,14 +92,14 @@ const SECTORS = [
 
 // 🔒🔒🔒 MMP1 TEMPLATE PROTECTED ZONE - DO NOT MODIFY WITHOUT USER PERMISSION 🔒🔒🔒
 // ⚠️ WARNING: USER-CONTROLLED TEMPLATE - AI MODIFICATIONS PROHIBITED ⚠️
-// MMP1 ID definitions (ID1-ID6 following P002 pattern - matching six sectors)
+// MMP1 ID definitions (ID7-ID12 for MM1 cards - separate from main sector selection IDs 1-6)
 const MMP1_IDS = [
-  { id: 'id1', name: 'Utilities', label: 'Utilities', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'id2', name: 'Adoption', label: 'Adoption', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'id3', name: 'Highways', label: 'Highways', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'id4', name: 'Insurance', label: 'Insurance', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'id5', name: 'Construction', label: 'Construction', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'id6', name: 'Domestic', label: 'Domestic', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'id7', name: 'Utilities', label: 'Utilities', devId: 'id7', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'id8', name: 'Adoption', label: 'Adoption', devId: 'id8', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'id9', name: 'Highways', label: 'Highways', devId: 'id9', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'id10', name: 'Insurance', label: 'Insurance', devId: 'id10', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'id11', name: 'Construction', label: 'Construction', devId: 'id11', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'id12', name: 'Domestic', label: 'Domestic', devId: 'id12', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // P26 Upper Level Data Structure
@@ -948,12 +948,12 @@ export default function PR2ConfigClean() {
       currentURL: window.location.href
     });
     
-    // Priority 1: Auto-select utilities (id1) when autoSelectUtilities is true
+    // Priority 1: Auto-select utilities (id7) when autoSelectUtilities is true
     const shouldAutoSelect = (autoSelectUtilities || autoSelectParam === 'true') && getTemplateType(categoryId || '') === 'MMP1';
     
     if (shouldAutoSelect) {
-      console.log('🎯 AUTO-SELECTING utilities (id1) card due to autoSelectUtilities=true');
-      setSelectedIds(['id1']);
+      console.log('🎯 AUTO-SELECTING utilities (id7) card due to autoSelectUtilities=true');
+      setSelectedIds(['id7']);
     }
     // Priority 2: Use selectedId from URL parameter
     else if (selectedId && getTemplateType(categoryId || '') === 'MMP1') {
@@ -3832,14 +3832,14 @@ export default function PR2ConfigClean() {
                     1. Select Configuration IDs (P002 Pattern)
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Select ID1-ID6 templates that will save prices to sectors when selected
+                    Select ID7-ID12 templates that will save prices to sectors when selected
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-3 gap-3">
                     {MMP1_IDS.map((idOption) => {
-                      // Auto-select utilities (id1) when coming from dashboard 150mm recommendations
-                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'id1' && !selectedIds.includes('id1');
+                      // Auto-select utilities (id7) when coming from dashboard 150mm recommendations
+                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'id7' && !selectedIds.includes('id7');
                       const isSelected = selectedIds.includes(idOption.id) || shouldAutoSelect;
                       const hasConfiguration = idsWithConfig.includes(idOption.id);
                       
@@ -3869,6 +3869,10 @@ export default function PR2ConfigClean() {
                             }`}>
                               {idOption.name}
                             </h3>
+                            
+                            {/* Dev ID */}
+                            <p className="text-xs text-gray-500 mb-2">{idOption.devId}</p>
+                            
                             <p className="text-xs text-gray-600">
                               {idOption.description}
                             </p>
