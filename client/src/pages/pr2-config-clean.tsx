@@ -3547,7 +3547,7 @@ export default function PR2ConfigClean() {
                 className="text-2xl font-bold text-gray-900"
                 data-component="page-title"
               >
-                {formData.categoryName || 'TP1 - Configuration'}
+                {formData.categoryName ? `${formData.categoryName} - Price Configuration` : 'TP1 - Configuration'}
               </h1>
               
               {/* Template Information Display */}
