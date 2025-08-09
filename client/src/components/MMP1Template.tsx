@@ -328,6 +328,28 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     updateMM5Data(newData);
   };
 
+  // Auto-select sector in MM1 when navigating from P003
+  useEffect(() => {
+    // Map sector names to MMP1 IDs
+    const sectorToIdMapping = {
+      'utilities': 'id1',
+      'adoption': 'id2',
+      'highways': 'id3',
+      'insurance': 'id4',
+      'construction': 'id5',
+      'domestic': 'id6'
+    };
+    
+    // If we have a sector from URL and no current selection, auto-select the relevant MM1 option
+    if (sector && !selectedIds.length) {
+      const correspondingId = sectorToIdMapping[sector];
+      if (correspondingId) {
+        console.log(`🎯 Auto-selecting MM1 sector: ${sector} → ${correspondingId}`);
+        setSelectedIds([correspondingId]);
+      }
+    }
+  }, [sector, selectedIds]);
+
   const addMM5Row = () => {
     const currentData = getCurrentMM5Data();
     const newData = [
