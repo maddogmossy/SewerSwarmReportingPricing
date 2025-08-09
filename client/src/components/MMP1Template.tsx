@@ -436,6 +436,37 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           })
         });
         if (!response.ok) throw new Error('Color save failed');
+      } else {
+        // If no editId, find and update the correct P-number configuration for this sector
+        const P_NUMBER_MAPPING = {
+          'utilities': 'P012',
+          'adoption': 'P112', 
+          'highways': 'P212',
+          'insurance': 'P312',
+          'construction': 'P412'
+        };
+        
+        const expectedPNumber = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+        if (expectedPNumber) {
+          // Find the existing P-number config for this sector
+          const existingPConfig = await fetch(`/api/pr2-clean?sector=${sector}`).then(r => r.json());
+          const pNumberConfig = existingPConfig.find((config: any) => config.categoryId === expectedPNumber);
+          
+          if (pNumberConfig) {
+            // Update the existing P-number configuration
+            const response = await fetch(`/api/pr2-clean/${pNumberConfig.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                categoryColor: color,
+                mmData: mmData,
+                sector: sector
+              })
+            });
+            if (!response.ok) throw new Error('P-number color save failed');
+            console.log(`🎨 Updated ${expectedPNumber} (ID: ${pNumberConfig.id}) color to: ${color}`);
+          }
+        }
       }
       
       // ONLY invalidate after successful save

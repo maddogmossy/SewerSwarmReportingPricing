@@ -97,7 +97,8 @@ export default function PR2Pricing() {
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
   
-  // Debug: Log current sector info
+  // Debug: Log current sector and configurations
+  console.log(`🔍 Current Sector: ${sector}, Available configs:`, pr2Configurations.map(c => ({id: c.id, categoryId: c.categoryId, hasColor: !!c.categoryColor})));
 
   
   const { toast } = useToast();
