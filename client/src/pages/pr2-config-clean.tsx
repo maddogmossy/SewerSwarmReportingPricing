@@ -181,7 +181,7 @@ export default function PR2ConfigClean() {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else if (
       // F-Series Equipment Configurations (All use MMP1 template)
-      categoryId === 'cctv-jet-vac' ||           // F606 - CCTV + Jet Vac
+      categoryId === 'cctv-jet-vac' ||           // F690 - CCTV + Jet Vac
       categoryId === 'cctv-van-pack' ||          // F608 - CCTV + Van Pack  
       categoryId === 'cctv-cleansing-root-cutting' || // F611 - CCTV + Cleansing + Root Cutting
       categoryId === 'cctv' ||                   // F612 - CCTV only
@@ -3582,7 +3582,7 @@ export default function PR2ConfigClean() {
                   const getPSeriesNumber = (sector: string, categoryId: string): string => {
                     const sectorPageMap: Record<string, Record<string, string>> = {
                       'utilities': {
-                        'cctv-jet-vac': 'P006',        // F606 - CCTV/Jet Vac
+                        'cctv-jet-vac': 'P006',        // F690 - CCTV/Jet Vac
                         'cctv-van-pack': 'P008',       // F608 - CCTV/Van Pack  
                         'cctv-cleansing-root-cutting': 'P011', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P012',                // F612 - CCTV only
@@ -3598,7 +3598,7 @@ export default function PR2ConfigClean() {
                         'jet-vac': 'P027',             // Jet Vac only
                       },
                       'adoption': {
-                        'cctv-jet-vac': 'P106',        // F606 - CCTV/Jet Vac
+                        'cctv-jet-vac': 'P106',        // F690 - CCTV/Jet Vac
                         'cctv-van-pack': 'P108',       // F608 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P111', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P112',                // F612 - CCTV only
@@ -3612,7 +3612,7 @@ export default function PR2ConfigClean() {
                         'tankering': 'P124',           // F624 - Tankering
                       },
                       'highways': {
-                        'cctv-jet-vac': 'P206',        // F606 - CCTV/Jet Vac
+                        'cctv-jet-vac': 'P206',        // F690 - CCTV/Jet Vac
                         'cctv-van-pack': 'P208',       // F608 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P211', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P212',                // F612 - CCTV only
@@ -3626,7 +3626,7 @@ export default function PR2ConfigClean() {
                         'tankering': 'P224',           // F624 - Tankering
                       },
                       'insurance': {
-                        'cctv-jet-vac': 'P306',        // F606 - CCTV/Jet Vac
+                        'cctv-jet-vac': 'P306',        // F690 - CCTV/Jet Vac
                         'cctv-van-pack': 'P308',       // F608 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P311', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P312',                // F612 - CCTV only
@@ -3640,7 +3640,7 @@ export default function PR2ConfigClean() {
                         'tankering': 'P324',           // F624 - Tankering
                       },
                       'construction': {
-                        'cctv-jet-vac': 'P406',        // F606 - CCTV/Jet Vac
+                        'cctv-jet-vac': 'P406',        // F690 - CCTV/Jet Vac
                         'cctv-van-pack': 'P408',       // F608 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P411', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P412',                // F612 - CCTV only
@@ -3654,7 +3654,7 @@ export default function PR2ConfigClean() {
                         'tankering': 'P424',           // F624 - Tankering
                       },
                       'domestic': {
-                        'cctv-jet-vac': 'P506',        // F606 - CCTV/Jet Vac
+                        'cctv-jet-vac': 'P506',        // F690 - CCTV/Jet Vac
                         'cctv-van-pack': 'P508',       // F608 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P511', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P512',                // F612 - CCTV only
@@ -3675,7 +3675,7 @@ export default function PR2ConfigClean() {
                   // Get F-Series number from categoryId
                   const getFSeriesNumber = (categoryId: string): string => {
                     const fSeriesMap: Record<string, string> = {
-                      'cctv-jet-vac': 'F606',
+                      'cctv-jet-vac': 'F690',
                       'cctv-van-pack': 'F608', 
                       'cctv-cleansing-root-cutting': 'F611',
                       'cctv': 'F612',
