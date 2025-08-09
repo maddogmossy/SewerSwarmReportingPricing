@@ -119,12 +119,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ error: 'Category already exists' });
       }
 
-      // Auto-assign F-series number if category name doesn't already have one
-      let finalCategoryName = categoryName;
-      if (!categoryName.match(/^F\d+/)) {
-        const nextFNumber = await getNextFSeriesNumber();
-        finalCategoryName = `F${nextFNumber} ${categoryName}`;
-      }
+      // Use original category name without F-series prefix (F-numbers handled by DevLabels)
+      const finalCategoryName = categoryName;
       
       // Auto-generate description if not provided
       const finalDescription = description || generateStandardDescription(finalCategoryName);
