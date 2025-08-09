@@ -4122,6 +4122,11 @@ export default function Dashboard() {
         });
         
         if (cctvConfig) {
+          // CRITICAL FIX: Disable auto-population to prevent overriding user-configured MM4 values
+          // The auto-populate function was causing dashboard prices to ignore user configurations
+          // by automatically overwriting purple length fields with buffered dashboard values
+          // This was the root cause of both issues: prices not updating and persistent warnings
+          
           // PRIORITY 1: CHECK MM4 RANGE VIOLATIONS FIRST
           // Check if section meets MM4 configuration criteria before checking day rate
           const sectionPipeSize = parseInt(section.pipeSize?.toString().replace(/mm.*$/i, '') || '0');
@@ -4158,7 +4163,9 @@ export default function Dashboard() {
                 id: row.id,
                 purpleLength: row.purpleLength,
                 purpleDebris: row.purpleDebris
-              }))
+              })),
+              usingUserConfiguredValues: true,
+              noAutoPopulationOverride: true
             });
             
             // Check each MM4 row to see if section fits within any range
@@ -6119,12 +6126,13 @@ export default function Dashboard() {
       
       if (f606Config && f606Config.mmData) {
         console.log('🔧 Triggering F606 MM4-150 purple length auto-population for', sectionData.length, 'sections');
-        console.log('🔍 First few sections for auto-population:', sectionData.slice(0, 5).map(s => ({
+        console.log('🔍 Auto-population disabled to preserve user-configured MM4 values:', sectionData.slice(0, 5).map(s => ({
           itemNo: s.itemNo,
           pipeSize: s.pipeSize,
           totalLength: s.totalLength
         })));
-        autoPopulatePurpleLengthFields(f606Config, sectionData[0], sectionData);
+        // DISABLED: autoPopulatePurpleLengthFields(f606Config, sectionData[0], sectionData);
+        // This was overriding user-configured MM4 purple values with auto-calculated ones
       }
     }
   }, [sectionData, pr2Configurations, currentSector.id]);
