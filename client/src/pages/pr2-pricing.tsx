@@ -67,6 +67,7 @@ const STANDARD_CATEGORIES = [
 export default function PR2Pricing() {
   const [location, setLocation] = useLocation();
   const [sector, setSector] = useState('utilities');
+  const [selectedSectorsForCopying, setSelectedSectorsForCopying] = useState<string[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<{id: string, name: string, affectedSectors?: string[]} | null>(null);
   
@@ -78,14 +79,16 @@ export default function PR2Pricing() {
   // Initialize sector and pipe size parameters from URL on page load only
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
-    const initialSector = urlParams.get('sector') || 'utilities';
+    const initialSector = urlParams.get('sector') || 'utilities'; // Always default to utilities
     const initialPipeSize = urlParams.get('pipeSize');
     const initialConfigName = urlParams.get('configName');
     const initialItemNo = urlParams.get('itemNo');
     
-
+    // Always ensure utilities is selected first unless explicitly coming from dashboard with different sector
+    const fromDashboard = urlParams.get('fromDashboard') === 'true';
+    const finalSector = fromDashboard ? initialSector : 'utilities';
     
-    setSector(initialSector);
+    setSector(finalSector);
     setPipeSize(initialPipeSize);
     setConfigName(initialConfigName);
     setSourceItemNo(initialItemNo ? parseInt(initialItemNo) : null);
@@ -345,6 +348,26 @@ export default function PR2Pricing() {
     return;
   };
 
+  // Handle sector switching in configuration pages
+  const handleSectorSwitch = (newSector: string) => {
+    setSector(newSector);
+    // Update URL to reflect new sector without triggering navigation
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
+    urlParams.set('sector', newSector);
+    setLocation(`/pr2-pricing?${urlParams.toString()}`);
+  };
+
+  // Handle multi-sector selection for price copying
+  const handleSectorSelectionForCopying = (sectorId: string) => {
+    setSelectedSectorsForCopying(prev => {
+      if (prev.includes(sectorId)) {
+        return prev.filter(id => id !== sectorId);
+      } else {
+        return [...prev, sectorId];
+      }
+    });
+  };
+
   // Handle navigation to add custom configuration
   const handleAddConfiguration = () => {
     setLocation(`/pr2-pricing-form?sector=${sector}&category=Custom`);
@@ -403,25 +426,77 @@ export default function PR2Pricing() {
       </div>
 
       {/* Sector Navigation */}
-      <div className="flex gap-2 flex-wrap">
-        {SECTORS.map((s) => (
-          <Button
-            key={s.id}
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              // Update sector state and URL simultaneously
-              setSector(s.id);
-              const newUrl = `/pr2-pricing?sector=${s.id}`;
-              window.history.pushState({}, '', newUrl);
-            }}
-            className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
-          >
-            <s.icon className="h-4 w-4" />
-            {s.name}
-          </Button>
-        ))}
-      </div>
+      <Card className="border border-gray-200">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold flex items-center gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              <Building className="h-5 w-5" />
+              Select Sector
+            </div>
+            {selectedSectorsForCopying.length > 0 && (
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                {selectedSectorsForCopying.length} selected for copying
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {SECTORS.map((sectorOption) => {
+              const isSelected = sectorOption.id === sector;
+              const isSelectedForCopying = selectedSectorsForCopying.includes(sectorOption.id);
+              
+              return (
+                <Card
+                  key={sectorOption.id}
+                  className={`cursor-pointer transition-all hover:shadow-md border-2 relative ${
+                    isSelected 
+                      ? `border-blue-500 ${sectorOption.bgColor}` 
+                      : isSelectedForCopying
+                      ? `border-green-500 bg-green-50`
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={(e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                      // Ctrl/Cmd+Click for multi-sector selection (price copying)
+                      handleSectorSelectionForCopying(sectorOption.id);
+                    } else {
+                      // Regular click for sector switching
+                      handleSectorSwitch(sectorOption.id);
+                    }
+                  }}
+                >
+                  <CardContent className="p-4 text-center">
+                    <sectorOption.icon className={`h-8 w-8 mx-auto mb-2 ${
+                      isSelected ? sectorOption.color : 
+                      isSelectedForCopying ? 'text-green-600' : 'text-gray-600'
+                    }`} />
+                    <h3 className={`font-medium text-sm ${
+                      isSelected ? sectorOption.color : 
+                      isSelectedForCopying ? 'text-green-800' : 'text-gray-800'
+                    }`}>
+                      {sectorOption.name}
+                    </h3>
+                    {isSelected && (
+                      <Badge variant="default" className="mt-1 text-xs bg-blue-600">
+                        Active
+                      </Badge>
+                    )}
+                    {isSelectedForCopying && !isSelected && (
+                      <Badge variant="secondary" className="mt-1 text-xs bg-green-600 text-white">
+                        Copy Target
+                      </Badge>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+          <div className="mt-3 text-sm text-gray-600">
+            <p><strong>Click</strong> to switch sector • <strong>Ctrl+Click</strong> to select multiple sectors for price copying</p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Work Categories */}
       <div className="space-y-4">
