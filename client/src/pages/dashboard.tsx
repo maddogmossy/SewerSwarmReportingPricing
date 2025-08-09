@@ -2119,28 +2119,23 @@ export default function Dashboard() {
         const forceServiceCalculation = section.defectType === 'service' && [3,6,8].includes(section.itemNo);
         const finalHasDefectsRequiringCost = hasDefectsRequiringCost || forceServiceCalculation;
         
-        // CRITICAL DEBUG: Force service item debugging to ALWAYS appear with alert
+        // F606→F690 MIGRATION VALIDATION: Ensure service cost calculations use F690
         if (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8) {
           const autoCostResult = calculateAutoCost(section);
-          const debugInfo = {
+          console.log(`✅ F690 SERVICE COST CALCULATION - Item ${section.itemNo}:`, {
             itemNo: section.itemNo,
             defectType: section.defectType,
             severityGrade: section.severityGrade,
-            hasDefectsRequiringCost,
-            forceServiceCalculation,
-            finalHasDefectsRequiringCost,
-            willEnterCostLogic: finalHasDefectsRequiringCost,
             defects: section.defects?.substring(0, 60),
             autoCostResult: autoCostResult ? {
               cost: autoCostResult.cost || 0,
               status: autoCostResult.status || 'unknown',
               method: autoCostResult.method || 'none',
+              configType: autoCostResult.configType || 'unknown',
               warningType: autoCostResult.warningType || null,
-              hasWarning: 'warningType' in autoCostResult
+              usingF690: true
             } : null
-          };
-          console.error(`🔥 SERVICE SECTION ${section.itemNo} - COST TRACE:`, debugInfo);
-          console.warn(`🔥 SERVICE SECTION ${section.itemNo} - COST TRACE:`, debugInfo);
+          });
           console.log(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
           
           // Also force to localStorage to debug visibility issue  
@@ -2185,7 +2180,7 @@ export default function Dashboard() {
         
         // FORCE CACHE REFRESH FOR DATABASE UPDATE - clear stale MM4 data
         if (section.itemNo === 10 && pr2Configurations) {
-          const cacheKey = `mm4-data-606`;
+          const cacheKey = `mm4-data-690`;
           if (localStorage.getItem(cacheKey)) {
             console.log('🔄 CLEARING STALE MM4 CACHE for Item 10 database update');
             localStorage.removeItem(cacheKey);
@@ -4886,19 +4881,19 @@ export default function Dashboard() {
               try {
                 const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
                 const pipeSizeKey = matchingPipeSizeKey;
-                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
+                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '690';
                 
                 // EQUIPMENT PRIORITY FIX: Respect equipment priority order - F690 first by default
                 const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
-                const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
+                const bufferKey690 = `690-${pipeSizeKey}-${rowId}-${field}`;
                 
                 // Priority: F690 default, F608 only if explicitly chosen
                 const equipmentPriority = localStorage.getItem('equipmentPriority') || 'f690';
                 let bufferedValue;
                 if (equipmentPriority === 'f608') {
-                  bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
+                  bufferedValue = buffer[bufferKey608] || buffer[bufferKey690] || fallback;
                 } else {
-                  bufferedValue = buffer[bufferKey606] || buffer[bufferKey608] || fallback;
+                  bufferedValue = buffer[bufferKey690] || buffer[bufferKey608] || fallback;
                 }
                 
                 // Debug for Items 21, 22, 23 buffer retrieval issues
@@ -4906,9 +4901,9 @@ export default function Dashboard() {
                   console.log(`🔍 Cross-Config Buffer Retrieval for Item ${section.itemNo}:`, {
                     field: field,
                     bufferKey608: bufferKey608,
-                    bufferKey606: bufferKey606,
+                    bufferKey690: bufferKey690,
                     bufferedValue608: buffer[bufferKey608],
-                    bufferedValue606: buffer[bufferKey606],
+                    bufferedValue690: buffer[bufferKey690],
                     finalValue: bufferedValue,
                     fallback: fallback,
                     allBufferKeys: Object.keys(buffer).filter(k => k.includes('225-2251'))
@@ -4947,7 +4942,7 @@ export default function Dashboard() {
                 purpleLengthFromBuffer: getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'),
                 lengthMatch: lengthMatch,
                 bufferKeys: {
-                  f690Key: `606-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
+                  f690Key: `690-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
                   f608Key: `608-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`
                 },
                 matchingPipeSizeKey: matchingPipeSizeKey,
