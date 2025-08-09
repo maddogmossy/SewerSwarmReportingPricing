@@ -1285,11 +1285,10 @@ export default function Dashboard() {
       // Call calculateAutoCost directly to get the cost object instead of rendered JSX
       const costCalc = calculateAutoCost(section);
       
-      // Flexible status check - accept any equipment-specific calculated status including range warnings
+      // Flexible status check - accept any equipment-specific calculated status
       const validServiceStatuses = [
         'f606_calculated', 'f606_insufficient_items',
-        'f608_calculated', 'f608_insufficient_items',
-        'mm4_range_warning' // NEW: Include range warning status for service cost calculation
+        'f608_calculated', 'f608_insufficient_items'
       ];
       
       const hasServiceCost = costCalc && 
@@ -4196,7 +4195,7 @@ export default function Dashboard() {
               }
             }
             
-            // CRITICAL FIX: If section exceeds ALL MM4 ranges, STILL CALCULATE COST but show warning
+            // If section exceeds ALL MM4 ranges, return range warning (proper validation)
             if (sectionExceedsAllRanges) {
               // Determine which range is exceeded by checking the most permissive row
               // Find the row with the highest purpleDebris and purpleLength values to give accurate error messages
@@ -4208,7 +4207,7 @@ export default function Dashboard() {
               const debrisExceeded = sectionDebrisPercent > (parseFloat(maxDebrisRow?.purpleDebris || '0'));
               const lengthExceeded = sectionLength > (parseFloat(maxLengthRow?.purpleLength || '0'));
 
-              console.log(`⚠️ PRIORITY WARNING: Section ${section.itemNo} exceeds MM4 ranges (but will still calculate cost):`, {
+              console.log(`⚠️ PRIORITY WARNING: Section ${section.itemNo} exceeds MM4 ranges:`, {
                 sectionDebrisPercent,
                 sectionLength,
                 allMM4Rows: matchingMM4Data.map(row => ({
@@ -4233,86 +4232,32 @@ export default function Dashboard() {
                 warningType = 'length_out_of_range';
               }
               
-              // Get the actual day rate for cost calculation
+              // Get the actual day rate for display purposes (even though section is out of range)
               const dayRateOption = cctvConfig.pricingOptions?.find((opt: any) => opt.id === 'price_dayrate');
               const actualDayRate = dayRateOption?.value ? parseFloat(dayRateOption.value) : 0;
               
-              // CRITICAL CHANGE: Still calculate and display cost even when ranges exceeded
-              // Use the most permissive MM4 row for cost calculation
-              const mostPermissiveRow = matchingMM4Data.reduce((max, row) => {
-                const maxPermissive = parseFloat(max.purpleDebris || '0') + parseFloat(max.purpleLength || '0');
-                const currentPermissive = parseFloat(row.purpleDebris || '0') + parseFloat(row.purpleLength || '0');
-                return currentPermissive > maxPermissive ? row : max;
-              }, matchingMM4Data[0]);
-              
-              // Calculate cost using standard MM4 logic but with warning status
-              const blueValue = parseFloat(mostPermissiveRow.blueValue || '0');
-              const greenValue = parseFloat(mostPermissiveRow.greenValue || '0');
-              
-              if (blueValue > 0 && greenValue > 0) {
-                const dayRate = blueValue;
-                const setupRate = greenValue;
-                let baseCost = setupRate;
-                
-                console.log('✅ MM4 Service Cost (Range Exceeded but Calculated):', {
-                  sectionId: section.itemNo,
-                  equipmentType: cctvConfig.categoryId,
-                  dayRate: dayRate,
-                  setupRate: setupRate,
-                  baseCost: baseCost,
-                  rangeExceeded: true,
-                  warningType: warningType
-                });
-                
-                return {
-                  cost: baseCost,
-                  currency: '£',
-                  method: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'F608' : 'F606'} Service (Range Warning)`,
-                  status: 'mm4_range_warning', // New status to show warning triangle but display cost
-                  recommendation: 'Section exceeds MM4 configuration ranges but cost calculated',
-                  warningType: warningType,
-                  rangeExceeded: true,
-                  sectionData: {
-                    itemNo: section.itemNo,
-                    defectType: 'service',
-                    pipeSize: section.pipeSize,
-                    totalLength: sectionLength,
-                    debrisPercent: sectionDebrisPercent
-                  },
-                  configData: {
-                    categoryId: cctvConfig.categoryId,
-                    maxDebris: parseFloat(maxDebrisRow?.purpleDebris || '0'),
-                    maxLength: parseFloat(maxLengthRow?.purpleLength || '0'),
-                    minLength: 0,
-                    actualDayRate: actualDayRate
-                  }
-                };
-              } else {
-                // Fallback to day rate if MM4 data is incomplete
-                return {
-                  cost: actualDayRate || 0,
-                  currency: '£',
-                  method: 'Day Rate (Range Warning)',
-                  status: 'mm4_range_warning',
-                  recommendation: 'Section exceeds MM4 ranges, using day rate fallback',
-                  warningType: warningType,
-                  rangeExceeded: true,
-                  sectionData: {
-                    itemNo: section.itemNo,
-                    defectType: 'service',
-                    pipeSize: section.pipeSize,
-                    totalLength: sectionLength,
-                    debrisPercent: sectionDebrisPercent
-                  },
-                  configData: {
-                    categoryId: cctvConfig.categoryId,
-                    maxDebris: parseFloat(maxDebrisRow?.purpleDebris || '0'),
-                    maxLength: parseFloat(maxLengthRow?.purpleLength || '0'),
-                    minLength: 0,
-                    actualDayRate: actualDayRate
-                  }
-                };
-              }
+              return {
+                cost: 0,
+                currency: '£',
+                method: 'MM4 Outside Ranges',
+                status: 'mm4_outside_ranges',
+                recommendation: 'Section exceeds MM4 configuration ranges (debris % or length)',
+                warningType: warningType,
+                sectionData: {
+                  itemNo: section.itemNo,
+                  defectType: 'service',
+                  pipeSize: section.pipeSize,
+                  totalLength: sectionLength,
+                  debrisPercent: sectionDebrisPercent
+                },
+                configData: {
+                  categoryId: cctvConfig.categoryId,
+                  maxDebris: parseFloat(maxDebrisRow?.purpleDebris || '0'),
+                  maxLength: parseFloat(maxLengthRow?.purpleLength || '0'),
+                  minLength: 0,
+                  actualDayRate: actualDayRate // Include actual day rate for display
+                }
+              };
             }
           }
           
@@ -4610,17 +4555,22 @@ export default function Dashboard() {
       // Manual tests removed - cleaning detection working correctly
     }
     
-    // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections AND service defects only
+    // CRITICAL FIX: Allow MM4 processing for both service AND structural sections that need cleaning
+    // Structural items (21, 22, 23) can have both structural costs (F615) AND service costs (F606/F608)
+    const willProcessMM4 = needsCleaning && pr2Configurations && isRestrictedSection;
+    
     console.log(`🔍 MM4 Processing Check for Item ${section.itemNo}:`, {
       needsCleaning,
       pr2ConfigsAvailable: !!pr2Configurations,
       isRestrictedSection,
       defectType: section.defectType,
       pipeSize: section.pipeSize,
-      willProcessMM4: needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service'
+      willProcessMM4: willProcessMM4,
+      CRITICAL_FIX: section.defectType === 'structural' ? 'Structural items can now get service costs too' : 'Standard service processing'
     });
     
-    if (needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service') {
+    // CRITICAL FIX: Use the new willProcessMM4 logic that allows both service and structural items
+    if (willProcessMM4) {
       // DYNAMIC CONFIGURATION SELECTION: Only F606 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
       // F612 (cctv) excluded - CCTV only, not for cleaning service defects
       const cctvConfigs = pr2Configurations.filter((config: any) => 
@@ -6616,7 +6566,18 @@ export default function Dashboard() {
     
     // For defective sections, use PR2 configuration calculations
     const autoCost = calculateAutoCost(section);
-    // Removed excessive logging
+    
+    // CRITICAL DEBUG: Log what calculateAutoCost returns for items showing warning triangles
+    if ([7, 15, 21, 22, 23].includes(section.itemNo)) {
+      console.log(`🔍 COST DISPLAY DEBUG - Item ${section.itemNo}:`, {
+        autoCost: autoCost,
+        hasCostProperty: autoCost ? 'cost' in autoCost : false,
+        costValue: autoCost && 'cost' in autoCost ? autoCost.cost : null,
+        costGreaterThanZero: autoCost && 'cost' in autoCost ? autoCost.cost > 0 : false,
+        willShowCost: !!(autoCost && 'cost' in autoCost && autoCost.cost > 0),
+        willShowTriangle: !(autoCost && 'cost' in autoCost && autoCost.cost > 0)
+      });
+    }
     
     if (autoCost && 'cost' in autoCost && autoCost.cost > 0) {
       // Check for MM4 insufficient runs status - show RED cost with warning popup
@@ -6659,20 +6620,7 @@ export default function Dashboard() {
         );
       }
       
-      // CRITICAL FIX: Handle new mm4_range_warning status - show cost with warning triangle
-      if (autoCost.status === 'mm4_range_warning') {
-        return (
-          <div className="flex items-center gap-1">
-            <span 
-              className="text-amber-600 font-medium cursor-help" 
-              title={`Cost calculated but section exceeds MM4 ranges\n${(autoCost as any).warningType}: ${(autoCost as any).recommendation}\nMax debris: ${(autoCost as any).configData?.maxDebris || 'N/A'}%\nMax length: ${(autoCost as any).configData?.maxLength || 'N/A'}m\nSection debris: ${(autoCost as any).sectionData?.debrisPercent || 'N/A'}%\nSection length: ${(autoCost as any).sectionData?.totalLength || 'N/A'}m`}
-            >
-              £{autoCost.cost.toFixed(2)}
-            </span>
-            <span className="text-amber-600" title="Range exceeded warning">⚠️</span>
-          </div>
-        );
-      }
+
       
       // Check if this item has applied structural pricing (green highlight)
       const hasAppliedStructuralPricing = appliedStructuralPricing.has(section.itemNo);
