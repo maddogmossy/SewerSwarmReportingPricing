@@ -26,6 +26,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **Multi-Sector Price Copying**: Sector cards support Ctrl+Click for selecting multiple sectors for price copying functionality across highlighted sectors.
 - **Single Source Day Rate System**: Eliminated dual storage confusion by migrating all day rates from `pricing_options` to MM4 blue values only. System now reads day rates exclusively from `mm_data.mm4Rows[0].blueValue` preventing synchronization issues and ensuring UI-driven pricing consistency.
 - **F606→F690 Configuration Migration**: Completed full migration from deleted F606 configurations to F690. All hardcoded references updated (UI components, routing, equipment priority defaults, status codes, and navigation). Added automatic redirect from deleted F606 URLs to F690 configurations to prevent broken navigation.
+- **Triangle Blocking Issue Analysis (Jan 2025)**: Completed comprehensive both-direction tracing analysis identifying root cause of service sections showing triangles instead of costs. F690 day rate validation logic incorrectly evaluates configured values ("1850") as missing, triggering `day_rate_missing` status and triangle display. Enhanced debugging implemented for verification when database access restored.
 
 ## System Architecture
 
