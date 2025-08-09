@@ -188,6 +188,11 @@ export default function PR2ConfigClean() {
       categoryId === 'directional-water-cutter' || // F614 - Directional Water Cutter
       categoryId === 'patching' ||               // F615 - Patching
       categoryId === 'f-robot-cutting' ||        // F619 - Robotic Cutting
+      categoryId === 'ambient-lining' ||         // F620 - Ambient Lining
+      categoryId === 'hot-cure-lining' ||        // F621 - Hot Cure Lining
+      categoryId === 'uv-lining' ||              // F622 - UV Lining
+      categoryId === 'excavation' ||             // F623 - Excavation
+      categoryId === 'tankering' ||              // F624 - Tankering
       // Individual Equipment Types
       categoryId === 'van-pack' ||               // Van Pack only
       categoryId === 'jet-vac' ||                // Jet Vac only  
@@ -266,44 +271,42 @@ export default function PR2ConfigClean() {
     if (pipeSize && sourceItemNo) {
       const formattedSize = pipeSize.endsWith('mm') ? pipeSize : `${pipeSize}mm`;
       const categoryMap: { [key: string]: string } = {
-        'cctv': `${formattedSize} CCTV Configuration`,
+        'cctv': `${formattedSize} F612 CCTV Configuration`,
         'van-pack': `${formattedSize} Van Pack Configuration`,
         'jet-vac': `${formattedSize} Jet Vac Configuration`,
-        'cctv-van-pack': `${formattedSize} CCTV Van Pack Configuration`,
-        'cctv-jet-vac': `${formattedSize} CCTV Jet Vac Configuration`,
-        'directional-water-cutter': `${formattedSize} Directional Water Cutter Configuration`,
-        'ambient-lining': `${formattedSize} Ambient Lining Configuration`,
-        'hot-cure-lining': `${formattedSize} Hot Cure Lining Configuration`,
-        'uv-lining': `${formattedSize} UV Lining Configuration`,
-        'ims-cutting': `${formattedSize} IMS Cutting Configuration`,
-        'excavation': `${formattedSize} Excavation Configuration`,
-        'patching': `${formattedSize} Patching Configuration`,
-        'patching-p006a': `${formattedSize} Patching Configuration`,
-        'f-robot-cutting': `${formattedSize} Robotic Cutting Configuration`, // TP3 Template
+        'cctv-van-pack': `${formattedSize} F608 CCTV Van Pack Configuration`,
+        'cctv-jet-vac': `${formattedSize} F606 CCTV Jet Vac Configuration`,
+        'cctv-cleansing-root-cutting': `${formattedSize} F611 CCTV Cleansing Root Cutting Configuration`,
+        'directional-water-cutter': `${formattedSize} F614 Directional Water Cutter Configuration`,
+        'ambient-lining': `${formattedSize} F620 Ambient Lining Configuration`,
+        'hot-cure-lining': `${formattedSize} F621 Hot Cure Lining Configuration`,
+        'uv-lining': `${formattedSize} F622 UV Lining Configuration`,
+        'excavation': `${formattedSize} F623 Excavation Configuration`,
+        'patching': `${formattedSize} F615 Patching Configuration`,
+        'f-robot-cutting': `${formattedSize} F619 Robotic Cutting Configuration`,
         'day-rate-db11': `${formattedSize} P26 Day Rate Configuration`, // P26 Template
-        'tankering': `${formattedSize} Tankering Configuration`
+        'tankering': `${formattedSize} F624 Tankering Configuration`
       };
       return categoryMap[categoryId] || `${formattedSize} Configuration`;
     }
     
     // Standard names without pipe size (until set up from dashboard)
     const categoryMap: { [key: string]: string } = {
-      'cctv': 'CCTV Configuration',
+      'cctv': 'F612 CCTV Configuration',
       'van-pack': 'Van Pack Configuration',
       'jet-vac': 'Jet Vac Configuration',
-      'cctv-van-pack': 'CCTV Van Pack Configuration',
-      'cctv-jet-vac': 'CCTV Jet Vac Configuration',
-      'directional-water-cutter': 'Directional Water Cutter Configuration',
-      'ambient-lining': 'Ambient Lining Configuration',
-      'hot-cure-lining': 'Hot Cure Lining Configuration',
-      'uv-lining': 'UV Lining Configuration',
-      'ims-cutting': 'IMS Cutting Configuration',
-      'excavation': 'Excavation Configuration',
-      'patching': 'Patching Configuration',
-      'patching-p006a': 'Patching Configuration',
-      'f-robot-cutting': 'Robotic Cutting Configuration', // TP3 Template
+      'cctv-van-pack': 'F608 CCTV Van Pack Configuration',
+      'cctv-jet-vac': 'F606 CCTV Jet Vac Configuration',
+      'cctv-cleansing-root-cutting': 'F611 CCTV Cleansing Root Cutting Configuration',
+      'directional-water-cutter': 'F614 Directional Water Cutter Configuration',
+      'ambient-lining': 'F620 Ambient Lining Configuration',
+      'hot-cure-lining': 'F621 Hot Cure Lining Configuration',
+      'uv-lining': 'F622 UV Lining Configuration',
+      'excavation': 'F623 Excavation Configuration',
+      'patching': 'F615 Patching Configuration',
+      'f-robot-cutting': 'F619 Robotic Cutting Configuration',
       'day-rate-db11': 'P26 - Day Rate Configuration', // P26 Template
-      'tankering': 'Tankering Configuration'
+      'tankering': 'F624 Tankering Configuration'
     };
     return categoryMap[categoryId] || 'Configuration';
   };
