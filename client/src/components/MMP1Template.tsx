@@ -46,6 +46,7 @@ const UK_PIPE_SIZES = [
 export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1TemplateProps) {
   // State management - Initialize empty to prevent persistent highlighting
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedSectorsForCopying, setSelectedSectorsForCopying] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
   const [customPipeSizes, setCustomPipeSizes] = useState<number[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>('#D4D4D4');
@@ -420,12 +421,30 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     triggerAutoSave();
   };
 
+  // Handle multi-sector selection for price copying
+  const handleSectorSelectionForCopying = (sectorId: string) => {
+    setSelectedSectorsForCopying(prev => {
+      if (prev.includes(sectorId)) {
+        return prev.filter(id => id !== sectorId);
+      } else {
+        return [...prev, sectorId];
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* MM1 - ID Selection Cards (P002 Pattern) */}
       <Card className="w-full bg-white">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold text-black">MM1 - Configuration Templates</CardTitle>
+          <CardTitle className="text-lg font-semibold text-black flex items-center justify-between">
+            <span>MM1 - Configuration Templates</span>
+            {selectedSectorsForCopying.length > 0 && (
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                {selectedSectorsForCopying.length} sectors selected for price copying
+              </Badge>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-3">
@@ -433,6 +452,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
               const IconComponent = id.icon;
               const isSelected = selectedIds.includes(id.id);
               const hasConfig = idsWithConfig.includes(id.id);
+              const isSelectedForCopying = selectedSectorsForCopying.includes(id.name.toLowerCase());
               
               return (
                 <div key={id.id} className="relative">
@@ -440,9 +460,19 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                     className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
                       isSelected 
                         ? `${id.bgColor} border-2 border-blue-300` 
+                        : isSelectedForCopying
+                        ? 'bg-green-50 border-2 border-green-300'
                         : 'bg-white border border-gray-200 hover:border-gray-300'
                     }`}
-                    onClick={() => handleMMP1IdChange(id.id, !isSelected)}
+                    onClick={(e) => {
+                      if (e.ctrlKey || e.metaKey) {
+                        // Ctrl/Cmd+Click for multi-sector selection (price copying)
+                        handleSectorSelectionForCopying(id.name.toLowerCase());
+                      } else {
+                        // Regular click for ID selection
+                        handleMMP1IdChange(id.id, !isSelected);
+                      }
+                    }}
                   >
                     <CardContent className="p-4 text-center relative">
                       <div className="flex flex-col items-center space-y-2">
@@ -466,11 +496,21 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                           </Badge>
                         </div>
                       )}
+                      {isSelectedForCopying && !isSelected && (
+                        <div className="absolute top-2 left-2">
+                          <Badge variant="secondary" className="text-xs bg-green-600 text-white">
+                            Copy Target
+                          </Badge>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </div>
               );
             })}
+          </div>
+          <div className="mt-4 text-sm text-gray-600">
+            <p><strong>Click</strong> to select configuration templates • <strong>Ctrl+Click</strong> to select multiple sectors for price copying</p>
           </div>
         </CardContent>
       </Card>

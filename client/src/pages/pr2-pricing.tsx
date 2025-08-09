@@ -433,18 +433,14 @@ export default function PR2Pricing() {
               <Building className="h-5 w-5" />
               Select Sector
             </div>
-            {selectedSectorsForCopying.length > 0 && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                {selectedSectorsForCopying.length} selected for copying
-              </Badge>
-            )}
+
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {SECTORS.map((sectorOption) => {
               const isSelected = sectorOption.id === sector;
-              const isSelectedForCopying = selectedSectorsForCopying.includes(sectorOption.id);
+              // Remove multi-selection logic from P003
               
               return (
                 <Card
@@ -452,28 +448,19 @@ export default function PR2Pricing() {
                   className={`cursor-pointer transition-all hover:shadow-md border-2 relative ${
                     isSelected 
                       ? `border-blue-500 ${sectorOption.bgColor}` 
-                      : isSelectedForCopying
-                      ? `border-green-500 bg-green-50`
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
-                  onClick={(e) => {
-                    if (e.ctrlKey || e.metaKey) {
-                      // Ctrl/Cmd+Click for multi-sector selection (price copying)
-                      handleSectorSelectionForCopying(sectorOption.id);
-                    } else {
-                      // Regular click for sector switching
-                      handleSectorSwitch(sectorOption.id);
-                    }
+                  onClick={() => {
+                    // Regular click for sector switching
+                    handleSectorSwitch(sectorOption.id);
                   }}
                 >
                   <CardContent className="p-4 text-center">
                     <sectorOption.icon className={`h-8 w-8 mx-auto mb-2 ${
-                      isSelected ? sectorOption.color : 
-                      isSelectedForCopying ? 'text-green-600' : 'text-gray-600'
+                      isSelected ? sectorOption.color : 'text-gray-600'
                     }`} />
                     <h3 className={`font-medium text-sm ${
-                      isSelected ? sectorOption.color : 
-                      isSelectedForCopying ? 'text-green-800' : 'text-gray-800'
+                      isSelected ? sectorOption.color : 'text-gray-800'
                     }`}>
                       {sectorOption.name}
                     </h3>
@@ -482,18 +469,13 @@ export default function PR2Pricing() {
                         Active
                       </Badge>
                     )}
-                    {isSelectedForCopying && !isSelected && (
-                      <Badge variant="secondary" className="mt-1 text-xs bg-green-600 text-white">
-                        Copy Target
-                      </Badge>
-                    )}
                   </CardContent>
                 </Card>
               );
             })}
           </div>
           <div className="mt-3 text-sm text-gray-600">
-            <p><strong>Click</strong> to switch sector • <strong>Ctrl+Click</strong> to select multiple sectors for price copying</p>
+            <p><strong>Click</strong> to switch sector for independent configuration management</p>
           </div>
         </CardContent>
       </Card>
