@@ -4197,16 +4197,31 @@ export default function Dashboard() {
             
             // If section exceeds ALL MM4 ranges, return range warning instead of day rate warning
             if (sectionExceedsAllRanges) {
+              // Determine which range is exceeded by checking the most permissive row
+              // Find the row with the highest purpleDebris and purpleLength values to give accurate error messages
+              const maxDebrisRow = matchingMM4Data.reduce((max, row) => 
+                (parseFloat(row.purpleDebris || '0') > parseFloat(max.purpleDebris || '0')) ? row : max, matchingMM4Data[0]);
+              const maxLengthRow = matchingMM4Data.reduce((max, row) => 
+                (parseFloat(row.purpleLength || '0') > parseFloat(max.purpleLength || '0')) ? row : max, matchingMM4Data[0]);
+              
+              const debrisExceeded = sectionDebrisPercent > (parseFloat(maxDebrisRow?.purpleDebris || '0'));
+              const lengthExceeded = sectionLength > (parseFloat(maxLengthRow?.purpleLength || '0'));
+
               console.log(`⚠️ PRIORITY WARNING: Section ${section.itemNo} exceeds MM4 ranges (checked before day rate):`, {
                 sectionDebrisPercent,
                 sectionLength,
-                maxDebris: matchingMM4Data[0]?.purpleDebris || 0,
-                maxLength: matchingMM4Data[0]?.purpleLength || 0
+                allMM4Rows: matchingMM4Data.map(row => ({
+                  id: row.id,
+                  purpleDebris: row.purpleDebris,
+                  purpleLength: row.purpleLength,
+                  parsedDebris: parseFloat(row.purpleDebris || '0'),
+                  parsedLength: parseFloat(row.purpleLength || '0')
+                })),
+                maxDebrisFound: parseFloat(maxDebrisRow?.purpleDebris || '0'),
+                maxLengthFound: parseFloat(maxLengthRow?.purpleLength || '0'),
+                sectionFailsDebris: debrisExceeded,
+                sectionFailsLength: lengthExceeded
               });
-              
-              // Determine which range is exceeded
-              const debrisExceeded = sectionDebrisPercent > (matchingMM4Data[0]?.purpleDebris || 0);
-              const lengthExceeded = sectionLength > (matchingMM4Data[0]?.purpleLength || 0);
               
               let warningType: 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range';
               if (debrisExceeded && lengthExceeded) {
@@ -4237,8 +4252,8 @@ export default function Dashboard() {
                 },
                 configData: {
                   categoryId: cctvConfig.categoryId,
-                  maxDebris: matchingMM4Data[0]?.purpleDebris || 0,
-                  maxLength: matchingMM4Data[0]?.purpleLength || 0,
+                  maxDebris: parseFloat(maxDebrisRow?.purpleDebris || '0'),
+                  maxLength: parseFloat(maxLengthRow?.purpleLength || '0'),
                   minLength: 0,
                   actualDayRate: actualDayRate // Include actual day rate for display
                 }
