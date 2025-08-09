@@ -67,7 +67,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return `${categoryName} services compliant with WRc Group standards and industry best practices`;
   };
 
-  // POST endpoint for creating standard categories
+  // F-Series auto-numbering function
+  const getNextFSeriesNumber = async (): Promise<number> => {
+    // Known F-series assignments
+    const knownFSeries = [606, 608, 611, 612, 614, 615, 619, 620, 621, 622, 623, 624];
+    
+    // Get all existing categories to check for any existing F-series numbers
+    const existingCategories = await db
+      .select()
+      .from(standardCategories);
+    
+    // Extract F-numbers from existing category names
+    const existingFNumbers = existingCategories
+      .map(cat => {
+        const match = cat.categoryName?.match(/^F(\d+)/);
+        return match ? parseInt(match[1]) : null;
+      })
+      .filter(num => num !== null);
+    
+    // Combine known and existing F-numbers, then find the next available
+    const allUsedNumbers = [...new Set([...knownFSeries, ...existingFNumbers])].sort((a, b) => a - b);
+    
+    // Find the next available F-number starting from F625
+    let nextNumber = 625;
+    while (allUsedNumbers.includes(nextNumber)) {
+      nextNumber++;
+    }
+    
+    return nextNumber;
+  };
+
+  // POST endpoint for creating standard categories with auto F-series numbering
   app.post('/api/standard-categories', async (req, res) => {
     try {
       const { categoryName, description } = req.body;
@@ -79,9 +109,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate category ID from name (lowercase, hyphenated)
       const categoryId = categoryName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
       
-      // Auto-generate description if not provided
-      const finalDescription = description || generateStandardDescription(categoryName);
-      
       // Check if category already exists
       const existingCategory = await db
         .select()
@@ -92,15 +119,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ error: 'Category already exists' });
       }
 
-      // Insert new category
+      // Auto-assign F-series number if category name doesn't already have one
+      let finalCategoryName = categoryName;
+      if (!categoryName.match(/^F\d+/)) {
+        const nextFNumber = await getNextFSeriesNumber();
+        finalCategoryName = `F${nextFNumber} ${categoryName}`;
+      }
+      
+      // Auto-generate description if not provided
+      const finalDescription = description || generateStandardDescription(finalCategoryName);
+
+      // Insert new category with F-series number
       const newCategory = await db
         .insert(standardCategories)
         .values({
           categoryId,
-          categoryName
+          categoryName: finalCategoryName
         })
         .returning();
-
 
       res.json(newCategory[0]);
     } catch (error) {

@@ -44,24 +44,24 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// Standard category options - Frontend DevLabels use database IDs with 'F' prefix for unified system
+// Standard category options - F-Series Equipment with proper F-numbers
 const STANDARD_CATEGORIES = [
-  { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video },
+  { id: 'cctv', name: 'F612 CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video },
   { id: 'van-pack', name: 'Van Pack', description: 'MMP1 template for test card configuration - ID1 - ID1 - ID4', icon: Truck },
   { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Monitor },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
-  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
+  { id: 'cctv-van-pack', name: 'F608 CCTV/Van Pack', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Monitor },
+  { id: 'cctv-jet-vac', name: 'F606 CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
+  { id: 'cctv-cleansing-root-cutting', name: 'F611 CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
 
-  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
-  { id: 'patching', name: 'Patching', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Edit },
-  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket },
-  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame },
-  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun },
-  { id: 'f-robot-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations (id: f-robotic-cutting)', icon: Settings },
-  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe },
-  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck }
+  { id: 'directional-water-cutter', name: 'F614 Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
+  { id: 'patching', name: 'F615 Patching', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Edit },
+  { id: 'ambient-lining', name: 'F620 Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket },
+  { id: 'hot-cure-lining', name: 'F621 Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame },
+  { id: 'uv-lining', name: 'F622 UV Lining', description: 'UV cure lining systems and installation', icon: Sun },
+  { id: 'f-robot-cutting', name: 'F619 Robotic Cutting', description: 'Robotic cutting and grinding operations (id: f-robotic-cutting)', icon: Settings },
+  { id: 'excavation', name: 'F623 Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe },
+  { id: 'tankering', name: 'F624 Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck }
 ];
 
 export default function PR2Pricing() {
