@@ -1093,6 +1093,10 @@ export default function Dashboard() {
       structuralCostsCount: structuralSectionsWithCosts.length
     });
 
+    // TEMPORARY FIX: Clear old cost decisions to restore natural cost display
+    // TODO: Remove this once cost display system is verified working
+    localStorage.removeItem('appliedCostDecisions');
+    
     // Check if user has already applied a cost decision for current report and equipment
     const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
     const currentEquipmentType = equipmentPriority; // 'f606' or 'f608'
@@ -4815,11 +4819,18 @@ export default function Dashboard() {
                 const pipeSizeKey = matchingPipeSizeKey;
                 const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
                 
-                // CRITICAL FIX: Try both F606 and F608 buffer keys for cross-configuration compatibility
+                // EQUIPMENT PRIORITY FIX: Respect equipment priority order - F606 first by default
                 const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
                 const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
                 
-                let bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
+                // Priority: F606 default, F608 only if explicitly chosen
+                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'f606';
+                let bufferedValue;
+                if (equipmentPriority === 'f608') {
+                  bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
+                } else {
+                  bufferedValue = buffer[bufferKey606] || buffer[bufferKey608] || fallback;
+                }
                 
                 // Debug for Items 21, 22, 23 buffer retrieval issues
                 if (matchingPipeSizeKey === '225-2251' && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23)) {
@@ -4850,9 +4861,8 @@ export default function Dashboard() {
             const debrisMatch = sectionDebrisPercent <= purpleDebris;
             const lengthMatch = sectionLength <= purpleLength;
             
-            // TEMPORARY TEST: Force Item 3 to fail length check to test warning system
-            const isTestingWarnings = section.itemNo === 3;
-            const adjustedLengthMatch = isTestingWarnings ? false : lengthMatch;
+            // FIXED: Remove forced Item 3 test failure that was causing immediate popup
+            const adjustedLengthMatch = lengthMatch;
             // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
             // CRITICAL FIX: Always require blueValue (day rate) for valid cost calculation - without it, show blue triangle
             const hasValidRate = blueValue > 0 && (greenValue > 0 || purpleDebris > 0);
@@ -4878,7 +4888,7 @@ export default function Dashboard() {
                 validationBreakdown: {
                   debrisCheck: `${sectionDebrisPercent}% ≤ ${purpleDebris}% = ${debrisMatch}`,
                   lengthCheck: `${sectionLength}m ≤ ${purpleLength}m = ${lengthMatch}`,
-                  adjustedLengthCheck: isTestingWarnings ? `FORCED FALSE for Item 3 testing` : `Same as lengthCheck`,
+                  adjustedLengthCheck: `Same as lengthCheck`,
                   rateCheck: `hasValidRate = ${hasValidRate}`
                 },
                 rawMM4RowData: {
