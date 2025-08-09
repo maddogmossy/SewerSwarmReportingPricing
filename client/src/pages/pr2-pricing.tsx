@@ -36,12 +36,12 @@ import { DevLabel } from '@/utils/DevLabel';
 
 // Sector definitions matching upload window colors from image
 const SECTORS = [
-  { id: 'utilities', name: 'Utilities', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'adoption', name: 'Adoption', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'highways', name: 'Highways', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'insurance', name: 'Insurance', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'construction', name: 'Construction', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'utilities', name: 'Utilities', devId: 'id1', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', devId: 'id2', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', devId: 'id3', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', devId: 'id4', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', devId: 'id5', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', devId: 'id6', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // Standard category options - F-Series Equipment with DevLabels for F-numbers
@@ -504,6 +504,7 @@ export default function PR2Pricing() {
                     }`}>
                       {sectorOption.name}
                     </h3>
+                    <p className="text-xs text-gray-500 mt-1">{sectorOption.devId}</p>
                     {isSelected && (
                       <Badge variant="default" className="mt-1 text-xs bg-blue-600">
                         Active
