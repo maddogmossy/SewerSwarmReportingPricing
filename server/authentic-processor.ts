@@ -70,7 +70,7 @@ export async function processAuthenticDb3ForSections(uploadId: number): Promise<
     
     // Get severity grades
     const gradeMap = await getSeverityGradesFromSecstat(database);
-    console.log(`🔍 Found ${Object.keys(gradeMap).size} grade mappings`);
+    console.log(`🔍 Found ${Object.keys(gradeMap).length} grade mappings`);
     
     // Process sections
     const processedSections: ProcessedSection[] = [];

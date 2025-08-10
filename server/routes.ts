@@ -763,12 +763,19 @@ export async function registerRoutes(app: Express) {
         'Expires': '0'
       });
 
+      console.log(`📊 SECTIONS API RESPONSE - Returning ${transformedSections.length} sections`);
       res.json(transformedSections);
     } catch (error) {
       console.error("Error fetching sections:", error);
       res.status(500).json({ error: "Failed to fetch sections" });
     }
   });
+
+  // Helper function mapping to the authentic processor
+  async function processAuthenticDb3ForSections(uploadId: number) {
+    const { processAuthenticDb3ForSections: processor } = await import("./authentic-processor");
+    return processor(uploadId);
+  }
 
   // Get standard categories for pricing
   app.get("/api/standard-categories", async (req: Request, res: Response) => {

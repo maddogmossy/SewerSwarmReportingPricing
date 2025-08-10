@@ -1,0 +1,84 @@
+Create a new file called diagnose-db.js and paste in the following script exactly. Then run npm install pg better-sqlite3 and execute it with node diagnose-db.js. This script tests Neon PostgreSQL connectivity using the DATABASE_URL environment variable, runs SELECT 1, catches any error codes (including XX000 or “endpoint disabled”), then checks if a .db3 SQLite file exists in uploads/ and can be opened. Finally, it outputs a summary of both tests.
+
+javascript
+Copy
+Edit
+// diagnose-db.js
+// Run with: node diagnose-db.js
+
+import { readFileSync, existsSync } from "fs";
+import { execSync } from "child_process";
+import { Client } from "pg";
+import Database from "better-sqlite3";
+
+function logSection(title) {
+  console.log("\n=== " + title.toUpperCase() + " ===");
+}
+
+async function testNeon() {
+  logSection("Neon PostgreSQL Connection Test");
+  const dbUrl = process.env.DATABASE_URL;
+  if (!dbUrl) {
+    console.error("❌ No DATABASE_URL environment variable found.");
+    return { ok: false, error: "Missing DATABASE_URL" };
+  }
+
+  const client = new Client({ connectionString: dbUrl, ssl: { rejectUnauthorized: false } });
+  try {
+    await client.connect();
+    const res = await client.query("SELECT 1");
+    console.log("✅ Neon connection succeeded:", res.rows);
+    await client.end();
+    return { ok: true };
+  } catch (err) {
+    console.error("❌ Neon connection failed.");
+    console.error("Error message:", err.message);
+    if (err.code) console.error("Error code:", err.code);
+    return { ok: false, error: err.message, code: err.code };
+  }
+}
+
+function testSQLite() {
+  logSection("SQLite (.db3) Fallback Test");
+  try {
+    const files = execSync("ls uploads/*.db3", { stdio: "pipe" })
+      .toString()
+      .trim()
+      .split("\n");
+
+    if (files.length === 0) {
+      console.log("ℹ No .db3 files found in uploads/");
+      return { ok: false, error: "No .db3 files" };
+    }
+
+    console.log("Found DB3 files:", files);
+    const db = new Database(files[0]);
+    const row = db.prepare("SELECT name FROM sqlite_master LIMIT 1").get();
+    console.log("✅ SQLite file opened successfully. Example table:", row);
+    return { ok: true };
+  } catch (err) {
+    console.error("❌ SQLite test failed:", err.message);
+    return { ok: false, error: err.message };
+  }
+}
+
+(async () => {
+  console.log("Starting DB Diagnostics...");
+  const neonResult = await testNeon();
+  const sqliteResult = testSQLite();
+
+  logSection("Summary");
+  if (neonResult.ok) {
+    console.log("✅ Neon DB is working. The problem is likely not the service.");
+  } else if (neonResult.code === "XX000" || /endpoint has been disabled/i.test(neonResult.error)) {
+    console.log("❌ Neon endpoint is disabled at the service level. This matches earlier Replit output.");
+  } else {
+    console.log("❌ Neon DB connection failed for another reason:", neonResult.error);
+  }
+
+  if (sqliteResult.ok) {
+    console.log("✅ SQLite fallback is present and functional.");
+  } else {
+    console.log("ℹ No working SQLite fallback detected.");
+  }
+})();
