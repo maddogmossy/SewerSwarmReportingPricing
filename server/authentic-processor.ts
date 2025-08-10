@@ -2,7 +2,8 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { generateSectionRecommendations, rulesVersionInfo } from './rule-evaluator.js';
+import { evaluateObservation, rulesVersionInfo } from '../logic/rules.js';
+import { generateSectionRecommendations } from './rule-evaluator.js';
 
 export interface ProcessedSection {
   id: number;
