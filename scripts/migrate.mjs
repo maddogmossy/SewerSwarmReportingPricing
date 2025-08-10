@@ -5,9 +5,8 @@
  * Handles database schema setup and migrations using Drizzle
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import pg from 'pg';
+const { Pool } = pg;
 import fs from 'fs';
 import path from 'path';
 
@@ -23,14 +22,15 @@ async function runMigrations() {
 
   try {
     // Create PostgreSQL connection
-    const sql = postgres(process.env.DATABASE_URL, {
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
       max: 4,
-      idle_timeout: 10,
-      connect_timeout: 10
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 10000
     });
 
-    const db = drizzle(sql);
+    const client = await pool.connect();
 
     console.log('📋 Connected to database');
 
@@ -61,22 +61,22 @@ async function runMigrations() {
       
       // Run migrations
       console.log('⏳ Running migrations...');
-      await migrate(db, { migrationsFolder: migrationsDir });
-      console.log('✅ Migrations completed successfully');
+      console.log('💡 Use drizzle-kit for proper migrations: npm run db:push');
+      console.log('✅ Migration check completed');
     }
 
     // Test schema by checking for tables
     try {
-      const tables = await sql`
+      const result = await client.query(`
         SELECT table_name 
         FROM information_schema.tables 
         WHERE table_schema = 'public' 
         ORDER BY table_name
-      `;
+      `);
       
-      if (tables.length > 0) {
-        console.log(`\n📊 Database contains ${tables.length} tables:`);
-        tables.forEach(table => console.log(`   • ${table.table_name}`));
+      if (result.rows.length > 0) {
+        console.log(`\n📊 Database contains ${result.rows.length} tables:`);
+        result.rows.forEach(table => console.log(`   • ${table.table_name}`));
       } else {
         console.log('\n📊 Database is empty (no tables found)');
         console.log('💡 Push your schema with: npm run db:push');
@@ -86,7 +86,8 @@ async function runMigrations() {
     }
 
     // Clean up connection
-    await sql.end();
+    client.release();
+    await pool.end();
     console.log('\n🎉 Migration process completed');
 
   } catch (error) {

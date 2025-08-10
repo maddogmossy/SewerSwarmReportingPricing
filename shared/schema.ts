@@ -522,40 +522,9 @@ export type InsertTeamBillingRecord = typeof teamBillingRecords.$inferInsert;
 export type Pr2Configuration = typeof pr2Configurations.$inferSelect;
 export type InsertPr2Configuration = typeof pr2Configurations.$inferInsert;
 
-export const insertUserSchema = createInsertSchema(users, {
-  createdAt: () => z.string().optional(),
-  updatedAt: () => z.string().optional(),
-}).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertProjectFolderSchema = createInsertSchema(projectFolders, {
-  createdAt: () => z.string().optional(),
-  updatedAt: () => z.string().optional(),
-  addressValidated: () => z.boolean().optional(),
-}).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  addressValidated: true,
-});
-
-export const insertFileUploadSchema = createInsertSchema(fileUploads, {
-  createdAt: () => z.string().optional(),
-  updatedAt: () => z.string().optional(),
-  processed: () => z.boolean().optional(),
-  processingStatus: () => z.string().optional(),
-  isAuthentic: () => z.boolean().optional(),
-}).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  processed: true,
-  processingStatus: true,
-  isAuthentic: true,
-});
+export const insertUserSchema = createInsertSchema(users);
+export const insertProjectFolderSchema = createInsertSchema(projectFolders);
+export const insertFileUploadSchema = createInsertSchema(fileUploads);
 
 // New schema tables for comprehensive data processing
 
@@ -622,32 +591,18 @@ export const recommendations = pgTable("recommendations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Create insert schemas for new tables
-export const insertJobSchema = createInsertSchema(jobs).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+// Type exports for new tables
+export type Job = typeof jobs.$inferSelect;
+export type Report = typeof reports.$inferSelect;
+export type Section = typeof sections.$inferSelect;
+export type Observation = typeof observations.$inferSelect;
+export type Recommendation = typeof recommendations.$inferSelect;
 
-export const insertReportSchema = createInsertSchema(reports).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertSectionSchema = createInsertSchema(sections).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertObservationSchema = createInsertSchema(observations).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertRecommendationSchema = createInsertSchema(recommendations).omit({
-  id: true,
-  createdAt: true,
-});
+export type InsertJob = typeof jobs.$inferInsert;
+export type InsertReport = typeof reports.$inferInsert;
+export type InsertSection = typeof sections.$inferInsert;
+export type InsertObservation = typeof observations.$inferInsert;
+export type InsertRecommendation = typeof recommendations.$inferInsert;
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertProjectFolder = z.infer<typeof insertProjectFolderSchema>;
