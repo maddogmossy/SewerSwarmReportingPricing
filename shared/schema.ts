@@ -522,20 +522,33 @@ export type InsertTeamBillingRecord = typeof teamBillingRecords.$inferInsert;
 export type Pr2Configuration = typeof pr2Configurations.$inferSelect;
 export type InsertPr2Configuration = typeof pr2Configurations.$inferInsert;
 
-export const insertUserSchema = createInsertSchema(users).omit({
+export const insertUserSchema = createInsertSchema(users, {
+  createdAt: () => z.string().optional(),
+  updatedAt: () => z.string().optional(),
+}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit({
+export const insertProjectFolderSchema = createInsertSchema(projectFolders, {
+  createdAt: () => z.string().optional(),
+  updatedAt: () => z.string().optional(),
+  addressValidated: () => z.boolean().optional(),
+}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
   addressValidated: true,
 });
 
-export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
+export const insertFileUploadSchema = createInsertSchema(fileUploads, {
+  createdAt: () => z.string().optional(),
+  updatedAt: () => z.string().optional(),
+  processed: () => z.boolean().optional(),
+  processingStatus: () => z.string().optional(),
+  isAuthentic: () => z.boolean().optional(),
+}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -609,10 +622,32 @@ export const recommendations = pgTable("recommendations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Indexes for performance
-export const jobsStatusIdx = index("jobs_status_idx").on(jobs.status);
-export const sectionsReportIdx = index("sections_report_idx").on(sections.reportId);
-export const obsServiceIdx = index("obs_section_idx").on(observations.sectionId);
+// Create insert schemas for new tables
+export const insertJobSchema = createInsertSchema(jobs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertReportSchema = createInsertSchema(reports).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSectionSchema = createInsertSchema(sections).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertObservationSchema = createInsertSchema(observations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRecommendationSchema = createInsertSchema(recommendations).omit({
+  id: true,
+  createdAt: true,
+});
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertProjectFolder = z.infer<typeof insertProjectFolderSchema>;
