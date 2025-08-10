@@ -463,7 +463,6 @@ export async function registerRoutes(app: Express) {
             fileSize: req.file.size,
             fileType: req.file.mimetype,
             filePath: req.file.path,
-            status: "processing",
             sector: req.body.sector || existingUpload[0].sector,
             folderId: folderId !== null ? folderId : existingUpload[0].folderId,
             updatedAt: new Date()
@@ -473,13 +472,11 @@ export async function registerRoutes(app: Express) {
       } else {
         // Create new upload record
         [fileUpload] = await db.insert(fileUploads).values({
-          userId: userId,
           folderId: folderId,
           fileName: req.file.originalname,
           fileSize: req.file.size,
           fileType: req.file.mimetype,
           filePath: req.file.path,
-          status: "processing",
           projectNumber: projectNo,
           visitNumber: visitNumber,
           sector: req.body.sector || "utilities"
@@ -505,11 +502,7 @@ export async function registerRoutes(app: Express) {
             // Update status to failed due to missing files
             await db.update(fileUploads)
               .set({ 
-                status: "failed",
-                extractedData: JSON.stringify({
-                  error: validation.message,
-                  extractionType: "wincan_database_validation_failed"
-                })
+                updatedAt: new Date()
               })
               .where(eq(fileUploads.id, fileUpload.id));
             
@@ -582,12 +575,7 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              extractedData: JSON.stringify({
-                sectionsCount: sections.length,
-                extractionType: "wincan_database",
-                validationMessage: validation.message,
-                status: "completed"
-              })
+              updatedAt: new Date()
             })
             .where(eq(fileUploads.id, fileUpload.id));
           
@@ -605,7 +593,7 @@ export async function registerRoutes(app: Express) {
           console.error("Database processing error:", dbError);
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
-            .set({ extractedData: "failed" })
+            .set({ updatedAt: new Date() })
             .where(eq(fileUploads.id, fileUpload.id));
           
           throw new Error(`Database processing failed: ${dbError.message}`);
@@ -627,11 +615,7 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              extractedData: JSON.stringify({
-                sectionsCount: sections.length,
-                extractionType: "pdf",
-                status: "completed"
-              })
+              updatedAt: new Date()
             })
             .where(eq(fileUploads.id, fileUpload.id));
           
@@ -646,7 +630,7 @@ export async function registerRoutes(app: Express) {
           console.error("PDF processing error:", pdfError);
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
-            .set({ extractedData: "failed" })
+            .set({ updatedAt: new Date() })
             .where(eq(fileUploads.id, fileUpload.id));
           
           throw new Error(`PDF processing failed: ${pdfError.message}`);
@@ -654,7 +638,7 @@ export async function registerRoutes(app: Express) {
       } else {
         // Unsupported file type
         await db.update(fileUploads)
-          .set({ extractedData: "failed" })
+          .set({ updatedAt: new Date() })
           .where(eq(fileUploads.id, fileUpload.id));
         
         return res.status(400).json({ 
@@ -851,10 +835,8 @@ export async function registerRoutes(app: Express) {
       console.log('✅ Folder validation passed, creating folder:', folderName.trim());
       
       const [folder] = await db.insert(projectFolders).values({
-        userId,
         folderName: folderName.trim(),
         projectAddress: projectAddress || "Not specified",
-        projectPostcode: projectPostcode || null,
         projectNumber: projectNumber || null,
         travelDistance: travelDistance || null,
         travelTime: travelTime || null,
