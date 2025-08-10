@@ -657,16 +657,28 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Get file uploads with fallback support
+  // Get file uploads with improved fallback support
   app.get("/api/uploads", async (req: Request, res: Response) => {
     try {
-      let uploads;
-      if (isUsingFallback) {
-        // Fallback: Load from authentic DB3 files in uploads directory
-        console.log('🔄 Using fallback: Loading from authentic DB3 files');
-        uploads = await loadFromAuthenticFiles();
-      } else {
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
         try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for uploads');
+        }
+      }
+
+      let uploads;
+      if (neonOk) {
+        // Use PostgreSQL if available
+        try {
+          const { db } = await import("./db");
+          const { fileUploads } = await import("../shared/schema");
+          const { eq, desc } = await import("drizzle-orm");
           const userId = "test-user";
           uploads = await db.select()
             .from(fileUploads)
@@ -676,7 +688,12 @@ export async function registerRoutes(app: Express) {
           console.log('❌ PostgreSQL query failed, switching to fallback');
           uploads = await loadFromAuthenticFiles();
         }
+      } else {
+        // Use fallback: Load from authentic DB3 files
+        console.log('🔄 Using fallback: Loading from authentic DB3 files');
+        uploads = await loadFromAuthenticFiles();
       }
+      
       res.json(uploads);
     } catch (error) {
       console.error("Error fetching uploads:", error);
@@ -708,13 +725,25 @@ export async function registerRoutes(app: Express) {
       const uploadId = parseInt(req.params.id);
       console.log(`🔍 SECTIONS API - Fetching sections for upload ${uploadId}`);
       
-      let sections;
-      if (isUsingFallback) {
-        // Fallback: Process authentic DB3 file directly
-        console.log('🔄 Using fallback: Processing authentic DB3 directly');
-        sections = await processAuthenticDb3ForSectionsLocal(uploadId);
-      } else {
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
         try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for sections');
+        }
+      }
+
+      let sections;
+      if (neonOk) {
+        // Use PostgreSQL if available
+        try {
+          const { db } = await import("./db");
+          const { sectionInspections } = await import("../shared/schema");
+          const { eq, asc } = await import("drizzle-orm");
           sections = await db.select()
             .from(sectionInspections)
             .where(eq(sectionInspections.fileUploadId, uploadId))
@@ -723,6 +752,10 @@ export async function registerRoutes(app: Express) {
           console.log('❌ PostgreSQL sections query failed, switching to fallback');
           sections = await processAuthenticDb3ForSectionsLocal(uploadId);
         }
+      } else {
+        // Fallback: Process authentic DB3 file directly
+        console.log('🔄 Using fallback: Processing authentic DB3 directly');
+        sections = await processAuthenticDb3ForSectionsLocal(uploadId);
       }
 
       console.log(`🔍 SECTIONS API - Found ${sections.length} sections total`);
@@ -859,15 +892,36 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Project folders API
+  // Project folders API with improved database handling
   app.get("/api/folders", async (req: Request, res: Response) => {
     try {
-      const userId = "test-user";
-      const folders = await db.select()
-        .from(projectFolders)
-        .where(eq(projectFolders.userId, userId))
-        .orderBy(desc(projectFolders.createdAt));
-      res.json(folders);
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for folders');
+        }
+      }
+
+      if (neonOk) {
+        // Use PostgreSQL if available
+        const { db } = await import("./db");
+        const { projectFolders } = await import("../shared/schema");
+        const { eq, desc } = await import("drizzle-orm");
+        const userId = "test-user";
+        const folders = await db.select()
+          .from(projectFolders)
+          .where(eq(projectFolders.userId, userId))
+          .orderBy(desc(projectFolders.createdAt));
+        res.json(folders);
+      } else {
+        // Return empty folders for fallback mode
+        res.json([]);
+      }
     } catch (error) {
       console.error("Error fetching folders:", error);
       res.status(500).json({ error: "Failed to fetch folders" });
