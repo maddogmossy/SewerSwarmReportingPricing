@@ -5,11 +5,14 @@ import * as schema from "@shared/schema";
 // Check if we should use fallback database
 let useFallback = false;
 
-if (!process.env.DATABASE_URL) {
-  console.warn('DATABASE_URL not set, using fallback SQLite database');
+// Check for both DATABASE_URL and DATABASE_URL_NEON
+const DATABASE_URL = process.env.DATABASE_URL || process.env.DATABASE_URL_NEON;
+
+if (!DATABASE_URL) {
+  console.warn('No DATABASE_URL or DATABASE_URL_NEON set, using fallback SQLite database');
   useFallback = true;
 } else {
-  console.log('DATABASE_URL found, attempting PostgreSQL connection...');
+  console.log('Database URL found, attempting PostgreSQL connection...');
 }
 
 let pool: Pool | null = null;
@@ -17,15 +20,15 @@ let db: any;
 
 if (!useFallback) {
   try {
-    // Simple, stable connection configuration
+    // Enhanced connection configuration with environment variables
     pool = new Pool({ 
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.DATABASE_URL.includes('neon.tech') || process.env.DATABASE_URL.includes('replit') 
+      connectionString: DATABASE_URL,
+      ssl: DATABASE_URL.includes('neon.tech') || DATABASE_URL.includes('replit') 
         ? { rejectUnauthorized: false } 
         : false,
-      max: 5,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
+      max: Number(process.env.PG_POOL_MAX ?? 4),
+      idleTimeoutMillis: Number(process.env.PG_IDLE_MS ?? 10000),
+      connectionTimeoutMillis: Number(process.env.PG_CONN_TIMEOUT_MS ?? 8000),
     });
 
     // Handle connection errors gracefully
