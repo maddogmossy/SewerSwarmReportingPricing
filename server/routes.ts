@@ -876,23 +876,64 @@ export async function registerRoutes(app: Express) {
     try {
       const uploadId = parseInt(req.params.id);
       
-      // Delete all sections first
-      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
       
-      // Get file info to delete physical file
-      const upload = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId)).limit(1);
-      
-      // Delete upload record
-      await db.delete(fileUploads).where(eq(fileUploads.id, uploadId));
-      
-      // Delete physical file if it exists
-      if (upload.length > 0 && upload[0].filePath) {
+      if (pool) {
         try {
-          if (existsSync(upload[0].filePath)) {
-            fs.unlinkSync(upload[0].filePath);
-          }
+          neonOk = await testDbConnection();
         } catch (error) {
-          console.warn("Could not delete physical file:", error);
+          console.log('❌ PostgreSQL connection failed for delete');
+        }
+      }
+
+      if (neonOk) {
+        // Use PostgreSQL if available
+        const { db } = await import("./db");
+        const { fileUploads, sectionInspections } = await import("../shared/schema");
+        const { eq } = await import("drizzle-orm");
+        
+        // Delete all sections first
+        await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+        
+        // Get file info to delete physical file
+        const upload = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId)).limit(1);
+        
+        // Delete upload record
+        await db.delete(fileUploads).where(eq(fileUploads.id, uploadId));
+        
+        // Delete physical file if it exists
+        if (upload.length > 0 && upload[0].filePath) {
+          try {
+            const fs = await import('fs');
+            if (fs.existsSync(upload[0].filePath)) {
+              fs.unlinkSync(upload[0].filePath);
+            }
+          } catch (error) {
+            console.warn("Could not delete physical file:", error);
+          }
+        }
+      } else {
+        // Fallback mode: Delete physical file directly
+        const fs = await import('fs');
+        const path = await import('path');
+        
+        const uploadsDir = path.join(process.cwd(), 'uploads');
+        const files = fs.readdirSync(uploadsDir).filter(file => file.endsWith('.db3'));
+        
+        if (uploadId <= files.length) {
+          const fileToDelete = files[uploadId - 1];
+          const filePath = path.join(uploadsDir, fileToDelete);
+          
+          try {
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+              console.log(`🗑️ Deleted physical file: ${fileToDelete}`);
+            }
+          } catch (error) {
+            console.warn("Could not delete physical file:", error);
+          }
         }
       }
       
