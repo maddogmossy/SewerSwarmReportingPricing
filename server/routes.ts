@@ -723,7 +723,7 @@ export async function registerRoutes(app: Express) {
       if (isUsingFallback) {
         // Fallback: Process authentic DB3 file directly
         console.log('🔄 Using fallback: Processing authentic DB3 directly');
-        sections = await processAuthenticDb3ForSections(uploadId);
+        sections = await processAuthenticDb3ForSectionsLocal(uploadId);
       } else {
         try {
           sections = await db.select()
@@ -732,7 +732,7 @@ export async function registerRoutes(app: Express) {
             .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
         } catch (pgError) {
           console.log('❌ PostgreSQL sections query failed, switching to fallback');
-          sections = await processAuthenticDb3ForSections(uploadId);
+          sections = await processAuthenticDb3ForSectionsLocal(uploadId);
         }
       }
 
@@ -772,7 +772,7 @@ export async function registerRoutes(app: Express) {
   });
 
   // Helper function mapping to the authentic processor
-  async function processAuthenticDb3ForSections(uploadId: number) {
+  async function processAuthenticDb3ForSectionsLocal(uploadId: number) {
     const { processAuthenticDb3ForSections: processor } = await import("./authentic-processor");
     return processor(uploadId);
   }

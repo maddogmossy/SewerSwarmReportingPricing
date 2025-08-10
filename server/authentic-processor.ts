@@ -43,7 +43,7 @@ export async function processAuthenticDb3ForSections(uploadId: number): Promise<
   const database = new Database(dbPath, { readonly: true });
   
   try {
-    // Build manhole mapping
+    // Build manhole mapping using actual WinCan schema
     const manholeMap = new Map<string, string>();
     try {
       const nodeData = database.prepare("SELECT OBJ_PK, OBJ_Key FROM NODE WHERE OBJ_Key IS NOT NULL").all();
@@ -52,21 +52,23 @@ export async function processAuthenticDb3ForSections(uploadId: number): Promise<
           manholeMap.set(node.OBJ_PK, node.OBJ_Key);
         }
       }
+      console.log(`🔍 Built manhole mapping with ${manholeMap.size} entries`);
     } catch (error) {
-      console.log('❌ NODE table not accessible');
+      console.log('❌ NODE table access failed:', error.message);
     }
     
-    // Get sections with proper column mapping
+    // Get sections using actual WinCan SECTION table structure
     const sectionQuery = `
       SELECT s.OBJ_PK, s.OBJ_Key, s.OBJ_SortOrder, s.OBJ_Size1, s.OBJ_Material, 
              s.OBJ_Length, s.OBJ_FromNode_REF, s.OBJ_ToNode_REF, s.OBJ_FlowDir,
              s.OBJ_TimeStamp
       FROM SECTION s
-      ORDER BY s.OBJ_SortOrder
+      WHERE s.OBJ_Key IS NOT NULL
+      ORDER BY COALESCE(s.OBJ_SortOrder, 999), s.OBJ_Key
     `;
     
     const sectionRecords = database.prepare(sectionQuery).all();
-    console.log(`🔍 Found ${sectionRecords.length} section records`);
+    console.log(`🔍 Found ${sectionRecords.length} section records with valid keys`);
     
     // Get severity grades
     const gradeMap = await getSeverityGradesFromSecstat(database);
@@ -149,34 +151,36 @@ async function getSeverityGradesFromSecstat(database: Database.Database): Promis
   const gradeMap: Record<number, { structural: number | null, service: number | null }> = {};
   
   try {
-    // Query SECSTAT with corrected table joins
+    // Query SECSTAT using actual WinCan schema structure
     const secstatQuery = `
-      SELECT ss.STA_Type, ss.STA_HighestGrade, si.INS_Section_FK, s.OBJ_SortOrder
+      SELECT ss.STA_Type, ss.STA_HighestGrade, si.INS_Section_FK, s.OBJ_SortOrder, s.OBJ_Key
       FROM SECSTAT ss
       LEFT JOIN SECINSP si ON ss.STA_Inspection_FK = si.INS_PK
       LEFT JOIN SECTION s ON si.INS_Section_FK = s.OBJ_PK
-      WHERE ss.STA_HighestGrade IS NOT NULL AND s.OBJ_SortOrder IS NOT NULL
-      ORDER BY s.OBJ_SortOrder, ss.STA_Type
+      WHERE ss.STA_HighestGrade > 0 AND s.OBJ_Key IS NOT NULL
+      ORDER BY COALESCE(s.OBJ_SortOrder, 999), s.OBJ_Key, ss.STA_Type
     `;
     
     const secstatRows = database.prepare(secstatQuery).all();
-    console.log(`🔍 Found ${secstatRows.length} SECSTAT records`);
+    console.log(`🔍 Found ${secstatRows.length} SECSTAT records with grades > 0`);
     
     for (const row of secstatRows) {
-      const itemNo = row.OBJ_SortOrder;
+      const itemNo = row.OBJ_SortOrder || 999;
       if (!gradeMap[itemNo]) {
         gradeMap[itemNo] = { structural: null, service: null };
       }
       
-      if (row.STA_Type === 'STR') {
+      if (row.STA_Type === 'STR' && row.STA_HighestGrade > 0) {
         gradeMap[itemNo].structural = row.STA_HighestGrade;
-      } else if (row.STA_Type === 'OPE') {
+        console.log(`🔍 Item ${itemNo}: Structural Grade ${row.STA_HighestGrade}`);
+      } else if (row.STA_Type === 'OPE' && row.STA_HighestGrade > 0) {
         gradeMap[itemNo].service = row.STA_HighestGrade;
+        console.log(`🔍 Item ${itemNo}: Service Grade ${row.STA_HighestGrade}`);
       }
     }
     
   } catch (error) {
-    console.log('❌ Error extracting SECSTAT grades:', error);
+    console.log('❌ Error extracting SECSTAT grades:', error.message);
   }
   
   return gradeMap;
@@ -189,8 +193,8 @@ async function getObservationsForSection(database: Database.Database, sectionPK:
       FROM SECOBS obs
       LEFT JOIN SECINSP si ON obs.OBS_Inspection_FK = si.INS_PK
       WHERE si.INS_Section_FK = ? AND obs.OBS_OpCode IS NOT NULL
-      AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'IC', 'ICF')
-      ORDER BY obs.OBS_Distance
+      AND obs.OBS_OpCode NOT IN ('MH', 'MHF', 'IC', 'ICF', 'START', 'END')
+      ORDER BY CAST(obs.OBS_Distance AS DECIMAL) ASC
     `;
     
     const observations = database.prepare(obsQuery).all(sectionPK);
@@ -199,12 +203,23 @@ async function getObservationsForSection(database: Database.Database, sectionPK:
       return 'No defects observed';
     }
     
-    return observations
-      .map(obs => `${obs.OBS_OpCode} ${obs.OBS_Distance}m${obs.OBS_Observation ? ` (${obs.OBS_Observation})` : ''}`)
-      .join(', ');
+    // Group observations by defect type
+    const defectGroups = observations.reduce((groups: any, obs: any) => {
+      const key = obs.OBS_OpCode;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(obs);
+      return groups;
+    }, {});
+    
+    return Object.entries(defectGroups)
+      .map(([code, defects]: [string, any[]]) => {
+        const distances = defects.map(d => `${d.OBS_Distance}m`).join(', ');
+        return `${code} at ${distances}`;
+      })
+      .join('; ');
       
   } catch (error) {
-    console.log('❌ Error getting observations:', error);
+    console.log('❌ Error getting observations:', error.message);
     return 'Unable to retrieve defect information';
   }
 }
