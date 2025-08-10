@@ -2,7 +2,7 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { generateSectionRecommendations, validateWRcMapping } from './wrc-processor.js';
+import { generateSectionRecommendations, rulesVersionInfo } from './rule-evaluator.js';
 
 export interface ProcessedSection {
   id: number;
@@ -55,6 +55,14 @@ export async function processAuthenticDb3ForSections(uploadId: number): Promise<
   }
   
   console.log(`🔍 Processing authentic DB3: ${workingFile}`);
+  
+  // Log WRc rules version
+  try {
+    const versionInfo = rulesVersionInfo();
+    console.log(`📋 Using WRc rules v${versionInfo.version}`);
+  } catch (error) {
+    console.log('❌ Failed to load WRc rules version');
+  }
   
   const database = new Database(dbPath, { readonly: true });
   

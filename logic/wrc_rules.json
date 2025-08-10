@@ -1,0 +1,95 @@
+{
+  "version": "2025-08-10-01",
+  "notes": "Local, deterministic mapping of MSCC/OS19x codes to recommended actions. Edit and commit to change behaviour for ALL future uploads.",
+  "defaults": {
+    "unknown": {
+      "rec_type": "reinspect",
+      "severity": 1,
+      "wr_ref": "MSCC5 – Unmapped code",
+      "operational_action": 15,
+      "rationale": "Code not found in local mapping; schedule targeted reinspection."
+    }
+  },
+  "rules": [
+    {
+      "when": { "code_regex": "^(WL)$", "min_grade": 2 },
+      "outcome": {
+        "rec_type": "clean",
+        "severity": 2,
+        "wr_ref": "OS19x – Water level restriction",
+        "operational_action": 3,
+        "rationale": "Elevated water level impeding inspection; clean/flush and reassess."
+      }
+    },
+    {
+      "when": { "code_regex": "^(DER)$", "min_grade": 2 },
+      "outcome": {
+        "rec_type": "patch",
+        "severity": 3,
+        "wr_ref": "MSCC5 – Deformation",
+        "operational_action": 4,
+        "rationale": "Localised deformation ≥ grade 2; install patch per WRc guidance."
+      }
+    },
+    {
+      "when": { "code_regex": "^(LL)$", "min_grade": 2 },
+      "outcome": {
+        "rec_type": "liner",
+        "severity": 3,
+        "wr_ref": "MSCC5 – Longitudinal crack/fracture",
+        "operational_action": 7,
+        "rationale": "Distributed longitudinal defects; consider CIPP lining."
+      }
+    },
+    {
+      "when": { "code_regex": "^(JN)$", "min_grade": 2 },
+      "outcome": {
+        "rec_type": "patch",
+        "severity": 3,
+        "wr_ref": "MSCC5 – Joint anomaly",
+        "operational_action": 4,
+        "rationale": "Localised joint anomaly; sectional repair recommended."
+      }
+    },
+    {
+      "when": { "code_regex": "^(CP)$", "min_grade": 2 },
+      "outcome": {
+        "rec_type": "clean",
+        "severity": 2,
+        "wr_ref": "OS19x – Cementitious projection/obstruction",
+        "operational_action": 2,
+        "rationale": "Obstruction; mechanical removal/clean then reassess."
+      }
+    },
+    {
+      "when": { "code_regex": "^(REF)$", "min_grade": 2 },
+      "outcome": {
+        "rec_type": "reinspect",
+        "severity": 2,
+        "wr_ref": "MSCC5 – Reflection/glare",
+        "operational_action": 15,
+        "rationale": "Imaging artefact; repeat inspection after cleaning/flow control."
+      }
+    },
+    {
+      "when": { "code_regex": "^(RG)$", "min_grade": 2 },
+      "outcome": {
+        "rec_type": "clean",
+        "severity": 2,
+        "wr_ref": "OS19x – Root ingress",
+        "operational_action": 2,
+        "rationale": "Roots present; root cut/clean and reassess for structural impact."
+      }
+    },
+    {
+      "when": { "code_regex": "^(OF|JS)$", "min_grade": 3 },
+      "outcome": {
+        "rec_type": "liner",
+        "severity": 4,
+        "wr_ref": "MSCC5 – Offset/Joint step ≥ 3",
+        "operational_action": 7,
+        "rationale": "Significant joint displacement; lining preferred over local patch."
+      }
+    }
+  ]
+}
