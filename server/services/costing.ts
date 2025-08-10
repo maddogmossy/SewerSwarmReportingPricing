@@ -1,0 +1,54 @@
+// server/services/costing.ts
+// Adds £ costs to each recommendation using the local/DB adapter (DB if up, file if down)
+import { priceItem } from "../pricing/adapter";
+
+export type SectionLite = {
+  id: string;
+  plr?: string | null;
+  lengthM?: number | null;      // section length in metres
+  diameterMm?: number | null;   // DN100 = 100 etc.
+  material?: "PVC" | "VC" | "CO" | "CONCRETE" | string | null;
+};
+
+export type RecommendationLite = {
+  rec_type: "CLEAN" | "ROOT_CUT" | "PATCH" | "LINER" | "REINSTATE" | "REINSPECT" | string;
+  severity?: number;
+  at?: number | null; // chainage
+  // …any other fields you already have (wr_ref, rationale, etc.)
+};
+
+function normaliseKind(recType: string): "CLEAN" | "ROOT_CUT" | "PATCH" | "LINER" | "REINSTATE" | null {
+  const t = recType.toUpperCase();
+  if (t.includes("CLEAN")) return "CLEAN";
+  if (t.includes("ROOT")) return "ROOT_CUT";
+  if (t.includes("PATCH") || t.includes("SPOT")) return "PATCH";
+  if (t.includes("LINER") || t.includes("RELINE")) return "LINER";
+  if (t.includes("REINSTATE")) return "REINSTATE";
+  return null; // REINSPECT or unmapped → no price
+}
+
+export async function enrichWithCosts(section: SectionLite, recs: RecommendationLite[]) {
+  const enriched = [];
+  let total = 0;
+
+  for (const r of recs) {
+    const kind = normaliseKind(r.rec_type);
+    if (!kind) { enriched.push({ ...r, cost: null }); continue; }
+
+    const lengthM =
+      kind === "PATCH" || kind === "REINSTATE" ? 1 :
+      (typeof section.lengthM === "number" ? section.lengthM : 1);
+
+    const diameterMm = typeof section.diameterMm === "number" ? section.diameterMm : 150;
+    const material = (section.material?.toUpperCase?.() as any) || "PVC";
+
+    const priced = await priceItem({
+      kind, lengthM, diameterMm, material
+    });
+
+    total += priced.subtotal;
+    enriched.push({ ...r, cost: priced });
+  }
+
+  return { items: enriched, totals: { currency: enriched.find(i => i.cost)?.cost?.currency || "GBP", subtotal: total } };
+}

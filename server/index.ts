@@ -51,6 +51,8 @@ app.use((req, res, next) => {
   } catch (error) {
     console.warn('Dev pricing endpoint not available:', error.message);
   }
+  
+
 
   // Serve static files for uploaded logos BEFORE Vite setup to prevent catch-all interference
   app.use('/uploads', express.static('uploads'));
