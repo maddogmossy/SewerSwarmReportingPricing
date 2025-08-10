@@ -52,6 +52,15 @@ app.use((req, res, next) => {
     console.warn('Dev pricing endpoint not available:', error.message);
   }
   
+  // Register recommendations endpoint with costing
+  try {
+    const recommendationsRouter = await import('./routes/recommendations.mjs');
+    app.use(recommendationsRouter.default);
+    log('Recommendations endpoint with costing registered');
+  } catch (error) {
+    console.warn('Recommendations endpoint not available:', error.message);
+  }
+  
 
 
   // Serve static files for uploaded logos BEFORE Vite setup to prevent catch-all interference
