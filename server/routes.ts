@@ -437,8 +437,7 @@ export async function registerRoutes(app: Express) {
       let db;
       try {
         await testDbConnection();
-        const neonSql = neon(process.env.DATABASE_URL!);
-        db = drizzle(neonSql);
+        db = fallbackDb; // Use fallback for now since Neon is disabled
       } catch (error) {
         console.log('🔄 PostgreSQL unavailable, using fallback database');
         db = fallbackDb;
@@ -1097,8 +1096,10 @@ export async function registerRoutes(app: Express) {
 
       const { db } = await import("./db");
       const [folder] = await db.insert(projectFolders).values({
+        userId: userId,
         folderName: folderName.trim(),
         projectAddress: projectAddress || "Not specified",
+        projectPostcode: null,
         projectNumber: projectNumber || null,
         travelDistance: travelDistance || null,
         travelTime: travelTime || null,

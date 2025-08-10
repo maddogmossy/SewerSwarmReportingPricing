@@ -1,0 +1,77 @@
+// src/config/standards.ts
+// Single source of truth for which rulebook is active and how categories behave.
+// No AI. Everything is deterministic and hard-coded.
+
+export type Category = "STRUCTURAL" | "SERVICE";
+export type WrcCode =
+  // structural (examples)
+  | "CC" | "CMJ" | "FC" | "FCJ" | "FMJ" | "BJ" | "JDL" | "XP"
+  // service/operational (examples)
+  | "DER" | "DEE" | "DEF" | "DES" | "RM" | "RMJ" | "RFJ" | "CXD" | "CXI"
+  // common/neutral
+  | "WL" | "JN" | "CP" | "MH" | "OCF" | "GYF" | "SA" | "ISJ" | "CN";
+
+export const ACTIVE_STANDARD = "MSCC5_SRM5" as const;
+
+// Minimal category map for known codes (extend as needed)
+export const CODE_CATEGORY: Record<WrcCode, Category | "NEUTRAL"> = {
+  // structural
+  CC: "STRUCTURAL", CMJ: "STRUCTURAL", FC: "STRUCTURAL", FCJ: "STRUCTURAL",
+  FMJ: "STRUCTURAL", BJ: "STRUCTURAL", JDL: "STRUCTURAL", XP: "STRUCTURAL",
+
+  // service/operational
+  DER: "SERVICE", DEE: "SERVICE", DEF: "SERVICE", DES: "SERVICE",
+  RM: "SERVICE", RMJ: "SERVICE", RFJ: "SERVICE", CXD: "SERVICE", CXI: "SERVICE",
+
+  // neutral/constructive
+  WL: "NEUTRAL", JN: "NEUTRAL", CP: "NEUTRAL", MH: "NEUTRAL",
+  OCF: "NEUTRAL", GYF: "NEUTRAL", SA: "NEUTRAL", ISJ: "NEUTRAL", CN: "NEUTRAL",
+};
+
+// SRM5 action thresholds by category.
+// Grade 1 => monitor/reinspect. Grade ≥2 => rule-driven action.
+export const SRM_THRESHOLDS = {
+  STRUCTURAL: { reinspectBelow: 2 }, // 2+ triggers specific structural actions
+  SERVICE:    { reinspectBelow: 2 }, // 2+ triggers specific maintenance actions
+} as const;
+
+export type Recommendation =
+  | "REINSPECT"
+  | "CLEAN"
+  | "ROOT_CUT"
+  | "PATCH"
+  | "SPOT_RELINE"
+  | "RELINE"
+  | "EXCAVATE_REPAIR"
+  | "CONFIRMATION_SURVEY";
+
+// Deterministic mapping for common MSCC5 observations at grade ≥2.
+// Keep this narrow and explicit—extend as your library grows.
+export function decideAction(code: WrcCode, category: Category, grade: number): Recommendation {
+  // Sub-grade 2: always reinspect per SRM thresholds
+  const threshold = SRM_THRESHOLDS[category].reinspectBelow;
+  if (grade < threshold) return "REINSPECT";
+
+  // Structural
+  if (category === "STRUCTURAL") {
+    if (code === "XP") return "EXCAVATE_REPAIR";  // Collapse
+    if (code === "BJ") return "PATCH";            // Broken at joint (spot repair)
+    if (code === "FCJ" || code === "FMJ" || code === "FC") {
+      return grade >= 4 ? "SPOT_RELINE" : "PATCH";
+    }
+    if (code === "JDL") return "PATCH";          // Large joint displacement
+    if (code === "CC" || code === "CMJ") {
+      return grade >= 4 ? "SPOT_RELINE" : "PATCH";
+    }
+  }
+
+  // Service/Operational
+  if (category === "SERVICE") {
+    if (code === "RM" || code === "RMJ" || code === "RFJ") return "ROOT_CUT";
+    if (code === "DER" || code === "DES" || code === "DEE" || code === "DEF") return "CLEAN";
+    if (code === "CXD" || code === "CXI") return "PATCH"; // defective/intruding connection
+  }
+
+  // Default for grade ≥2 when code/category not yet mapped
+  return "CONFIRMATION_SURVEY";
+}
