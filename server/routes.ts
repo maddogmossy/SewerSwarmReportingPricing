@@ -463,6 +463,7 @@ export async function registerRoutes(app: Express) {
             fileSize: req.file.size,
             fileType: req.file.mimetype,
             filePath: req.file.path,
+            status: "processing",
             sector: req.body.sector || existingUpload[0].sector,
             folderId: folderId !== null ? folderId : existingUpload[0].folderId,
             updatedAt: new Date()
@@ -472,11 +473,13 @@ export async function registerRoutes(app: Express) {
       } else {
         // Create new upload record
         [fileUpload] = await db.insert(fileUploads).values({
+          userId: userId,
           folderId: folderId,
           fileName: req.file.originalname,
           fileSize: req.file.size,
           fileType: req.file.mimetype,
           filePath: req.file.path,
+          status: "processing",
           projectNumber: projectNo,
           visitNumber: visitNumber,
           sector: req.body.sector || "utilities"
@@ -502,7 +505,11 @@ export async function registerRoutes(app: Express) {
             // Update status to failed due to missing files
             await db.update(fileUploads)
               .set({ 
-                updatedAt: new Date()
+                status: "failed",
+                extractedData: JSON.stringify({
+                  error: validation.message,
+                  extractionType: "wincan_database_validation_failed"
+                })
               })
               .where(eq(fileUploads.id, fileUpload.id));
             
@@ -575,7 +582,12 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              updatedAt: new Date()
+              status: "completed",
+              extractedData: JSON.stringify({
+                sectionsCount: sections.length,
+                extractionType: "wincan_database",
+                validationMessage: validation.message
+              })
             })
             .where(eq(fileUploads.id, fileUpload.id));
           
@@ -615,7 +627,11 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              updatedAt: new Date()
+              status: "completed",
+              extractedData: JSON.stringify({
+                sectionsCount: sections.length,
+                extractionType: "pdf"
+              })
             })
             .where(eq(fileUploads.id, fileUpload.id));
           
@@ -655,11 +671,20 @@ export async function registerRoutes(app: Express) {
   app.get("/api/uploads", async (req: Request, res: Response) => {
     try {
       const userId = "test-user";
-      const uploads = await db.select()
-        .from(fileUploads)
-        .where(eq(fileUploads.userId, userId))
-        .orderBy(desc(fileUploads.createdAt));
-      res.json(uploads);
+      
+      // Try PostgreSQL first, fallback to temp database if Neon is down
+      try {
+        const uploads = await db.select()
+          .from(fileUploads)
+          .where(eq(fileUploads.userId, userId))
+          .orderBy(desc(fileUploads.createdAt));
+        res.json(uploads);
+      } catch (pgError) {
+        console.log('🔄 PostgreSQL unavailable, using temp fallback database...');
+        const { getTempUploads } = await import('./temp-db-fallback');
+        const uploads = getTempUploads();
+        res.json(uploads);
+      }
     } catch (error) {
       console.error("Error fetching uploads:", error);
       res.status(500).json({ error: "Failed to fetch uploads" });
@@ -672,10 +697,18 @@ export async function registerRoutes(app: Express) {
       const uploadId = parseInt(req.params.id);
       console.log(`🔍 SECTIONS API - Fetching sections for upload ${uploadId}`);
       
-      const sections = await db.select()
-        .from(sectionInspections)
-        .where(eq(sectionInspections.fileUploadId, uploadId))
-        .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
+      // Try PostgreSQL first, fallback to temp database if Neon is down
+      let sections = [];
+      try {
+        sections = await db.select()
+          .from(sectionInspections)
+          .where(eq(sectionInspections.fileUploadId, uploadId))
+          .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
+      } catch (pgError) {
+        console.log('🔄 PostgreSQL unavailable for sections, using temp fallback database...');
+        const { getTempSections } = await import('./temp-db-fallback');
+        sections = getTempSections(uploadId) || [];
+      }
 
       console.log(`🔍 SECTIONS API - Found ${sections.length} sections total`);
       
@@ -835,8 +868,10 @@ export async function registerRoutes(app: Express) {
       console.log('✅ Folder validation passed, creating folder:', folderName.trim());
       
       const [folder] = await db.insert(projectFolders).values({
+        userId,
         folderName: folderName.trim(),
         projectAddress: projectAddress || "Not specified",
+        projectPostcode: projectPostcode || null,
         projectNumber: projectNumber || null,
         travelDistance: travelDistance || null,
         travelTime: travelTime || null,
