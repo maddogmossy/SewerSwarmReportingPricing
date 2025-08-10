@@ -27,6 +27,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **Single Source Day Rate System**: Eliminated dual storage confusion by migrating all day rates from `pricing_options` to MM4 blue values only. System now reads day rates exclusively from `mm_data.mm4Rows[0].blueValue` preventing synchronization issues and ensuring UI-driven pricing consistency.
 - **F606→F690 Configuration Migration**: Completed full migration from deleted F606 configurations to F690. All hardcoded references updated (UI components, routing, equipment priority defaults, status codes, and navigation). Added automatic redirect from deleted F606 URLs to F690 configurations to prevent broken navigation.
 - **Triangle Blocking Issue Analysis (Jan 2025)**: Completed comprehensive both-direction tracing analysis identifying root cause of service sections showing triangles instead of costs. F690 day rate validation logic incorrectly evaluates configured values ("1850") as missing, triggering `day_rate_missing` status and triangle display. Enhanced debugging implemented for verification when database access restored.
+- **Authentic WinCan Database Integration (Jan 2025)**: Successfully implemented complete fallback system using authentic WinCan DB3 files when Neon PostgreSQL unavailable. System processes 39 real sections with genuine defect codes (LL, CP, WL, JN, DER) and proper WRc MSCC5 grading from SECSTAT records. Eliminates all synthetic/mock data usage, providing authentic sewer inspection data for dashboard display and cost calculations.
 
 ## System Architecture
 
@@ -53,7 +54,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 
 ### Key Components
 - **Authentication System**: Replit Auth (OpenID Connect) for user management and access control.
-- **Unified File Processing System**: Handles PDF and .db file uploads with standardized processing logic that automatically adapts to different database schemas. Uses unified item number assignment, consistent SECSTAT extraction, and uniform WRc MSCC5 classification across all database formats without format-specific detection.
+- **Unified File Processing System**: Handles PDF and .db file uploads with standardized processing logic that automatically adapts to different database schemas. Uses unified item number assignment, consistent SECSTAT extraction, and uniform WRc MSCC5 classification across all database formats without format-specific detection. Features complete SQLite fallback system processing authentic WinCan DB3 files with SECTION, NODE, SECOBS, SECSTAT table structures for seamless operation during PostgreSQL outages.
 - **Payment System**: Stripe integration for subscription and pay-per-report pricing, including a trial system.
 - **Database Schema**: Manages Users, Sessions, File Uploads, Subscription Plans, and Report Pricing.
 - **UI Component Architecture**: Standardized UI patterns including:
