@@ -2,6 +2,7 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
+import { generateSectionRecommendations, validateWRcMapping } from './wrc-processor.js';
 
 export interface ProcessedSection {
   id: number;
@@ -103,6 +104,9 @@ export async function processAuthenticDb3ForSections(uploadId: number): Promise<
       // Get grades for this section
       const sectionGrades = gradeMap[itemNo] || { structural: null, service: null };
       
+      // Get observations for defect text first
+      const defects = await getObservationsForSection(database, record.OBJ_PK);
+      
       // Determine primary defect type and grade based on WRc standards
       let severityGrade = '0';
       let defectType = 'service';
@@ -113,17 +117,18 @@ export async function processAuthenticDb3ForSections(uploadId: number): Promise<
       if (sectionGrades.structural && sectionGrades.structural > 0) {
         severityGrade = sectionGrades.structural.toString();
         defectType = 'structural';
-        recommendations = getWRcRecommendation(sectionGrades.structural, 'structural');
+        // Generate WRc-compliant recommendations using deterministic mapping
+        const wrcResult = generateSectionRecommendations(itemNo, defects, sectionGrades.structural);
+        recommendations = wrcResult.primary_recommendation.rationale;
         adoptable = sectionGrades.structural >= 3 ? 'No' : 'Yes';
       } else if (sectionGrades.service && sectionGrades.service > 0) {
         severityGrade = sectionGrades.service.toString();
         defectType = 'service';
-        recommendations = getWRcRecommendation(sectionGrades.service, 'service');
+        // Generate WRc-compliant recommendations using deterministic mapping
+        const wrcServiceResult = generateSectionRecommendations(itemNo, defects, sectionGrades.service);
+        recommendations = wrcServiceResult.primary_recommendation.rationale;
         adoptable = sectionGrades.service >= 4 ? 'No' : 'Yes';
       }
-      
-      // Get observations for defect text
-      const defects = await getObservationsForSection(database, record.OBJ_PK);
       
       const section: ProcessedSection = {
         id: i + 1,
