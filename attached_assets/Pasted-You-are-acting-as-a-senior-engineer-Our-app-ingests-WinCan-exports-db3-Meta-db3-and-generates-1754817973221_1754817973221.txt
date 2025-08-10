@@ -1,0 +1,72 @@
+You are acting as a senior engineer.
+Our app ingests WinCan exports (.db3 + _Meta.db3) and generates SER/STR grades and WRc recommendations (MSCC5 SRM scoring + OS20X / Drain Repair Book 4th Ed). Recently recommendations and grades in the UI changed unexpectedly even though no new .db3/_Meta.db3 files were added.
+
+Your tasks (please run code/search/edits as needed):
+
+Diff & scope:
+
+Show a concise git diff of the last 10 commits touching:
+
+any code that parses *.db3 / *_Meta.db3
+
+grading/WRc mapping (SER/STR, SRM5)
+
+recommendation builders and the UI “cards”
+
+caching layers (in‑memory, Redis, browser), filename normalization, and any data migrations.
+
+Point out changes that could alter outputs without new files (e.g., default thresholds, enum/code → text mapping, rounding, clock positions, %CSA buckets, defect code remaps, filtering by “Abandoned Surveys”, or environment‑based toggles).
+
+Data path audit:
+
+Trace one record end‑to‑end, from raw DB3 → parsed defect → graded SER/STR → recommendation → UI card.
+
+Use these known examples as acceptance checks:
+
+MH06X should present a SER grade 4 for “Connection defective, intruding 225 mm, ~40%” (intruding connection) and appear in Service Grade table.
+
+CN.BX should appear with STR grade 5 for a collapse/100% CSA loss.
+
+MH10X should have STR grade 4 due to broken/fracture at joints.
+
+If your output differs, print the intermediate values (parsed defect code, clock position, diameter, % intrusion/% CSA, joint/at joint flags) and show where the mapping diverges from our rules.
+
+Parser & mapping checks:
+
+Verify WinCan → internal code mapping for: CXI/CXD (connection defective), XP (collapse), BJ (broken), FC/FCJ/FL/FLJ/CC/CCJ/CMJ/FM* (fracture/crack families), RM/RMJ (roots), DES/DER/DEE/DEF (deposits).
+
+Confirm clock‑face and % CSA/intusion bucketization (e.g., 5/10/15/40/90/100) still match MSCC5 SRM5 thresholds.
+
+Ensure filters aren’t hiding abandoned surveys from the grading inputs if your logic expects to include/exclude them at a different stage.
+
+Filename & caching issues:
+
+Check for brittle filename handling (spaces like “GR7188 - 40 Hollow Road - …”), case sensitivity, or relying on mtime/etag.
+
+Clear/disable caches and recompute to see if stale caches caused the change. Provide commands/scripts you used.
+
+DB/host stability:
+
+If we use Neon or another hosted DB: verify connection retries, timeouts, and any schema drift; confirm no silent fallback to an empty/mocked dataset that could flatten grades/recommendations.
+
+Automated tests:
+
+Add/repair unit tests that pin the expected mapping for the examples above (SER/STR + recommendation text).
+
+Make the tests fail on regressions and then fix the root cause. Commit with clear messages.
+
+Fix + PR:
+
+Implement the minimal, correct fix (do not hard‑code results).
+
+Include a PR summary explaining: cause, scope, tests added, and rollback plan.
+
+Deliverables:
+
+Short root‑cause analysis (what changed, why outputs shifted without new DB3s).
+
+The specific code diff that fixes it.
+
+Test outputs before/after.
+
+A one‑paragraph note to the team describing the fix and any config changes they must make.
