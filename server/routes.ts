@@ -709,14 +709,25 @@ export async function registerRoutes(app: Express) {
     const uploadsDir = path.join(process.cwd(), 'uploads');
     const files = fs.readdirSync(uploadsDir).filter(file => file.endsWith('.db3'));
     
-    return files.map((file, index) => ({
-      id: index + 1,
-      file_name: file,
-      status: 'completed',
-      sector: 'utilities',
-      created_at: new Date().toISOString(),
-      extracted_data: JSON.stringify({ sectionsCount: 39, extractionType: 'wincan_database' })
-    }));
+    return files.map((file, index) => {
+      const filePath = path.join(uploadsDir, file);
+      const stats = fs.statSync(filePath);
+      const fileDate = stats.mtime; // Use file modification time
+      
+      return {
+        id: index + 1,
+        fileName: file,
+        file_name: file, // Keep both for compatibility
+        status: 'completed',
+        sector: 'utilities',
+        fileSize: stats.size,
+        createdAt: fileDate.toISOString(),
+        created_at: fileDate.toISOString(), // Keep both for compatibility
+        updatedAt: fileDate.toISOString(),
+        extractedData: JSON.stringify({ sectionsCount: 39, extractionType: 'wincan_database' }),
+        extracted_data: JSON.stringify({ sectionsCount: 39, extractionType: 'wincan_database' }) // Keep both for compatibility
+      };
+    });
   }
 
   // Get sections for an upload with fallback support
