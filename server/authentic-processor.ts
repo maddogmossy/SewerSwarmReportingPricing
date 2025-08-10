@@ -30,8 +30,22 @@ export interface ProcessedSection {
 export async function processAuthenticDb3ForSections(uploadId: number): Promise<ProcessedSection[]> {
   const uploadsDir = path.join(process.cwd(), 'uploads');
   
-  // Use the working DB3 file with actual data
-  const workingFile = 'backup_gr7188.db3';
+  // Get available DB3 files
+  const availableFiles = fs.readdirSync(uploadsDir).filter(file => file.endsWith('.db3'));
+  
+  if (availableFiles.length === 0) {
+    console.log('❌ No DB3 files found in uploads directory');
+    return [];
+  }
+  
+  // Map uploadId to available files (1-based indexing)
+  const fileIndex = uploadId - 1;
+  if (fileIndex >= availableFiles.length) {
+    console.log(`❌ Upload ID ${uploadId} exceeds available files (${availableFiles.length})`);
+    return [];
+  }
+  
+  const workingFile = availableFiles[fileIndex];
   const dbPath = path.join(uploadsDir, workingFile);
   
   if (!fs.existsSync(dbPath)) {
