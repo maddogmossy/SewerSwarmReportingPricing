@@ -131,7 +131,7 @@ export async function initializeFallbackDatabase() {
       fallbackDb.prepare(`
         INSERT INTO users (id, email, first_name, last_name, is_test_user)
         VALUES (?, ?, ?, ?, ?)
-      `).run('test-user', 'test@example.com', 'Test', 'User', true);
+      `).run('test-user', 'test@example.com', 'Test', 'User', 1);
     }
     
     console.log('✅ Fallback database initialized successfully');

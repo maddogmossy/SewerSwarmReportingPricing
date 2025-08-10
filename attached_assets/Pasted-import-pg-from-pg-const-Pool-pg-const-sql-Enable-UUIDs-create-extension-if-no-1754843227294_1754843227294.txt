@@ -1,0 +1,97 @@
+import pg from "pg";
+const { Pool } = pg;
+
+const sql = `
+-- Enable UUIDs
+create extension if not exists pgcrypto;
+
+-- Jobs queue
+create table if not exists jobs (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null,                           -- 'parse-db3' | 'parse-pdf'
+  status text not null default 'queued',        -- 'queued' | 'running' | 'done' | 'error'
+  file_key text not null,                       -- temp path or storage key
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  error text,
+  result jsonb
+);
+create index if not exists jobs_status_idx on jobs(status);
+
+-- Reports uploaded
+create table if not exists reports (
+  id uuid primary key default gen_random_uuid(),
+  source_filename text not null,
+  storage_key text not null,
+  created_at timestamptz not null default now()
+);
+
+-- Pipe sections
+create table if not exists sections (
+  id uuid primary key default gen_random_uuid(),
+  report_id uuid not null references reports(id) on delete cascade,
+  item_no text,
+  upstream_node text,
+  downstream_node text,
+  direction text,
+  use_class text,
+  pipe_shape text,
+  dia_height text,
+  material text,
+  total_length_m numeric,
+  inspected_length_m numeric,
+  meta jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists sections_report_idx on sections(report_id);
+
+-- Observations (defects)
+create table if not exists observations (
+  id uuid primary key default gen_random_uuid(),
+  section_id uuid not null references sections(id) on delete cascade,
+  position_m numeric,
+  code text,
+  observation text,
+  grade int,
+  meta jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists obs_section_idx on observations(section_id);
+
+-- WRc/MSCC-derived recommendations
+create table if not exists recommendations (
+  id uuid primary key default gen_random_uuid(),
+  section_id uuid not null references sections(id) on delete cascade,
+  observation_id uuid references observations(id) on delete cascade,
+  rec_type text,                 -- 'patch' | 'liner' | 'clean' | 'reinspect' etc.
+  severity int,
+  rationale text,
+  wr_ref text,                   -- e.g., 'MSCC5 X.Y.Z' / 'OS19x A1'
+  operational_action int,        -- 1–15
+  created_at timestamptz not null default now()
+);
+`;
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+
+const run = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("begin");
+    await client.query(sql);
+    await client.query("commit");
+    console.log("✅ Migration complete.");
+  } catch (e) {
+    await client.query("rollback");
+    console.error("❌ Migration failed:", e.message);
+    process.exitCode = 1;
+  } finally {
+    client.release();
+    await pool.end();
+  }
+};
+
+run();
