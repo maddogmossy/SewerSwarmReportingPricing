@@ -42,6 +42,15 @@ app.use((req, res, next) => {
   
   // Register clean PR2 routes
   await registerCleanPR2Routes(app);
+  
+  // Register dev pricing endpoint for testing
+  try {
+    const devPriceRouter = await import('./dev/price.mjs');
+    app.use(devPriceRouter.default);
+    log('Dev pricing endpoint registered');
+  } catch (error) {
+    console.warn('Dev pricing endpoint not available:', error.message);
+  }
 
   // Serve static files for uploaded logos BEFORE Vite setup to prevent catch-all interference
   app.use('/uploads', express.static('uploads'));
