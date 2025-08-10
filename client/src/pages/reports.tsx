@@ -465,7 +465,7 @@ export default function Reports() {
                         <div className="flex items-center gap-4 text-sm text-slate-600">
                           <span>{sectors.find(s => s.id === upload.sector)?.name || 'Unknown'} Sector</span>
                           <span>•</span>
-                          <span>Uploaded {upload.createdAt ? new Date(upload.createdAt).toLocaleDateString() : upload.created_at ? new Date(upload.created_at).toLocaleDateString() : 'Unknown Date'}</span>
+                          <span>Uploaded {new Date(upload.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>

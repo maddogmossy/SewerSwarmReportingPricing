@@ -9,8 +9,6 @@ import {
   decimal,
   boolean,
   integer,
-  uuid,
-  numeric,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -522,87 +520,23 @@ export type InsertTeamBillingRecord = typeof teamBillingRecords.$inferInsert;
 export type Pr2Configuration = typeof pr2Configurations.$inferSelect;
 export type InsertPr2Configuration = typeof pr2Configurations.$inferInsert;
 
-export const insertUserSchema = createInsertSchema(users);
-export const insertProjectFolderSchema = createInsertSchema(projectFolders);
-export const insertFileUploadSchema = createInsertSchema(fileUploads);
-
-// New schema tables for comprehensive data processing
-
-// Jobs queue table for async processing
-export const jobs = pgTable("jobs", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  kind: text("kind").notNull(), // 'parse-db3' | 'parse-pdf'
-  status: text("status").notNull().default("queued"), // 'queued' | 'running' | 'done' | 'error'
-  fileKey: text("file_key").notNull(), // temp path or storage key
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  error: text("error"),
-  result: jsonb("result"),
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
-// Reports uploaded table
-export const reports = pgTable("reports", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  sourceFilename: text("source_filename").notNull(),
-  storageKey: text("storage_key").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
-// Pipe sections table
-export const sections = pgTable("sections", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  reportId: uuid("report_id").notNull().references(() => reports.id, { onDelete: "cascade" }),
-  itemNo: text("item_no"),
-  upstreamNode: text("upstream_node"),
-  downstreamNode: text("downstream_node"),
-  direction: text("direction"),
-  useClass: text("use_class"),
-  pipeShape: text("pipe_shape"),
-  diaHeight: text("dia_height"),
-  material: text("material"),
-  totalLengthM: numeric("total_length_m"),
-  inspectedLengthM: numeric("inspected_length_m"),
-  meta: jsonb("meta"),
-  createdAt: timestamp("created_at").defaultNow(),
+export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
-
-// Observations (defects) table
-export const observations = pgTable("observations", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  sectionId: uuid("section_id").notNull().references(() => sections.id, { onDelete: "cascade" }),
-  positionM: numeric("position_m"),
-  code: text("code"),
-  observation: text("observation"),
-  grade: integer("grade"),
-  meta: jsonb("meta"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// WRc/MSCC-derived recommendations table
-export const recommendations = pgTable("recommendations", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  sectionId: uuid("section_id").notNull().references(() => sections.id, { onDelete: "cascade" }),
-  observationId: uuid("observation_id").references(() => observations.id, { onDelete: "cascade" }),
-  recType: text("rec_type"), // 'patch' | 'liner' | 'clean' | 'reinspect' etc.
-  severity: integer("severity"),
-  rationale: text("rationale"),
-  wrRef: text("wr_ref"), // e.g., 'MSCC5 X.Y.Z' / 'OS19x A1'
-  operationalAction: integer("operational_action"), // 1–15
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Type exports for new tables
-export type Job = typeof jobs.$inferSelect;
-export type Report = typeof reports.$inferSelect;
-export type Section = typeof sections.$inferSelect;
-export type Observation = typeof observations.$inferSelect;
-export type Recommendation = typeof recommendations.$inferSelect;
-
-export type InsertJob = typeof jobs.$inferInsert;
-export type InsertReport = typeof reports.$inferInsert;
-export type InsertSection = typeof sections.$inferInsert;
-export type InsertObservation = typeof observations.$inferInsert;
-export type InsertRecommendation = typeof recommendations.$inferInsert;
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertProjectFolder = z.infer<typeof insertProjectFolderSchema>;

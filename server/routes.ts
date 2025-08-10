@@ -5,16 +5,8 @@ import path from "path";
 import fs, { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-// Import database connections
-import { getDb, testDbConnection } from "./db";
-import { db as fallbackDb, initializeFallbackDatabase } from "./db-fallback";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { neon } from "@neondatabase/serverless";
-
-// Initialize fallback database
-await initializeFallbackDatabase();
+import { db } from "./db";
 import { storage } from "./storage";
-import { processAuthenticDb3ForSections } from "./authentic-processor";
 import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories, depotSettings, travelCalculations, vehicleTravelRates } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
@@ -434,15 +426,6 @@ export async function registerRoutes(app: Express) {
       const projectNo = projectMatch ? projectMatch[1] : "0000";
       
       // Check if this file already exists and has a sector assigned
-      let db;
-      try {
-        await testDbConnection();
-        db = fallbackDb; // Use fallback for now since Neon is disabled
-      } catch (error) {
-        console.log('🔄 PostgreSQL unavailable, using fallback database');
-        db = fallbackDb;
-      }
-      
       const existingUpload = await db.select().from(fileUploads)
         .where(and(
           eq(fileUploads.userId, userId),
@@ -480,6 +463,7 @@ export async function registerRoutes(app: Express) {
             fileSize: req.file.size,
             fileType: req.file.mimetype,
             filePath: req.file.path,
+            status: "processing",
             sector: req.body.sector || existingUpload[0].sector,
             folderId: folderId !== null ? folderId : existingUpload[0].folderId,
             updatedAt: new Date()
@@ -489,11 +473,13 @@ export async function registerRoutes(app: Express) {
       } else {
         // Create new upload record
         [fileUpload] = await db.insert(fileUploads).values({
+          userId: userId,
           folderId: folderId,
           fileName: req.file.originalname,
           fileSize: req.file.size,
           fileType: req.file.mimetype,
           filePath: req.file.path,
+          status: "processing",
           projectNumber: projectNo,
           visitNumber: visitNumber,
           sector: req.body.sector || "utilities"
@@ -519,7 +505,11 @@ export async function registerRoutes(app: Express) {
             // Update status to failed due to missing files
             await db.update(fileUploads)
               .set({ 
-                updatedAt: new Date()
+                status: "failed",
+                extractedData: JSON.stringify({
+                  error: validation.message,
+                  extractionType: "wincan_database_validation_failed"
+                })
               })
               .where(eq(fileUploads.id, fileUpload.id));
             
@@ -592,7 +582,12 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              updatedAt: new Date()
+              extractedData: JSON.stringify({
+                sectionsCount: sections.length,
+                extractionType: "wincan_database",
+                validationMessage: validation.message,
+                status: "completed"
+              })
             })
             .where(eq(fileUploads.id, fileUpload.id));
           
@@ -610,7 +605,7 @@ export async function registerRoutes(app: Express) {
           console.error("Database processing error:", dbError);
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
-            .set({ updatedAt: new Date() })
+            .set({ extractedData: "failed" })
             .where(eq(fileUploads.id, fileUpload.id));
           
           throw new Error(`Database processing failed: ${dbError.message}`);
@@ -632,7 +627,11 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              updatedAt: new Date()
+              extractedData: JSON.stringify({
+                sectionsCount: sections.length,
+                extractionType: "pdf",
+                status: "completed"
+              })
             })
             .where(eq(fileUploads.id, fileUpload.id));
           
@@ -647,7 +646,7 @@ export async function registerRoutes(app: Express) {
           console.error("PDF processing error:", pdfError);
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
-            .set({ updatedAt: new Date() })
+            .set({ extractedData: "failed" })
             .where(eq(fileUploads.id, fileUpload.id));
           
           throw new Error(`PDF processing failed: ${pdfError.message}`);
@@ -655,7 +654,7 @@ export async function registerRoutes(app: Express) {
       } else {
         // Unsupported file type
         await db.update(fileUploads)
-          .set({ updatedAt: new Date() })
+          .set({ extractedData: "failed" })
           .where(eq(fileUploads.id, fileUpload.id));
         
         return res.status(400).json({ 
@@ -668,43 +667,14 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Get file uploads with improved fallback support
+  // Get file uploads
   app.get("/api/uploads", async (req: Request, res: Response) => {
     try {
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for uploads');
-        }
-      }
-
-      let uploads;
-      if (neonOk) {
-        // Use PostgreSQL if available
-        try {
-          const { db } = await import("./db");
-          const { fileUploads } = await import("../shared/schema");
-          const { eq, desc } = await import("drizzle-orm");
-          const userId = "test-user";
-          uploads = await db.select()
-            .from(fileUploads)
-            .where(eq(fileUploads.userId, userId))
-            .orderBy(desc(fileUploads.createdAt));
-        } catch (pgError) {
-          console.log('❌ PostgreSQL query failed, switching to fallback');
-          uploads = await loadFromAuthenticFiles();
-        }
-      } else {
-        // Use fallback: Load from authentic DB3 files
-        console.log('🔄 Using fallback: Loading from authentic DB3 files');
-        uploads = await loadFromAuthenticFiles();
-      }
-      
+      const userId = "test-user";
+      const uploads = await db.select()
+        .from(fileUploads)
+        .where(eq(fileUploads.userId, userId))
+        .orderBy(desc(fileUploads.createdAt));
       res.json(uploads);
     } catch (error) {
       console.error("Error fetching uploads:", error);
@@ -712,73 +682,16 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Fallback function to load from authentic DB3 files
-  async function loadFromAuthenticFiles() {
-    const fs = await import('fs');
-    const path = await import('path');
-    
-    const uploadsDir = path.join(process.cwd(), 'uploads');
-    const files = fs.readdirSync(uploadsDir).filter(file => file.endsWith('.db3'));
-    
-    return files.map((file, index) => {
-      const filePath = path.join(uploadsDir, file);
-      const stats = fs.statSync(filePath);
-      const fileDate = stats.mtime; // Use file modification time
-      
-      return {
-        id: index + 1,
-        fileName: file,
-        file_name: file, // Keep both for compatibility
-        status: 'completed',
-        sector: 'utilities',
-        fileSize: stats.size,
-        createdAt: fileDate.toISOString(),
-        created_at: fileDate.toISOString(), // Keep both for compatibility
-        updatedAt: fileDate.toISOString(),
-        extractedData: JSON.stringify({ sectionsCount: 39, extractionType: 'wincan_database' }),
-        extracted_data: JSON.stringify({ sectionsCount: 39, extractionType: 'wincan_database' }) // Keep both for compatibility
-      };
-    });
-  }
-
-  // Get sections for an upload with fallback support
+  // Get sections for an upload
   app.get("/api/uploads/:id/sections", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.id);
       console.log(`🔍 SECTIONS API - Fetching sections for upload ${uploadId}`);
       
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for sections');
-        }
-      }
-
-      let sections;
-      if (neonOk) {
-        // Use PostgreSQL if available
-        try {
-          const { db } = await import("./db");
-          const { sectionInspections } = await import("../shared/schema");
-          const { eq, asc } = await import("drizzle-orm");
-          sections = await db.select()
-            .from(sectionInspections)
-            .where(eq(sectionInspections.fileUploadId, uploadId))
-            .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
-        } catch (pgError) {
-          console.log('❌ PostgreSQL sections query failed, switching to fallback');
-          sections = await processAuthenticDb3ForSectionsLocal(uploadId);
-        }
-      } else {
-        // Fallback: Process authentic DB3 file directly
-        console.log('🔄 Using fallback: Processing authentic DB3 directly');
-        sections = await processAuthenticDb3ForSectionsLocal(uploadId);
-      }
+      const sections = await db.select()
+        .from(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, uploadId))
+        .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
 
       console.log(`🔍 SECTIONS API - Found ${sections.length} sections total`);
       
@@ -807,7 +720,6 @@ export async function registerRoutes(app: Express) {
         'Expires': '0'
       });
 
-      console.log(`📊 SECTIONS API RESPONSE - Returning ${transformedSections.length} sections`);
       res.json(transformedSections);
     } catch (error) {
       console.error("Error fetching sections:", error);
@@ -815,35 +727,11 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Helper function mapping to the authentic processor
-  async function processAuthenticDb3ForSectionsLocal(uploadId: number) {
-    const { processAuthenticDb3ForSections: processor } = await import("./authentic-processor");
-    return processor(uploadId);
-  }
-
   // Get standard categories for pricing
   app.get("/api/standard-categories", async (req: Request, res: Response) => {
     try {
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for standard categories');
-        }
-      }
-
-      if (neonOk) {
-        const { db } = await import("./db");
-        const categories = await db.select().from(sectorStandards).orderBy(asc(sectorStandards.standardName));
-        res.json(categories);
-      } else {
-        // Return empty array for fallback mode
-        res.json([]);
-      }
+      const categories = await db.select().from(sectorStandards).orderBy(asc(sectorStandards.standardName));
+      res.json(categories);
     } catch (error) {
       console.error("Error fetching standard categories:", error);
       res.status(500).json({ error: "Failed to fetch categories" });
@@ -853,26 +741,8 @@ export async function registerRoutes(app: Express) {
   // Get equipment types
   app.get("/api/equipment-types", async (req: Request, res: Response) => {
     try {
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for equipment types');
-        }
-      }
-
-      if (neonOk) {
-        const { db } = await import("./db");
-        const equipment = await db.select().from(equipmentTypes).orderBy(asc(equipmentTypes.name));
-        res.json(equipment);
-      } else {
-        // Return empty array for fallback mode
-        res.json([]);
-      }
+      const equipment = await db.select().from(equipmentTypes).orderBy(asc(equipmentTypes.name));
+      res.json(equipment);
     } catch (error) {
       console.error("Error fetching equipment types:", error);
       res.status(500).json({ error: "Failed to fetch equipment types" });
@@ -882,30 +752,12 @@ export async function registerRoutes(app: Express) {
   // Get sector standards
   app.get("/api/sector-standards/:sector", async (req: Request, res: Response) => {
     try {
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for sector standards');
-        }
-      }
-
-      if (neonOk) {
-        const { db } = await import("./db");
-        const { sector } = req.params;
-        const standards = await db.select()
-          .from(sectorStandards)
-          .where(eq(sectorStandards.sector, sector))
-          .orderBy(asc(sectorStandards.standardName));
-        res.json(standards);
-      } else {
-        // Return empty array for fallback mode
-        res.json([]);
-      }
+      const { sector } = req.params;
+      const standards = await db.select()
+        .from(sectorStandards)
+        .where(eq(sectorStandards.sector, sector))
+        .orderBy(asc(sectorStandards.standardName));
+      res.json(standards);
     } catch (error) {
       console.error("Error fetching sector standards:", error);
       res.status(500).json({ error: "Failed to fetch sector standards" });
@@ -915,39 +767,21 @@ export async function registerRoutes(app: Express) {
   // Sector standards endpoint specifically for sectors like utilities
   app.get("/api/sector-standards", async (req: Request, res: Response) => {
     try {
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
+      const { sector } = req.query;
+      let standards;
       
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for sector standards query');
-        }
-      }
-
-      if (neonOk) {
-        const { db } = await import("./db");
-        const { sector } = req.query;
-        let standards;
-        
-        if (sector) {
-          standards = await db.select()
-            .from(sectorStandards)
-            .where(eq(sectorStandards.sector, sector as string))
-            .orderBy(asc(sectorStandards.standardName));
-        } else {
-          standards = await db.select()
-            .from(sectorStandards)
-            .orderBy(asc(sectorStandards.sector), asc(sectorStandards.standardName));
-        }
-        
-        res.json(standards);
+      if (sector) {
+        standards = await db.select()
+          .from(sectorStandards)
+          .where(eq(sectorStandards.sector, sector as string))
+          .orderBy(asc(sectorStandards.standardName));
       } else {
-        // Return empty array for fallback mode
-        res.json([]);
+        standards = await db.select()
+          .from(sectorStandards)
+          .orderBy(asc(sectorStandards.sector), asc(sectorStandards.standardName));
       }
+      
+      res.json(standards);
     } catch (error) {
       console.error("Error fetching sector standards:", error);
       res.status(500).json({ error: "Failed to fetch sector standards" });
@@ -959,64 +793,23 @@ export async function registerRoutes(app: Express) {
     try {
       const uploadId = parseInt(req.params.id);
       
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
+      // Delete all sections first
+      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
       
-      if (pool) {
+      // Get file info to delete physical file
+      const upload = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId)).limit(1);
+      
+      // Delete upload record
+      await db.delete(fileUploads).where(eq(fileUploads.id, uploadId));
+      
+      // Delete physical file if it exists
+      if (upload.length > 0 && upload[0].filePath) {
         try {
-          neonOk = await testDbConnection();
+          if (existsSync(upload[0].filePath)) {
+            fs.unlinkSync(upload[0].filePath);
+          }
         } catch (error) {
-          console.log('❌ PostgreSQL connection failed for delete');
-        }
-      }
-
-      if (neonOk) {
-        // Use PostgreSQL if available
-        const { db } = await import("./db");
-        const { fileUploads, sectionInspections } = await import("../shared/schema");
-        const { eq } = await import("drizzle-orm");
-        
-        // Delete all sections first
-        await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
-        
-        // Get file info to delete physical file
-        const upload = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId)).limit(1);
-        
-        // Delete upload record
-        await db.delete(fileUploads).where(eq(fileUploads.id, uploadId));
-        
-        // Delete physical file if it exists
-        if (upload.length > 0 && upload[0].filePath) {
-          try {
-            const fs = await import('fs');
-            if (fs.existsSync(upload[0].filePath)) {
-              fs.unlinkSync(upload[0].filePath);
-            }
-          } catch (error) {
-            console.warn("Could not delete physical file:", error);
-          }
-        }
-      } else {
-        // Fallback mode: Delete physical file directly
-        const fs = await import('fs');
-        const path = await import('path');
-        
-        const uploadsDir = path.join(process.cwd(), 'uploads');
-        const files = fs.readdirSync(uploadsDir).filter(file => file.endsWith('.db3'));
-        
-        if (uploadId <= files.length) {
-          const fileToDelete = files[uploadId - 1];
-          const filePath = path.join(uploadsDir, fileToDelete);
-          
-          try {
-            if (fs.existsSync(filePath)) {
-              fs.unlinkSync(filePath);
-              console.log(`🗑️ Deleted physical file: ${fileToDelete}`);
-            }
-          } catch (error) {
-            console.warn("Could not delete physical file:", error);
-          }
+          console.warn("Could not delete physical file:", error);
         }
       }
       
@@ -1027,36 +820,15 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Project folders API with improved database handling
+  // Project folders API
   app.get("/api/folders", async (req: Request, res: Response) => {
     try {
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for folders');
-        }
-      }
-
-      if (neonOk) {
-        // Use PostgreSQL if available
-        const { db } = await import("./db");
-        const { projectFolders } = await import("../shared/schema");
-        const { eq, desc } = await import("drizzle-orm");
-        const userId = "test-user";
-        const folders = await db.select()
-          .from(projectFolders)
-          .where(eq(projectFolders.userId, userId))
-          .orderBy(desc(projectFolders.createdAt));
-        res.json(folders);
-      } else {
-        // Return empty folders for fallback mode
-        res.json([]);
-      }
+      const userId = "test-user";
+      const folders = await db.select()
+        .from(projectFolders)
+        .where(eq(projectFolders.userId, userId))
+        .orderBy(desc(projectFolders.createdAt));
+      res.json(folders);
     } catch (error) {
       console.error("Error fetching folders:", error);
       res.status(500).json({ error: "Failed to fetch folders" });
@@ -1078,27 +850,15 @@ export async function registerRoutes(app: Express) {
       
       console.log('✅ Folder validation passed, creating folder:', folderName.trim());
       
-      // Test PostgreSQL connectivity first
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for folder creation');
-        }
-      }
-
-      if (!neonOk) {
-        return res.status(503).json({ error: "Database unavailable - folders require PostgreSQL" });
-      }
-
-      const { db } = await import("./db");
       const [folder] = await db.insert(projectFolders).values({
-        userId: userId,
+        userId,
         folderName: folderName.trim(),
-        projectAddress: projectAddress || "Not specified"
+        projectAddress: projectAddress || "Not specified",
+        projectPostcode: projectPostcode || null,
+        projectNumber: projectNumber || null,
+        travelDistance: travelDistance || null,
+        travelTime: travelTime || null,
+        addressValidated: addressValidated || false
       }).returning();
       
       console.log('✅ Folder created successfully:', folder);
@@ -1335,34 +1095,17 @@ export async function registerRoutes(app: Express) {
   // Categories for vehicle travel rates dropdown
   app.get("/api/pr2-configurations", async (req: Request, res: Response) => {
     try {
-      // Test PostgreSQL connectivity
-      const pool = getDb();
-      let neonOk = false;
+      const userId = "test-user"; // Default user for testing
+      // Import pr2Configurations here to avoid circular imports
+      const { pr2Configurations } = await import("@shared/schema");
+      const configs = await db.select({
+        id: pr2Configurations.id,
+        categoryName: pr2Configurations.categoryName,
+        sector: pr2Configurations.sector,
+      }).from(pr2Configurations)
+        .where(eq(pr2Configurations.userId, userId));
       
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log('❌ PostgreSQL connection failed for PR2 configurations');
-        }
-      }
-
-      if (neonOk) {
-        const { db } = await import("./db");
-        const { pr2Configurations } = await import("@shared/schema");
-        const userId = "test-user"; // Default user for testing
-        const configs = await db.select({
-          id: pr2Configurations.id,
-          categoryName: pr2Configurations.categoryName,
-          sector: pr2Configurations.sector,
-        }).from(pr2Configurations)
-          .where(eq(pr2Configurations.userId, userId));
-        
-        res.json(configs);
-      } else {
-        // Return empty array for fallback mode
-        res.json([]);
-      }
+      res.json(configs);
     } catch (error) {
       console.error("Error fetching PR2 configurations:", error);
       res.status(500).json({ error: "Failed to fetch categories" });
@@ -1420,56 +1163,6 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Error triggering fuel price update:', error);
       res.status(500).json({ error: 'Failed to trigger fuel price update' });
-    }
-  });
-
-  // Health check endpoints
-  app.get("/api/health", (req: Request, res: Response) => {
-    res.json({ ok: true });
-  });
-
-  app.get("/api/health/db", async (req: Request, res: Response) => {
-    try {
-      // Test PostgreSQL connectivity using the new pattern
-      const pool = getDb();
-      let neonOk = false;
-      
-      if (pool) {
-        try {
-          neonOk = await testDbConnection();
-        } catch (error) {
-          console.log("PostgreSQL connectivity test failed:", error.message);
-        }
-      }
-      
-      if (neonOk) {
-        // PostgreSQL is available
-        res.json({ 
-          ok: true, 
-          database: "PostgreSQL",
-          version: "Neon PostgreSQL",
-          status: "Connected to Neon PostgreSQL",
-          persisted: true
-        });
-      } else {
-        // Using authentic WinCan fallback database
-        res.json({ 
-          ok: true, 
-          database: "SQLite3 WinCan Fallback",
-          version: "authentic-wincan-database",
-          status: "Using authentic WinCan DB3 files",
-          sections: 39,
-          defects: 221,
-          persisted: false
-        });
-      }
-    } catch (error) {
-      console.error("Database health check failed:", error);
-      res.json({ 
-        ok: false, 
-        error: error.message,
-        status: "Database connection failed"
-      });
     }
   });
 

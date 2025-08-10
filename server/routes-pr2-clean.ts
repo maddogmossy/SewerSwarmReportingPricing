@@ -4,7 +4,6 @@ import { db } from "./db";
 import { pr2Configurations, standardCategories } from "../shared/schema";
 import { eq, and, sql, desc } from "drizzle-orm";
 import { getSectorStandards } from "./sector-standards";
-import { generateFallbackConfigurations, shouldUseFallback } from "./pricing-fallback";
 
 // Legacy routes function - still needed for server startup
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -308,15 +307,6 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching clean PR2 configurations:', error);
-      
-      // Use fallback configurations when database is unavailable
-      if (shouldUseFallback(error)) {
-        console.log('🔄 Using fallback pricing configurations');
-        const { sector, categoryId } = req.query;
-        const fallbackConfigs = await generateFallbackConfigurations(sector as string || 'utilities', categoryId as string);
-        return res.json(fallbackConfigs);
-      }
-      
       res.status(500).json({ error: 'Failed to fetch configurations' });
     }
   });
@@ -350,15 +340,6 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching configurations by category:', error);
-      
-      // Use fallback configurations when database is unavailable
-      if (shouldUseFallback(error)) {
-        console.log('🔄 Using fallback pricing configurations for category');
-        const categoryId = req.params.categoryId;
-        const fallbackConfigs = await generateFallbackConfigurations('utilities', categoryId);
-        return res.json(fallbackConfigs);
-      }
-      
       res.status(500).json({ error: 'Failed to fetch configurations' });
     }
   });

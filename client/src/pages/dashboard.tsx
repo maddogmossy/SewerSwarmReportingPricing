@@ -2119,23 +2119,29 @@ export default function Dashboard() {
         const forceServiceCalculation = section.defectType === 'service' && [3,6,8].includes(section.itemNo);
         const finalHasDefectsRequiringCost = hasDefectsRequiringCost || forceServiceCalculation;
         
-        // F606→F690 MIGRATION VALIDATION: Ensure service cost calculations use F690
+        // CRITICAL DEBUG: Force service item debugging to ALWAYS appear with alert
         if (section.itemNo === 3 || section.itemNo === 6 || section.itemNo === 8) {
-          const autoCostResult = calculateAutoCost(section);
-          console.log(`✅ F690 SERVICE COST CALCULATION - Item ${section.itemNo}:`, {
+          const debugInfo = {
             itemNo: section.itemNo,
             defectType: section.defectType,
             severityGrade: section.severityGrade,
-            defects: section.defects?.substring(0, 60),
-            autoCostResult: autoCostResult ? {
-              cost: autoCostResult.cost || 0,
-              status: autoCostResult.status || 'unknown',
-              method: autoCostResult.method || 'none',
-              configType: autoCostResult.configType || 'unknown',
-              warningType: autoCostResult.warningType || null,
-              usingF690: true
-            } : null
-          });
+            hasDefectsRequiringCost,
+            forceServiceCalculation,
+            finalHasDefectsRequiringCost,
+            willEnterCostLogic: finalHasDefectsRequiringCost,
+            defects: section.defects?.substring(0, 60)
+          };
+          console.error(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
+          console.warn(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
+          console.log(`🔥 SERVICE SECTION ${section.itemNo} - FORCE DEBUG:`, debugInfo);
+          
+          // Also force to localStorage to debug visibility issue  
+          try {
+            localStorage.setItem(`debug_section_${section.itemNo}`, JSON.stringify({
+              timestamp: Date.now(),
+              ...debugInfo
+            }));
+          } catch(e) {}
         }
           
         // CRITICAL DEBUG: Check service sections specifically - ITEM 3 FIRST
@@ -2171,7 +2177,7 @@ export default function Dashboard() {
         
         // FORCE CACHE REFRESH FOR DATABASE UPDATE - clear stale MM4 data
         if (section.itemNo === 10 && pr2Configurations) {
-          const cacheKey = `mm4-data-690`;
+          const cacheKey = `mm4-data-606`;
           if (localStorage.getItem(cacheKey)) {
             console.log('🔄 CLEARING STALE MM4 CACHE for Item 10 database update');
             localStorage.removeItem(cacheKey);
@@ -2315,34 +2321,19 @@ export default function Dashboard() {
             costCalculation.cost > 0 && 
             !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status);
             
-          // 🔍 DASHBOARD TRIANGLE ANALYSIS: Check what makes service sections show triangles
+          // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
-            const excludedStatuses = ['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges', 'day_rate_missing'];
-            console.log('🔍 DASHBOARD TRIANGLE LOGIC - Service Section Analysis:', {
+            console.log('🔍 SERVICE COST VALIDATION CHECK:', {
               itemNo: section.itemNo,
-              costCalculation: costCalculation ? {
-                exists: 'YES',
-                cost: costCalculation.cost || 0,
-                status: costCalculation.status || 'NO_STATUS',
-                method: costCalculation.method || 'NO_METHOD',
-                warningType: costCalculation.warningType || null,
-                configType: costCalculation.configType || null
-              } : 'NULL_RESULT',
-              validationChecks: {
-                hasCostProperty: costCalculation && 'cost' in costCalculation,
-                costGreaterThanZero: costCalculation && 'cost' in costCalculation && costCalculation.cost > 0,
-                statusNotInExcludeList: costCalculation && 'status' in costCalculation ? 
-                  !excludedStatuses.includes(costCalculation.status) : false,
-                isValidCostCalculation
-              },
-              finalDecision: isValidCostCalculation ? 'SHOW_COST' : 'SHOW_TRIANGLE',
-              triangleReason: !isValidCostCalculation ? (
-                !costCalculation ? 'NULL_CALCULATION' :
-                !('cost' in costCalculation) ? 'NO_COST_PROPERTY' :
-                costCalculation.cost <= 0 ? 'ZERO_COST' :
-                excludedStatuses.includes(costCalculation.status) ? `EXCLUDED_STATUS_${costCalculation.status}` :
-                'UNKNOWN_REASON'
-              ) : null
+              costCalculation: costCalculation ? 'EXISTS' : 'NULL',
+              hasCostProperty: costCalculation && 'cost' in costCalculation,
+              costValue: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
+              costGreaterThanZero: costCalculation && 'cost' in costCalculation && costCalculation.cost > 0,
+              status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
+              statusNotInExcludeList: costCalculation && 'status' in costCalculation ? 
+                !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status) : false,
+              isValidCostCalculation,
+              willShowCost: isValidCostCalculation ? 'YES_COST' : 'BLUE_TRIANGLE'
             });
           }
           
@@ -3064,64 +3055,15 @@ export default function Dashboard() {
     
     console.log(`🎯 CHECKING CONFIG WARNINGS for default category: ${currentEquipmentPriority} (${defaultCategoryId})`);
 
-    // FIXED: Only check service sections that would actually use the selected F690/F608 configuration
-    const targetConfig = pr2Configurations?.find(config => config.categoryId === defaultCategoryId);
-    if (!targetConfig) {
-      console.log(`❌ No ${defaultCategoryId} configuration found - skipping warning checks`);
-      return;
-    }
-
-    // Filter sections to only those that match the specific pipe size configured in F690 MM4 data
-    const relevantServiceSections = sections.filter(section => {
-      // Must be service type
-      if (section.defectType !== 'service') return false;
+    // Find the first service section with a configuration warning that matches the current default category
+    for (const section of sections) {
+      // Only check service sections (structural uses patching config regardless of F690/F608 setting)
+      if (section.defectType !== 'service') continue;
       
-      // Must need cleaning to use F690/F608
-      const needsCleaning = requiresCleaning(section.defects || '');
-      if (!needsCleaning) return false;
-      
-      // Must be in restricted item range that uses CCTV configurations
-      const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
-      if (!isRestrictedSection) return false;
-      
-      // PRECISE FILTERING: Only check sections with pipe sizes that have MM4 data in F690 configuration
-      const sectionPipeSize = section.pipeSize?.toString().replace(/mm.*$/i, '') || '0';
-      const mm4DataByPipeSize = targetConfig?.mmData?.mm4DataByPipeSize || {};
-      
-      // Find exact pipe size key match (e.g., "150-1501" for 150mm)
-      const exactPipeSizeKey = Object.keys(mm4DataByPipeSize).find(key => 
-        key.startsWith(sectionPipeSize + '-')
-      );
-      
-      if (!exactPipeSizeKey) {
-        console.log(`⏭️ SKIPPING section ${section.itemNo} - pipe size ${sectionPipeSize}mm not configured in ${defaultCategoryId}`);
-        return false;
-      }
-      
-      // Verify MM4 data exists for this pipe size
-      const mm4Data = mm4DataByPipeSize[exactPipeSizeKey];
-      if (!mm4Data || !Array.isArray(mm4Data) || mm4Data.length === 0) {
-        console.log(`⏭️ SKIPPING section ${section.itemNo} - no MM4 data for pipe size ${sectionPipeSize}mm in ${defaultCategoryId}`);
-        return false;
-      }
-      
-      console.log(`✅ CHECKING section ${section.itemNo} - pipe size ${sectionPipeSize}mm has MM4 data in ${defaultCategoryId}`);
-      return true;
-    });
-
-    console.log(`🔍 FILTERED SERVICE SECTIONS for ${defaultCategoryId}:`, {
-      totalSections: sections.length,
-      serviceSections: sections.filter(s => s.defectType === 'service').length,
-      relevantSections: relevantServiceSections.length,
-      itemNumbers: relevantServiceSections.map(s => s.itemNo)
-    });
-
-    // Check only the filtered relevant sections
-    for (const section of relevantServiceSections) {
       const costCalc = calculateAutoCost(section);
       
       if (costCalc && 'warningType' in costCalc && costCalc.warningType) {
-        // Verify this warning is indeed for our target configuration
+        // Check if this warning is for the currently selected default category
         const configCategoryId = costCalc.configData?.categoryId;
         
         if (configCategoryId === defaultCategoryId) {
@@ -3130,8 +3072,7 @@ export default function Dashboard() {
             method: costCalc.method,
             status: costCalc.status,
             configCategoryId,
-            defaultCategoryId,
-            pipeSize: section.pipeSize
+            defaultCategoryId
           });
           
           // Auto-trigger the configuration warning popup
@@ -3142,13 +3083,15 @@ export default function Dashboard() {
           });
           setShowConfigWarning(true);
           return; // Only show one warning at a time
+        } else {
+          console.log(`⏭️ SKIPPING CONFIG WARNING for section ${section.itemNo} - different category:`, {
+            configCategoryId,
+            defaultCategoryId,
+            currentPriority: currentEquipmentPriority
+          });
         }
-      } else {
-        console.log(`✅ Section ${section.itemNo} has no config warnings for ${defaultCategoryId}`);
       }
     }
-    
-    console.log(`✅ No config warnings found for ${defaultCategoryId} in ${relevantServiceSections.length} relevant sections`);
   };
 
   // Function to detect TP2 configuration issues and trigger validation warnings
@@ -4335,30 +4278,13 @@ export default function Dashboard() {
           const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
           const isDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
           
-          // 🔍 F690 MM4-150 CONFIGURATION ANALYSIS: Trace exact blocking issue
-          console.log('🔍 F690 MM4-150 CONFIGURATION DEEP DIVE:', {
+          console.log('🔍 F690/F608 Day Rate Validation (after range check):', {
             itemNo: section.itemNo,
             equipmentPriority: equipmentPriority,
             configId: cctvConfig.id,
-            categoryId: cctvConfig.categoryId,
-            configName: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
-            mm4DataStructure: {
-              hasMmData: !!cctvConfig.mm_data,
-              hasMm4Rows: !!(cctvConfig.mm_data?.mm4Rows),
-              mm4RowsCount: cctvConfig.mm_data?.mm4Rows?.length || 0,
-              firstRowData: cctvConfig.mm_data?.mm4Rows?.[0] || null
-            },
-            dayRateAnalysis: {
-              rawDayRateValue: dayRateValue,
-              dayRateType: typeof dayRateValue,
-              dayRateLength: dayRateValue?.length || 0,
-              dayRateTrimmed: dayRateValue?.trim(),
-              isDayRateConfigured: isDayRateConfigured,
-              parseResult: dayRateValue ? parseFloat(dayRateValue) : 'NO_VALUE'
-            },
-            blockingFactor: !isDayRateConfigured ? 'DAY_RATE_MISSING' : 'RANGE_CHECK_PASSED',
-            willReturnError: !isDayRateConfigured,
-            errorStatus: !isDayRateConfigured ? 'day_rate_missing' : null
+            dayRateValue: dayRateValue,
+            isDayRateConfigured: isDayRateConfigured,
+            willShowBlueTriangle: !isDayRateConfigured
           });
           
           // If day rate is not configured, return specific error information
@@ -4904,19 +4830,19 @@ export default function Dashboard() {
               try {
                 const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
                 const pipeSizeKey = matchingPipeSizeKey;
-                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '690';
+                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
                 
                 // EQUIPMENT PRIORITY FIX: Respect equipment priority order - F690 first by default
                 const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
-                const bufferKey690 = `690-${pipeSizeKey}-${rowId}-${field}`;
+                const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
                 
                 // Priority: F690 default, F608 only if explicitly chosen
                 const equipmentPriority = localStorage.getItem('equipmentPriority') || 'f690';
                 let bufferedValue;
                 if (equipmentPriority === 'f608') {
-                  bufferedValue = buffer[bufferKey608] || buffer[bufferKey690] || fallback;
+                  bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
                 } else {
-                  bufferedValue = buffer[bufferKey690] || buffer[bufferKey608] || fallback;
+                  bufferedValue = buffer[bufferKey606] || buffer[bufferKey608] || fallback;
                 }
                 
                 // Debug for Items 21, 22, 23 buffer retrieval issues
@@ -4924,9 +4850,9 @@ export default function Dashboard() {
                   console.log(`🔍 Cross-Config Buffer Retrieval for Item ${section.itemNo}:`, {
                     field: field,
                     bufferKey608: bufferKey608,
-                    bufferKey690: bufferKey690,
+                    bufferKey606: bufferKey606,
                     bufferedValue608: buffer[bufferKey608],
-                    bufferedValue690: buffer[bufferKey690],
+                    bufferedValue606: buffer[bufferKey606],
                     finalValue: bufferedValue,
                     fallback: fallback,
                     allBufferKeys: Object.keys(buffer).filter(k => k.includes('225-2251'))
@@ -4965,7 +4891,7 @@ export default function Dashboard() {
                 purpleLengthFromBuffer: getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'),
                 lengthMatch: lengthMatch,
                 bufferKeys: {
-                  f690Key: `690-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
+                  f690Key: `606-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
                   f608Key: `608-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`
                 },
                 matchingPipeSizeKey: matchingPipeSizeKey,

@@ -897,18 +897,18 @@ export class MSCC5Classifier {
       for (let i = 0; i < defects.length; i++) {
         const defect = defects[i];
         await db.insert(sectionDefects).values({
-          fileUploadId: fileUploadId,
-          itemNo: itemNo,
-          defectSequence: i + 1,
-          defectCode: defect.defectCode,
+          file_upload_id: fileUploadId,
+          item_no: itemNo,
+          defect_sequence: i + 1,
+          defect_code: defect.defectCode,
           meterage: defect.meterage,
           percentage: defect.percentage,
           description: defect.description,
-          mscc5Grade: defect.mscc5Grade,
-          defectType: this.getDefectType(defect.defectCode),
+          mscc5_grade: defect.mscc5Grade,
+          defect_type: this.getDefectType(defect.defectCode),
           recommendation: defect.recommendation,
-          operationType: defect.operationType,
-          estimatedCost: defect.estimatedCost
+          operation_type: defect.operationType,
+          estimated_cost: defect.estimatedCost
         });
       }
       
