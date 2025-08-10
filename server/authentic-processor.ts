@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { evaluateObservation, rulesVersionInfo } from '../logic/rules.js';
 import { generateSectionRecommendations } from './rule-evaluator.js';
+import { processSection } from '../src/processors/sectionProcessor.js';
 
 export interface ProcessedSection {
   id: number;

@@ -9,7 +9,9 @@ export type WrcCode =
   // service/operational (examples)
   | "DER" | "DEE" | "DEF" | "DES" | "RM" | "RMJ" | "RFJ" | "CXD" | "CXI"
   // common/neutral
-  | "WL" | "JN" | "CP" | "MH" | "OCF" | "GYF" | "SA" | "ISJ" | "CN";
+  | "WL" | "JN" | "CP" | "MH" | "OCF" | "GYF" | "SA" | "ISJ" | "CN"
+  // authentic WinCan codes from genuine database
+  | "LL" | "REF" | "OF" | "JS";
 
 export const ACTIVE_STANDARD = "MSCC5_SRM5" as const;
 
@@ -26,6 +28,12 @@ export const CODE_CATEGORY: Record<WrcCode, Category | "NEUTRAL"> = {
   // neutral/constructive
   WL: "NEUTRAL", JN: "NEUTRAL", CP: "NEUTRAL", MH: "NEUTRAL",
   OCF: "NEUTRAL", GYF: "NEUTRAL", SA: "NEUTRAL", ISJ: "NEUTRAL", CN: "NEUTRAL",
+  
+  // authentic WinCan codes (from genuine database processing)
+  LL: "STRUCTURAL", // Longitudinal line deviation (observed in items 6, 9, etc.)
+  REF: "NEUTRAL",   // Reflection (observed in item 6)
+  OF: "NEUTRAL",    // Offset (potential future observation)
+  JS: "NEUTRAL",    // Joint step (potential future observation)
 };
 
 // SRM5 action thresholds by category.

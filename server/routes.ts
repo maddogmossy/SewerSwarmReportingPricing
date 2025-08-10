@@ -1098,12 +1098,7 @@ export async function registerRoutes(app: Express) {
       const [folder] = await db.insert(projectFolders).values({
         userId: userId,
         folderName: folderName.trim(),
-        projectAddress: projectAddress || "Not specified",
-        projectPostcode: null,
-        projectNumber: projectNumber || null,
-        travelDistance: travelDistance || null,
-        travelTime: travelTime || null,
-        addressValidated: addressValidated || false
+        projectAddress: projectAddress || "Not specified"
       }).returning();
       
       console.log('✅ Folder created successfully:', folder);
