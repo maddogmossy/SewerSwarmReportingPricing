@@ -5,23 +5,12 @@ import path from "path";
 import fs, { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-// Import database connection with fallback
-let db: any;
-let isUsingFallback = false;
+// Import database connections
+import { getDb, testDbConnection } from "./db";
+import { db as fallbackDb, initializeFallbackDatabase } from "./db-fallback";
 
-try {
-  // Try Neon PostgreSQL first
-  const pgDb = await import("./db");
-  db = pgDb.db;
-  console.log("✅ Connected to Neon PostgreSQL");
-} catch (error) {
-  console.log("❌ Neon PostgreSQL unavailable, switching to fallback SQLite");
-  const fallbackDb = await import("./db-fallback");
-  db = fallbackDb.db;
-  isUsingFallback = true;
-  await fallbackDb.initializeFallbackDatabase();
-  console.log("✅ Connected to fallback SQLite database");
-}
+// Initialize fallback database
+await initializeFallbackDatabase();
 import { storage } from "./storage";
 import { processAuthenticDb3ForSections } from "./authentic-processor";
 import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories, depotSettings, travelCalculations, vehicleTravelRates } from "@shared/schema";
@@ -1221,7 +1210,28 @@ export async function registerRoutes(app: Express) {
 
   app.get("/api/health/db", async (req: Request, res: Response) => {
     try {
-      if (isUsingFallback) {
+      // Test PostgreSQL connectivity using the new pattern
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log("PostgreSQL connectivity test failed:", error.message);
+        }
+      }
+      
+      if (neonOk) {
+        // PostgreSQL is available
+        res.json({ 
+          ok: true, 
+          database: "PostgreSQL",
+          version: "Neon PostgreSQL",
+          status: "Connected to Neon PostgreSQL",
+          persisted: true
+        });
+      } else {
         // Using authentic WinCan fallback database
         res.json({ 
           ok: true, 
@@ -1229,17 +1239,8 @@ export async function registerRoutes(app: Express) {
           version: "authentic-wincan-database",
           status: "Using authentic WinCan DB3 files",
           sections: 39,
-          defects: 221
-        });
-      } else {
-        // Test PostgreSQL connection
-        const result = await db.execute('SELECT version()');
-        const version = result.rows[0]?.version || 'PostgreSQL';
-        res.json({ 
-          ok: true, 
-          database: "PostgreSQL", 
-          version: version,
-          status: "Connected to Neon PostgreSQL"
+          defects: 221,
+          persisted: false
         });
       }
     } catch (error) {

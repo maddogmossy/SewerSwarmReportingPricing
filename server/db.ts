@@ -2,25 +2,15 @@ import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 
-// Check if we should use fallback database
-let useFallback = false;
-
 // Check for both DATABASE_URL and DATABASE_URL_NEON
 const DATABASE_URL = process.env.DATABASE_URL || process.env.DATABASE_URL_NEON;
 
-if (!DATABASE_URL) {
-  console.warn('No DATABASE_URL or DATABASE_URL_NEON set, using fallback SQLite database');
-  useFallback = true;
-} else {
-  console.log('Database URL found, attempting PostgreSQL connection...');
-}
-
 let pool: Pool | null = null;
-let db: any;
 
-if (!useFallback) {
+// Initialize PostgreSQL pool if URL is available
+if (DATABASE_URL) {
   try {
-    // Enhanced connection configuration with environment variables
+    console.log('Database URL found, creating PostgreSQL pool...');
     pool = new Pool({ 
       connectionString: DATABASE_URL,
       ssl: DATABASE_URL.includes('neon.tech') || DATABASE_URL.includes('replit') 
@@ -34,23 +24,34 @@ if (!useFallback) {
     // Handle connection errors gracefully
     pool.on('error', (err) => {
       console.error('Database connection error:', err);
-      console.log('Switching to fallback SQLite database...');
-      useFallback = true;
     });
-
-    db = drizzle(pool, { schema });
   } catch (error) {
-    console.error('Failed to create PostgreSQL connection, using fallback:', error);
-    useFallback = true;
+    console.error('Failed to create PostgreSQL pool:', error);
+    pool = null;
   }
+} else {
+  console.warn('No DATABASE_URL or DATABASE_URL_NEON set');
 }
 
-// Use fallback database if PostgreSQL fails
-if (useFallback) {
-  console.log('🔄 Using fallback SQLite database...');
-  const { db: fallbackDatabase, initializeFallbackDatabase } = await import('./db-fallback');
-  await initializeFallbackDatabase();
-  db = fallbackDatabase;
+// Create drizzle instance if pool is available
+const db = pool ? drizzle(pool, { schema }) : null;
+
+// Function to get database connection (returns null if unavailable)
+export function getDb(): Pool | null {
+  return pool;
+}
+
+// Function to test database connectivity
+export async function testDbConnection(): Promise<boolean> {
+  if (!pool) return false;
+  
+  try {
+    await pool.query('SELECT 1');
+    return true;
+  } catch (error) {
+    console.error('Database connectivity test failed:', error);
+    return false;
+  }
 }
 
 export { db, pool };
