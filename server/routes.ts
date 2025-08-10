@@ -8,6 +8,8 @@ import { dirname } from "path";
 // Import database connections
 import { getDb, testDbConnection } from "./db";
 import { db as fallbackDb, initializeFallbackDatabase } from "./db-fallback";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { neon } from "@neondatabase/serverless";
 
 // Initialize fallback database
 await initializeFallbackDatabase();
@@ -432,6 +434,16 @@ export async function registerRoutes(app: Express) {
       const projectNo = projectMatch ? projectMatch[1] : "0000";
       
       // Check if this file already exists and has a sector assigned
+      let db;
+      try {
+        await testDbConnection();
+        const neonSql = neon(process.env.DATABASE_URL!);
+        db = drizzle(neonSql);
+      } catch (error) {
+        console.log('🔄 PostgreSQL unavailable, using fallback database');
+        db = fallbackDb;
+      }
+      
       const existingUpload = await db.select().from(fileUploads)
         .where(and(
           eq(fileUploads.userId, userId),
@@ -813,8 +825,26 @@ export async function registerRoutes(app: Express) {
   // Get standard categories for pricing
   app.get("/api/standard-categories", async (req: Request, res: Response) => {
     try {
-      const categories = await db.select().from(sectorStandards).orderBy(asc(sectorStandards.standardName));
-      res.json(categories);
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for standard categories');
+        }
+      }
+
+      if (neonOk) {
+        const { db } = await import("./db");
+        const categories = await db.select().from(sectorStandards).orderBy(asc(sectorStandards.standardName));
+        res.json(categories);
+      } else {
+        // Return empty array for fallback mode
+        res.json([]);
+      }
     } catch (error) {
       console.error("Error fetching standard categories:", error);
       res.status(500).json({ error: "Failed to fetch categories" });
@@ -1049,6 +1079,23 @@ export async function registerRoutes(app: Express) {
       
       console.log('✅ Folder validation passed, creating folder:', folderName.trim());
       
+      // Test PostgreSQL connectivity first
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for folder creation');
+        }
+      }
+
+      if (!neonOk) {
+        return res.status(503).json({ error: "Database unavailable - folders require PostgreSQL" });
+      }
+
+      const { db } = await import("./db");
       const [folder] = await db.insert(projectFolders).values({
         folderName: folderName.trim(),
         projectAddress: projectAddress || "Not specified",
@@ -1292,17 +1339,34 @@ export async function registerRoutes(app: Express) {
   // Categories for vehicle travel rates dropdown
   app.get("/api/pr2-configurations", async (req: Request, res: Response) => {
     try {
-      const userId = "test-user"; // Default user for testing
-      // Import pr2Configurations here to avoid circular imports
-      const { pr2Configurations } = await import("@shared/schema");
-      const configs = await db.select({
-        id: pr2Configurations.id,
-        categoryName: pr2Configurations.categoryName,
-        sector: pr2Configurations.sector,
-      }).from(pr2Configurations)
-        .where(eq(pr2Configurations.userId, userId));
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
       
-      res.json(configs);
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for PR2 configurations');
+        }
+      }
+
+      if (neonOk) {
+        const { db } = await import("./db");
+        const { pr2Configurations } = await import("@shared/schema");
+        const userId = "test-user"; // Default user for testing
+        const configs = await db.select({
+          id: pr2Configurations.id,
+          categoryName: pr2Configurations.categoryName,
+          sector: pr2Configurations.sector,
+        }).from(pr2Configurations)
+          .where(eq(pr2Configurations.userId, userId));
+        
+        res.json(configs);
+      } else {
+        // Return empty array for fallback mode
+        res.json([]);
+      }
     } catch (error) {
       console.error("Error fetching PR2 configurations:", error);
       res.status(500).json({ error: "Failed to fetch categories" });
