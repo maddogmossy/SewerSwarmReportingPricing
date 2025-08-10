@@ -824,8 +824,26 @@ export async function registerRoutes(app: Express) {
   // Get equipment types
   app.get("/api/equipment-types", async (req: Request, res: Response) => {
     try {
-      const equipment = await db.select().from(equipmentTypes).orderBy(asc(equipmentTypes.name));
-      res.json(equipment);
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for equipment types');
+        }
+      }
+
+      if (neonOk) {
+        const { db } = await import("./db");
+        const equipment = await db.select().from(equipmentTypes).orderBy(asc(equipmentTypes.name));
+        res.json(equipment);
+      } else {
+        // Return empty array for fallback mode
+        res.json([]);
+      }
     } catch (error) {
       console.error("Error fetching equipment types:", error);
       res.status(500).json({ error: "Failed to fetch equipment types" });
@@ -835,12 +853,30 @@ export async function registerRoutes(app: Express) {
   // Get sector standards
   app.get("/api/sector-standards/:sector", async (req: Request, res: Response) => {
     try {
-      const { sector } = req.params;
-      const standards = await db.select()
-        .from(sectorStandards)
-        .where(eq(sectorStandards.sector, sector))
-        .orderBy(asc(sectorStandards.standardName));
-      res.json(standards);
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
+      
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for sector standards');
+        }
+      }
+
+      if (neonOk) {
+        const { db } = await import("./db");
+        const { sector } = req.params;
+        const standards = await db.select()
+          .from(sectorStandards)
+          .where(eq(sectorStandards.sector, sector))
+          .orderBy(asc(sectorStandards.standardName));
+        res.json(standards);
+      } else {
+        // Return empty array for fallback mode
+        res.json([]);
+      }
     } catch (error) {
       console.error("Error fetching sector standards:", error);
       res.status(500).json({ error: "Failed to fetch sector standards" });
@@ -850,21 +886,39 @@ export async function registerRoutes(app: Express) {
   // Sector standards endpoint specifically for sectors like utilities
   app.get("/api/sector-standards", async (req: Request, res: Response) => {
     try {
-      const { sector } = req.query;
-      let standards;
+      // Test PostgreSQL connectivity
+      const pool = getDb();
+      let neonOk = false;
       
-      if (sector) {
-        standards = await db.select()
-          .from(sectorStandards)
-          .where(eq(sectorStandards.sector, sector as string))
-          .orderBy(asc(sectorStandards.standardName));
-      } else {
-        standards = await db.select()
-          .from(sectorStandards)
-          .orderBy(asc(sectorStandards.sector), asc(sectorStandards.standardName));
+      if (pool) {
+        try {
+          neonOk = await testDbConnection();
+        } catch (error) {
+          console.log('❌ PostgreSQL connection failed for sector standards query');
+        }
       }
-      
-      res.json(standards);
+
+      if (neonOk) {
+        const { db } = await import("./db");
+        const { sector } = req.query;
+        let standards;
+        
+        if (sector) {
+          standards = await db.select()
+            .from(sectorStandards)
+            .where(eq(sectorStandards.sector, sector as string))
+            .orderBy(asc(sectorStandards.standardName));
+        } else {
+          standards = await db.select()
+            .from(sectorStandards)
+            .orderBy(asc(sectorStandards.sector), asc(sectorStandards.standardName));
+        }
+        
+        res.json(standards);
+      } else {
+        // Return empty array for fallback mode
+        res.json([]);
+      }
     } catch (error) {
       console.error("Error fetching sector standards:", error);
       res.status(500).json({ error: "Failed to fetch sector standards" });
