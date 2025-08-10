@@ -734,6 +734,14 @@ export async function registerRoutes(app: Express) {
       res.json(categories);
     } catch (error) {
       console.error("Error fetching standard categories:", error);
+      
+      // Check if it's a database connection error and provide fallback
+      if (error && (error as any).code === 'XX000' && (error as any).message?.includes('endpoint has been disabled')) {
+        console.log('🔄 Database unavailable, using fallback work categories for standard categories');
+        const { FALLBACK_WORK_CATEGORIES } = await import('./fallback-data');
+        return res.json(FALLBACK_WORK_CATEGORIES);
+      }
+      
       res.status(500).json({ error: "Failed to fetch categories" });
     }
   });

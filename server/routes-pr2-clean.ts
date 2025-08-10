@@ -310,16 +310,25 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       
       // Check if it's a database connection error and provide fallback
       if (error && (error as any).code === 'XX000' && (error as any).message?.includes('endpoint has been disabled')) {
-        console.log('🔄 Database unavailable, using fallback F690 configuration');
-        const { FALLBACK_F690_CONFIG } = await import('./fallback-data');
+        console.log('🔄 Database unavailable, using fallback configurations');
+        const { FALLBACK_CONFIGURATIONS } = await import('./fallback-data');
         
-        // Return F690 configuration if requested for utilities sector
         const requestedSector = req.query.sector as string;
         const requestedCategoryId = req.query.categoryId as string;
         
-        if (requestedSector === 'utilities' && (requestedCategoryId === 'cctv-jet-vac' || !requestedCategoryId)) {
-          return res.json([FALLBACK_F690_CONFIG]);
+        // Filter fallback configurations based on request
+        let filteredConfigs = FALLBACK_CONFIGURATIONS;
+        
+        if (requestedSector) {
+          filteredConfigs = filteredConfigs.filter(config => config.sector === requestedSector);
         }
+        
+        if (requestedCategoryId) {
+          filteredConfigs = filteredConfigs.filter(config => config.categoryId === requestedCategoryId);
+        }
+        
+        console.log(`🔄 Returning ${filteredConfigs.length} fallback configurations for sector: ${requestedSector}, category: ${requestedCategoryId}`);
+        return res.json(filteredConfigs);
       }
       
       res.status(500).json({ error: 'Failed to fetch configurations' });
