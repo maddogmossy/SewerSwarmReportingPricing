@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getCostConfig, priceItem } from './pricing/adapter';
 
 // Local pricing fallback system when database is unavailable
 interface PricingConfig {
@@ -39,60 +40,78 @@ export function loadDefaultPricing(): PricingConfig | null {
 }
 
 // Generate fallback PR2 configurations based on local pricing
-export function generateFallbackConfigurations(sector: string, categoryId?: string) {
-  const pricing = loadDefaultPricing();
-  if (!pricing) return [];
-
-  const configurations = [];
-  
-  // Generate configurations for common pipe sizes and the specific category
-  const pipeSizes = ['150', '225', '300'];
-  const categories = categoryId ? [categoryId] : ['cctv-jet-vac', 'patching', 'lining', 'excavation'];
-  
-  for (const category of categories) {
-    for (const pipeSize of pipeSizes) {
-      // Calculate base costs using the pricing data
-      const diameterMultiplier = pricing.multipliers.diameter[pipeSize] || 1.0;
-      
-      let baseCost = 0;
-      switch (category) {
-        case 'cctv-jet-vac':
-        case 'jet-vac':
-          baseCost = pricing.unitRates.CLEAN * diameterMultiplier;
-          break;
-        case 'patching':
-          baseCost = pricing.unitRates.PATCH * diameterMultiplier;
-          break;
-        case 'lining':
-        case 'ambient-lining':
-        case 'uv-lining':
-          baseCost = pricing.unitRates.LINER * diameterMultiplier;
-          break;
-        case 'excavation':
-          baseCost = pricing.unitRates.REINSTATE * diameterMultiplier + pricing.adders.deepExcavation;
-          break;
-        default:
-          baseCost = pricing.unitRates.CLEAN * diameterMultiplier;
+export async function generateFallbackConfigurations(sector: string, categoryId?: string) {
+  try {
+    const configurations = [];
+    
+    // Generate configurations for common pipe sizes and the specific category
+    const pipeSizes = [150, 225, 300];
+    const categories = categoryId ? [categoryId] : ['cctv-jet-vac', 'patching', 'lining', 'excavation'];
+    
+    for (const category of categories) {
+      for (const pipeSize of pipeSizes) {
+        // Use the pricing adapter to calculate costs
+        let pricingResult;
+        switch (category) {
+          case 'cctv-jet-vac':
+          case 'jet-vac':
+            pricingResult = await priceItem({
+              kind: 'CLEAN',
+              diameterMm: pipeSize,
+              lengthM: 10 // Default length for day rate calculation
+            });
+            break;
+          case 'patching':
+            pricingResult = await priceItem({
+              kind: 'PATCH',
+              diameterMm: pipeSize
+            });
+            break;
+          case 'lining':
+          case 'ambient-lining':
+          case 'uv-lining':
+            pricingResult = await priceItem({
+              kind: 'LINER',
+              diameterMm: pipeSize,
+              lengthM: 10
+            });
+            break;
+          case 'excavation':
+            pricingResult = await priceItem({
+              kind: 'REINSTATE',
+              diameterMm: pipeSize,
+              adders: ['deepExcavation']
+            });
+            break;
+          default:
+            pricingResult = await priceItem({
+              kind: 'CLEAN',
+              diameterMm: pipeSize,
+              lengthM: 10
+            });
+        }
+        
+        configurations.push({
+          id: `fallback-${category}-${pipeSize}`,
+          userId: 'test-user',
+          categoryId: category,
+          sector,
+          pipeSize: String(pipeSize),
+          configuration: category,
+          dayRate: Math.round(pricingResult.subtotal),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          quantity: 1,
+          notes: `Fallback configuration (${pricingResult.currency}) - Base: ${pricingResult.breakdown.base}, Multipliers: ${pricingResult.breakdown.dMult}x${pricingResult.breakdown.mMult}`
+        });
       }
-      
-      configurations.push({
-        id: `fallback-${category}-${pipeSize}`,
-        userId: 'test-user',
-        categoryId: category,
-        sector,
-        pipeSize,
-        configuration: category,
-        dayRate: Math.round(baseCost),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        // Add required fields based on your schema
-        quantity: 1,
-        notes: `Fallback configuration generated from local pricing data (${pricing.currency})`
-      });
     }
+    
+    return configurations;
+  } catch (error) {
+    console.error('Error generating fallback configurations:', error);
+    return [];
   }
-  
-  return configurations;
 }
 
 // Check if we should use fallback (when database query fails)

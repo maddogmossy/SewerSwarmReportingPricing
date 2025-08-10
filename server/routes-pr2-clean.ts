@@ -313,7 +313,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       if (shouldUseFallback(error)) {
         console.log('🔄 Using fallback pricing configurations');
         const { sector, categoryId } = req.query;
-        const fallbackConfigs = generateFallbackConfigurations(sector as string || 'utilities', categoryId as string);
+        const fallbackConfigs = await generateFallbackConfigurations(sector as string || 'utilities', categoryId as string);
         return res.json(fallbackConfigs);
       }
       
@@ -355,7 +355,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       if (shouldUseFallback(error)) {
         console.log('🔄 Using fallback pricing configurations for category');
         const categoryId = req.params.categoryId;
-        const fallbackConfigs = generateFallbackConfigurations('utilities', categoryId);
+        const fallbackConfigs = await generateFallbackConfigurations('utilities', categoryId);
         return res.json(fallbackConfigs);
       }
       
