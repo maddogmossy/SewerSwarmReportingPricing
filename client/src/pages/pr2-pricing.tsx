@@ -45,23 +45,26 @@ const SECTORS = [
 ];
 
 // Standard category options - F-Series Equipment with DevLabels for F-numbers
+// Complete mapping: category_id → Database ID → DevLabel → Equipment Type
 const STANDARD_CATEGORIES = [
-  { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video },
-  { id: 'van-pack', name: 'Van Pack', description: 'MMP1 template for test card configuration - ID1 - ID1 - ID4', icon: Truck },
-  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Monitor },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
-  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
-  { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
-
-  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
-  { id: 'patching', name: 'Patching', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Edit },
-  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket },
-  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame },
-  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun },
-  { id: 'f-robot-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations (id: f-robotic-cutting)', icon: Settings },
-  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe },
-  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck }
+  // Core Database Configurations (F605-F690)
+  { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video, devId: 'F612' },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'CCTV Van Pack equipment with MM4 robotic cutting capabilities', icon: Monitor, devId: 'F608' },
+  { id: 'van-pack', name: 'Van Pack', description: 'Van Pack mobile equipment for sewer maintenance', icon: Truck, devId: 'F609' },
+  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, devId: 'F610' },
+  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings, devId: 'F611' },
+  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves, devId: 'F614' },
+  { id: 'patching', name: 'Patching', description: 'Patch repair and reinstatement services', icon: Edit, devId: 'F615' },
+  { id: 'f-robot-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 'F619' },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, devId: 'F690' },
+  { id: 'test-card', name: 'Test Card', description: 'Test configuration for system validation', icon: Zap, devId: 'F605' },
+  
+  // Extended Categories (not yet in database)
+  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket, devId: 'F700+' },
+  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame, devId: 'F700+' },
+  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun, devId: 'F700+' },
+  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe, devId: 'F700+' },
+  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 'F700+' }
 ];
 
 export default function PR2Pricing() {
