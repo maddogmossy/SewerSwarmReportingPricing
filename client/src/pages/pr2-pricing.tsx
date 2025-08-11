@@ -118,7 +118,14 @@ export default function PR2Pricing() {
     queryKey: ['/api/pr2-clean', sector],
     enabled: !!sector,
     retry: false,
-    throwOnError: false
+    throwOnError: false,
+    queryFn: async () => {
+      const response = await fetch(`/api/pr2-clean?sector=${sector}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch PR2 configurations');
+      return response.json();
+    }
   });
 
   // Fetch standard categories from database
