@@ -6797,60 +6797,24 @@ export default function Dashboard() {
               : selectedReportIds.length > 0 && rawSectionData.length > 0
                 ? `Viewing ${selectedReportIds.length} selected reports with projects: ${[...new Set(rawSectionData.map(s => s.projectNumber))].filter(p => p !== 'Unknown').join(', ')}`
                 : currentUpload 
-                  ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector • Uploaded ${new Date(currentUpload.createdAt).toLocaleDateString()}`
+                  ? (() => {
+                      // Get companion files for this project
+                      const projectFiles = uploads.filter(upload => 
+                        upload.projectNumber === currentUpload.projectNumber && 
+                        upload.projectNumber
+                      );
+                      const hasMain = projectFiles.some(f => f.fileName.endsWith('.db3') && !f.fileName.toLowerCase().includes('meta'));
+                      const hasMeta = projectFiles.some(f => f.fileName.toLowerCase().includes('meta') && f.fileName.endsWith('.db3'));
+                      
+                      const fileStatus = hasMain && hasMeta ? 'DB3 & Meta.db3' : 
+                                        hasMain ? 'DB3 only ⚠️' : 
+                                        'Processing...';
+                      
+                      return `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector • Uploaded ${new Date(currentUpload.createdAt).toLocaleDateString()} - ${fileStatus}`;
+                    })()
                   : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
             }
           </p>
-          
-          {/* File Contents Display for Current Report */}
-          {currentUpload && (() => {
-            // Get all files for this project number
-            const projectFiles = uploads.filter(upload => 
-              upload.projectNumber === currentUpload.projectNumber && 
-              upload.projectNumber
-            ).map(file => ({
-              fileName: file.fileName,
-              fileType: file.fileName.toLowerCase().includes('meta') && file.fileName.endsWith('.db3') 
-                ? 'Meta Database' as const
-                : file.fileName.endsWith('.db3') 
-                ? 'Main Database' as const  
-                : file.fileName.endsWith('.pdf')
-                ? 'PDF Report' as const
-                : 'Unknown' as any,
-              status: file.status,
-              uploadDate: new Date(file.createdAt).toLocaleDateString()
-            }));
-
-            return projectFiles.length > 1 ? (
-              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="text-sm font-medium text-blue-800 mb-2">
-                  Report {currentUpload.projectNumber} File Contents:
-                </div>
-                <div className="space-y-1">
-                  {projectFiles.map((file, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs text-gray-700">
-                      <div className={`w-2 h-2 rounded-full ${
-                        file.fileType === 'Main Database' ? 'bg-blue-500' :
-                        file.fileType === 'Meta Database' ? 'bg-green-500' :
-                        'bg-purple-500'
-                      }`}></div>
-                      <span className="truncate max-w-64">{file.fileName}</span>
-                      <span className="px-2 py-0.5 bg-gray-200 rounded text-xs">
-                        {file.fileType === 'Meta Database' ? 'Meta' : 
-                         file.fileType === 'Main Database' ? 'Main' : 'PDF'}
-                      </span>
-                    </div>
-                  ))}
-                  {projectFiles.filter(f => f.fileType === 'Main Database').length > 0 && 
-                   projectFiles.filter(f => f.fileType === 'Meta Database').length === 0 && (
-                    <div className="flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded mt-1">
-                      <span className="text-xs">⚠️ Missing Meta.db3 file - Grading may be incomplete</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : null;
-          })()}
         </div>
 
         {shouldShowEmptyState ? (

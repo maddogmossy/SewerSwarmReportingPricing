@@ -44,7 +44,7 @@ const upload = multer({
     if (allowedTypes.includes(ext) || isMetaFile) {
       cb(null, true);
     } else {
-      cb(new Error('Only database files (.db, .db3, Meta.db3) and PDF files are allowed'));
+      cb(new Error('Upload both files together: Main database (.db3) and Meta database (Meta.db3)'));
     }
   }
 });
