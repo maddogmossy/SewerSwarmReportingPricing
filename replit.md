@@ -27,6 +27,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **Single Source Day Rate System**: Eliminated dual storage confusion by migrating all day rates from `pricing_options` to MM4 blue values only. System now reads day rates exclusively from `mm_data.mm4Rows[0].blueValue` preventing synchronization issues and ensuring UI-driven pricing consistency.
 - **F606→F690 Configuration Migration**: Completed full migration from deleted F606 configurations to F690. All hardcoded references updated (UI components, routing, equipment priority defaults, status codes, and navigation). Added automatic redirect from deleted F606 URLs to F690 configurations to prevent broken navigation.
 - **A1-F16 Sector Card System**: Completely restructured PR2 configurations with logical sector-based naming. Utilities=A1-A16, Adoption=B1-B16, Highways=C1-C16, Insurance=D1-D16, Construction=E1-E16, Domestic=F1-F16. Each sector gets identical equipment types (A1=CCTV, A2=Van Pack, etc.) eliminating random F-numbers and P-series confusion. Perfect frontend-database matching with clear user identification.
+- **Unified Database ID System**: Eliminated confusion between 3 different numbering systems (F-series, P-series, database IDs). DevLabels now display actual database IDs (756, 757, 790, etc.) instead of hardcoded F-numbers. All 96 category cards (6 sectors × 16 categories) now have complete database records with proper A1-F16 naming and unified ID display.
 
 ## System Architecture
 
