@@ -749,18 +749,7 @@ export default function PR2Pricing() {
                     existingConfiguration.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== ''))
                   );
                   
-                  // DEBUG: Log problematic configurations
-                  if (existingConfiguration && ['van-pack', 'jet-vac', 'cctv-van-pack', 'patching', 'f-robot-cutting'].includes(category.id)) {
-                    console.log(`🐛 DEBUG ${category.id}:`, {
-                      id: existingConfiguration.id,
-                      hasActualValues,
-                      pricingOptions: existingConfiguration.pricingOptions,
-                      quantityOptions: existingConfiguration.quantityOptions,
-                      minQuantityOptions: existingConfiguration.minQuantityOptions,
-                      rangeOptions: existingConfiguration.rangeOptions,
-                      mmData: existingConfiguration.mmData
-                    });
-                  }
+
                   
 
                   
@@ -998,8 +987,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
