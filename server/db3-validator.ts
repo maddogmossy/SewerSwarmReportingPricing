@@ -49,14 +49,13 @@ export function validateGenericDb3Files(directory: string, baseName?: string): {
       }
     }
 
-    // If no meta file found, allow processing with warning
+    // If no meta file found, require it for complete processing
     if (metaFiles.length === 0) {
-      console.warn("⚠️ Meta.db3 missing — grading will be partial.");
+      console.error("❌ Meta.db3 REQUIRED for accurate WRc MSCC5 grading");
       
       return { 
-        valid: true, 
-        message: "✅ Main database file loaded successfully.",
-        warning: "⚠️ Meta.db3 missing — grading will be partial.",
+        valid: false, 
+        message: "❌ Meta.db3 file required. Please upload both files together for accurate WRc MSCC5 classification.",
         files: {
           main: path.join(directory, db3Files[0])
         }
