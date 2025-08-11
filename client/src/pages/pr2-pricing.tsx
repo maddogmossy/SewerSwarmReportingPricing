@@ -749,6 +749,19 @@ export default function PR2Pricing() {
                     existingConfiguration.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== ''))
                   );
                   
+                  // DEBUG: Log problematic configurations
+                  if (existingConfiguration && ['van-pack', 'jet-vac', 'cctv-van-pack', 'patching', 'f-robot-cutting'].includes(category.id)) {
+                    console.log(`🐛 DEBUG ${category.id}:`, {
+                      id: existingConfiguration.id,
+                      hasActualValues,
+                      pricingOptions: existingConfiguration.pricingOptions,
+                      quantityOptions: existingConfiguration.quantityOptions,
+                      minQuantityOptions: existingConfiguration.minQuantityOptions,
+                      rangeOptions: existingConfiguration.rangeOptions,
+                      mmData: existingConfiguration.mmData
+                    });
+                  }
+                  
 
                   
                   // Convert hex color to rgba with opacity for background
