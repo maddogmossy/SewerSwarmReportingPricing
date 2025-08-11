@@ -1,0 +1,2 @@
+id,admin_user_id,depot_name,same_as_company,address,postcode,phone_number,created_at,updated_at,travel_rate_per_mile,standard_travel_time,max_travel_distance,operating_hours,is_active,street_address,town,city,county,country,email,building_name,street_name,street_name_2
+1,test-user,Head office,true,,CV9 1LG,+447748115595,Sat Jul 05 2025 13:46:49 GMT+0000 (Coordinated Universal Time),Sun Jul 06 2025 14:08:03 GMT+0000 (Coordinated Universal Time),,,,07.00 to 17.00,true,,,,,United Kingdom,,,,

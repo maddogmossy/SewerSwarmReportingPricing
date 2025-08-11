@@ -34,14 +34,14 @@ import {
 } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 
-// Sector definitions with new A1-F16 card system
+// Sector definitions - id1-id6 with A1-F16 card display system
 const SECTORS = [
-  { id: 'utilities', name: 'Utilities', letter: 'A', devId: 'A1-A16', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'adoption', name: 'Adoption', letter: 'B', devId: 'B1-B16', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'highways', name: 'Highways', letter: 'C', devId: 'C1-C16', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'insurance', name: 'Insurance', letter: 'D', devId: 'D1-D16', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'construction', name: 'Construction', letter: 'E', devId: 'E1-E16', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'domestic', name: 'Domestic', letter: 'F', devId: 'F1-F16', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'id1', name: 'Utilities', letter: 'A', devId: 'A1-A16', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'id2', name: 'Adoption', letter: 'B', devId: 'B1-B16', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'id3', name: 'Highways', letter: 'C', devId: 'C1-C16', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'id4', name: 'Insurance', letter: 'D', devId: 'D1-D16', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'id5', name: 'Construction', letter: 'E', devId: 'E1-E16', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'id6', name: 'Domestic', letter: 'F', devId: 'F1-F16', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // A1-F16 Equipment Card System - Each sector gets identical equipment types
@@ -87,14 +87,14 @@ export default function PR2Pricing() {
   // Initialize sector and pipe size parameters from URL on page load only
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
-    const initialSector = urlParams.get('sector') || 'utilities'; // Always default to utilities
+    const initialSector = urlParams.get('sector') || 'id1'; // Always default to id1 (utilities)
     const initialPipeSize = urlParams.get('pipeSize');
     const initialConfigName = urlParams.get('configName');
     const initialItemNo = urlParams.get('itemNo');
     
-    // Always ensure utilities is selected first unless explicitly coming from dashboard with different sector
+    // Always ensure id1 is selected first unless explicitly coming from dashboard with different sector
     const fromDashboard = urlParams.get('fromDashboard') === 'true';
-    const finalSector = fromDashboard ? initialSector : 'utilities';
+    const finalSector = fromDashboard ? initialSector : 'id1';
     
     setSector(finalSector);
     setPipeSize(initialPipeSize);
