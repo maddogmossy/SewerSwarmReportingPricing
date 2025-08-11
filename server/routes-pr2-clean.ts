@@ -299,23 +299,39 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
       };
       
+      // Map frontend sector names to database sector IDs
+      const sectorMapping: Record<string, string> = {
+        'utilities': 'id1',
+        'adoption': 'id2', 
+        'highways': 'id3',
+        'insurance': 'id4',
+        'construction': 'id5',
+        'domestic': 'id6'
+      };
+      
       // API request logging removed
       
       let configurations;
       if (sector && categoryId) {
-        // Use P-number system for sector-specific lookup
-        const sectorSpecificCategoryId = generatePNumber(categoryId, sector);
+        // Map frontend sector name to database sector ID
+        const databaseSectorId = sectorMapping[sector] || sector;
         
-        // Filter by userId, sector, and P-number categoryId using single sector field
-        // Filtering logging removed
+        console.log('🔍 Backend PR2 Config Lookup:', {
+          requestedSector: sector,
+          requestedCategoryId: categoryId,
+          databaseSectorId: databaseSectorId,
+          willQuery: `userId=system, categoryId=${categoryId}, sector=${databaseSectorId}`
+        });
+        
+        // Filter by userId, sector, and categoryId using mapped sector ID
         try {
           configurations = await db
             .select()
             .from(pr2Configurations)
             .where(and(
               eq(pr2Configurations.userId, "system"),
-              eq(pr2Configurations.categoryId, sectorSpecificCategoryId),
-              eq(pr2Configurations.sector, sector)
+              eq(pr2Configurations.categoryId, categoryId),
+              eq(pr2Configurations.sector, databaseSectorId)
             ));
         } catch (queryError) {
           console.error('Query error details:', queryError);

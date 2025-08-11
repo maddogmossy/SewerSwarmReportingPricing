@@ -851,7 +851,7 @@ export default function Dashboard() {
     try {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
       const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
       
       const serviceDecision = existingDecisions.find((decision: any) => 
         decision.reportId === currentReportId && 
@@ -878,7 +878,7 @@ export default function Dashboard() {
     try {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
       const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
       
       const structuralDecision = existingDecisions.find((decision: any) => 
         decision.reportId === currentReportId && 
@@ -906,7 +906,7 @@ export default function Dashboard() {
     try {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
       const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
+      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
       
       const structuralDecision = existingDecisions.find((decision: any) => 
         decision.reportId === currentReportId && 
@@ -977,7 +977,7 @@ export default function Dashboard() {
     
     // Save decision to localStorage to prevent repeated warnings
     const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-    const currentEquipmentType = equipmentPriority; // 'f690' or 'f608'
+    const currentEquipmentType = equipmentPriority; // 'id760' or 'id759'
     
     if (currentReportId && currentEquipmentType) {
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
@@ -1108,7 +1108,7 @@ export default function Dashboard() {
     
     // Check if user has already applied a cost decision for current report and equipment
     const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-    const currentEquipmentType = equipmentPriority; // 'f690' or 'f608'
+    const currentEquipmentType = equipmentPriority; // 'id760' or 'id759'
     const currentReportId = new URLSearchParams(window.location.search).get('reportId');
     
     const existingStructuralDecision = existingDecisions.find((decision: any) => 
@@ -1337,7 +1337,7 @@ export default function Dashboard() {
 
     // Check if user has already applied a cost decision for current report and equipment
     const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-    const currentEquipmentType = equipmentPriority; // 'f690' or 'f608'
+    const currentEquipmentType = equipmentPriority; // 'id760' or 'id759'
     const currentReportId = new URLSearchParams(window.location.search).get('reportId');
     
     const existingServiceDecision = existingDecisions.find((decision: any) => 
@@ -2852,14 +2852,27 @@ export default function Dashboard() {
 
   // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
   const { data: repairPricingData = [] } = useQuery({
-    queryKey: ['pr2-configs', currentSector.id],
+    queryKey: ['pr2-configs', currentSector.id, equipmentPriority],
     queryFn: async () => {
+      // Map equipment priority to category names for API calls
+      const equipmentToCategoryMapping: Record<string, string> = {
+        'id760': 'cctv-jet-vac',
+        'id759': 'cctv-van-pack'
+      };
+      
+      const categoryId = equipmentToCategoryMapping[equipmentPriority] || 'cctv-jet-vac';
+      
       console.log('🔍 Dashboard PR2 Config Fetch:', { 
         sector: currentSector.id, 
         sectorName: currentSector.name,
+        equipmentPriority: equipmentPriority,
+        categoryId: categoryId,
         queryEnabled: !!currentSector?.id 
       });
-      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: currentSector.id });
+      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { 
+        sector: currentSector.id,
+        categoryId: categoryId 
+      });
       const data = await response.json();
       console.log('🔍 Dashboard PR2 Config Response:', { 
         responseLength: data.length, 
