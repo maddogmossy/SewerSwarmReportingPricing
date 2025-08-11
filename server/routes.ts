@@ -596,6 +596,7 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
+              status: "completed",
               extractedData: JSON.stringify({
                 sectionsCount: sections.length,
                 extractionType: "wincan_database",
@@ -1112,6 +1113,52 @@ export async function registerRoutes(app: Express) {
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
     res.status(503).json({ error: "PayPal integration temporarily disabled" });
+  });
+
+  // Sections endpoint for dashboard data
+  app.get("/api/sections", async (req: Request, res: Response) => {
+    try {
+      const userId = req.query.userId as string || "test-user";
+      
+      // Get all section inspections for the user
+      const sections = await db.select()
+        .from(sectionInspections)
+        .innerJoin(fileUploads, eq(sectionInspections.fileUploadId, fileUploads.id))
+        .where(and(
+          eq(fileUploads.userId, userId),
+          eq(fileUploads.status, "completed")
+        ))
+        .orderBy(desc(sectionInspections.id));
+      
+      // Format the response data
+      const formattedSections = sections.map(row => ({
+        id: row.section_inspections.id,
+        fileUploadId: row.section_inspections.fileUploadId,
+        itemNo: row.section_inspections.itemNo,
+        letterSuffix: row.section_inspections.letterSuffix,
+        projectNo: row.section_inspections.projectNo,
+        startMH: row.section_inspections.startMH,
+        finishMH: row.section_inspections.finishMH,
+        pipeSize: row.section_inspections.pipeSize,
+        pipeMaterial: row.section_inspections.pipeMaterial,
+        totalLength: row.section_inspections.totalLength,
+        defects: row.section_inspections.defects,
+        defectType: row.section_inspections.defectType,
+        severityGrade: row.section_inspections.severityGrade,
+        severityGrades: row.section_inspections.severityGrades,
+        recommendations: row.section_inspections.recommendations,
+        adoptable: row.section_inspections.adoptable,
+        cost: row.section_inspections.cost,
+        sector: row.file_uploads.sector,
+        fileName: row.file_uploads.fileName,
+        projectNumber: row.file_uploads.projectNumber
+      }));
+      
+      res.json(formattedSections);
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      res.status(500).json({ error: "Failed to fetch sections" });
+    }
   });
 
   // Categories for vehicle travel rates dropdown
