@@ -6798,6 +6798,11 @@ export default function Dashboard() {
                 ? `Viewing ${selectedReportIds.length} selected reports with projects: ${[...new Set(rawSectionData.map(s => s.projectNumber))].filter(p => p !== 'Unknown').join(', ')}`
                 : currentUpload 
                   ? (() => {
+                      // Check if this upload was processed with both files (based on extracted data)
+                      const extractedData = currentUpload.extractedData ? JSON.parse(currentUpload.extractedData) : null;
+                      const hasMetaProcessing = extractedData?.validationMessage?.includes('Both database files') || 
+                                              extractedData?.sectionsCount > 0;
+                      
                       // Get companion files for this project
                       const projectFiles = uploads.filter(upload => 
                         upload.projectNumber === currentUpload.projectNumber && 
@@ -6806,8 +6811,8 @@ export default function Dashboard() {
                       const hasMain = projectFiles.some(f => f.fileName.endsWith('.db3') && !f.fileName.toLowerCase().includes('meta'));
                       const hasMeta = projectFiles.some(f => f.fileName.toLowerCase().includes('meta') && f.fileName.endsWith('.db3'));
                       
-                      const fileStatus = hasMain && hasMeta ? 'DB3 & Meta.db3' : 
-                                        hasMain ? 'DB3 only ⚠️' : 
+                      const fileStatus = hasMain && (hasMeta || hasMetaProcessing) ? 'DB3 & Meta.db3' : 
+                                        hasMain && !hasMeta && !hasMetaProcessing ? 'DB3 only ⚠️' : 
                                         'Processing...';
                       
                       return `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector • Uploaded ${new Date(currentUpload.createdAt).toLocaleDateString()} - ${fileStatus}`;
