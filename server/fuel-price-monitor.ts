@@ -17,7 +17,8 @@ export class FuelPriceMonitor {
   private updateInterval: NodeJS.Timeout | null = null;
 
   private constructor() {
-    this.scheduleWeeklyUpdates();
+    // Disabled fuel price monitoring to prevent runaway loops
+    // this.scheduleWeeklyUpdates();
   }
 
   public static getInstance(): FuelPriceMonitor {
