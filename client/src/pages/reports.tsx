@@ -455,42 +455,90 @@ export default function Reports() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4">
-                {filteredUploads.map((upload) => (
-                  <div key={upload.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      {getStatusIcon(upload.status || 'pending')}
-                      <div>
-                        <h3 className="font-medium text-slate-900">{upload.fileName}</h3>
-                        <div className="flex items-center gap-4 text-sm text-slate-600">
-                          <span>{sectors.find(s => s.id === upload.sector)?.name || 'Unknown'} Sector</span>
-                          <span>•</span>
-                          <span>Uploaded {new Date(upload.createdAt).toLocaleDateString()}</span>
+              <div className="grid gap-4" data-component="reports-list" id="reports-display">
+                {(() => {
+                  // Group uploads by project number to show as pairs
+                  const groupedReports = filteredUploads.reduce((groups: { [key: string]: typeof filteredUploads }, upload) => {
+                    const projectKey = upload.projectNumber || 'no-project';
+                    if (!groups[projectKey]) groups[projectKey] = [];
+                    groups[projectKey].push(upload);
+                    return groups;
+                  }, {});
+
+                  return Object.entries(groupedReports).map(([projectNumber, uploads]) => {
+                    const mainFile = uploads.find(u => u.fileName.endsWith('.db3') && !u.fileName.toLowerCase().includes('meta'));
+                    const metaFile = uploads.find(u => u.fileName.toLowerCase().includes('meta') && u.fileName.endsWith('.db3'));
+                    const pdfFile = uploads.find(u => u.fileName.endsWith('.pdf'));
+                    
+                    // Use the main file for primary display, fallback to first upload
+                    const primaryUpload = mainFile || uploads[0];
+                    const hasCompleteDbPair = mainFile && metaFile;
+                    const fileStatus = hasCompleteDbPair ? 'DB3 & Meta.db3' : 
+                                      mainFile && !metaFile ? 'DB3 only ⚠️' :
+                                      pdfFile ? 'PDF Report' : 'Processing...';
+
+                    return (
+                      <div key={projectNumber} className="p-4 border border-slate-200 rounded-lg" data-project={projectNumber} id={`report-${projectNumber}`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            {getStatusIcon(primaryUpload.status || 'pending')}
+                            <div>
+                              <h3 className="font-medium text-slate-900">
+                                Report {projectNumber}
+                                {!hasCompleteDbPair && mainFile && (
+                                  <span className="ml-2 text-red-600 text-sm">⚠️ Missing Meta.db3</span>
+                                )}
+                              </h3>
+                              <div className="flex items-center gap-4 text-sm text-slate-600">
+                                <span>{sectors.find(s => s.id === primaryUpload.sector)?.name || 'Unknown'} Sector</span>
+                                <span>•</span>
+                                <span>Uploaded {new Date(primaryUpload.createdAt).toLocaleDateString()}</span>
+                                <span>•</span>
+                                <span>{fileStatus}</span>
+                              </div>
+                              {uploads.length > 1 && (
+                                <div className="text-xs text-gray-600 mt-1">
+                                  Files: {uploads.map(u => {
+                                    const isMain = u.fileName.endsWith('.db3') && !u.fileName.toLowerCase().includes('meta');
+                                    const isMeta = u.fileName.toLowerCase().includes('meta');
+                                    return isMain ? 'Main.db3' : isMeta ? 'Meta.db3' : 'PDF';
+                                  }).join(', ')}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              onClick={() => handleViewReport(primaryUpload.id)}
+                              variant="outline"
+                              size="sm"
+                              className="gap-2"
+                              data-component="view-dashboard-btn"
+                              id={`view-${projectNumber}`}
+                            >
+                              <BarChart3 className="h-4 w-4" />
+                              View Dashboard
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                // Delete all files in this project group
+                                uploads.forEach(upload => deleteUploadMutation.mutate(upload.id));
+                              }}
+                              variant="destructive"
+                              size="sm"
+                              className="gap-2"
+                              data-component="delete-project-btn"
+                              id={`delete-${projectNumber}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete Project
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        onClick={() => handleViewReport(upload.id)}
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                      >
-                        <BarChart3 className="h-4 w-4" />
-                        View Dashboard
-                      </Button>
-                      <Button
-                        onClick={() => deleteUploadMutation.mutate(upload.id)}
-                        variant="outline"
-                        size="sm"
-                        className="gap-2 text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                    );
+                  });
+                })()}
               </div>
             </CardContent>
           </Card>
