@@ -1,0 +1,5 @@
+id,work_category_id,name,description,min_pipe_size,max_pipe_size,created_at,sector,cost_per_day,category
+43,2,High-Pressure Jetter 7.5t,Standard water jetting for 100-300mm pipes,100,300,Fri Jul 11 2025 19:52:49 GMT+0000 (Coordinated Universal Time),utilities,280.00,Jetting
+44,2,Heavy-Duty Jetter 18t,Heavy-duty water jetting for 300-600mm pipes,300,600,Fri Jul 11 2025 19:52:49 GMT+0000 (Coordinated Universal Time),utilities,450.00,Jetting
+45,6,UV Curing System,Structural lining system for 150-300mm pipes,150,300,Fri Jul 11 2025 19:52:49 GMT+0000 (Coordinated Universal Time),utilities,520.00,Patching
+46,6,Pipe Bursting Kit,Full pipe replacement for 150-400mm pipes,150,400,Fri Jul 11 2025 19:52:49 GMT+0000 (Coordinated Universal Time),utilities,680.00,Patching

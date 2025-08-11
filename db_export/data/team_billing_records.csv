@@ -1,0 +1,1 @@
+id,admin_user_id,team_member_user_id,action,amount,stripe_payment_intent_id,description,status,billing_date,created_at
