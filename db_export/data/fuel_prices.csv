@@ -1,7 +1,0 @@
-id,fuel_type,price_per_litre,region,source,recorded_at,is_active
-1,diesel,1.485,UK,RAC Fuel Watch - January 2025,Sat Jul 05 2025 13:39:22 GMT+0000 (Coordinated Universal Time),true
-2,petrol,1.395,UK,RAC Fuel Watch - January 2025,Sat Jul 05 2025 13:39:22 GMT+0000 (Coordinated Universal Time),true
-20785,diesel,1.483,UK,Automated Monthly Update,Sat Jul 05 2025 13:43:58 GMT+0000 (Coordinated Universal Time),true
-20786,petrol,1.393,UK,Automated Monthly Update,Sat Jul 05 2025 13:43:58 GMT+0000 (Coordinated Universal Time),true
-20787,diesel,1.485,UK,Automated Monthly Update,Sat Jul 05 2025 13:43:58 GMT+0000 (Coordinated Universal Time),true
-20788,petrol,1.395,UK,Automated Monthly Update,Sat Jul 05 2025 13:43:58 GMT+0000 (Coordinated Universal Time),true

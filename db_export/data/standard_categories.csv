@@ -1,7 +1,0 @@
-id,category_id,category_name,description,icon_name,is_default,is_active,created_at
-3,patching,Patching,Localized pipe repair and patching services according to WRc Drain Repair Book standards,Edit,true,true,Tue Jul 15 2025 15:42:22 GMT+0000 (Coordinated Universal Time)
-4,van-pack,Van Pack,MMP1 template for test card configuration - ID1 - ID1 - ID4,Truck,true,true,Thu Jul 31 2025 19:01:40 GMT+0000 (Coordinated Universal Time)
-5,jet-vac,Jet Vac,MMP1 master template for high-pressure water jetting and vacuum services,Waves,true,true,Thu Jul 31 2025 19:04:14 GMT+0000 (Coordinated Universal Time)
-6,cctv-cleansing-root-cutting,CCTV/Cleansing/Root Cutting,"MMP1 master template for combined CCTV inspection, cleansing and root cutting operations",Settings,true,true,Thu Jul 31 2025 19:05:58 GMT+0000 (Coordinated Universal Time)
-7,cctv,CCTV,MMP1 master template for CCTV inspection and condition assessment surveys,Video,true,true,Thu Jul 31 2025 19:07:20 GMT+0000 (Coordinated Universal Time)
-8,directional-water-cutter,Directional Water Cutter,MMP1 master template for precise directional cutting services,Waves,true,true,Thu Jul 31 2025 19:08:23 GMT+0000 (Coordinated Universal Time)

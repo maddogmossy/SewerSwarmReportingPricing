@@ -1,3 +1,0 @@
-id,email,first_name,last_name,profile_image_url,company,company_address,phone_number,stripe_customer_id,stripe_subscription_id,subscription_status,trial_reports_used,created_at,updated_at,is_test_user,role,admin_id,payment_method_id,is_active,last_login_at
-43990917,t55p627w2z@privaterelay.appleid.com,Mike,Moss,,,,,,,none,1,Fri Jun 27 2025 09:54:57 GMT+0000 (Coordinated Universal Time),Sun Jun 29 2025 18:33:02 GMT+0000 (Coordinated Universal Time),true,user,,,true,
-test-user,test@example.com,,,,,,,,,none,0,Mon Jun 30 2025 16:12:21 GMT+0000 (Coordinated Universal Time),Mon Jun 30 2025 16:12:21 GMT+0000 (Coordinated Universal Time),false,admin,,,true,

@@ -1,2 +1,0 @@
-id,revision_name,total_sections,defective_sections,multi_defect_sections,dataset_description,created_at
-1,rev_v1,96,19,1,"Complete ECL Newark adoption dataset with multi-defect section splitting. Section 2/2a demonstrates service vs structural defect separation. 96 total sections (95 + 1 split), 19 defective sections, authentic MSCC5 classifications, zero synthetic data, full adoption sector compliance.",Mon Jul 07 2025 18:16:00 GMT+0000 (Coordinated Universal Time)

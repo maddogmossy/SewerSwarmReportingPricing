@@ -1,6 +1,0 @@
-id,user_id,folder_name,project_address,project_number,created_at,updated_at,project_postcode,travel_distance,travel_time,address_validated
-18,test-user,"40 Hollow Road, Bury St Edmunds, IP32 7AY","40 Hollow Road, Bury St Edmunds, IP32 7AY",,Fri Jul 11 2025 16:59:38 GMT+0000 (Coordinated Universal Time),Fri Jul 11 2025 16:59:38 GMT+0000 (Coordinated Universal Time),IP32 7AY,,,true
-22,test-user,HEMPSTED LANE HEMPSTED GL2 5JS,HEMPSTED LANE HEMPSTED GL2 5JS,,Sat Aug 02 2025 16:35:51 GMT+0000 (Coordinated Universal Time),Sat Aug 02 2025 16:35:51 GMT+0000 (Coordinated Universal Time),GL2 5JS,,,true
-23,test-user,Sheppard Way,"Sheppard Way, Rothley, Leicester, LE7 7WG",,Sun Aug 03 2025 16:42:39 GMT+0000 (Coordinated Universal Time),Sun Aug 03 2025 16:42:39 GMT+0000 (Coordinated Universal Time),LE7 7WG,,,true
-24,test-user,"Sheppard Way, Rothley","Sheppard Way, Rothley, Leicester, LE7 7WG",,Fri Aug 08 2025 14:23:25 GMT+0000 (Coordinated Universal Time),Fri Aug 08 2025 14:23:25 GMT+0000 (Coordinated Universal Time),,,,false
-25,test-user,"1 High Croft, Aldridge, Walsall","1 High Croft, Aldridge, Walsall WS9 8XL",,Fri Aug 08 2025 14:24:21 GMT+0000 (Coordinated Universal Time),Fri Aug 08 2025 14:24:21 GMT+0000 (Coordinated Universal Time),,,,false

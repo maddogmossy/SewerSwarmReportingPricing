@@ -1,2 +1,0 @@
-id,userId,controlType,sector,categoryId,isLocked,lockReason,createdAt,updatedAt
-1,test-user,tp2_option_1_lock,utilities,patching,false,Admin-level security control,Wed Jul 16 2025 10:43:55 GMT+0000 (Coordinated Universal Time),Wed Jul 16 2025 10:53:57 GMT+0000 (Coordinated Universal Time)
