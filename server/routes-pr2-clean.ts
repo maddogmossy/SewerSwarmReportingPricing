@@ -313,7 +313,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
             .select()
             .from(pr2Configurations)
             .where(and(
-              eq(pr2Configurations.userId, "test-user"),
+              eq(pr2Configurations.userId, "system"),
               eq(pr2Configurations.categoryId, sectorSpecificCategoryId),
               eq(pr2Configurations.sector, sector)
             ));
@@ -328,7 +328,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           .select()
           .from(pr2Configurations)
           .where(and(
-            eq(pr2Configurations.userId, "test-user"),
+            eq(pr2Configurations.userId, "system"),
             eq(pr2Configurations.categoryId, categoryId)
           ));
       } else if (sector) {
@@ -338,7 +338,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           .select()
           .from(pr2Configurations)
           .where(and(
-            eq(pr2Configurations.userId, "test-user"),
+            eq(pr2Configurations.userId, "system"),
             eq(pr2Configurations.sector, sector)
           ));
 
@@ -348,7 +348,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         configurations = await db
           .select()
           .from(pr2Configurations)
-          .where(eq(pr2Configurations.userId, "test-user"));
+          .where(eq(pr2Configurations.userId, "system"));
       }
       
       // Query result logging removed
@@ -392,7 +392,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       
       // Build query conditions
       let whereConditions = and(
-        eq(pr2Configurations.userId, "test-user"),
+        eq(pr2Configurations.userId, "system"),
         eq(pr2Configurations.categoryId, categoryId)
       );
       
