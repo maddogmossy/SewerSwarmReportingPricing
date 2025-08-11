@@ -47,7 +47,7 @@ const SECTORS = [
 // Standard category options - F-Series Equipment with DevLabels for F-numbers
 // Complete mapping: category_id → Database ID → DevLabel → Equipment Type
 const STANDARD_CATEGORIES = [
-  // Core Database Configurations (F605-F690)
+  // Core Database Configurations (F608-F690) - F605 Test Card removed
   { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video, devId: 'F612' },
   { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'CCTV Van Pack equipment with MM4 robotic cutting capabilities', icon: Monitor, devId: 'F608' },
   { id: 'van-pack', name: 'Van Pack', description: 'Van Pack mobile equipment for sewer maintenance', icon: Truck, devId: 'F609' },
@@ -57,7 +57,6 @@ const STANDARD_CATEGORIES = [
   { id: 'patching', name: 'Patching', description: 'Patch repair and reinstatement services', icon: Edit, devId: 'F615' },
   { id: 'f-robot-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 'F619' },
   { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, devId: 'F690' },
-  { id: 'test-card', name: 'Test Card', description: 'Test configuration for system validation', icon: Zap, devId: 'F605' },
   
   // Extended Categories (not yet in database)
   { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket, devId: 'F700+' },

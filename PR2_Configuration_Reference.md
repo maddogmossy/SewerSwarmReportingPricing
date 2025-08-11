@@ -4,7 +4,7 @@
 
 | DB ID | category_id | Frontend Name | DevLabel | Equipment Type | Description |
 |-------|-------------|---------------|----------|----------------|-------------|
-| 605 | `test-card` | Test Card | F605 | System Testing | Test configuration for system validation |
+| ~~605~~ | ~~`test-card`~~ | ~~Test Card~~ | ~~F605~~ | ~~System Testing~~ | **REMOVED** |
 | 608 | `cctv-van-pack` | CCTV/Van Pack | F608 | CCTV + Van Pack | CCTV Van Pack equipment with MM4 robotic cutting |
 | 609 | `van-pack` | Van Pack | F609 | Van Pack Equipment | Van Pack mobile equipment for sewer maintenance |
 | 610 | `jet-vac` | Jet Vac | F610 | Jet Vac Services | High-pressure water jetting and vacuum services |
