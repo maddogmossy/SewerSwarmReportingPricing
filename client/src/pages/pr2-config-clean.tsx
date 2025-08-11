@@ -3524,7 +3524,7 @@ export default function PR2ConfigClean() {
   if (isAutoCreating) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 relative flex items-center justify-center">
-        <DevLabel id={editId ? `F${editId}-Loading` : 'F-Loading'} position="top-right" />
+        <DevLabel id={existingConfig?.id ? `${existingConfig.id}-Loading` : 'Loading'} position="top-right" />
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <h2 className="text-xl font-semibold text-gray-900">Loading Configuration...</h2>
@@ -3544,18 +3544,22 @@ export default function PR2ConfigClean() {
       data-is-editing={isEditing}
     >
       <DevLabel id={(() => {
-        // Show P-series number when configuring a specific sector/category combination
-        const pSeriesMap: Record<string, Record<string, string>> = {
-          'utilities': { 'cctv': 'P012', 'cctv-jet-vac': 'P006', 'cctv-van-pack': 'P008', 'patching': 'P015' },
-          'adoption': { 'cctv': 'P112', 'cctv-jet-vac': 'P106', 'cctv-van-pack': 'P108', 'patching': 'P115' },
-          'highways': { 'cctv': 'P212', 'cctv-jet-vac': 'P206', 'cctv-van-pack': 'P208', 'patching': 'P215' },
-          'insurance': { 'cctv': 'P312', 'cctv-jet-vac': 'P306', 'cctv-van-pack': 'P308', 'patching': 'P315' },
-          'construction': { 'cctv': 'P412', 'cctv-jet-vac': 'P406', 'cctv-van-pack': 'P408', 'patching': 'P415' },
-          'domestic': { 'cctv': 'P512', 'cctv-jet-vac': 'P506', 'cctv-van-pack': 'P508', 'patching': 'P515' }
-        };
+        // Use actual database ID when available, otherwise show descriptive label
+        if (existingConfig?.id) {
+          return existingConfig.id.toString();
+        }
         
-        const pNumber = pSeriesMap[sector]?.[categoryId || ''];
-        return pNumber || (editId ? `F${editId}` : 'F-Config');
+        // Show descriptive labels for non-configured states
+        if (categoryId && sector) {
+          const sectorLabels = {
+            'utilities': 'A', 'adoption': 'B', 'highways': 'C', 
+            'insurance': 'D', 'construction': 'E', 'domestic': 'F'
+          };
+          const sectorLabel = sectorLabels[sector as keyof typeof sectorLabels] || 'Config';
+          return `${sectorLabel}-${categoryId}`;
+        }
+        
+        return 'Config';
       })()} position="top-right" />
       <div className="max-w-7xl mx-auto">
           {/* Header */}
