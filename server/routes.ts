@@ -39,10 +39,12 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['.db', '.db3', '.pdf'];
     const ext = path.extname(file.originalname).toLowerCase();
-    if (allowedTypes.includes(ext) || file.originalname.endsWith('meta.db3')) {
+    const isMetaFile = file.originalname.toLowerCase().includes('meta') && ext === '.db3';
+    
+    if (allowedTypes.includes(ext) || isMetaFile) {
       cb(null, true);
     } else {
-      cb(new Error('Only database files (.db, .db3, meta.db3) and PDF files are allowed'));
+      cb(new Error('Only database files (.db, .db3, Meta.db3) and PDF files are allowed'));
     }
   }
 });
@@ -498,16 +500,28 @@ export async function registerRoutes(app: Express) {
           // Import validation function
           const { validateGenericDb3Files } = await import('./db3-validator');
           
+          // Import file pairing validator
+          const { FilePairingValidator } = await import('./file-pairing-validator');
+          
+          // Check file pairing status
+          const pairingResult = await FilePairingValidator.validateUploadedFile(
+            req.file.originalname, 
+            projectNumber, 
+            userId
+          );
+          
           // Validate that both .db3 and _Meta.db3 files are present
           const validation = validateGenericDb3Files(uploadDirectory);
           
           if (!validation.valid) {
-            // Update status to failed due to missing files
+            // Update status to failed due to missing files, but include pairing warning
             await db.update(fileUploads)
               .set({ 
                 status: "failed",
                 extractedData: JSON.stringify({
                   error: validation.message,
+                  pairingWarning: pairingResult.warning,
+                  pairingStatus: pairingResult.pairStatus,
                   extractionType: "wincan_database_validation_failed"
                 })
               })
