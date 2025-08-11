@@ -773,7 +773,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F610" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F610"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -800,7 +800,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F614" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F614"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -827,7 +827,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F612" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F612"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -854,7 +854,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F611" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F611"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -881,7 +881,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F609" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F609"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -908,7 +908,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F608" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F608"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -935,7 +935,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F690" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F690"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -962,7 +962,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F615" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F615"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -989,7 +989,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F619" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F619"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1016,7 +1016,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F620" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F620"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1043,7 +1043,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F621" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F621"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1070,7 +1070,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F622" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F622"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1097,7 +1097,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F623" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F623"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1124,7 +1124,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="F624" />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "F624"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
