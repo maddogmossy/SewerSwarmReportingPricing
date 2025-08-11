@@ -472,9 +472,14 @@ export default function Reports() {
                     
                     // Use the main file for primary display, fallback to first upload
                     const primaryUpload = mainFile || uploads[0];
-                    const hasCompleteDbPair = mainFile && metaFile;
+                    // Check if this upload was processed with both files (based on extracted data)
+                    const extractedData = primaryUpload.extractedData ? JSON.parse(primaryUpload.extractedData) : null;
+                    const hasMetaProcessing = extractedData?.validationMessage?.includes('Both database files') || 
+                                            extractedData?.sectionsCount > 0;
+                    
+                    const hasCompleteDbPair = mainFile && (metaFile || hasMetaProcessing);
                     const fileStatus = hasCompleteDbPair ? 'DB3 & Meta.db3' : 
-                                      mainFile && !metaFile ? 'DB3 only ⚠️' :
+                                      mainFile && !metaFile && !hasMetaProcessing ? 'DB3 only ⚠️' :
                                       pdfFile ? 'PDF Report' : 'Processing...';
 
                     return (
@@ -485,7 +490,7 @@ export default function Reports() {
                             <div>
                               <h3 className="font-medium text-slate-900">
                                 Report {projectNumber}
-                                {!hasCompleteDbPair && mainFile && (
+                                {!hasCompleteDbPair && mainFile && !hasMetaProcessing && (
                                   <span className="ml-2 text-red-600 text-sm">⚠️ Missing Meta.db3</span>
                                 )}
                               </h3>

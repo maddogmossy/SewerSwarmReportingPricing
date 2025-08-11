@@ -52,8 +52,8 @@ export function FileContentsDisplay({ projectNumber, files }: FileContentProps) 
         </div>
       )}
       
-      {/* Warning for incomplete pairs */}
-      {hasMainOnly && (
+      {/* Warning for incomplete pairs - only show if processing wasn't successful */}
+      {hasMainOnly && (!mainFile?.extractedData || !JSON.parse(mainFile.extractedData)?.validationMessage?.includes('Both database files')) && (
         <div className="flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded">
           <AlertTriangle className="h-3 w-3" />
           <span className="text-xs">Missing Meta.db3 file - Grading may be incomplete</span>
