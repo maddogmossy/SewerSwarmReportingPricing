@@ -506,7 +506,7 @@ export async function registerRoutes(app: Express) {
           // Check file pairing status
           const pairingResult = await FilePairingValidator.validateUploadedFile(
             req.file.originalname, 
-            projectNumber, 
+            projectNo, 
             userId
           );
           
