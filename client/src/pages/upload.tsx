@@ -109,7 +109,7 @@ const sectors = [
 
 export default function Upload() {
   const { toast } = useToast();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
 
@@ -174,9 +174,20 @@ export default function Upload() {
   // Keep folders collapsed by default - users can click to expand
 
   const uploadMutation = useMutation({
-    mutationFn: async ({ file, sector, folderId }: { file: File; sector: string; folderId: number | null }) => {
+    mutationFn: async ({ files, sector, folderId }: { files: File[]; sector: string; folderId: number | null }) => {
       const formData = new FormData();
-      formData.append('file', file);
+      
+      // Handle multiple files for paired uploads
+      if (files.length === 1) {
+        formData.append('file', files[0]);
+      } else {
+        // For multiple files, append each one
+        files.forEach((file, index) => {
+          formData.append(`file${index}`, file);
+        });
+        formData.append('fileCount', files.length.toString());
+      }
+      
       formData.append('sector', sector);
       if (folderId !== null) {
         formData.append('folderId', folderId.toString());
@@ -192,7 +203,7 @@ export default function Upload() {
           "Existing report has been reprocessed with updated data." :
           "Your file has been uploaded and is being processed.",
       });
-      setSelectedFile(null);
+      setSelectedFiles([]);
       setSelectedSector("");
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       
@@ -218,15 +229,15 @@ export default function Upload() {
   });
 
   const handleUpload = () => {
-    if (!selectedFile || !selectedSector) {
+    if (selectedFiles.length === 0 || !selectedSector) {
       toast({
         title: "Missing Information",
-        description: "Please select both a file and applicable sector.",
+        description: "Please select both files and applicable sector.",
         variant: "destructive",
       });
       return;
     }
-    uploadMutation.mutate({ file: selectedFile, sector: selectedSector, folderId: selectedFolderId });
+    uploadMutation.mutate({ files: selectedFiles, sector: selectedSector, folderId: selectedFolderId });
   };
 
   const refreshMutation = useMutation({
@@ -278,7 +289,7 @@ export default function Upload() {
       // Reset all upload state to return to sector selection
       setSelectedFolderId(null);
       setSelectedSector("");
-      setSelectedFile(null);
+      setSelectedFiles([]);
       
     },
     onError: (error) => {
@@ -516,21 +527,22 @@ export default function Upload() {
                   <FolderSelector
                     selectedFolderId={selectedFolderId}
                     onFolderSelect={setSelectedFolderId}
-                    fileName={selectedFile?.name}
+                    fileName={selectedFiles[0]?.name}
                   />
                 </div>
 
                 {/* File Upload */}
                 <div className="space-y-4">
                   <FileUpload
-                    onFileSelect={setSelectedFile}
-                    selectedFile={selectedFile}
+                    onFileSelect={(file) => setSelectedFiles(file ? [file] : [])}
+                    onFilesSelect={setSelectedFiles}
+                    selectedFile={selectedFiles[0] || null}
                     accept=".db,.db3,.pdf"
                     maxSize={50 * 1024 * 1024} // 50MB
                     requiresSector={false}
                   />
 
-                  {selectedFile && (
+                  {selectedFiles.length > 0 && (
                     <div className="space-y-3">
                       {/* Pause for Review Checkbox */}
 

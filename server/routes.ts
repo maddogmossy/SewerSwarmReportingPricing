@@ -49,6 +49,26 @@ const upload = multer({
   }
 });
 
+// Multiple file upload for paired .db3 files
+const uploadMultiple = multer({
+  dest: "uploads/",
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit per file
+    files: 5 // Maximum 5 files
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['.db', '.db3', '.pdf'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    const isMetaFile = file.originalname.toLowerCase().includes('meta') && ext === '.db3';
+    
+    if (allowedTypes.includes(ext) || isMetaFile) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only .db3 and .pdf files are allowed'));
+    }
+  }
+});
+
 // Separate multer configuration for image uploads (logos)
 const logoUpload = multer({
   dest: "uploads/logos/",
@@ -406,32 +426,36 @@ export async function registerRoutes(app: Express) {
   });
 
   // File upload endpoint for database files only
-  app.post("/api/upload", upload.single("file"), async (req: Request, res: Response) => {
+  app.post("/api/upload", uploadMultiple.any(), async (req: Request, res: Response) => {
     try {
       console.log('🔍 UPLOAD ROUTE - Start processing');
-      console.log('🔍 req.file:', req.file ? {
-        originalname: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        path: req.file.path
-      } : 'NO FILE');
-      console.log('🔍 req.body:', req.body);
       console.log('🔍 req.files:', req.files);
+      console.log('🔍 req.body:', req.body);
       
-      if (!req.file) {
-        console.log('❌ No file uploaded');
-        return res.status(400).json({ error: "No file uploaded" });
+      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+        console.log('❌ No files uploaded');
+        return res.status(400).json({ error: "No files uploaded" });
+      }
+      
+      // Handle both single and multiple file uploads
+      const files = req.files as Express.Multer.File[];
+      const mainFile = files.find(f => !f.originalname.toLowerCase().includes('meta'));
+      const metaFile = files.find(f => f.originalname.toLowerCase().includes('meta'));
+      
+      if (!mainFile) {
+        console.log('❌ No main database file found');
+        return res.status(400).json({ error: "Main database file (.db3) is required" });
       }
 
       const userId = "test-user";
-      const projectMatch = req.file.originalname.match(/(\d{4})/);
+      const projectMatch = mainFile.originalname.match(/(\d{4})/);
       const projectNo = projectMatch ? projectMatch[1] : "0000";
       
       // Check if this file already exists and has a sector assigned
       const existingUpload = await db.select().from(fileUploads)
         .where(and(
           eq(fileUploads.userId, userId),
-          eq(fileUploads.fileName, req.file.originalname)
+          eq(fileUploads.fileName, mainFile.originalname)
         ))
         .limit(1);
       
@@ -462,9 +486,9 @@ export async function registerRoutes(app: Express) {
         // Update existing upload record
         [fileUpload] = await db.update(fileUploads)
           .set({
-            fileSize: req.file.size,
-            fileType: req.file.mimetype,
-            filePath: req.file.path,
+            fileSize: mainFile.size,
+            fileType: mainFile.mimetype,
+            filePath: mainFile.path,
             status: "processing",
             sector: req.body.sector || existingUpload[0].sector,
             folderId: folderId !== null ? folderId : existingUpload[0].folderId,
@@ -477,10 +501,10 @@ export async function registerRoutes(app: Express) {
         [fileUpload] = await db.insert(fileUploads).values({
           userId: userId,
           folderId: folderId,
-          fileName: req.file.originalname,
-          fileSize: req.file.size,
-          fileType: req.file.mimetype,
-          filePath: req.file.path,
+          fileName: mainFile.originalname,
+          fileSize: mainFile.size,
+          fileType: mainFile.mimetype,
+          filePath: mainFile.path,
           status: "processing",
           projectNumber: projectNo,
           visitNumber: visitNumber,
@@ -489,12 +513,44 @@ export async function registerRoutes(app: Express) {
       }
 
 
+      // Check if Meta file is present - now REQUIRED
+      if (!metaFile) {
+        console.error('❌ Meta.db3 file is missing - required for WRc MSCC5 grading');
+        await db.update(fileUploads)
+          .set({ 
+            status: "failed",
+            extractedData: JSON.stringify({
+              error: "Meta.db3 file required for accurate WRc MSCC5 classification",
+              extractionType: "meta_file_missing"
+            })
+          })
+          .where(eq(fileUploads.id, fileUpload.id));
+        
+        return res.status(400).json({ 
+          error: "Meta.db3 file required. Please upload both files together for accurate WRc MSCC5 classification.",
+          uploadId: fileUpload.id,
+          status: "failed"
+        });
+      }
+
       // Check file type and process accordingly
-      if (req.file.originalname.endsWith('.db') || req.file.originalname.endsWith('.db3') || req.file.originalname.endsWith('meta.db3')) {
+      if (mainFile.originalname.endsWith('.db') || mainFile.originalname.endsWith('.db3')) {
         // Process database files with validation
         try {
-          const filePath = req.file.path;
-          const uploadDirectory = path.dirname(filePath);
+          const mainFilePath = mainFile.path;
+          const metaFilePath = metaFile.path;
+          const uploadDirectory = path.dirname(mainFilePath);
+          
+          // Copy both files to the same directory to ensure proper pairing
+          const targetMainPath = path.join(uploadDirectory, mainFile.originalname);
+          const targetMetaPath = path.join(uploadDirectory, metaFile.originalname);
+          
+          if (mainFilePath !== targetMainPath) {
+            fs.copyFileSync(mainFilePath, targetMainPath);
+          }
+          if (metaFilePath !== targetMetaPath) {
+            fs.copyFileSync(metaFilePath, targetMetaPath);
+          }
           
           
           // Import validation function
@@ -547,7 +603,7 @@ export async function registerRoutes(app: Express) {
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
           // Use the uploaded file for processing
-          const mainDbPath = filePath;
+          const mainDbPath = targetMainPath;
           
           // Extract authentic data from database with enhanced debugging
           console.log('🔍 Processing database file:', mainDbPath);
@@ -613,7 +669,7 @@ export async function registerRoutes(app: Express) {
             status: "completed",
             validation: validation.message,
             warning: validation.warning,
-            hasMetaDb: !!validation.files?.meta
+            hasMetaDb: true
           });
           
         } catch (dbError) {
@@ -625,7 +681,7 @@ export async function registerRoutes(app: Express) {
           
           throw new Error(`Database processing failed: ${dbError.message}`);
         }
-      } else if (req.file.originalname.toLowerCase().endsWith('.pdf')) {
+      } else if (mainFile.originalname.toLowerCase().endsWith('.pdf')) {
         // Process PDF files
         try {
           
@@ -636,7 +692,7 @@ export async function registerRoutes(app: Express) {
           const { processPDF } = await import('./pdf-processor');
           
           // Process PDF and extract sections
-          const sections = await processPDF(req.file.path, fileUpload.id, req.body.sector || 'utilities');
+          const sections = await processPDF(mainFile.path, fileUpload.id, req.body.sector || 'utilities');
           
           
           // Update file upload status to completed

@@ -6,6 +6,7 @@ import { checkMetaPairing } from "@/utils/loadDb3Files";
 
 interface FileUploadProps {
   onFileSelect: (file: File | null) => void;
+  onFilesSelect?: (files: File[]) => void;
   selectedFile?: File | null;
   accept?: string;
   maxSize?: number;
@@ -18,6 +19,7 @@ interface FileUploadProps {
 
 export default function FileUpload({ 
   onFileSelect, 
+  onFilesSelect,
   selectedFile, 
   accept = ".db,.db3,.pdf",
   maxSize = 50 * 1024 * 1024, // 50MB default
@@ -53,9 +55,21 @@ export default function FileUpload({
       const validFiles = files.filter(file => validateFile(file));
       if (validFiles.length > 0) {
         // Check for meta file pairing
-        checkMetaPairing(validFiles);
+        const pairing = checkMetaPairing(validFiles);
         
-        // For now, just select the first valid file
+        // If we have proper pairing and multiple file handler, use it
+        if (pairing.hasMeta && onFilesSelect) {
+          if (requiresSector && !selectedSector) {
+            if (onFileSelectedWithoutSector) {
+              onFileSelectedWithoutSector(validFiles[0]);
+            }
+            return;
+          }
+          onFilesSelect(validFiles);
+          return;
+        }
+        
+        // Fall back to single file selection
         const firstFile = validFiles[0];
         if (requiresSector && !selectedSector) {
           if (onFileSelectedWithoutSector) {
@@ -102,9 +116,21 @@ export default function FileUpload({
       const validFiles = files.filter(file => validateFile(file));
       if (validFiles.length > 0) {
         // Check for meta file pairing
-        checkMetaPairing(validFiles);
+        const pairing = checkMetaPairing(validFiles);
         
-        // For now, just select the first valid file
+        // If we have proper pairing and multiple file handler, use it
+        if (pairing.hasMeta && onFilesSelect) {
+          if (requiresSector && !selectedSector) {
+            if (onFileSelectedWithoutSector) {
+              onFileSelectedWithoutSector(validFiles[0]);
+            }
+            return;
+          }
+          onFilesSelect(validFiles);
+          return;
+        }
+        
+        // Fall back to single file selection
         const firstFile = validFiles[0];
         if (requiresSector && !selectedSector) {
           if (onFileSelectedWithoutSector) {
