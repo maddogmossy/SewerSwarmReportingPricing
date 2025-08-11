@@ -1300,6 +1300,9 @@ export default function Dashboard() {
       
       // Flexible status check - accept any equipment-specific calculated status
       const validServiceStatuses = [
+        'id760_calculated', 'id760_insufficient_items',
+        'id759_calculated', 'id759_insufficient_items',
+        // Legacy status codes for backward compatibility
         'f690_calculated', 'f690_insufficient_items',
         'f608_calculated', 'f608_insufficient_items'
       ];
@@ -4128,27 +4131,27 @@ export default function Dashboard() {
       const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
       
       if (needsCleaning && isRestrictedSection) {
-        // Find F690 and F608 configurations
-        const f690Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
-        const f608Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
+        // Find ID760 and ID759 configurations (ID760=cctv-jet-vac, ID759=cctv-van-pack)
+        const id760Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
+        const id759Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
         
-        // Check current equipment priority - CACHE CLEARING TEST
+        // Check current equipment priority
         console.log('🔍 EQUIPMENT PRIORITY DEBUG:', {
           equipmentPriority,
           localStorage_equipmentPriority: localStorage.getItem('equipmentPriority'),
-          f690Available: !!f690Config,
-          f608Available: !!f608Config,
-          f690Id: f690Config?.id,
-          f608Id: f608Config?.id
+          id760Available: !!id760Config,
+          id759Available: !!id759Config,
+          id760Id: id760Config?.id,
+          id759Id: id759Config?.id
         });
         
-        const cctvConfig = equipmentPriority === 'id759' ? f608Config : f690Config;
+        const cctvConfig = equipmentPriority === 'id759' ? id759Config : id760Config;
         
         console.log('🔍 SELECTED EQUIPMENT CONFIG:', {
           selectedConfig: cctvConfig?.id,
           selectedCategoryId: cctvConfig?.categoryId,
-          wouldUseF690: equipmentPriority !== 'id759',
-          f690PurpleLengths: f690Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
+          wouldUseID760: equipmentPriority !== 'id759',
+          id760PurpleLengths: id760Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
         });
         
         if (cctvConfig) {
@@ -5001,7 +5004,7 @@ export default function Dashboard() {
                 minimumQuantity: greenValue, // Required minimum from green window
                 debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
                 lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`,
-                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
                 inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0,
                 expectedCalculation: `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run`,
                 allPipeSizeConfigs: isSpecialTracking ? Object.keys(mmData.mm4DataByPipeSize || {}) : undefined
@@ -5018,7 +5021,7 @@ export default function Dashboard() {
               return {
                 cost: totalCost, // Display calculated service cost
                 currency: '£',
-                method: cctvConfig.categoryId === 'cctv-van-pack' ? `F608 Row ${mm4Row.id} Service Cost` : `F690 Row ${mm4Row.id} Service Cost`,
+                method: cctvConfig.categoryId === 'cctv-van-pack' ? `ID759 Row ${mm4Row.id} Service Cost` : `ID760 Row ${mm4Row.id} Service Cost`,
                 status: meetsMinimumRuns 
                   ? (equipmentPriority === 'id759' ? 'id759_calculated' : 'id760_calculated')
                   : (equipmentPriority === 'id759' ? 'id759_insufficient_items' : 'id760_insufficient_items'),
@@ -5030,8 +5033,8 @@ export default function Dashboard() {
                 totalServiceItems: totalServiceItems,
                 meetsMinimumRuns: meetsMinimumRuns,
                 mm4RowUsed: mm4Row.id,
-                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
-                recommendation: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'F608' : 'F690'} Row ${mm4Row.id}: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
+                recommendation: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759' : 'ID760'} Row ${mm4Row.id}: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
               };
             }
           }
@@ -6200,13 +6203,13 @@ export default function Dashboard() {
   // AUTO-POPULATE F690 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
   useEffect(() => {
     if (sectionData?.length > 0 && pr2Configurations?.length > 0) {
-      // Trigger auto-population for F690 configurations
-      const f690Config = pr2Configurations.find(config => 
+      // Trigger auto-population for ID760 configurations (cctv-jet-vac)
+      const id760Config = pr2Configurations.find(config => 
         config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
       );
       
-      if (f690Config && f690Config.mmData) {
-        console.log('🔧 Triggering F690 MM4-150 purple length auto-population for', sectionData.length, 'sections');
+      if (id760Config && id760Config.mmData) {
+        console.log('🔧 Triggering ID760 MM4-150 purple length auto-population for', sectionData.length, 'sections');
         console.log('🔍 Auto-population disabled to preserve user-configured MM4 values:', sectionData.slice(0, 5).map(s => ({
           itemNo: s.itemNo,
           pipeSize: s.pipeSize,
