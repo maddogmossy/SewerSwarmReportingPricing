@@ -766,8 +766,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -780,7 +780,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -793,8 +797,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -807,7 +811,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -820,8 +828,10 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: (existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor)
+                          borderColor: hasActualValues && (existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor) 
+                            ? existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor 
+                            : '#e5e7eb',
+                          backgroundColor: hasActualValues && (existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor)
                             ? hexToRgba(existingConfiguration?.mmData?.mm1Colors || existingConfiguration?.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -834,7 +844,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -847,8 +861,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -861,7 +875,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -874,8 +892,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -888,7 +906,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -901,8 +923,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -915,7 +937,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -928,8 +954,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -942,7 +968,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -969,7 +999,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -982,8 +1016,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -996,7 +1030,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -1009,8 +1047,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -1023,7 +1061,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -1036,8 +1078,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -1050,7 +1092,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -1063,8 +1109,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -1077,7 +1123,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -1090,8 +1140,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -1104,7 +1154,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -1117,8 +1171,8 @@ export default function PR2Pricing() {
                         key={category.id}
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: existingConfiguration?.categoryColor || '#e5e7eb',
-                          backgroundColor: existingConfiguration?.categoryColor 
+                          borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : '#e5e7eb',
+                          backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                             ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                             : 'white'
                         }}
@@ -1131,7 +1185,11 @@ export default function PR2Pricing() {
                             {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {hasActualValues ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -1142,8 +1200,8 @@ export default function PR2Pricing() {
                       key={category.id}
                       className="relative cursor-pointer transition-all hover:shadow-md border-4"
                       style={{
-                        borderColor: existingConfiguration?.categoryColor || (isUserCreated ? '#bbf7d0' : '#e5e7eb'),
-                        backgroundColor: existingConfiguration?.categoryColor 
+                        borderColor: hasActualValues && existingConfiguration?.categoryColor ? existingConfiguration.categoryColor : (isUserCreated ? '#bbf7d0' : '#e5e7eb'),
+                        backgroundColor: hasActualValues && existingConfiguration?.categoryColor 
                           ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
                           : 'white'
                       }}
