@@ -777,7 +777,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -804,7 +804,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -831,7 +831,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -858,7 +858,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -885,7 +885,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -912,7 +912,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -939,7 +939,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -966,7 +966,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -993,7 +993,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -1020,7 +1020,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -1047,7 +1047,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -1074,7 +1074,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -1101,7 +1101,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -1128,7 +1128,7 @@ export default function PR2Pricing() {
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
-                            {category.name}
+                            {existingConfiguration?.categoryName || category.name}
                           </h3>
                           <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
@@ -1155,7 +1155,7 @@ export default function PR2Pricing() {
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
                         }`} />
                         <h3 className="font-medium text-sm mb-1 text-gray-800">
-                          {category.name}
+                          {existingConfiguration?.categoryName || category.name}
                         </h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                         
