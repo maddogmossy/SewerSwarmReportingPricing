@@ -26,7 +26,7 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **Multi-Sector Price Copying**: Sector cards support Ctrl+Click for selecting multiple sectors for price copying functionality across highlighted sectors.
 - **Single Source Day Rate System**: Eliminated dual storage confusion by migrating all day rates from `pricing_options` to MM4 blue values only. System now reads day rates exclusively from `mm_data.mm4Rows[0].blueValue` preventing synchronization issues and ensuring UI-driven pricing consistency.
 - **F606→F690 Configuration Migration**: Completed full migration from deleted F606 configurations to F690. All hardcoded references updated (UI components, routing, equipment priority defaults, status codes, and navigation). Added automatic redirect from deleted F606 URLs to F690 configurations to prevent broken navigation.
-- **PR2 Configuration Data Cleanup**: Fixed inconsistent category_id mappings (P012→cctv), removed duplicate entries in invalid sectors (id11, id2, id3), standardized descriptions, and created clean frontend-database mapping. All F-series equipment now has consistent DevLabel IDs (F605-F690) matching database IDs.
+- **A1-F16 Sector Card System**: Completely restructured PR2 configurations with logical sector-based naming. Utilities=A1-A16, Adoption=B1-B16, Highways=C1-C16, Insurance=D1-D16, Construction=E1-E16, Domestic=F1-F16. Each sector gets identical equipment types (A1=CCTV, A2=Van Pack, etc.) eliminating random F-numbers and P-series confusion. Perfect frontend-database matching with clear user identification.
 
 ## System Architecture
 

@@ -34,37 +34,43 @@ import {
 } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 
-// Sector definitions matching upload window colors from image
+// Sector definitions with new A1-F16 card system
 const SECTORS = [
-  { id: 'utilities', name: 'Utilities', devId: 'id1', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'adoption', name: 'Adoption', devId: 'id2', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'highways', name: 'Highways', devId: 'id3', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'insurance', name: 'Insurance', devId: 'id4', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'construction', name: 'Construction', devId: 'id5', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'domestic', name: 'Domestic', devId: 'id6', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'utilities', name: 'Utilities', letter: 'A', devId: 'A1-A16', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', letter: 'B', devId: 'B1-B16', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', letter: 'C', devId: 'C1-C16', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', letter: 'D', devId: 'D1-D16', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', letter: 'E', devId: 'E1-E16', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', letter: 'F', devId: 'F1-F16', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// Standard category options - F-Series Equipment with DevLabels for F-numbers
-// Complete mapping: category_id → Database ID → DevLabel → Equipment Type
+// A1-F16 Equipment Card System - Each sector gets identical equipment types
+// A1=Utilities CCTV, B1=Adoption CCTV, C1=Highways CCTV, etc.
 const STANDARD_CATEGORIES = [
-  // Core Database Configurations (F608-F690) - F605 Test Card removed
-  { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video, devId: 'F612' },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'CCTV Van Pack equipment with MM4 robotic cutting capabilities', icon: Monitor, devId: 'F608' },
-  { id: 'van-pack', name: 'Van Pack', description: 'Van Pack mobile equipment for sewer maintenance', icon: Truck, devId: 'F609' },
-  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, devId: 'F610' },
-  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings, devId: 'F611' },
-  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves, devId: 'F614' },
-  { id: 'patching', name: 'Patching', description: 'Patch repair and reinstatement services', icon: Edit, devId: 'F615' },
-  { id: 'f-robot-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 'F619' },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, devId: 'F690' },
+  { id: 'cctv', name: 'CCTV', cardNum: 1, description: 'CCTV inspection and condition assessment surveys', icon: Video },
+  { id: 'van-pack', name: 'Van Pack', cardNum: 2, description: 'Van Pack mobile equipment for sewer maintenance', icon: Truck },
+  { id: 'jet-vac', name: 'Jet Vac', cardNum: 3, description: 'High-pressure water jetting and vacuum services', icon: Waves },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', cardNum: 4, description: 'CCTV Van Pack equipment with MM4 robotic cutting capabilities', icon: Monitor },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', cardNum: 5, description: 'Combined CCTV inspection with jet vac services', icon: Video },
+  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', cardNum: 6, description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
+  { id: 'directional-water-cutter', name: 'Directional Water Cutter', cardNum: 7, description: 'Precise directional water cutting services', icon: Waves },
+  { id: 'patching', name: 'Patching', cardNum: 8, description: 'Patch repair and reinstatement services', icon: Edit },
+  { id: 'f-robot-cutting', name: 'Robotic Cutting', cardNum: 9, description: 'Robotic cutting and grinding operations', icon: Settings },
   
-  // Extended Categories (not yet in database)
-  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket, devId: 'F700+' },
-  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame, devId: 'F700+' },
-  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun, devId: 'F700+' },
-  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe, devId: 'F700+' },
-  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 'F700+' }
+  // Future expansion slots 10-16 available per sector
+  { id: 'ambient-lining', name: 'Ambient Lining', cardNum: 10, description: 'Ambient cure lining systems and installation', icon: PaintBucket },
+  { id: 'hot-cure-lining', name: 'Hot Cure Lining', cardNum: 11, description: 'Hot cure lining systems and installation', icon: Flame },
+  { id: 'uv-lining', name: 'UV Lining', cardNum: 12, description: 'UV cure lining systems and installation', icon: Sun },
+  { id: 'excavation', name: 'Excavation', cardNum: 13, description: 'Open cut excavation and replacement works', icon: Pickaxe },
+  { id: 'tankering', name: 'Tankering', cardNum: 14, description: 'Vacuum tanker operations and waste removal', icon: Truck }
 ];
+
+// Helper function to generate DevLabel (A1, B2, C3, etc.)
+const getDevLabel = (sector: string, categoryId: string) => {
+  const sectorInfo = SECTORS.find(s => s.id === sector);
+  const categoryInfo = STANDARD_CATEGORIES.find(c => c.id === categoryId);
+  return sectorInfo && categoryInfo ? `${sectorInfo.letter}${categoryInfo.cardNum}` : 'Unknown';
+};
 
 export default function PR2Pricing() {
   const [location, setLocation] = useLocation();
