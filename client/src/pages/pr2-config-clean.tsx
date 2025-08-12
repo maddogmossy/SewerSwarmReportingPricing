@@ -3699,8 +3699,20 @@ export default function PR2ConfigClean() {
                   const fNumber = getFSeriesNumber(categoryId || '');
                   const displayName = getCategoryDisplayName();
                   
+                  // FIXED: Map database sector IDs to proper names for page titles
+                  const getSectorDisplayName = (sector: string): string => {
+                    if (sector === 'id1' || sector === 'utilities') return 'Utilities';
+                    if (sector === 'id2' || sector === 'adoption') return 'Adoption'; 
+                    if (sector === 'id3' || sector === 'highways') return 'Highways';
+                    if (sector === 'id4' || sector === 'insurance') return 'Insurance';
+                    if (sector === 'id5' || sector === 'construction') return 'Construction';
+                    if (sector === 'id6' || sector === 'domestic') return 'Domestic';
+                    return sector.charAt(0).toUpperCase() + sector.slice(1);
+                  };
+                  
+                  const sectorDisplayName = getSectorDisplayName(sector);
                   // Create comprehensive page title with P-Series identification
-                  return `${pNumber}-${sector.charAt(0).toUpperCase() + sector.slice(1)} | ${fNumber} - ${displayName} Price Configuration`;
+                  return `${pNumber}-${sectorDisplayName} | ${fNumber} - ${displayName} Price Configuration`;
                 })()}
               </h1>
               
@@ -3715,8 +3727,6 @@ export default function PR2ConfigClean() {
                         return `P006 Template`;
                       } else if (templateType === 'P006a') {
                         return `P006a Template`;
-                      } else if (templateType === 'P26') {
-                        return `Legacy P26 (Deprecated)`;
                       } else if (templateType === 'MMP1') {
                         // F612 CCTV uses MMP1-BG (no purple fields)
                         if (categoryId === 'cctv') {
