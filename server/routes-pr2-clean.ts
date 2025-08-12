@@ -336,10 +336,21 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
               sql`(${pr2Configurations.sector} = ${databaseSectorId} OR ${pr2Configurations.sector} = ${sector})`
             ));
           
+          // Prioritize original sector name over mapped sector ID (utilities over id1)
+          // This ensures A5 (ID 760, utilities) takes priority over duplicates
+          configurations.sort((a, b) => {
+            if (a.sector === sector && b.sector !== sector) return -1;
+            if (b.sector === sector && a.sector !== sector) return 1;
+            return a.id - b.id; // Secondary sort by ID (lower IDs first)
+          });
+          
           console.log('🔍 DUAL SECTOR QUERY RESULTS:', {
+            requestedSector: sector,
             totalFound: configurations.length,
             sectors: configurations.map(c => c.sector),
-            ids: configurations.map(c => c.id)
+            ids: configurations.map(c => c.id),
+            prioritizedConfig: configurations[0]?.id,
+            prioritizedSector: configurations[0]?.sector
           });
         } catch (queryError) {
           console.error('Query error details:', queryError);
