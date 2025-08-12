@@ -243,62 +243,7 @@ export const repairMethods = pgTable("repair_methods", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Repair Pricing table for category-specific pricing
-export const repairPricing = pgTable("repair_pricing", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  sector: varchar("sector").notNull(), // utilities, adoption, highways, etc.
-  workCategoryId: integer("work_category_id").references(() => workCategories.id),
-  repairMethodId: integer("repair_method_id").references(() => repairMethods.id), // Optional, legacy support
-  pipeSize: varchar("pipe_size").notNull(), // "150mm", "225mm", "300mm", etc.
-  depth: varchar("depth"), // "0-1m", "1-2m", "2-3m", etc.
-  description: text("description"), // User's custom description
-  cost: varchar("cost").notNull(), // Store as string to avoid decimal precision issues
-  rule: text("rule"), // "Rate based on min of 4 patches"
-  minimumQuantity: integer("minimum_quantity").default(1),
-  // Option costs for different patch types
-  option1Cost: varchar("option1_cost"), // Single layer cost
-  option2Cost: varchar("option2_cost"), // Double layer cost  
-  option3Cost: varchar("option3_cost"), // Triple layer cost
-  option4Cost: varchar("option4_cost"), // Triple layer with extra cure time
-  selectedOption: varchar("selected_option"), // Which option was selected
-  // Per shift rates
-  option1PerShift: varchar("option1_per_shift"),
-  option2PerShift: varchar("option2_per_shift"), 
-  option3PerShift: varchar("option3_per_shift"),
-  option4PerShift: varchar("option4_per_shift"),
-  // Length and installation settings
-  lengthOfRepair: varchar("length_of_repair").default("1000mm"),
-  minInstallationPerDay: varchar("min_installation_per_day"),
-  travelTimeAllowance: varchar("travel_time_allowance").default("2.0"),
-  // Travel and crew pricing fields
-  travelIncludedHours: decimal("travel_included_hours", { precision: 4, scale: 2 }).default("0.00"), // Hours of travel included in base cost
-  additionalTravelRate: decimal("additional_travel_rate", { precision: 8, scale: 2 }).default("0.00"), // Cost per additional travel hour
-  dayRate: decimal("day_rate", { precision: 10, scale: 2 }).default("0.00"), // Day rate for crew
-  hourlyRate: decimal("hourly_rate", { precision: 8, scale: 2 }).default("0.00"), // Calculated as dayRate / 8
-  // Vehicle selection for travel costs
-  vehicleId: integer("vehicle_id").references(() => vehicleTravelRates.id),
-  // Pricing structure options (stored as JSON object)
-  pricingStructure: jsonb("pricing_structure"),
-  // Math operators for calculation chains
-  mathOperators: jsonb("math_operators"),
-  // Custom options for user-added fields
-  customOptions: jsonb("custom_options"),
-  // Individual pricing option values
-  meterage: varchar("meterage"),
-  setupRate: varchar("setup_rate"),
-  minCharge: varchar("min_charge"),
-  numberPerShift: varchar("number_per_shift"),
-  metersPerShift: varchar("meters_per_shift"),
-  runsPerShift: varchar("runs_per_shift"),
-  minUnitsPerShift: varchar("min_units_per_shift"),
-  minMetersPerShift: varchar("min_meters_per_shift"),
-  minInspectionsPerShift: varchar("min_inspections_per_shift"),
-  minSetupCount: varchar("min_setup_count"),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+
 
 // Company settings for admin users
 export const companySettings = pgTable("company_settings", {
@@ -498,8 +443,6 @@ export type InsertSectorStandard = typeof sectorStandards.$inferInsert;
 
 export type RepairMethod = typeof repairMethods.$inferSelect;
 export type InsertRepairMethod = typeof repairMethods.$inferInsert;
-export type RepairPricing = typeof repairPricing.$inferSelect;
-export type InsertRepairPricing = typeof repairPricing.$inferInsert;
 
 export type CompanySettings = typeof companySettings.$inferSelect;
 export type InsertCompanySettings = typeof companySettings.$inferInsert;
