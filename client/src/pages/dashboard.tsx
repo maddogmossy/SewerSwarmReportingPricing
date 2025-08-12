@@ -642,12 +642,23 @@ export default function Dashboard() {
     const clearOldPatterns = () => {
       const keys = Object.keys(localStorage);
       const oldPatternKeys = keys.filter(key => 
-        key.includes('-1051-') || key.includes('760-150-1051')
+        key.includes('-1051-') || key.includes('760-150-1051') || key.includes('759-150-1051')
       );
       
       if (oldPatternKeys.length > 0) {
-        console.log('🧹 CLEARING OLD ID PATTERNS from localStorage:', oldPatternKeys);
+        console.log('🧹 CLEARING OLD ID PATTERNS from localStorage (including 759-150-1051):', oldPatternKeys);
         oldPatternKeys.forEach(key => localStorage.removeItem(key));
+        
+        // Also clear inputBuffer which may contain old patterns
+        const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+        const updatedBuffer = {};
+        for (const [key, value] of Object.entries(inputBuffer)) {
+          if (!key.includes('-1051-')) {
+            updatedBuffer[key] = value;
+          }
+        }
+        localStorage.setItem('inputBuffer', JSON.stringify(updatedBuffer));
+        console.log('🧹 CLEARED inputBuffer old patterns, kept:', Object.keys(updatedBuffer));
       }
     };
     
