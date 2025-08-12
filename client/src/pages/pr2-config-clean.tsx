@@ -3501,7 +3501,9 @@ export default function PR2ConfigClean() {
   const dynamicPageId = categoryId ? CATEGORY_PAGE_IDS[categoryId as keyof typeof CATEGORY_PAGE_IDS] || `p-${categoryId}` : 'p-config';
 
   // Show loading state during auto-creation to eliminate "Create" page appearance
-  const isAutoCreating = !isEditing && pipeSize && categoryId && allCategoryConfigs;
+  // CRITICAL: Never show loading if editId is present in URL, even if isEditing is momentarily false during redirect
+  const hasEditIdInUrl = !!(urlParams.get('edit') || urlParams.get('editId') || urlParams.get('id'));
+  const isAutoCreating = !hasEditIdInUrl && !isEditing && pipeSize && categoryId && allCategoryConfigs;
   
   // Show loading screen during auto-creation process
   if (isAutoCreating) {
