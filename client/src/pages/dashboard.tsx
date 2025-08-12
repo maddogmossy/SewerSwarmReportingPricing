@@ -4323,30 +4323,32 @@ export default function Dashboard() {
           }
           
           // PRIORITY 2: CHECK DAY RATE ONLY AFTER CONFIRMING MM4 RANGES ARE OK
-          // CRITICAL FIX: Use same buffered value logic as cost calculation to ensure consistency
-          const validationMM4Data = cctvConfig?.mmData?.mm4DataByPipeSize?.[matchingPipeSizeKey] || [];
+          // CRITICAL FIX: Use exact same buffer validation as the cost calculation section below (lines 4917+)
+          // Get buffered day rate using identical logic to cost calculation
           let effectiveDayRate = 0;
           
-          if (validationMM4Data.length > 0) {
-            // Use the same getBufferedValue logic as the cost calculation
-            const getBufferedValue = (rowId: number, field: string, fallback: string) => {
-              try {
-                const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id760';
-                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
-                const bufferKey = `${configPrefix}-${matchingPipeSizeKey}-${rowId}-${field}`;
-                return buffer[bufferKey] || fallback;
-              } catch {
-                return fallback;
-              }
-            };
+          // Use same buffer retrieval logic as cost calculation (getBufferedValue function)
+          try {
+            const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+            const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id760';
+            const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
+            const bufferKey = `${configPrefix}-${matchingPipeSizeKey}-1-blueValue`;
             
-            effectiveDayRate = parseFloat(getBufferedValue(1, 'blueValue', validationMM4Data[0]?.blueValue || '0'));
+            // First try to get buffered value, then fall back to database value
+            const bufferedDayRate = buffer[bufferKey];
+            const dbDayRate = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
+            const finalDayRate = bufferedDayRate || dbDayRate || '0';
+            
+            effectiveDayRate = parseFloat(finalDayRate);
+          } catch {
+            // Final fallback to database value
+            const dbDayRate = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
+            effectiveDayRate = parseFloat(dbDayRate || '0');
           }
           
           const isDayRateConfigured = effectiveDayRate > 0;
           
-          console.log('🔍 F690/F608 Day Rate Validation (FIXED - using buffered values):', {
+          console.log('🔍 F690/F608 Day Rate Validation (BUFFER CONSISTENCY FIX):', {
             itemNo: section.itemNo,
             equipmentPriority: equipmentPriority,
             configId: cctvConfig.id,
@@ -4355,7 +4357,8 @@ export default function Dashboard() {
             isDayRateConfigured: isDayRateConfigured,
             willShowBlueTriangle: !isDayRateConfigured,
             matchingPipeSizeKey: matchingPipeSizeKey,
-            mm4DataLength: validationMM4Data.length
+            bufferKey: `${cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606'}-${matchingPipeSizeKey}-1-blueValue`,
+            configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac'
           });
           
           // If day rate is not configured, return specific error information
