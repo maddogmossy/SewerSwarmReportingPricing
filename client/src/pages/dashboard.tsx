@@ -1313,11 +1313,12 @@ export default function Dashboard() {
         'tp1_unconfigured', 'tp1_invalid', 'configuration_missing'
       ];
       
+      // CRITICAL FIX: Include ALL service items that have cost calculations, even if cost is 0
+      // Service cost warning should show items needing configuration (cost=0) AND items with calculated costs
       const hasServiceCost = costCalc && 
                            typeof costCalc === 'object' && 
                            'status' in costCalc &&
-                           validServiceStatuses.includes(costCalc.status) && 
-                           costCalc.cost > 0;
+                           validServiceStatuses.includes(costCalc.status);
       
       console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         defectType: section.defectType,
