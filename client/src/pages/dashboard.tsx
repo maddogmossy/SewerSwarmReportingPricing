@@ -4278,10 +4278,38 @@ export default function Dashboard() {
           id760Available: !!id760Config,
           id759Available: !!id759Config,
           id760Id: id760Config?.id,
-          id759Id: id759Config?.id
+          id759Id: id759Config?.id,
+          id760HasMM4Data: !!(id760Config?.mm_data?.mm4Rows?.[0]?.blueValue),
+          id759HasMM4Data: !!(id759Config?.mm_data?.mm4Rows?.[0]?.blueValue),
+          id760BlueValue: id760Config?.mm_data?.mm4Rows?.[0]?.blueValue,
+          id759BlueValue: id759Config?.mm_data?.mm4Rows?.[0]?.blueValue
         });
         
-        const cctvConfig = equipmentPriority === 'id759' ? id759Config : id760Config;
+        // INTELLIGENT FALLBACK: Use configuration with valid MM4 data
+        // Priority: user preference -> valid data -> any available config
+        let cctvConfig;
+        const preferredConfig = equipmentPriority === 'id759' ? id759Config : id760Config;
+        const alternativeConfig = equipmentPriority === 'id759' ? id760Config : id759Config;
+        
+        // Check if preferred config has valid MM4 day rate data
+        const preferredHasValidData = preferredConfig?.mm_data?.mm4Rows?.[0]?.blueValue && 
+                                    preferredConfig.mm_data.mm4Rows[0].blueValue.trim() !== '' &&
+                                    parseFloat(preferredConfig.mm_data.mm4Rows[0].blueValue) > 0;
+        
+        const alternativeHasValidData = alternativeConfig?.mm_data?.mm4Rows?.[0]?.blueValue && 
+                                      alternativeConfig.mm_data.mm4Rows[0].blueValue.trim() !== '' &&
+                                      parseFloat(alternativeConfig.mm_data.mm4Rows[0].blueValue) > 0;
+        
+        if (preferredHasValidData) {
+          cctvConfig = preferredConfig;
+          console.log('✅ Using preferred configuration with valid MM4 data:', cctvConfig.id);
+        } else if (alternativeHasValidData) {
+          cctvConfig = alternativeConfig;
+          console.log('🔄 Falling back to alternative configuration with valid MM4 data:', cctvConfig.id);
+        } else {
+          cctvConfig = preferredConfig; // Use preferred even if data is missing (will show proper error)
+          console.log('⚠️ Using preferred configuration despite missing MM4 data:', cctvConfig?.id);
+        }
         
         console.log('🔍 SELECTED EQUIPMENT CONFIG:', {
           selectedConfig: cctvConfig?.id,
@@ -4289,6 +4317,36 @@ export default function Dashboard() {
           wouldUseID760: equipmentPriority !== 'id759',
           id760PurpleLengths: id760Config?.mmData?.mm4DataByPipeSize?.['150-1051']?.map(row => row.purpleLength)
         });
+        
+        if (!cctvConfig) {
+          // No valid CCTV configuration found at all
+          console.log('❌ NO CCTV CONFIGURATION FOUND:', {
+            itemNo: section.itemNo,
+            id760Available: !!id760Config,
+            id759Available: !!id759Config,
+            equipmentPriority: equipmentPriority,
+            reason: 'Neither ID760 nor ID759 configuration available'
+          });
+          
+          return {
+            cost: 0,
+            currency: '£',
+            method: 'No Configuration Found',
+            status: 'no_config_found',
+            configType: 'CCTV Configuration Missing',
+            warningType: 'no_config_found',
+            sectionData: {
+              itemNo: section.itemNo,
+              defectType: 'service',
+              pipeSize: section.pipeSize,
+              totalLength: parseFloat(section.totalLength || '0'),
+              debrisPercent: extractDebrisPercentage(section.defects || '')
+            },
+            configData: {
+              categoryId: 'missing'
+            }
+          };
+        }
         
         if (cctvConfig) {
           // CRITICAL FIX: Disable auto-population to prevent overriding user-configured MM4 values
