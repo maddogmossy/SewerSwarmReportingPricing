@@ -4323,17 +4323,39 @@ export default function Dashboard() {
           }
           
           // PRIORITY 2: CHECK DAY RATE ONLY AFTER CONFIRMING MM4 RANGES ARE OK
-          // Check if day rate is properly configured in MM4 blue value (single source of truth)
-          const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
-          const isDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
+          // CRITICAL FIX: Use same buffered value logic as cost calculation to ensure consistency
+          const validationMM4Data = cctvConfig?.mmData?.mm4DataByPipeSize?.[matchingPipeSizeKey] || [];
+          let effectiveDayRate = 0;
           
-          console.log('🔍 F690/F608 Day Rate Validation (after range check):', {
+          if (validationMM4Data.length > 0) {
+            // Use the same getBufferedValue logic as the cost calculation
+            const getBufferedValue = (rowId: number, field: string, fallback: string) => {
+              try {
+                const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id760';
+                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
+                const bufferKey = `${configPrefix}-${matchingPipeSizeKey}-${rowId}-${field}`;
+                return buffer[bufferKey] || fallback;
+              } catch {
+                return fallback;
+              }
+            };
+            
+            effectiveDayRate = parseFloat(getBufferedValue(1, 'blueValue', validationMM4Data[0]?.blueValue || '0'));
+          }
+          
+          const isDayRateConfigured = effectiveDayRate > 0;
+          
+          console.log('🔍 F690/F608 Day Rate Validation (FIXED - using buffered values):', {
             itemNo: section.itemNo,
             equipmentPriority: equipmentPriority,
             configId: cctvConfig.id,
-            dayRateValue: dayRateValue,
+            rawDayRateValue: cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue,
+            bufferedDayRateValue: effectiveDayRate,
             isDayRateConfigured: isDayRateConfigured,
-            willShowBlueTriangle: !isDayRateConfigured
+            willShowBlueTriangle: !isDayRateConfigured,
+            matchingPipeSizeKey: matchingPipeSizeKey,
+            mm4DataLength: validationMM4Data.length
           });
           
           // If day rate is not configured, return specific error information
