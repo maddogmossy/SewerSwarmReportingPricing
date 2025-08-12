@@ -4179,7 +4179,7 @@ export default function Dashboard() {
           selectedConfig: cctvConfig?.id,
           selectedCategoryId: cctvConfig?.categoryId,
           wouldUseID760: equipmentPriority !== 'id759',
-          id760PurpleLengths: id760Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
+          id760PurpleLengths: id760Config?.mmData?.mm4DataByPipeSize?.['150-1051']?.map(row => row.purpleLength)
         });
         
         if (cctvConfig) {
@@ -4199,7 +4199,7 @@ export default function Dashboard() {
           let matchingMM4Data: any = [];
           let matchingPipeSizeKey = '';
           
-          // Try to find exact pipe size match (e.g., "150-1501")
+          // Try to find exact pipe size match (e.g., "150-1051")
           for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
             const [keyPipeSize] = pipeSizeKey.split('-');
             
