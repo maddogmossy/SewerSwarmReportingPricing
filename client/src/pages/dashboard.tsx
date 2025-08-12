@@ -3556,14 +3556,18 @@ export default function Dashboard() {
       if (needsCleaning) {
         // Navigate to cleaning configuration
         const pipeSize = firstSection.pipeSize?.match(/\d+/)?.[0] || '150';
-        window.location.href = `/pr2-config-clean?categoryId=cctv&sector=${currentSector.id}&pipeSize=${pipeSize}`;
+        // Apply 150mm priority for CCTV configurations
+        const finalPipeSize = (pipeSize === '100' || !pipeSize) ? '150' : pipeSize;
+        window.location.href = `/pr2-config-clean?categoryId=cctv&sector=${currentSector.id}&pipeSize=${finalPipeSize}`;
       } else if (needsStructural) {
         // Navigate to F615 patching configuration with auto-select utilities
         const pipeSize = firstSection.pipeSize?.match(/\d+/)?.[0] || '150';
         console.log('🚀 DASHBOARD NAVIGATION - Redirecting to F615 with autoSelectUtilities=true');
         console.log('🚀 DASHBOARD NAVIGATION - pipeSize extracted:', pipeSize);
         console.log('🚀 DASHBOARD NAVIGATION - currentSector:', currentSector.id);
-        const finalUrl = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`;
+        // Apply 150mm priority for patching configurations when coming from CCTV data
+        const finalPipeSize = (pipeSize === '100' || !pipeSize) ? '150' : pipeSize;
+        const finalUrl = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&pipeSize=${finalPipeSize}&autoSelectUtilities=true`;
         console.log('🚀 DASHBOARD NAVIGATION - Final URL:', finalUrl);
         window.location.href = finalUrl;
       }

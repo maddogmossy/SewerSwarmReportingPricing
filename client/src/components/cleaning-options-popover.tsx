@@ -90,13 +90,16 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   ];
 
   const handleEquipmentSelection = async (equipment: typeof equipmentOptions[0]) => {
-    const pipeSize = sectionData.pipeSize || '150mm';
-    const pipeSizeNumber = pipeSize.replace('mm', '');
+    const rawPipeSize = sectionData.pipeSize || '150mm';
+    // **CRITICAL FIX**: Apply 150mm priority for CCTV configurations from 100mm sections
+    const pipeSizeNumber = rawPipeSize.replace('mm', '');
+    const finalPipeSizeNumber = (pipeSizeNumber === '100' || !pipeSizeNumber) ? '150' : pipeSizeNumber;
     
     console.log('🔍 CLEANING POPOVER PIPE SIZE DEBUG:', {
       originalSectionPipeSize: sectionData.pipeSize,
-      fallbackPipeSize: pipeSize,
-      finalPipeSizeNumber: pipeSizeNumber,
+      rawPipeSize: rawPipeSize,
+      extractedPipeSizeNumber: pipeSizeNumber,
+      finalPipeSizeNumber: finalPipeSizeNumber,
       equipmentId: equipment.id,
       sectionData: sectionData
     });
@@ -115,22 +118,22 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           // Route to existing configuration - use config's pipe size, not section pipe size
           const configPipeSize = selectedConfig.pipeSize || pipeSizeNumber;
           const reportParam = reportId ? `&reportId=${reportId}` : '';
-          window.location.href = `/pr2-config-clean?id=${selectedConfig.id}&categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${configPipeSize}&autoSelectUtilities=true${reportParam}`;
+          window.location.href = `/pr2-config-clean?id=${selectedConfig.id}&categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
         } else {
           // Create new configuration
           const reportParam = reportId ? `&reportId=${reportId}` : '';
-          window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+          window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
         }
       } else {
         // Fallback to configuration creation
         const reportParam = reportId ? `&reportId=${reportId}` : '';
-        window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+        window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
       }
     } catch (error) {
       console.error('Error routing to equipment configuration:', error);
       // Fallback routing
       const reportParam = reportId ? `&reportId=${reportId}` : '';
-      window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+      window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
     }
     
     setIsOpen(false);
