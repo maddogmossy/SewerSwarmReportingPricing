@@ -5033,10 +5033,11 @@ export default function Dashboard() {
           sectionDebrisPercent,
           sectionPipeSize,
           hasMMData: !!actualMmData,
-          mmData: actualMmData,
           dataStructureUsed: cctvConfig.mmData ? 'mmData (frontend)' : 'mm_data (backend)',
-          allPipeSizesConfigured: enhancedLogging ? Object.keys(actualMmData?.mm4DataByPipeSize || {}) : undefined,
-          currentPipeSizeMatching: enhancedLogging ? `Looking for ${sectionPipeSize?.replace('mm', '')}` : undefined
+          allPipeSizesConfigured: Object.keys(actualMmData?.mm4DataByPipeSize || {}),
+          lookingForPipeSize: sectionPipeSize?.replace('mm', ''),
+          CRITICAL_DEBUG_actualMmData: actualMmData,
+          CRITICAL_DEBUG_mm4DataByPipeSize: actualMmData?.mm4DataByPipeSize
         });
         
         // Get MM4 data for the matching pipe size

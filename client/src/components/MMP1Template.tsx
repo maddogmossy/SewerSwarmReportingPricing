@@ -92,12 +92,12 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     // Wait longer to ensure page-level URL processing is complete
     const timeoutId = setTimeout(() => {
       const sectorToIdMapping = {
-        'utilities': 'utilities',
-        'adoption': 'adoption', 
-        'highways': 'highways',
-        'insurance': 'insurance',
-        'construction': 'construction',
-        'domestic': 'domestic'
+        'utilities': 'id7',
+        'adoption': 'id8', 
+        'highways': 'id9',
+        'insurance': 'id10',
+        'construction': 'id11',
+        'domestic': 'id12'
       };
       
       const correspondingId = sectorToIdMapping[sector as keyof typeof sectorToIdMapping];
@@ -384,14 +384,14 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     triggerAutoSave();
   };
 
-  // Map sector names to database sectors for copying (simplified)
+  // Map MMP1 IDs to database sectors for copying
   const MMP1_ID_TO_SECTOR_MAPPING = {
-    'utilities': 'utilities',   // Utilities
-    'adoption': 'adoption',   // Adoption  
-    'highways': 'highways',   // Highways
-    'insurance': 'insurance',  // Insurance
-    'construction': 'construction',  // Construction
-    'domestic': 'domestic'   // Domestic
+    'id7': 'utilities',   // Utilities
+    'id8': 'adoption',   // Adoption  
+    'id9': 'highways',   // Highways
+    'id10': 'insurance',  // Insurance
+    'id11': 'construction',  // Construction
+    'id12': 'domestic'   // Domestic
   };
 
   // Function to copy current configuration to target sector
