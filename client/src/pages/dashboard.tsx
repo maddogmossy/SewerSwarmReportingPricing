@@ -8165,12 +8165,12 @@ export default function Dashboard() {
             // **CRITICAL FIX**: For CCTV/Jet Vac, ensure we get the correct pipe size from Item 3 data
             let pipeSize = configWarningData.sectionData?.pipeSize;
             
-            // If no pipe size found or it's wrong for cctv-jet-vac, use Item 3's actual pipe size
-            if (categoryId === 'cctv-jet-vac' && (!pipeSize || pipeSize === '100')) {
+            // **FIXED**: Apply 150mm priority for BOTH CCTV configurations (A4 Van Pack + A5 Jet Vac)
+            if ((categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack') && (!pipeSize || pipeSize === '100')) {
               // Look up the actual pipe size from the sections data for the triggering item
               const triggerItemNo = configWarningData.sectionData?.itemNo;
-              console.log('🔧 PIPE SIZE CORRECTION for Item:', triggerItemNo);
-              // For now, force 150mm for cctv-jet-vac as per the original requirement
+              console.log('🔧 PIPE SIZE CORRECTION for Item:', triggerItemNo, 'Category:', categoryId);
+              // Force 150mm for both cctv-jet-vac (A5) and cctv-van-pack (A4) as per requirements
               pipeSize = '150';
             } else {
               pipeSize = pipeSize || '150';

@@ -118,7 +118,7 @@ const CATEGORY_PAGE_IDS = {
   'uv-lining': 'p23',
   'ims-cutting': 'p24',
   'excavation': 'p25',
-  'patching': 'p26',
+  'patching': 'TP1',
   'f-robot-cutting': 'p4', // TP3 Template - ID4 Robotic Cutting
   'tankering': 'p27'
 };
@@ -411,7 +411,7 @@ export default function PR2ConfigClean() {
   const createPipeSizeConfiguration = async (categoryId: string, sector: string, pipeSize: string, configName: string): Promise<number | null> => {
     try {
       const templateType = getTemplateType(categoryId);
-      const isP26 = false; // P26 system removed
+      // P26 system completely removed
       
       // Create configuration based on template type
       const newConfig = {
@@ -422,15 +422,11 @@ export default function PR2ConfigClean() {
         sector,
         
         // Template-specific structure
-        pricingOptions: isP26 ? [
-          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' }
-        ] : [
+        pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
         
-        quantityOptions: isP26 ? [
-          { id: `${pipeSize}_day_rate`, label: `${pipeSize} Day Rate`, enabled: true, value: '' }
-        ] : [
+        quantityOptions: [
           { id: 'quantity_runs', label: 'No Per Shift', enabled: true, value: '' }
         ],
         
@@ -438,12 +434,9 @@ export default function PR2ConfigClean() {
         
         rangeOptions: [],
         
-        vehicleTravelRates: isP26 ? [
-          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
-          { id: 'vehicle_26t', vehicleType: '26t', hourlyRate: '75', numberOfHours: '2', enabled: true }
-        ] : [],
+        vehicleTravelRates: [],
         
-        mathOperators: isP26 ? [] : ['÷'],
+        mathOperators: ['÷'],
         isActive: true
       };
 
@@ -1465,21 +1458,21 @@ export default function PR2ConfigClean() {
         itemNo: 1,
         length: 25,
         debrisPercent: 20,
-        pipeSize: '100mm',
+        pipeSize: '150mm',
         observations: 'DEG Debris deposits, grease'
       },
       {
         itemNo: 2,
         length: 35,
         debrisPercent: 40,
-        pipeSize: '100mm',
+        pipeSize: '150mm',
         observations: 'DER Debris deposits, roots'
       },
       {
         itemNo: 3,
         length: 15,
         debrisPercent: 10,
-        pipeSize: '100mm',
+        pipeSize: '150mm',
         observations: 'No defects found'
       }
     ];
