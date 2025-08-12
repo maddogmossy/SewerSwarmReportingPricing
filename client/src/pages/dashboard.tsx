@@ -4327,12 +4327,14 @@ export default function Dashboard() {
           // Get buffered day rate using identical logic to cost calculation
           let effectiveDayRate = 0;
           
-          // Use same buffer retrieval logic as cost calculation (getBufferedValue function)
+          // CRITICAL FIX: Use current ID format, not legacy 606/608 format
           try {
             const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
             const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id760';
-            const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
-            const bufferKey = `${configPrefix}-${matchingPipeSizeKey}-1-blueValue`;
+            
+            // Use actual config ID (760) instead of legacy prefix (606)
+            const configId = cctvConfig.id; // This should be 760 for A5 CCTV/Jet Vac
+            const bufferKey = `${configId}-${matchingPipeSizeKey}-1-blueValue`;
             
             // First try to get buffered value, then fall back to database value
             const bufferedDayRate = buffer[bufferKey];
@@ -4348,24 +4350,25 @@ export default function Dashboard() {
           
           const isDayRateConfigured = effectiveDayRate > 0;
           
-          // Enhanced debugging to find buffer issue
+          // Enhanced debugging with FIXED buffer key format
           const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-          const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
-          const constructedBufferKey = `${configPrefix}-${matchingPipeSizeKey}-1-blueValue`;
+          const configId = cctvConfig.id; // Use actual config ID (760)
+          const constructedBufferKey = `${configId}-${matchingPipeSizeKey}-1-blueValue`;
           const bufferedValue = buffer[constructedBufferKey];
           
-          console.log('🚨 DETAILED BUFFER DEBUG - Item 3 Validation:', {
+          console.log('🚨 BUFFER KEY FIX - Item 3 Validation:', {
             itemNo: section.itemNo,
-            STEP_1_matchingPipeSizeKey: matchingPipeSizeKey,
-            STEP_2_configPrefix: configPrefix,
+            STEP_1_configId: configId,
+            STEP_2_matchingPipeSizeKey: matchingPipeSizeKey,
             STEP_3_constructedBufferKey: constructedBufferKey,
             STEP_4_bufferedValue: bufferedValue,
             STEP_5_rawDbValue: cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue,
             STEP_6_finalEffectiveDayRate: effectiveDayRate,
             STEP_7_isDayRateConfigured: isDayRateConfigured,
             STEP_8_willShowPopup: !isDayRateConfigured,
-            ALL_BUFFER_KEYS: Object.keys(buffer).filter(k => k.includes('150')),
-            EXACT_MATCHING_KEYS: Object.keys(buffer).filter(k => k.includes('150-1501'))
+            LEGACY_606_KEYS: Object.keys(buffer).filter(k => k.includes('606-150')),
+            CURRENT_760_KEYS: Object.keys(buffer).filter(k => k.includes('760-150')),
+            ALL_760_KEYS: Object.keys(buffer).filter(k => k.includes('760'))
           });
           
           // If day rate is not configured, return specific error information
