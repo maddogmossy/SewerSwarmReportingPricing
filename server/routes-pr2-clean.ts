@@ -323,7 +323,8 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           willQuery: `userId=system, categoryId=${categoryId}, sector=${databaseSectorId}`
         });
         
-        // Filter by userId, sector, and categoryId using mapped sector ID
+        // Filter by userId, sector, and categoryId using BOTH mapped sector ID AND original sector name
+        // This handles the transition period where some configs use 'utilities' and others use 'id1'
         try {
           configurations = await db
             .select()
@@ -331,8 +332,15 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
             .where(and(
               eq(pr2Configurations.userId, "system"),
               eq(pr2Configurations.categoryId, categoryId),
-              eq(pr2Configurations.sector, databaseSectorId)
+              // Query BOTH the mapped sector (id1) AND the original sector (utilities)
+              sql`(${pr2Configurations.sector} = ${databaseSectorId} OR ${pr2Configurations.sector} = ${sector})`
             ));
+          
+          console.log('🔍 DUAL SECTOR QUERY RESULTS:', {
+            totalFound: configurations.length,
+            sectors: configurations.map(c => c.sector),
+            ids: configurations.map(c => c.id)
+          });
         } catch (queryError) {
           console.error('Query error details:', queryError);
           throw queryError;
