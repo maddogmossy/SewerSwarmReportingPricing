@@ -4125,7 +4125,7 @@ export default function Dashboard() {
       currentEquipmentPriority: equipmentPriority
     });
     
-    // CRITICAL DEBUG: Force logging for service sections to understand why validation not triggering
+    // CRITICAL DEBUG: Force logging for ALL service sections to understand validation triggers
     if (section.defectType === 'service') {
       console.log('🔍 SERVICE SECTION VALIDATION TRACE:', {
         itemNo: section.itemNo,
@@ -4134,12 +4134,19 @@ export default function Dashboard() {
         needsCleaning: requiresCleaning(section.defects || ''),
         isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
         shouldTriggerValidation: section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0 && requiresCleaning(section.defects || '') && [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
-        defectsText: section.defects
+        defectsText: section.defects,
+        itemNoInRange: section.itemNo >= 1 && section.itemNo <= 4 ? 'EARLY_ITEM' : 'LATER_ITEM'
       });
       
-      // FORCE EARLY RETURN TO DEBUG: Let's see if this log appears for service sections
-      if (section.itemNo === 6 || section.itemNo === 8) {
-        console.log('🚨 DEBUGGING: Service section reached calculateAutoCost but validation logic may be skipped!');
+      // DEBUG Items 1-4 specifically
+      if (section.itemNo >= 1 && section.itemNo <= 4) {
+        console.log(`🔍 EARLY SERVICE ITEM ${section.itemNo} ANALYSIS:`, {
+          defects: section.defects,
+          needsCleaningResult: requiresCleaning(section.defects || ''),
+          isInRestrictedList: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
+          willProcessValidation: requiresCleaning(section.defects || '') && [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
+          reasonSkipped: !requiresCleaning(section.defects || '') ? 'NO_CLEANING_NEEDED' : ![3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo) ? 'NOT_IN_RESTRICTED_LIST' : 'SHOULD_PROCESS'
+        });
       }
     }
 
