@@ -4173,7 +4173,10 @@ export default function Dashboard() {
       const needsCleaning = requiresCleaning(section.defects || '');
       const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
       
-      if (needsCleaning && isRestrictedSection) {
+      // CRITICAL FIX: Process ALL service sections for cost calculation, not just ones that need cleaning
+      // Old logic: if (needsCleaning && isRestrictedSection)
+      // New logic: Process all service sections, but use different validation paths
+      if (true) { // Always process service sections
         // Find ID760 and ID759 configurations (ID760=cctv-jet-vac, ID759=cctv-van-pack)
         const id760Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
         const id759Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
