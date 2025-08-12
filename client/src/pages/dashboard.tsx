@@ -2105,7 +2105,8 @@ export default function Dashboard() {
         // Check both old severityGrade field AND new severity_grades JSON
         const hasNoDefects = (section.cost === 'Complete') || 
           (section.severityGrade === '0' && section.adoptable === 'Yes' && 
-           (!section.severityGrades || (section.severityGrades.service === 0 && section.severityGrades.structural === 0)));
+           (!section.severityGrades || (section.severityGrades.service === 0 && section.severityGrades.structural === 0))) ||
+          (section.defects === 'No defects recorded' && (section.severityGrade === '0' || section.severityGrade === 0));
         
         if (hasNoDefects) {
           return (
