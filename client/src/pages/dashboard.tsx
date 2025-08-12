@@ -3095,13 +3095,28 @@ export default function Dashboard() {
             configCategoryId,
             defaultCategoryId,
             sectionPipeSize: costCalc.sectionData?.pipeSize,
-            sectionData: costCalc.sectionData
+            originalSectionPipeSize: section.pipeSize,
+            sectionPipeSizeMatch: costCalc.sectionData?.pipeSize === section.pipeSize,
+            costCalcSectionData: costCalc.sectionData,
+            originalSectionData: section
+          });
+          
+          // CRITICAL: Ensure we're passing the correct section data with the right pipe size
+          const correctedSectionData = {
+            ...costCalc.sectionData,
+            pipeSize: section.pipeSize || costCalc.sectionData?.pipeSize || '150'
+          };
+          
+          console.log('🔧 PIPE SIZE CORRECTION:', {
+            originalPipeSize: costCalc.sectionData?.pipeSize,
+            correctedPipeSize: correctedSectionData.pipeSize,
+            sourcePipeSize: section.pipeSize
           });
           
           // Auto-trigger the configuration warning popup
           setConfigWarningData({
             warningType: costCalc.warningType as 'day_rate_missing' | 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range' | 'config_missing',
-            sectionData: costCalc.sectionData,
+            sectionData: correctedSectionData,
             configData: costCalc.configData
           });
           setShowConfigWarning(true);
