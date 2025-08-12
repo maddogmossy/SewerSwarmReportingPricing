@@ -1,0 +1,106 @@
+rest-express@1.0.0 dev
+Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+🔍 Backend PR2 Config Lookup: {
+  requestedSector: 'utilities',
+  requestedCategoryId: 'cctv-jet-vac',
+  databaseSectorId: 'id1',
+  willQuery: 'userId=system, categoryId=cctv-jet-vac, sector=id1'
+}
+🔍 SECTIONS API - Fetching sections for upload 102
+🔍 SECTIONS API - Found 29 sections total
+🔍 SECTIONS API - Target items with line deviations: [
+  {
+    itemNo: 4,
+    defects: 'No defects recorded',
+    severityGrade: '0',
+    defectType: 'service'
+  },
+  {
+    itemNo: 6,
+    defects: 'DER at 8.1m, 9.26m, 27.13m. LL 33.34m (Line deviates left)',
+    severityGrade: '1',
+    defectType: 'service'
+  },
+  {
+    itemNo: 8,
+    defects: 'DER 11.35m (Settled deposits, coarse, 5% cross-sectional area loss)',
+    severityGrade: '1',
+    defectType: 'service'
+  },
+  {
+    itemNo: 9,
+    defects: 'LL 1.87m (Line deviates left)',
+    severityGrade: '1',
+    defectType: 'service'
+  }
+]
+🔍 Backend PR2 Config Lookup: {
+  requestedSector: 'utilities',
+  requestedCategoryId: 'cctv-jet-vac',
+  databaseSectorId: 'id1',
+  willQuery: 'userId=system, categoryId=cctv-jet-vac, sector=id1'
+}
+🔍 SECTIONS API - Fetching sections for upload 102
+🔍 SECTIONS API - Found 29 sections total
+🔍 SECTIONS API - Target items with line deviations: [
+  {
+    itemNo: 4,
+    defects: 'No defects recorded',
+    severityGrade: '0',
+    defectType: 'service'
+  },
+  {
+    itemNo: 6,
+    defects: 'DER at 8.1m, 9.26m, 27.13m. LL 33.34m (Line deviates left)',
+    severityGrade: '1',
+    defectType: 'service'
+  },
+  {
+    itemNo: 8,
+    defects: 'DER 11.35m (Settled deposits, coarse, 5% cross-sectional area loss)',
+    severityGrade: '1',
+    defectType: 'service'
+  },
+  {
+    itemNo: 9,
+    defects: 'LL 1.87m (Line deviates left)',
+    severityGrade: '1',
+    defectType: 'service'
+  }
+]
+🔍 Backend PR2 Config Lookup: {
+  requestedSector: 'utilities',
+  requestedCategoryId: 'cctv-jet-vac',
+  databaseSectorId: 'id1',
+  willQuery: 'userId=system, categoryId=cctv-jet-vac, sector=id1'
+}
+🔍 SECTIONS API - Fetching sections for upload 102
+🔍 SECTIONS API - Found 29 sections total
+🔍 SECTIONS API - Target items with line deviations: [
+  {
+    itemNo: 4,
+    defects: 'No defects recorded',
+    severityGrade: '0',
+    defectType: 'service'
+  },
+  {
+    itemNo: 6,
+    defects: 'DER at 8.1m, 9.26m, 27.13m. LL 33.34m (Line deviates left)',
+    severityGrade: '1',
+    defectType: 'service'
+  },
+  {
+    itemNo: 8,
+    defects: 'DER 11.35m (Settled deposits, coarse, 5% cross-sectional area loss)',
+    severityGrade: '1',
+    defectType: 'service'
+  },
+  {
+    itemNo: 9,
+    defects: 'LL 1.87m (Line deviates left)',
+    severityGrade: '1',
+    defectType: 'service'
+  }
+]
