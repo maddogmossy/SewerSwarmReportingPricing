@@ -76,6 +76,10 @@ export async function getClientToken() {
 
 export async function createPaypalOrder(req: Request, res: Response) {
   try {
+    if (!ordersController) {
+      return res.status(503).json({ error: "PayPal service not configured" });
+    }
+
     const { amount, currency, intent } = req.body;
 
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
@@ -128,6 +132,10 @@ export async function createPaypalOrder(req: Request, res: Response) {
 
 export async function capturePaypalOrder(req: Request, res: Response) {
   try {
+    if (!ordersController) {
+      return res.status(503).json({ error: "PayPal service not configured" });
+    }
+
     const { orderID } = req.params;
     const collect = {
       id: orderID,
@@ -148,9 +156,13 @@ export async function capturePaypalOrder(req: Request, res: Response) {
 }
 
 export async function loadPaypalDefault(req: Request, res: Response) {
-  const clientToken = await getClientToken();
-  res.json({
-    clientToken,
-  });
+  try {
+    const clientToken = await getClientToken();
+    res.json({
+      clientToken,
+    });
+  } catch (error) {
+    res.status(503).json({ error: "PayPal service not configured" });
+  }
 }
 // <END_EXACT_CODE>
