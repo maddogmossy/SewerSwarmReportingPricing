@@ -637,6 +637,23 @@ export default function Dashboard() {
     return stored === 'id759' ? 'id759' : 'id760';
   });
 
+  // CRITICAL FIX: Clear old 1051 patterns from localStorage cache on component mount
+  useEffect(() => {
+    const clearOldPatterns = () => {
+      const keys = Object.keys(localStorage);
+      const oldPatternKeys = keys.filter(key => 
+        key.includes('-1051-') || key.includes('760-150-1051')
+      );
+      
+      if (oldPatternKeys.length > 0) {
+        console.log('🧹 CLEARING OLD ID PATTERNS from localStorage:', oldPatternKeys);
+        oldPatternKeys.forEach(key => localStorage.removeItem(key));
+      }
+    };
+    
+    clearOldPatterns();
+  }, []);
+
   // Listen for equipment priority changes from popups
   useEffect(() => {
     const handleEquipmentPriorityChange = (event: CustomEvent) => {
@@ -5047,13 +5064,29 @@ export default function Dashboard() {
         let matchingMM4Data = null;
         let matchingPipeSizeKey = null;
         
-        // Try to find exact pipe size match (e.g., "150-1501")
+        // CRITICAL FIX: Handle both old (1051) and new (1501) ID patterns during transition
+        const targetPipeSize = sectionPipeSize?.replace('mm', '');
+        
+        console.log('🔍 PIPE SIZE MATCHING DEBUG:', {
+          sectionId: section.itemNo,
+          targetPipeSize,
+          allAvailableKeys: Object.keys(mm4DataByPipeSize),
+          searchingFor: `${targetPipeSize}-*`
+        });
+        
+        // Try to find exact pipe size match (prioritize new pattern, fallback to old)
         for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
           const [keyPipeSize] = pipeSizeKey.split('-');
           
-          if (keyPipeSize === sectionPipeSize?.replace('mm', '')) {
+          if (keyPipeSize === targetPipeSize) {
             matchingMM4Data = mm4Data;
             matchingPipeSizeKey = pipeSizeKey;
+            console.log('✅ PIPE SIZE MATCH FOUND:', {
+              sectionId: section.itemNo,
+              matchedKey: pipeSizeKey,
+              dataExists: !!mm4Data,
+              dataLength: Array.isArray(mm4Data) ? mm4Data.length : 0
+            });
             break;
           }
         }
