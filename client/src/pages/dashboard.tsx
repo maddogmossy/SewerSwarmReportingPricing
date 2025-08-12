@@ -2397,9 +2397,10 @@ export default function Dashboard() {
           }
           
           // Check if this is a valid cost calculation (not a failed configuration)
+          // FIXED: Allow MM4 configurations with valid costs to display, even if marked as mm4_outside_ranges
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
             costCalculation.cost > 0 && 
-            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status);
+            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status);
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
@@ -2411,7 +2412,7 @@ export default function Dashboard() {
               costGreaterThanZero: costCalculation && 'cost' in costCalculation && costCalculation.cost > 0,
               status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
               statusNotInExcludeList: costCalculation && 'status' in costCalculation ? 
-                !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status) : false,
+                !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status) : false,
               isValidCostCalculation,
               willShowCost: isValidCostCalculation ? 'YES_COST' : 'BLUE_TRIANGLE'
             });
@@ -3275,7 +3276,7 @@ export default function Dashboard() {
       const showsTriangle = !costCalculation || 
                            costCalculation === null || 
                            (costCalculation.cost === 0 && 
-                            ['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'mm4_outside_ranges'].includes(costCalculation.status));
+                            ['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status));
       
       return showsTriangle;
     });
@@ -3313,7 +3314,7 @@ export default function Dashboard() {
     // Don't trigger for unconfigured prices (triangles) - only for configured prices that are below minimum
     const allSectionsHaveCompletePricing = sectionData.every(section => {
       const costCalc = calculateAutoCost(section);
-      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items', 'mm4_outside_ranges'].includes(costCalc.status);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(costCalc.status);
     });
     
     console.log('TP2 final trigger decision:', {
@@ -3323,7 +3324,7 @@ export default function Dashboard() {
       totalSections: sectionData.length,
       sectionsWithTriangles: sectionData.filter(s => {
         const calc = calculateAutoCost(s);
-        return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items', 'mm4_outside_ranges'].includes(calc.status);
+        return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(calc.status);
       }).length
     });
     
@@ -3397,7 +3398,7 @@ export default function Dashboard() {
     // Only trigger TP1 warning when ALL sections have complete pricing AND costs are red
     const allSectionsHaveCompletePricing = sections.every(section => {
       const costCalc = calculateAutoCost(section);
-      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items', 'mm4_outside_ranges'].includes(costCalc.status);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(costCalc.status);
     });
 
     // Debug TP1 sections
