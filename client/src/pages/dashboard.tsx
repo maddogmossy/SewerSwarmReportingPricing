@@ -4356,7 +4356,7 @@ export default function Dashboard() {
           const constructedBufferKey = `${configId}-${matchingPipeSizeKey}-1-blueValue`;
           const bufferedValue = buffer[constructedBufferKey];
           
-          console.log('🚨 BUFFER KEY FIX - Item 3 Validation:', {
+          console.log('🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue):', {
             itemNo: section.itemNo,
             STEP_1_configId: configId,
             STEP_2_matchingPipeSizeKey: matchingPipeSizeKey,
@@ -4366,9 +4366,11 @@ export default function Dashboard() {
             STEP_6_finalEffectiveDayRate: effectiveDayRate,
             STEP_7_isDayRateConfigured: isDayRateConfigured,
             STEP_8_willShowPopup: !isDayRateConfigured,
-            LEGACY_606_KEYS: Object.keys(buffer).filter(k => k.includes('606-150')),
-            CURRENT_760_KEYS: Object.keys(buffer).filter(k => k.includes('760-150')),
-            ALL_760_KEYS: Object.keys(buffer).filter(k => k.includes('760'))
+            USER_REPORTED_KEY: '760-150-1051-1-blueValue',
+            USER_REPORTED_VALUE: '1850',
+            EXACT_MATCH_TEST: buffer['760-150-1051-1-blueValue'],
+            ALL_760_150_KEYS: Object.keys(buffer).filter(k => k.includes('760-150')),
+            BUFFER_KEY_MISMATCH: constructedBufferKey !== '760-150-1051-1-blueValue' ? 'KEY MISMATCH DETECTED' : 'KEY MATCHES'
           });
           
           // If day rate is not configured, return specific error information
