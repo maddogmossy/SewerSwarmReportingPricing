@@ -1,1 +1,0 @@
-console.log('🧹 CACHE CHECK - Current localStorage keys:', Object.keys(localStorage)); console.log('🧹 Equipment priority:', localStorage.getItem('equipmentPriority')); console.log('🧹 Buffered values check:', Object.keys(localStorage).filter(k => k.includes('blueValue') || k.includes('purpleLength')));
