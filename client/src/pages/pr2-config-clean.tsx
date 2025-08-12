@@ -716,8 +716,8 @@ export default function PR2ConfigClean() {
 
   // Route to existing configuration - AUTO-CREATION DISABLED
   useEffect(() => {
-    // Only run when we have categoryId and sector but not already editing
-    if (!isEditing && categoryId && sector && allCategoryConfigs) {
+    // Only run when we have categoryId and sector but not already editing or editing a specific ID
+    if (!isEditing && !editId && categoryId && sector && allCategoryConfigs) {
       console.log('🔍 ROUTING DEBUG - Auto-creation disabled, only finding existing configs');
       
       // For patching category, ALWAYS route to F615 (id=615) - PRESERVE autoSelectUtilities parameter
@@ -768,7 +768,7 @@ export default function PR2ConfigClean() {
         console.log('⚠️ NO EXISTING CONFIG - Staying in create mode (auto-creation disabled)');
       }
     }
-  }, [allCategoryConfigs, isEditing, categoryId, sector, pipeSize, setLocation]);
+  }, [allCategoryConfigs, isEditing, editId, categoryId, sector, pipeSize, setLocation]);
 
   // DEBOUNCED SAVE: Save input values after user stops typing
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
