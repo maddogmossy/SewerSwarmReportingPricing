@@ -172,9 +172,11 @@ export default function PR2ConfigClean() {
   const isEditing = !!editId;
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'P26' | 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
+  const getTemplateType = (categoryId: string): 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
     if (categoryId === 'day-rate-db11') {
-      return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
+      // P26 system removed - day-rate-db11 no longer supported
+      console.warn('⚠️ day-rate-db11 (P26) deprecated - redirecting to CCTV/Jet Vac configuration');
+      return 'MMP1'; // Fallback to MMP1 template
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
     } else if ((categoryId?.includes('-p006a') && categoryId !== 'patching-p006a')) {
@@ -292,7 +294,7 @@ export default function PR2ConfigClean() {
         'excavation': `${formattedSize} F623 Excavation Configuration`,
         'patching': `${formattedSize} F615 Patching Configuration`,
         'f-robot-cutting': `${formattedSize} F619 Robotic Cutting Configuration`,
-        'day-rate-db11': `${formattedSize} P26 Day Rate Configuration`, // P26 Template
+        'day-rate-db11': `${formattedSize} Legacy Day Rate (Deprecated)`, // P26 removed
         'tankering': `${formattedSize} F624 Tankering Configuration`
       };
       return categoryMap[categoryId] || `${formattedSize} Configuration`;
@@ -313,7 +315,7 @@ export default function PR2ConfigClean() {
       'excavation': 'F623 Excavation Configuration',
       'patching': 'F615 Patching Configuration',
       'f-robot-cutting': 'F619 Robotic Cutting Configuration',
-      'day-rate-db11': 'P26 - Day Rate Configuration', // P26 Template
+      'day-rate-db11': 'Legacy Day Rate (Deprecated)', // P26 removed
       'tankering': 'F624 Tankering Configuration'
     };
     return categoryMap[categoryId] || 'Configuration';
@@ -372,50 +374,8 @@ export default function PR2ConfigClean() {
   const getDefaultFormData = () => {
     const templateType = getTemplateType(categoryId || '');
     
-    if (templateType === 'P26') {
-      // P26 - Day Rate Configuration with Multiple Pipe Sizes and DB15 component
-      return {
-        categoryName: categoryId ? getCategoryName(categoryId) : '',
-        description: '',
-        categoryColor: '#ffffff', // Default white color - user must assign color
-        pipeSize: pipeSize || '',
-        
-        // Blue Window - Central Day Rate for all pipe sizes
-        pricingOptions: [
-          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '' },
-          { id: 'db7_day_rate', label: 'DB7 Day Rate', enabled: true, value: '' }
-        ],
-        
-        // Green Window - Multiple pipe size configurations
-        quantityOptions: [
-          { id: '100mm_day_rate', label: '100mm Day Rate', enabled: true, value: '' },
-          { id: '150mm_day_rate', label: '150mm Day Rate', enabled: true, value: '' },
-          { id: '200mm_day_rate', label: '200mm Day Rate', enabled: true, value: '' },
-          { id: '225mm_day_rate', label: '225mm Day Rate', enabled: true, value: '' },
-          { id: '300mm_day_rate', label: '300mm Day Rate', enabled: true, value: '' }
-        ],
-        
-        // Orange Window - Min Quantity Options (empty for P26)
-        minQuantityOptions: [],
-        
-        // Purple Window - Range Options (empty for P26)  
-        rangeOptions: [],
-        
-        // DB15 Window (Teal) - Vehicle Travel Rates (like P19)
-        vehicleTravelRates: [
-          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
-          { id: 'vehicle_26t', vehicleType: '26t', hourlyRate: '75', numberOfHours: '2', enabled: true }
-        ],
-        
-        mathOperators: ['N/A'], // No math operations for P26
-        pricingStackOrder: ['central_day_rate', 'db7_day_rate'],
-        quantityStackOrder: ['100mm_day_rate', '150mm_day_rate', '200mm_day_rate', '225mm_day_rate', '300mm_day_rate'],
-        minQuantityStackOrder: [],
-        rangeStackOrder: [],
-        vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_26t'],
-        sector
-      };
-    } else {
+    // P26 system removed - all templates use standard TP1 configuration
+    {
       // TP1 - Standard Configuration (all windows)
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
@@ -451,7 +411,7 @@ export default function PR2ConfigClean() {
   const createPipeSizeConfiguration = async (categoryId: string, sector: string, pipeSize: string, configName: string): Promise<number | null> => {
     try {
       const templateType = getTemplateType(categoryId);
-      const isP26 = templateType === 'P26';
+      const isP26 = false; // P26 system removed
       
       // Create configuration based on template type
       const newConfig = {
@@ -502,16 +462,9 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Query P26 configuration from database
-  const { data: p26Config } = useQuery({
-    queryKey: ['/api/pr2-clean/P26', sector],
-    queryFn: async () => {
-      const response = await apiRequest('GET', `/api/pr2-clean?sector=${sector}&categoryId=P26`);
-      const configs = await response.json();
-      return configs.length > 0 ? configs[0] : null;
-    },
-    enabled: !!sector,
-  });
+  // P26 system removed - no longer needed for central day rates
+  // Day rates now managed per-configuration via CCTV/Jet Vac configs
+  const p26Config = null;
 
   const [formData, setFormData] = useState<CleanFormData>(() => {
     const defaultData = getDefaultFormData();
@@ -3761,7 +3714,7 @@ export default function PR2ConfigClean() {
                       } else if (templateType === 'P006a') {
                         return `P006a Template`;
                       } else if (templateType === 'P26') {
-                        return `P26 Template`;
+                        return `Legacy P26 (Deprecated)`;
                       } else if (templateType === 'MMP1') {
                         // F612 CCTV uses MMP1-BG (no purple fields)
                         if (categoryId === 'cctv') {
