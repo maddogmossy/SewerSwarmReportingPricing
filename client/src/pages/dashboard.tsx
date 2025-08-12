@@ -3093,7 +3093,9 @@ export default function Dashboard() {
             method: costCalc.method,
             status: costCalc.status,
             configCategoryId,
-            defaultCategoryId
+            defaultCategoryId,
+            sectionPipeSize: costCalc.sectionData?.pipeSize,
+            sectionData: costCalc.sectionData
           });
           
           // Auto-trigger the configuration warning popup
