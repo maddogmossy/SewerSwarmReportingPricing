@@ -979,8 +979,8 @@ export default function PR2ConfigClean() {
     if (pipeSize) {
       return pipeSize.toString().replace('mm', '');
     }
-    // For F690 CCTV/Jet Vac configurations, default to 150mm
-    if (categoryId === 'cctv-jet-vac') {
+    // FIXED: Prioritize 150mm for both CCTV configurations (A4 759 Van Pack and A5 760 Jet Vac)
+    if (categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack') {
       return '150';
     }
     // Default fallback to 100mm for other categories
@@ -1021,7 +1021,8 @@ export default function PR2ConfigClean() {
     // Initialize with correct pipe size ID based on selectedPipeSizeForMM4
     // CRITICAL FIX: When routing from auto-trigger, use the pipeSize from URL parameter first
     const urlPipeSize = pipeSize?.toString().replace('mm', '');
-    const initialPipeSize = urlPipeSize || (categoryId === 'cctv-jet-vac' ? '150' : '100');
+    // FIXED: Prioritize 150mm for both CCTV configurations (A4 759 Van Pack and A5 760 Jet Vac)
+    const initialPipeSize = urlPipeSize || (categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' ? '150' : '100');
     
     console.log('🔧 PIPE SIZE INITIALIZATION DEBUG:', {
       urlPipeSize: urlPipeSize,
