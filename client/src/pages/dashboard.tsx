@@ -4938,15 +4938,17 @@ export default function Dashboard() {
       const id760Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
       const id759Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-van-pack');
       
-      // Check if ID759 has valid MM4 data (user configured it)
-      const id759HasValidMM4 = id759Config?.mmData?.mm4Rows?.some((row: any) => 
+      // Check if ID759 has valid MM4 data (user configured it) - Support both data structures
+      const id759ActualData = id759Config?.mmData || id759Config?.mm_data;
+      const id759HasValidMM4 = id759ActualData?.mm4Rows?.some((row: any) => 
         row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
       );
       
       // Selection logic: Respect user's equipment priority choice first
       // Priority: User preference > ID760 default > Available config as fallback
       const userPrefersId759 = equipmentPriority === 'id759';
-      const id760HasValidMM4 = id760Config?.mmData?.mm4Rows?.some((row: any) => 
+      const id760ActualData = id760Config?.mmData || id760Config?.mm_data;
+      const id760HasValidMM4 = id760ActualData?.mm4Rows?.some((row: any) => 
         row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
       );
       
@@ -5014,28 +5016,31 @@ export default function Dashboard() {
           categoryId: cctvConfig.categoryId,
           reason: (id760HasValidMM4 && id759HasValidMM4) ? `User preference: ${cctvConfig.categoryId}` : 
                   cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 configured with MM4 data' : 'ID760 default selection',
-          hasMMData: !!cctvConfig.mmData,
+          hasMMData: !!(cctvConfig.mmData || cctvConfig.mm_data),
           method: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
-          allConfiguredPipeSizes: enhancedLogging && cctvConfig.mmData ? Object.keys(cctvConfig.mmData.mm4DataByPipeSize || {}) : undefined
+          allConfiguredPipeSizes: enhancedLogging ? Object.keys((cctvConfig.mmData || cctvConfig.mm_data)?.mm4DataByPipeSize || {}) : undefined
         } : null,
         currentSector: currentSector.id
       });
       
-      if (cctvConfig && cctvConfig.mmData) {
+      if (cctvConfig && (cctvConfig.mmData || cctvConfig.mm_data)) {
+        // CRITICAL FIX: Support both mmData (frontend) and mm_data (backend) structures
+        const actualMmData = cctvConfig.mmData || cctvConfig.mm_data;
+        
         console.log(enhancedLogging ? '🔍 ENHANCED MM4/MM5 Dashboard Cost Integration:' : '🔍 MM4/MM5 Dashboard Cost Integration:', {
           sectionId: section.itemNo,
           sectionLength,
           sectionDebrisPercent,
           sectionPipeSize,
-          hasMMData: !!cctvConfig.mmData,
-          mmData: cctvConfig.mmData,
-          allPipeSizesConfigured: enhancedLogging ? Object.keys(cctvConfig.mmData?.mm4DataByPipeSize || {}) : undefined,
+          hasMMData: !!actualMmData,
+          mmData: actualMmData,
+          dataStructureUsed: cctvConfig.mmData ? 'mmData (frontend)' : 'mm_data (backend)',
+          allPipeSizesConfigured: enhancedLogging ? Object.keys(actualMmData?.mm4DataByPipeSize || {}) : undefined,
           currentPipeSizeMatching: enhancedLogging ? `Looking for ${sectionPipeSize?.replace('mm', '')}` : undefined
         });
         
         // Get MM4 data for the matching pipe size
-        const mmData = cctvConfig.mmData;
-        const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
+        const mm4DataByPipeSize = actualMmData?.mm4DataByPipeSize || {};
         
         // Find matching pipe size configuration
         let matchingMM4Data = null;
@@ -5318,7 +5323,7 @@ export default function Dashboard() {
                 configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
                 inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0,
                 expectedCalculation: `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run`,
-                allPipeSizeConfigs: isSpecialTracking ? Object.keys(mmData.mm4DataByPipeSize || {}) : undefined
+                allPipeSizeConfigs: isSpecialTracking ? Object.keys(actualMmData?.mm4DataByPipeSize || {}) : undefined
               });
               
               // Count total service items across all sections (not just defects)

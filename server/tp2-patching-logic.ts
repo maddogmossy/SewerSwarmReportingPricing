@@ -33,7 +33,7 @@ export interface TP2PatchingRules {
  */
 export const TP2_PATCHING_RULES: TP2PatchingRules = {
   templateSystem: 'TP2_ONLY',
-  configurationId: null, // P26 system removed - using DB7 Math window for min qty checks
+  configurationId: null, // Legacy system removed - using DB7 Math window for min qty checks
   sector: 'utilities',
   
   // Repair counting methodology

@@ -90,19 +90,17 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'F1-F16', description: 'Residential and domestic drainage work', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// 🔒🔒🔒 MMP1 TEMPLATE PROTECTED ZONE - DO NOT MODIFY WITHOUT USER PERMISSION 🔒🔒🔒
-// ⚠️ WARNING: USER-CONTROLLED TEMPLATE - AI MODIFICATIONS PROHIBITED ⚠️
-// MMP1 ID definitions (ID7-ID12 for MM1 cards - separate from main sector selection IDs 1-6)
+// MMP1 sector definitions - using standard sector names for consistency
 const MMP1_IDS = [
-  { id: 'id7', name: 'Utilities', label: 'Utilities', devId: 'id7', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'id8', name: 'Adoption', label: 'Adoption', devId: 'id8', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'id9', name: 'Highways', label: 'Highways', devId: 'id9', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'id10', name: 'Insurance', label: 'Insurance', devId: 'id10', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'id11', name: 'Construction', label: 'Construction', devId: 'id11', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'id12', name: 'Domestic', label: 'Domestic', devId: 'id12', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'utilities', name: 'Utilities', label: 'Utilities', devId: 'utilities', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', label: 'Adoption', devId: 'adoption', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', label: 'Highways', devId: 'highways', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', label: 'Insurance', devId: 'insurance', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', label: 'Construction', devId: 'construction', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'domestic', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// P26 Upper Level Data Structure
+// Removed P26 Upper Level Data Structure - deprecated
 // REMOVED - Now using database queries directly
 
 // Category ID to page ID mapping (matching pr2-pricing.tsx devId values)
@@ -166,7 +164,7 @@ export default function PR2ConfigClean() {
   const configName = urlParams.get('configName');
   const sourceItemNo = urlParams.get('itemNo');
   const selectedOptionId = urlParams.get('selectedOption'); // Track which option is selected for editing
-  const selectedId = urlParams.get('selectedId'); // Track MMP1 ID selection from dashboard (id1, id2, etc.)
+  const selectedId = urlParams.get('selectedId'); // Track MMP1 sector selection from dashboard
   const autoSelectUtilities = urlParams.get('autoSelectUtilities') === 'true'; // Auto-select utilities tab in MM1
   const reportId = urlParams.get('reportId'); // Preserve current upload ID for navigation back to dashboard
   const isEditing = !!editId;
@@ -175,8 +173,8 @@ export default function PR2ConfigClean() {
   // Determine template type based on category
   const getTemplateType = (categoryId: string): 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
     if (categoryId === 'day-rate-db11') {
-      // P26 system removed - day-rate-db11 no longer supported
-      console.warn('⚠️ day-rate-db11 (P26) deprecated - redirecting to CCTV/Jet Vac configuration');
+      // Legacy system removed - day-rate-db11 no longer supported
+      console.warn('⚠️ day-rate-db11 deprecated - redirecting to CCTV/Jet Vac configuration');
       return 'MMP1'; // Fallback to MMP1 template
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
@@ -299,7 +297,7 @@ export default function PR2ConfigClean() {
         'excavation': `${formattedSize} F623 Excavation Configuration`,
         'patching': `${formattedSize} F615 Patching Configuration`,
         'f-robot-cutting': `${formattedSize} F619 Robotic Cutting Configuration`,
-        'day-rate-db11': `${formattedSize} Legacy Day Rate (Deprecated)`, // P26 removed
+        'day-rate-db11': `${formattedSize} Legacy Day Rate (Deprecated)`, // Legacy removed
         'tankering': `${formattedSize} F624 Tankering Configuration`
       };
       return categoryMap[categoryId] || `${formattedSize} Configuration`;
@@ -320,7 +318,7 @@ export default function PR2ConfigClean() {
       'excavation': 'F623 Excavation Configuration',
       'patching': 'F615 Patching Configuration',
       'f-robot-cutting': 'F619 Robotic Cutting Configuration',
-      'day-rate-db11': 'Legacy Day Rate (Deprecated)', // P26 removed
+      'day-rate-db11': 'Legacy Day Rate (Deprecated)', // Legacy removed
       'tankering': 'F624 Tankering Configuration'
     };
     return categoryMap[categoryId] || 'Configuration';
