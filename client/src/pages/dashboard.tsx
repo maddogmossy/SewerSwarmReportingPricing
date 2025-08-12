@@ -3075,6 +3075,17 @@ export default function Dashboard() {
     const defaultCategoryId = currentEquipmentPriority === 'id759' ? 'cctv-van-pack' : 'cctv-jet-vac';
     
     console.log(`🎯 CHECKING CONFIG WARNINGS for default category: ${currentEquipmentPriority} (${defaultCategoryId})`);
+    
+    // Log Item 3 specifically to debug pipe size issue
+    const item3 = sections.find(s => s.itemNo === 3);
+    if (item3) {
+      console.log('🔍 ITEM 3 PIPE SIZE DEBUG:', {
+        itemNo: item3.itemNo,
+        pipeSize: item3.pipeSize,
+        defects: item3.defects,
+        defectType: item3.defectType
+      });
+    }
 
     // Find the first service section with a configuration warning that matches the current default category
     for (const section of sections) {
