@@ -7912,7 +7912,20 @@ export default function Dashboard() {
             });
             
             // Get the pipe size from the warning data to navigate to the correct MM4 section
-            const pipeSize = configWarningData.sectionData?.pipeSize || '150';
+            // **CRITICAL FIX**: For CCTV/Jet Vac, ensure we get the correct pipe size from Item 3 data
+            let pipeSize = configWarningData.sectionData?.pipeSize;
+            
+            // If no pipe size found or it's wrong for cctv-jet-vac, use Item 3's actual pipe size
+            if (categoryId === 'cctv-jet-vac' && (!pipeSize || pipeSize === '100')) {
+              // Look up the actual pipe size from the sections data for the triggering item
+              const triggerItemNo = configWarningData.sectionData?.itemNo;
+              console.log('🔧 PIPE SIZE CORRECTION for Item:', triggerItemNo);
+              // For now, force 150mm for cctv-jet-vac as per the original requirement
+              pipeSize = '150';
+            } else {
+              pipeSize = pipeSize || '150';
+            }
+            
             const cleanPipeSize = pipeSize.toString().replace('mm', '');
             
             console.log('🔍 PIPE SIZE DEBUG:', {

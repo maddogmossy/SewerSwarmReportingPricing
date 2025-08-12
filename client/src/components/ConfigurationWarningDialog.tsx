@@ -38,13 +38,13 @@ export function ConfigurationWarningDialog({
     const getSpecificConfigType = () => {
       if (sectionData.defectType === 'structural') return 'F615 Patching';
       
-      // For service defects, use the specific category from configData with correct F-series mapping
-      if (configData?.categoryId === 'cctv-van-pack') return 'F608 CCTV/Van Pack';
-      if (configData?.categoryId === 'cctv-jet-vac') return 'F690 CCTV/Jet Vac';
-      if (configData?.categoryId === 'cctv') return 'F612 CCTV';
+      // For service defects, use A1-F16 naming system instead of old F-series
+      if (configData?.categoryId === 'cctv-van-pack') return 'A4 CCTV/Van Pack';
+      if (configData?.categoryId === 'cctv-jet-vac') return 'A5 CCTV/Jet Vac';
+      if (configData?.categoryId === 'cctv') return 'A1 CCTV';
       
-      // Fallback for service defects without specific config
-      return 'F690/F608/F612 Service';
+      // Fallback for service defects without specific config - use A1-F16 naming
+      return 'A5/A4/A1 Service';
     };
     
     const configType = getSpecificConfigType();

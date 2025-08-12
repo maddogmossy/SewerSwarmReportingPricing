@@ -1065,7 +1065,16 @@ export default function PR2ConfigClean() {
   
   const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(() => {
     // Initialize with correct pipe size ID based on selectedPipeSizeForMM4
-    const initialPipeSize = pipeSize?.toString().replace('mm', '') || (categoryId === 'cctv-jet-vac' ? '150' : '100');
+    // CRITICAL FIX: When routing from auto-trigger, use the pipeSize from URL parameter first
+    const urlPipeSize = pipeSize?.toString().replace('mm', '');
+    const initialPipeSize = urlPipeSize || (categoryId === 'cctv-jet-vac' ? '150' : '100');
+    
+    console.log('🔧 PIPE SIZE INITIALIZATION DEBUG:', {
+      urlPipeSize: urlPipeSize,
+      categoryId: categoryId,
+      finalInitialPipeSize: initialPipeSize,
+      urlPipeSizeParam: pipeSize
+    });
     return PIPE_SIZE_IDS[initialPipeSize] || PIPE_SIZE_IDS['100'];
   });
   const [showRangeWarning, setShowRangeWarning] = useState<boolean>(false);
@@ -3601,10 +3610,10 @@ export default function PR2ConfigClean() {
                   const getPSeriesNumber = (sector: string, categoryId: string): string => {
                     const sectorPageMap: Record<string, Record<string, string>> = {
                       'utilities': {
-                        'cctv-jet-vac': 'P006',        // F606 - CCTV/Jet Vac
-                        'cctv-van-pack': 'P008',       // F608 - CCTV/Van Pack  
+                        'cctv-jet-vac': 'A5',          // A5 - CCTV/Jet Vac (A1-F16 system)
+                        'cctv-van-pack': 'A4',         // A4 - CCTV/Van Pack (A1-F16 system)  
                         'cctv-cleansing-root-cutting': 'P011', // F611 - CCTV/Cleansing/Root Cutting
-                        'cctv': 'P012',                // F612 - CCTV only
+                        'cctv': 'A1',                  // A1 - CCTV only (A1-F16 system)
                         'directional-water-cutter': 'P014', // F614 - Directional Water Cutter
                         'patching': 'P015',            // F615 - Patching
                         'f-robot-cutting': 'P019',     // F619 - Robotic Cutting
