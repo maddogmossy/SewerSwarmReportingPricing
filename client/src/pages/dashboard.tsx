@@ -2853,10 +2853,18 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
+  // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)  
   const { data: repairPricingData = [] } = useQuery({
-    queryKey: ['pr2-configs', currentSector.id, equipmentPriority],
+    queryKey: ['pr2-configs', currentSector.id, equipmentPriority, costRecalcTrigger],
     queryFn: async () => {
+      console.log('🔍 DASHBOARD PR2 CONFIG FETCH - ENHANCED:', {
+        sector: currentSector.id,
+        equipmentPriority,
+        costRecalcTrigger,
+        timestamp: Date.now(),
+        forceCacheRefresh: costRecalcTrigger > 0
+      });
+      
       // Map equipment priority to category names for API calls
       const equipmentToCategoryMapping: Record<string, string> = {
         'id760': 'cctv-jet-vac',
