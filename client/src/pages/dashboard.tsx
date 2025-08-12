@@ -5172,6 +5172,23 @@ export default function Dashboard() {
           });
         }
         
+        // CRITICAL STATUS FIX: If no MM4 data found, return proper insufficient status instead of day_rate_missing
+        if (!matchingMM4Data || !Array.isArray(matchingMM4Data) || matchingMM4Data.length === 0) {
+          const statusCode = equipmentPriority === 'id759' ? 'id759_insufficient_items' : 'id760_insufficient_items';
+          console.log('❌ NO MM4 DATA FOUND - Returning proper status:', {
+            sectionId: section.itemNo,
+            equipmentPriority,
+            statusCode,
+            explanation: 'No MM4 configuration data available for this equipment/pipe size combination'
+          });
+          
+          return {
+            cost: 0,
+            status: statusCode,
+            details: `No MM4 configuration found for ${sectionPipeSize} pipe with ${equipmentPriority}`
+          };
+        }
+        
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
           // DEBUG: Special tracking for Item 13 F608 Row 3 calculations AND Items 21-23 F608 MM4-225 validation
           if (section.itemNo === 13 || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
