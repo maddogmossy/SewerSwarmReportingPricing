@@ -576,6 +576,28 @@ export default function PR2Pricing() {
                     );
                     const configToUse = existingConfig || generalConfig;
                     
+                    // CROSS-SECTOR SEARCH: Check utilities sector for ID760 if not found in current sector
+                    const [crossSectorConfig, setCrossSectorConfig] = useState(null);
+                    
+                    useEffect(() => {
+                      if (!configToUse && sector === 'id1') {
+                        // Search utilities sector for cctv-jet-vac (ID760)
+                        fetch('/api/pr2-clean?sector=utilities', { credentials: 'include' })
+                          .then(res => res.json())
+                          .then(configs => {
+                            const utilitiesConfig = Array.isArray(configs) ? 
+                              configs.find(c => c.categoryId === 'cctv-jet-vac') : null;
+                            if (utilitiesConfig) {
+                              console.log('🔍 Found CCTV/Jet Vac in utilities sector:', utilitiesConfig.id);
+                              setCrossSectorConfig(utilitiesConfig);
+                            }
+                          })
+                          .catch(err => console.error('Error searching utilities sector:', err));
+                      }
+                    }, [configToUse, sector]);
+                    
+                    const finalConfig = configToUse || crossSectorConfig;
+                    
                     const hexToRgba = (hex: string, opacity: number) => {
                       const r = parseInt(hex.slice(1, 3), 16);
                       const g = parseInt(hex.slice(3, 5), 16);
