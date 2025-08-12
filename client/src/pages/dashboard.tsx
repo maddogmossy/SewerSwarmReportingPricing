@@ -2293,14 +2293,14 @@ export default function Dashboard() {
                 ? costCalculation.defectCount * costCalculation.costPerUnit || 0 
                 : 0;
             
-            // Extract day rate from P26 configuration for dialog
+            // Extract day rate from CCTV/Jet Vac configuration for dialog
             let dayRate = 0; // No synthetic fallbacks - must come from user configuration
             if (pr2Configurations && pr2Configurations.length > 0) {
-              const p26Config = pr2Configurations.find(config => 
-                config.categoryId === 'P26'
+              const cctvConfig = pr2Configurations.find(config => 
+                config.categoryId === 'cctv-jet-vac'
               );
-              if (p26Config) {
-                const dayRateValue = p26Config.mm_data?.mm4Rows?.[0]?.blueValue;
+              if (cctvConfig) {
+                const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
                 if (dayRateValue) {
                   dayRate = parseFloat(dayRateValue) || 0; // No synthetic fallback
                 }
@@ -3819,14 +3819,14 @@ export default function Dashboard() {
     
     // TP2 calculation inputs analyzed
     
-    // Get day rate from P26 configuration
-    let dayRate = 1650; // Fallback if P26 not found
+    // Get day rate from CCTV/Jet Vac configuration
+    let dayRate = 1650; // Fallback if CCTV/Jet Vac not found
     
-    // Find P26 configuration for central day rate
+    // Find CCTV/Jet Vac configuration for central day rate
     if (pr2Configurations && pr2Configurations.length > 0) {
-      const p26Config = pr2Configurations.find(config => config.categoryId === 'P26');
-      if (p26Config && p26Config.pricingOptions) {
-        const dayRateValue = p26Config.mm_data?.mm4Rows?.[0]?.blueValue;
+      const cctvConfig = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
+      if (cctvConfig && cctvConfig.pricingOptions) {
+        const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
         if (dayRateValue) {
           dayRate = parseFloat(dayRateValue) || 0;
         }
@@ -3943,7 +3943,7 @@ export default function Dashboard() {
       };
     }
     
-    // Update recommendation to include pipe size and length with P26 day rate info
+    // Update recommendation to include pipe size and length with CCTV/Jet Vac day rate info
     const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
     
     return {
@@ -3951,7 +3951,7 @@ export default function Dashboard() {
       costPerUnit: costPerUnit,
       baseCost: baseCost,
       dayRateAdjustment: 0,
-      dayRate: dayRate, // Now from P26 Central Configuration
+      dayRate: dayRate, // Now from CCTV/Jet Vac Central Configuration
       defectCount: defectCount,
       minQuantity: minQuantity,
       patchingType: selectedPatchingOption.label,
