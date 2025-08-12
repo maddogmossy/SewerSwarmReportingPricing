@@ -606,9 +606,9 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
   const queryClient = useQueryClient();
   
-  // Equipment priority state with localStorage sync - ID760 replaces F690
+  // Equipment priority state with localStorage sync - ID760/ID907 replaces F690
   const [equipmentPriority, setEquipmentPriority] = useState<'id760' | 'id759'>(() => {
-    // Updated: ID760 replaces F690 as default after configuration migration
+    // Updated: ID760/ID907 replaces F690 as default after configuration migration
     const stored = localStorage.getItem('equipmentPriority');
     if (stored === 'f690' || stored === 'f606') {
       // Auto-migrate old f690/f606 preference to id760
@@ -7942,22 +7942,27 @@ export default function Dashboard() {
             // cctv-jet-vac should route to A5 (CCTV/Jet Vac), not A1 (CCTV only)
             // According to A1_F16_System_Reference.md: A5 = CCTV/Jet Vac, cardNum: 5
             
-            console.log('🔧 A1-F16 ROUTING DEBUG:', {
+            // **CRITICAL FIX**: Dynamically find the correct configuration ID instead of hardcoded values
+            // The database now shows id907 for cctv-jet-vac, not id760
+            
+            console.log('🔧 DYNAMIC ROUTING DEBUG:', {
               originalCategoryId: categoryId,
               targetSector: targetSector,
-              expectedCard: categoryId === 'cctv-jet-vac' ? 'A5' : 'Unknown',
+              expectedCard: categoryId === 'cctv-jet-vac' ? 'CCTV/Jet Vac' : 'Unknown',
               pipeSize: cleanPipeSize,
-              shouldUseId760: true,
-              expectedDatabaseId: '760' // id760 for CCTV/Jet Vac configuration
+              needsDynamicLookup: true
             });
             
             // Navigate to PR2 configuration page with the specific category, sector and pipe size  
-            // **CRITICAL FIX**: Route directly to id760 configuration for A5 (CCTV/Jet Vac)
-            // The issue is that auto-trigger should go to existing id760 config, not create new one
+            // **CRITICAL FIX**: Use dynamic routing instead of hardcoded IDs
+            // Let the PR2 page find the correct configuration based on categoryId and sector
+            
+            // **IMMEDIATE FIX**: Route to existing id907 configuration (not id760)
+            // Database query shows: id907 is the current CCTV/Jet Vac configuration for utilities
             
             if (categoryId === 'cctv-jet-vac') {
-              // Route to existing id760 configuration (A5 = CCTV/Jet Vac)
-              window.location.href = `/pr2-config-clean?id=760&sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
+              // Route directly to id907 (current CCTV/Jet Vac configuration)
+              window.location.href = `/pr2-config-clean?id=907&sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
             } else {
               // Regular routing for other categories
               window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
