@@ -19,20 +19,20 @@ The database has **TWO different naming systems** mixed together:
 ### IDs 632, 633, 634, 660 are:
 | ID | Sector Code | Real Sector | category_id | What It Actually Is |
 |----|-------------|-------------|-------------|-------------------|
-| 632 | `id6` | **domestic** | `van-pack` | Van Pack for Domestic sector |
-| 633 | `id5` | **construction** | `van-pack` | Van Pack for Construction sector |
-| 634 | `id4` | **insurance** | `van-pack` | Van Pack for Insurance sector |
-| 660 | `id1` | **utilities** | `van-pack` | Van Pack for Utilities sector (DUPLICATE!) |
+| 632 | `domestic` | **domestic** | `van-pack` | Van Pack for Domestic sector |
+| 633 | `construction` | **construction** | `van-pack` | Van Pack for Construction sector |
+| 634 | `insurance` | **insurance** | `van-pack` | Van Pack for Insurance sector |
+| 660 | `utilities` | **utilities** | `van-pack` | Van Pack for Utilities sector (DUPLICATE!) |
 
 ### All Van Pack Configurations:
 | ID | Sector | category_id | Series | Status |
 |----|--------|-------------|--------|--------|
 | 608 | utilities | `cctv-van-pack` | **F-Series** | ✅ Clean (CCTV+Van Pack combo) |
 | 609 | utilities | `van-pack` | **F-Series** | ✅ Clean (Pure Van Pack) |
-| 632 | domestic (id6) | `van-pack` | Legacy | ❌ Old system |
-| 633 | construction (id5) | `van-pack` | Legacy | ❌ Old system |
-| 634 | insurance (id4) | `van-pack` | Legacy | ❌ Old system |
-| 660 | utilities (id1) | `van-pack` | Legacy | ❌ **DUPLICATE** of 609! |
+| 632 | domestic | `van-pack` | A1-F16 | ✅ Migrated |
+| 633 | construction | `van-pack` | A1-F16 | ✅ Migrated |
+| 634 | insurance | `van-pack` | A1-F16 | ✅ Migrated |
+| 660 | utilities | `van-pack` | A1-F16 | ✅ Migrated |
 
 ## Frontend ↔ Database Matching Example
 

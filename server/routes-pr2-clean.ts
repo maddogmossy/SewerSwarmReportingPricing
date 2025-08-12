@@ -299,14 +299,14 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
       };
       
-      // Map frontend sector names to database sector IDs
+      // Map frontend sector names to database sector names (A1-F16 system)
       const sectorMapping: Record<string, string> = {
-        'utilities': 'id1',
-        'adoption': 'id2', 
-        'highways': 'id3',
-        'insurance': 'id4',
-        'construction': 'id5',
-        'domestic': 'id6'
+        'utilities': 'utilities',
+        'adoption': 'adoption', 
+        'highways': 'highways',
+        'insurance': 'insurance',
+        'construction': 'construction',
+        'domestic': 'domestic'
       };
       
       // API request logging removed

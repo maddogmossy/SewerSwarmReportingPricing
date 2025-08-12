@@ -34,14 +34,14 @@ import {
 } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 
-// Sector definitions - id1-id6 with A1-F16 card display system
+// Sector definitions - A1-F16 sector system
 const SECTORS = [
-  { id: 'id1', name: 'Utilities', letter: 'A', devId: 'A1-A16', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'id2', name: 'Adoption', letter: 'B', devId: 'B1-B16', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'id3', name: 'Highways', letter: 'C', devId: 'C1-C16', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'id4', name: 'Insurance', letter: 'D', devId: 'D1-D16', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'id5', name: 'Construction', letter: 'E', devId: 'E1-E16', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'id6', name: 'Domestic', letter: 'F', devId: 'F1-F16', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'utilities', name: 'Utilities', letter: 'A', devId: 'A1-A16', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', letter: 'B', devId: 'B1-B16', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', letter: 'C', devId: 'C1-C16', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', letter: 'D', devId: 'D1-D16', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', letter: 'E', devId: 'E1-E16', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', letter: 'F', devId: 'F1-F16', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // A1-F16 Equipment Card System - Each sector gets identical equipment types
@@ -92,9 +92,9 @@ export default function PR2Pricing() {
     const initialConfigName = urlParams.get('configName');
     const initialItemNo = urlParams.get('itemNo');
     
-    // Always ensure id1 is selected first unless explicitly coming from dashboard with different sector
+    // Always ensure utilities is selected first unless explicitly coming from dashboard with different sector
     const fromDashboard = urlParams.get('fromDashboard') === 'true';
-    const finalSector = fromDashboard ? initialSector : 'id1';
+    const finalSector = fromDashboard ? initialSector : 'utilities';
     
     setSector(finalSector);
     setPipeSize(initialPipeSize);
@@ -128,10 +128,10 @@ export default function PR2Pricing() {
     }
   });
 
-  // Fetch utilities sector configurations to access ID760 when in id1 sector
+  // Fetch utilities sector configurations to access ID760 when in other sectors
   const { data: utilitiesConfigurationsRaw = [] } = useQuery({
     queryKey: ['/api/pr2-clean', 'utilities'],
-    enabled: sector === 'id1', // Only load when in id1 sector
+    enabled: sector !== 'utilities', // Load when not in utilities sector
     retry: false,
     throwOnError: false,
     queryFn: async () => {
@@ -302,7 +302,7 @@ export default function PR2Pricing() {
     }
     
     // Special handling for cctv-jet-vac: check utilities sector if not found in current sector
-    if (categoryId === 'cctv-jet-vac' && sector === 'id1') {
+    if (categoryId === 'cctv-jet-vac' && sector !== 'utilities') {
       const utilitiesConfig = utilitiesConfigurations.find(c => c.categoryId === 'cctv-jet-vac');
       if (utilitiesConfig) {
         console.log(`🔗 Found cctv-jet-vac in utilities sector (ID ${utilitiesConfig.id}), navigating there`);
@@ -603,7 +603,7 @@ export default function PR2Pricing() {
                     const configToUse = existingConfig || generalConfig;
                     
                     // CROSS-SECTOR LOOKUP: Check utilities sector for ID760 if not found in current sector
-                    const utilitiesConfig = sector === 'id1' ? 
+                    const utilitiesConfig = sector !== 'utilities' ? 
                       utilitiesConfigurations.find(c => c.categoryId === 'cctv-jet-vac') : null;
                     const finalConfig = configToUse || utilitiesConfig;
                     
@@ -792,8 +792,8 @@ export default function PR2Pricing() {
                     return false;
                   });
 
-                  // CROSS-SECTOR LOOKUP: Check utilities sector for cctv-jet-vac when in id1 sector
-                  if (!existingConfiguration && category.id === 'cctv-jet-vac' && sector === 'id1') {
+                  // CROSS-SECTOR LOOKUP: Check utilities sector for cctv-jet-vac when in other sectors
+                  if (!existingConfiguration && category.id === 'cctv-jet-vac' && sector !== 'utilities') {
                     existingConfiguration = utilitiesConfigurations.find(c => c.categoryId === 'cctv-jet-vac');
                   }
 

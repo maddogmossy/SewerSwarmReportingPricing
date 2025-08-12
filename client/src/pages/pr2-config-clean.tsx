@@ -82,12 +82,12 @@ const PIPE_SIZES = ['100', '125', '150', '175', '200', '225', '250', '275', '300
 
 // Sector definitions
 const SECTORS = [
-  { id: 'utilities', name: 'Utilities', label: 'Utilities', devId: 'id1', description: 'Water and utility infrastructure projects', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'adoption', name: 'Adoption', label: 'Adoption', devId: 'id2', description: 'New infrastructure adoption and inspection', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'highways', name: 'Highways', label: 'Highways', devId: 'id3', description: 'Road and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'insurance', name: 'Insurance', label: 'Insurance', devId: 'id4', description: 'Insurance claims and assessment work', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'construction', name: 'Construction', label: 'Construction', devId: 'id5', description: 'Construction site and development projects', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'id6', description: 'Residential and domestic drainage work', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'utilities', name: 'Utilities', label: 'Utilities', devId: 'A1-A16', description: 'Water and utility infrastructure projects', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', label: 'Adoption', devId: 'B1-B16', description: 'New infrastructure adoption and inspection', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', label: 'Highways', devId: 'C1-C16', description: 'Road and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', label: 'Insurance', devId: 'D1-D16', description: 'Insurance claims and assessment work', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', label: 'Construction', devId: 'E1-E16', description: 'Construction site and development projects', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'F1-F16', description: 'Residential and domestic drainage work', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // 🔒🔒🔒 MMP1 TEMPLATE PROTECTED ZONE - DO NOT MODIFY WITHOUT USER PERMISSION 🔒🔒🔒

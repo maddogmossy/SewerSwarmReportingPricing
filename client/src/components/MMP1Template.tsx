@@ -27,9 +27,9 @@ const MMP1_IDS = [
   { id: 'id7', name: 'Utilities', label: 'Utilities', devId: 'id7', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
   { id: 'id8', name: 'Adoption', label: 'Adoption', devId: 'id8', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
   { id: 'id9', name: 'Highways', label: 'Highways', devId: 'id9', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'id10', name: 'Insurance', label: 'Insurance', devId: 'id10', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'id11', name: 'Construction', label: 'Construction', devId: 'id11', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'id12', name: 'Domestic', label: 'Domestic', devId: 'id12', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'insurance', name: 'Insurance', label: 'Insurance', devId: 'D1-D16', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', label: 'Construction', devId: 'E1-E16', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'F1-F16', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // Outlook Diary Style Colors (20 colors in 10x2 grid)
@@ -92,12 +92,12 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     // Wait longer to ensure page-level URL processing is complete
     const timeoutId = setTimeout(() => {
       const sectorToIdMapping = {
-        'utilities': 'id1',
-        'adoption': 'id2', 
-        'highways': 'id3',
-        'insurance': 'id4',
-        'construction': 'id5',
-        'domestic': 'id6'
+        'utilities': 'id7',
+        'adoption': 'id8', 
+        'highways': 'id9',
+        'insurance': 'id10',
+        'construction': 'id11',
+        'domestic': 'id12'
       };
       
       const correspondingId = sectorToIdMapping[sector as keyof typeof sectorToIdMapping];
@@ -386,12 +386,12 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
 
   // Map MM1 IDs to database sectors for copying
   const MMP1_ID_TO_SECTOR_MAPPING = {
-    'id7': 'id1',   // Utilities
-    'id8': 'id2',   // Adoption  
-    'id9': 'id3',   // Highways
-    'id10': 'id4',  // Insurance
-    'id11': 'id5',  // Construction
-    'id12': 'id6'   // Domestic
+    'id7': 'utilities',   // Utilities
+    'id8': 'adoption',   // Adoption  
+    'id9': 'highways',   // Highways
+    'id10': 'insurance',  // Insurance
+    'id11': 'construction',  // Construction
+    'id12': 'domestic'   // Domestic
   };
 
   // Function to copy current configuration to target sector
