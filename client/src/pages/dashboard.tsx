@@ -239,7 +239,7 @@ const calculateTravelCost = (config: any): number => {
 };
 
 // Generate dynamic recommendations based on section data and PR2 configurations
-const generateDynamicRecommendation = (section: any, pr2Configurations: any[], checkFunction?: any): string => {
+const generateDynamicRecommendation = (section: any, repairPricingData: any[], checkFunction?: any): string => {
   const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
   
   // Extract defect percentages and types from observations
@@ -325,13 +325,13 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
   };
 
   // Helper function to get PR2 configuration details for dynamic recommendations
-  const getPR2ConfigurationDetails = (section: any, pr2Configurations: any[], checkFunction: any): string => {
-    if (!pr2Configurations || pr2Configurations.length === 0) {
+  const getPR2ConfigurationDetails = (section: any, repairPricingData: any[], checkFunction: any): string => {
+    if (!repairPricingData || repairPricingData.length === 0) {
       return 'cleanse and survey'; // Default fallback
     }
     
     // Find the configuration that this section meets
-    const matchingConfig = pr2Configurations.find(config => 
+    const matchingConfig = repairPricingData.find(config => 
       checkFunction(section, config)
     );
     
@@ -2239,7 +2239,7 @@ export default function Dashboard() {
         }
         
         // FORCE CACHE REFRESH FOR DATABASE UPDATE - clear stale MM4 data
-        if (section.itemNo === 10 && pr2Configurations) {
+        if (section.itemNo === 10 && repairPricingData) {
           const cacheKey = `mm4-data-606`;
           if (localStorage.getItem(cacheKey)) {
             console.log('🔄 CLEARING STALE MM4 CACHE for Item 10 database update');
@@ -2321,7 +2321,7 @@ export default function Dashboard() {
           if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
             
             // CRITICAL: Check if TP2 configuration has valid pricing data before showing popup
-            const tp2Config = pr2Configurations.find(config => 
+            const tp2Config = repairPricingData.find(config => 
               config.categoryId === 'patching' && 
               config.sector === currentSector.id
             );
@@ -2350,8 +2350,8 @@ export default function Dashboard() {
             
             // Extract day rate from CCTV/Jet Vac configuration for dialog
             let dayRate = 0; // No synthetic fallbacks - must come from user configuration
-            if (pr2Configurations && pr2Configurations.length > 0) {
-              const cctvConfig = pr2Configurations.find(config => 
+            if (repairPricingData && repairPricingData.length > 0) {
+              const cctvConfig = repairPricingData.find(config => 
                 config.categoryId === 'cctv-jet-vac'
               );
               if (cctvConfig) {
@@ -2908,59 +2908,80 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)  
-  const { data: repairPricingData = [] } = useQuery({
-    queryKey: ['pr2-configs', currentSector.id, equipmentPriority, costRecalcTrigger],
+  // FIXED: Load ALL PR2 configurations independently (id760 AND id759) - don't force equipment priority choice
+  // This allows users to switch between equipment types without refetching data
+  const { data: allPR2Configurations = [] } = useQuery({
+    queryKey: ['pr2-all-configs', currentSector.id], // Removed equipmentPriority dependency
     queryFn: async () => {
-      console.log('🔍 DASHBOARD PR2 CONFIG FETCH - ENHANCED:', {
+      console.log('🔍 DASHBOARD PR2 CONFIG FETCH - INDEPENDENT LOADING:', {
         sector: currentSector.id,
-        equipmentPriority,
-        costRecalcTrigger,
-        timestamp: Date.now(),
-        forceCacheRefresh: costRecalcTrigger > 0
+        approach: 'Load all configurations, select by equipment priority in cost calculation',
+        timestamp: Date.now()
       });
       
-      // Map equipment priority to category names for API calls
-      const equipmentToCategoryMapping: Record<string, string> = {
-        'id760': 'cctv-jet-vac',
-        'id759': 'cctv-van-pack'
-      };
+      // Load BOTH id760 and id759 configurations simultaneously 
+      const configRequests = [
+        { categoryId: 'cctv-jet-vac', equipmentId: 'id760', label: 'CCTV/Jet Vac' },
+        { categoryId: 'van-pack', equipmentId: 'id759', label: 'Van Pack' }
+      ];
       
-      const categoryId = equipmentToCategoryMapping[equipmentPriority] || 'cctv-jet-vac';
+      const allConfigs = [];
       
-      console.log('🔍 Dashboard PR2 Config Fetch:', { 
-        sector: currentSector.id, 
-        sectorName: currentSector.name,
-        equipmentPriority: equipmentPriority,
-        categoryId: categoryId,
-        queryEnabled: !!currentSector?.id 
-      });
-      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { 
-        sector: currentSector.id,
-        categoryId: categoryId 
-      });
-      const data = await response.json();
-      console.log('🔍 Dashboard PR2 Config Response:', { 
-        responseLength: data.length, 
-        configs: data.map((c: any) => ({ 
-          id: c.id, 
-          categoryId: c.categoryId, 
+      for (const config of configRequests) {
+        try {
+          const response = await apiRequest('GET', '/api/pr2-clean', undefined, { 
+            sector: currentSector.id,
+            categoryId: config.categoryId 
+          });
+          const data = await response.json();
+          
+          // Tag each configuration with its equipment ID for later selection
+          const taggedData = data.map((c: any) => ({
+            ...c,
+            equipmentId: config.equipmentId,
+            equipmentLabel: config.label
+          }));
+          
+          allConfigs.push(...taggedData);
+          
+          console.log(`🔍 Loaded ${config.label} (${config.equipmentId}):`, {
+            categoryId: config.categoryId,
+            configCount: data.length,
+            hasValidConfigs: data.length > 0
+          });
+        } catch (error) {
+          console.error(`❌ Failed to load ${config.label} configuration:`, error);
+        }
+      }
+      
+      console.log('🔍 All PR2 Configurations Loaded:', { 
+        totalConfigs: allConfigs.length,
+        id760Count: allConfigs.filter(c => c.equipmentId === 'id760').length,
+        id759Count: allConfigs.filter(c => c.equipmentId === 'id759').length,
+        configDetails: allConfigs.map(c => ({
+          id: c.id,
+          equipmentId: c.equipmentId,
+          categoryId: c.categoryId,
           sector: c.sector,
           hasMmData: !!c.mm_data,
-          mmDataKeys: c.mm_data ? Object.keys(c.mm_data) : [],
-          mm4RowsExists: !!c.mm_data?.mm4Rows,
-          mm4RowsLength: c.mm_data?.mm4Rows?.length || 0,
           blueValue: c.mm_data?.mm4Rows?.[0]?.blueValue || 'missing'
         }))
       });
-      return data;
+      
+      return allConfigs;
     },
     enabled: !!currentSector?.id,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true
+    staleTime: 300000, // Cache for 5 minutes since configurations don't change often
+    gcTime: 600000, // Keep in cache for 10 minutes
+    refetchOnMount: false, // Don't refetch on mount since data is stable
+    refetchOnWindowFocus: false // Don't refetch on window focus
   });
+
+  // FIXED: Select appropriate configuration based on current equipment priority
+  // This filters the loaded configurations instead of forcing API calls
+  const repairPricingData = allPR2Configurations.filter(config => 
+    config.equipmentId === equipmentPriority
+  );
 
   // Check if a section has approved repair pricing configuration 
   const hasApprovedRepairPricing = (section: any): { hasApproved: boolean, pricingConfig?: any, actualCost?: string } => {
@@ -3018,8 +3039,8 @@ export default function Dashboard() {
     return { hasApproved: false };
   };
 
-  // Use PR2 configurations for cost calculations
-  const pr2Configurations = repairPricingData;
+  // FIXED: Removed redundant assignment - use repairPricingData directly throughout calculateAutoCost
+  // The old repairPricingData variable caused confusion and forced equipment priority coupling
   
   // Fetch work categories and vehicle travel rates for validation
   const { data: workCategories = [] } = useQuery<any[]>({
@@ -3035,12 +3056,12 @@ export default function Dashboard() {
     console.log('Dashboard validation data:', {
       hasAuthenticData,
       rawSectionDataLength: rawSectionData?.length || 0,
-      pr2ConfigurationsLength: pr2Configurations?.length || 0,
+      repairPricingDataLength: repairPricingData?.length || 0,
       workCategoriesLength: workCategories?.length || 0,
       vehicleTravelRatesLength: vehicleTravelRates?.length || 0
     });
 
-    if (rawSectionData?.length > 0 && pr2Configurations) {
+    if (rawSectionData?.length > 0 && repairPricingData) {
       try {
         // Transform section data to match validation interface
         const reportSections: ReportSection[] = rawSectionData.map(section => ({
@@ -3059,7 +3080,7 @@ export default function Dashboard() {
         const result = validateReportExportReadiness(
           reportSections, 
           travelInfo, 
-          pr2Configurations,
+          repairPricingData,
           workCategories,
           vehicleTravelRates
         );
@@ -3068,9 +3089,9 @@ export default function Dashboard() {
         
         console.log('Validation completed:', {
           sectionsLength: rawSectionData.length,
-          configsLength: pr2Configurations.length,
+          configsLength: repairPricingData.length,
           sampleSection: rawSectionData[0]?.itemNo,
-          sampleConfig: pr2Configurations[0]?.categoryId
+          sampleConfig: repairPricingData[0]?.categoryId
         });
         
         // Check for configuration warnings (MM4 outside ranges, day rate missing, etc.)
@@ -3087,13 +3108,13 @@ export default function Dashboard() {
         }
         
         try {
-          checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+          checkTP2ConfigurationIssues(rawSectionData, repairPricingData);
         } catch (error) {
           console.error('🔧 TP2 CONFIG CHECK ERROR:', error);
         }
 
         try {
-          checkTP1ConfigurationIssues(rawSectionData, pr2Configurations);
+          checkTP1ConfigurationIssues(rawSectionData, repairPricingData);
         } catch (error) {
           console.error('🔧 TP1 CONFIG CHECK ERROR:', error);
         }
@@ -3126,7 +3147,7 @@ export default function Dashboard() {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
     }
-  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length, showServiceCostWarning, serviceCostData, showStructuralCostWarning, structuralCostData, configWarningDismissed]);
+  }, [hasAuthenticData, rawSectionData?.length, repairPricingData?.length, showServiceCostWarning, serviceCostData, showStructuralCostWarning, structuralCostData, configWarningDismissed]);
 
   // Function to check for configuration warning issues (MM4 outside ranges, day rate missing, etc.)
   const checkConfigurationWarnings = (sections: any[]) => {
@@ -3432,7 +3453,7 @@ export default function Dashboard() {
     
     try {
       // Get the current TP2 patching configuration
-      const tp2Config = pr2Configurations.find(config => config.categoryId === 'patching');
+      const tp2Config = repairPricingData.find(config => config.categoryId === 'patching');
       if (!tp2Config) {
         toast({
           title: "Error",
@@ -3500,14 +3521,14 @@ export default function Dashboard() {
     
     if (needsCleaning) {
       // Check for cleaning configuration
-      return pr2Configurations.some(config => 
+      return repairPricingData.some(config => 
         config.categoryId === 'cctv-jet-vac' && isConfigurationProperlyConfigured(config)
       );
     }
     
     if (needsStructural) {
       // Check for patching configuration
-      return pr2Configurations.some(config => 
+      return repairPricingData.some(config => 
         config.categoryId === 'patching' && isConfigurationProperlyConfigured(config)
       );
     }
@@ -3550,12 +3571,12 @@ export default function Dashboard() {
     try {
       // Find the relevant configuration
       const configId = defectType === 'service' 
-        ? pr2Configurations.find(c => c.categoryId === 'cctv-jet-vac')?.id
-        : pr2Configurations.find(c => c.categoryId === 'patching')?.id;
+        ? repairPricingData.find(c => c.categoryId === 'cctv-jet-vac')?.id
+        : repairPricingData.find(c => c.categoryId === 'patching')?.id;
 
       if (configId) {
         // Update the configuration with the new rate
-        const config = pr2Configurations.find(c => c.id === configId);
+        const config = repairPricingData.find(c => c.id === configId);
         const updatedPricingOptions = config.pricingOptions?.map((opt: any) => 
           opt.label?.toLowerCase().includes('rate') ? { ...opt, value: newRate.toString() } : opt
         );
@@ -3581,7 +3602,7 @@ export default function Dashboard() {
         variant: "destructive"
       });
     }
-  }, [pr2Configurations, queryClient, refetchSections, toast]);
+  }, [repairPricingData, queryClient, refetchSections, toast]);
 
   const handleSplitTravelCosts = useCallback((defectType: 'service' | 'structural', costPerItem: number) => {
     // Update travel info state to reflect cost distribution
@@ -3703,9 +3724,10 @@ export default function Dashboard() {
 
   // Function to calculate TP1 cleaning cost for service defects
   const calculateTP1CleaningCost = (section: any) => {
-    // Find TP1 CCTV configuration for this sector
-    const tp1Config = pr2Configurations?.find(config => 
-      config.categoryId === 'cctv-jet-vac' && 
+    // FIXED: Use filtered repairPricingData based on current equipment priority
+    // Find configuration matching current equipment priority (id760 for cctv-jet-vac, id759 for van-pack)
+    const tp1Config = repairPricingData?.find(config => 
+      config.equipmentId === equipmentPriority && 
       config.sector === currentSector.id
     );
     
@@ -3886,8 +3908,8 @@ export default function Dashboard() {
     let dayRate = 1650; // Fallback if CCTV/Jet Vac not found
     
     // Find CCTV/Jet Vac configuration for central day rate
-    if (pr2Configurations && pr2Configurations.length > 0) {
-      const cctvConfig = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
+    if (repairPricingData && repairPricingData.length > 0) {
+      const cctvConfig = repairPricingData.find(config => config.categoryId === 'cctv-jet-vac');
       if (cctvConfig && cctvConfig.pricingOptions) {
         const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
         if (dayRateValue) {
@@ -4190,7 +4212,7 @@ export default function Dashboard() {
       defectType: section.defectType,
       needsCleaning: requiresCleaning(section.defects || ''),
       isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
-      pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0,
+      pr2ConfigsAvailable: !!repairPricingData && repairPricingData.length > 0,
       currentEquipmentPriority: equipmentPriority
     });
     
@@ -4199,10 +4221,10 @@ export default function Dashboard() {
       console.log('🔍 SERVICE SECTION VALIDATION TRACE:', {
         itemNo: section.itemNo,
         willEnterServiceValidation: true,
-        pr2ConfigsCount: pr2Configurations ? pr2Configurations.length : 0,
+        pr2ConfigsCount: repairPricingData ? repairPricingData.length : 0,
         needsCleaning: requiresCleaning(section.defects || ''),
         isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
-        shouldTriggerValidation: section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0 && requiresCleaning(section.defects || '') && [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
+        shouldTriggerValidation: section.defectType === 'service' && repairPricingData && repairPricingData.length > 0 && requiresCleaning(section.defects || '') && [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
         defectsText: section.defects,
         itemNoInRange: section.itemNo >= 1 && section.itemNo <= 4 ? 'EARLY_ITEM' : 'LATER_ITEM'
       });
@@ -4225,12 +4247,12 @@ export default function Dashboard() {
       itemNo: section.itemNo,
       defectType: section.defectType,
       isServiceType: section.defectType === 'service',
-      pr2ConfigsExists: !!pr2Configurations,
-      pr2ConfigsLength: pr2Configurations ? pr2Configurations.length : 0,
-      willEnterServiceValidation: section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0
+      pr2ConfigsExists: !!repairPricingData,
+      pr2ConfigsLength: repairPricingData ? repairPricingData.length : 0,
+      willEnterServiceValidation: section.defectType === 'service' && repairPricingData && repairPricingData.length > 0
     });
     
-    if (section.defectType === 'service' && pr2Configurations && pr2Configurations.length > 0) {
+    if (section.defectType === 'service' && repairPricingData && repairPricingData.length > 0) {
       const needsCleaning = requiresCleaning(section.defects || '');
       const isRestrictedSection = [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo);
       
@@ -4239,8 +4261,8 @@ export default function Dashboard() {
       // New logic: Process all service sections, but use different validation paths
       if (true) { // Always process service sections
         // Find ID760 and ID759 configurations (ID760=cctv-jet-vac, ID759=cctv-van-pack)
-        const id760Config = pr2Configurations.find(config => config.categoryId === 'cctv-jet-vac');
-        const id759Config = pr2Configurations.find(config => config.categoryId === 'cctv-van-pack');
+        const id760Config = repairPricingData.find(config => config.categoryId === 'cctv-jet-vac');
+        const id759Config = repairPricingData.find(config => config.categoryId === 'cctv-van-pack');
         
         // Check current equipment priority
         console.log('🔍 EQUIPMENT PRIORITY DEBUG:', {
@@ -4509,9 +4531,9 @@ export default function Dashboard() {
     }
 
     // CRITICAL FIX: Also validate F615 structural configurations for day rate
-    if (section.defectType === 'structural' && pr2Configurations && pr2Configurations.length > 0) {
+    if (section.defectType === 'structural' && repairPricingData && repairPricingData.length > 0) {
       // Find F615 patching configuration
-      const f615Config = pr2Configurations.find(config => config.categoryId === 'patching' && config.sector === 'utilities');
+      const f615Config = repairPricingData.find(config => config.categoryId === 'patching' && config.sector === 'utilities');
       
       if (f615Config) {
         // Check if day rate is properly configured in MM4 blue value (single source of truth)
@@ -4620,8 +4642,8 @@ export default function Dashboard() {
         pipeSize: section.pipeSize,
         needsCleaning: requiresCleaning(section.defects || ''),
         isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
-        pr2ConfigsAvailable: !!pr2Configurations,
-        pr2ConfigsLength: pr2Configurations?.length || 0
+        pr2ConfigsAvailable: !!repairPricingData,
+        pr2ConfigsLength: repairPricingData?.length || 0
       });
     }
     
@@ -4634,7 +4656,7 @@ export default function Dashboard() {
         totalLength: section.totalLength,
         pipeSize: section.pipeSize,
         needsCleaning: requiresCleaning(section.defects || ''),
-        pr2ConfigsLength: pr2Configurations?.length || 0
+        pr2ConfigsLength: repairPricingData?.length || 0
       });
     }
     
@@ -4776,8 +4798,8 @@ export default function Dashboard() {
         defectType: section.defectType,
         letterSuffix: section.letterSuffix,
         requiresCleaningResult: requiresCleaning(section.defects || ''),
-        pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0,
-        shouldProcessMM4: needsCleaning && pr2Configurations,
+        pr2ConfigsAvailable: !!repairPricingData && repairPricingData.length > 0,
+        shouldProcessMM4: needsCleaning && repairPricingData,
         isRestrictedSection: isRestrictedSection,
         sectionLength: parseFloat(section.totalLength) || 0,
         sectionDebrisPercent: extractDebrisPercentage(section.defects || '')
@@ -4791,25 +4813,25 @@ export default function Dashboard() {
     // Structural sections: Use F615 patching cost calculation
     console.log(`🔍 MM4 Processing Check for Item ${section.itemNo}:`, {
       needsCleaning,
-      pr2ConfigsAvailable: !!pr2Configurations,
+      pr2ConfigsAvailable: !!repairPricingData,
       isRestrictedSection,
       defectType: section.defectType,
       pipeSize: section.pipeSize,
-      willProcessServiceMM4: section.defectType === 'service' && needsCleaning && pr2Configurations && isRestrictedSection,
+      willProcessServiceMM4: section.defectType === 'service' && needsCleaning && repairPricingData && isRestrictedSection,
       willProcessStructuralF615: section.defectType === 'structural'
     });
     
     // FIXED: Only process MM4 for SERVICE sections that need cleaning
-    if (section.defectType === 'service' && needsCleaning && pr2Configurations && isRestrictedSection) {
+    if (section.defectType === 'service' && needsCleaning && repairPricingData && isRestrictedSection) {
       // SERVICE SECTION MM4 PROCESSING: Only F690 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
       // F612 (cctv) excluded - CCTV only, not for cleaning service defects
-      const cctvConfigs = pr2Configurations.filter((config: any) => 
+      const cctvConfigs = repairPricingData.filter((config: any) => 
         ['cctv-van-pack', 'cctv-jet-vac'].includes(config.categoryId) && 
         config.sector === currentSector.id
       );
       
       console.log(`🔍 CRITICAL CONFIG DETECTION - Item ${section.itemNo}:`, {
-        allPR2Configs: pr2Configurations.length,
+        allPR2Configs: repairPricingData.length,
         cctvConfigsFound: cctvConfigs.length,
         cctvConfigDetails: cctvConfigs.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })),
         currentSector: currentSector.id,
@@ -5247,7 +5269,7 @@ export default function Dashboard() {
     }
     
     // STRUCTURAL DEFECT ROUTING: Check for F615 patching configuration for structural defects
-    if (section.defectType === 'structural' && pr2Configurations && isRestrictedSection) {
+    if (section.defectType === 'structural' && repairPricingData && isRestrictedSection) {
       // DEBUG: Log Item 13a, Item 19, and Item 20 specifically
       if (section.itemNo === 13 || section.itemNo === 19 || section.itemNo === 20) {
         console.log(`🎯 ITEM ${section.itemNo} F615 ROUTING DEBUG:`, {
@@ -5256,14 +5278,14 @@ export default function Dashboard() {
           defectType: section.defectType,
           defects: section.defects,
           isRestrictedSection: isRestrictedSection,
-          pr2ConfigsAvailable: !!pr2Configurations,
-          pr2ConfigsLength: pr2Configurations?.length || 0,
-          availableConfigs: pr2Configurations?.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })) || []
+          pr2ConfigsAvailable: !!repairPricingData,
+          pr2ConfigsLength: repairPricingData?.length || 0,
+          availableConfigs: repairPricingData?.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })) || []
         });
       }
       
       // Find patching configuration for current sector
-      const patchingConfig = pr2Configurations.find((config: any) => 
+      const patchingConfig = repairPricingData.find((config: any) => 
         config.categoryId === 'patching' && config.sector === currentSector.id
       );
       
@@ -5442,8 +5464,8 @@ export default function Dashboard() {
         recommendations.toLowerCase().includes('id4') || 
         recommendations.toLowerCase().includes('p4')) {
       
-      // Safety check: Ensure pr2Configurations exists before accessing
-      if (!pr2Configurations || !Array.isArray(pr2Configurations)) {
+      // FIXED: Safety check using filtered repairPricingData instead of repairPricingData
+      if (!repairPricingData || !Array.isArray(repairPricingData)) {
         return {
           cost: 0,
           currency: '£',
@@ -5456,7 +5478,7 @@ export default function Dashboard() {
         };
       }
       
-      const id4Config = pr2Configurations.find((config: any) => 
+      const id4Config = repairPricingData.find((config: any) => 
         config.categoryId === 'f-robot-cutting'
       );
       
@@ -5656,7 +5678,7 @@ export default function Dashboard() {
         const f619Details = cutDetails.join(' + ');
         
         // Process F615 structural patching
-        const patchingConfig = pr2Configurations.find((config: any) => 
+        const patchingConfig = repairPricingData.find((config: any) => 
           config.categoryId === 'patching' && config.sector === currentSector.id
         );
         
@@ -5700,8 +5722,8 @@ export default function Dashboard() {
       };
     }
     
-    // Safety check: Ensure pr2Configurations exists and is an array
-    if (!pr2Configurations || !Array.isArray(pr2Configurations) || pr2Configurations.length === 0) {
+    // Safety check: Ensure repairPricingData exists and is an array
+    if (!repairPricingData || !Array.isArray(repairPricingData) || repairPricingData.length === 0) {
       // No PR2 configurations found
       return {
         cost: 0,
@@ -5722,7 +5744,7 @@ export default function Dashboard() {
       // DEBUG: TP2 sections matching logic completed
       
       // Only find pipe size-specific configuration - no fallback to incompatible sizes
-      let tp2PatchingConfig = pr2Configurations.find((config: any) => 
+      let tp2PatchingConfig = repairPricingData.find((config: any) => 
         config.categoryId === 'patching' && 
         config.sector === currentSector.id &&
         config.categoryName?.includes(`${pipeSize}mm`)
@@ -5745,7 +5767,7 @@ export default function Dashboard() {
 
     // Find configurations that this section meets, prioritizing those with actual values
     let matchingConfigs = [];
-    for (const config of pr2Configurations) {
+    for (const config of repairPricingData) {
       if (checkSectionMeetsPR2Requirements(section, config)) {
         matchingConfigs.push(config);
       }
@@ -6085,7 +6107,7 @@ export default function Dashboard() {
   // Now using only the string-based requiresCleaning function defined at the top of the file
 
   // Component-level dynamic recommendation function with access to checkSectionMeetsPR2Requirements
-  const generateDynamicRecommendationWithPR2 = (section: any, pr2Configurations: any[]): string => {
+  const generateDynamicRecommendationWithPR2 = (section: any, repairConfigData: any[]): string => {
     const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
     
     // Ensure totalLength has 'm' suffix
@@ -6138,9 +6160,9 @@ export default function Dashboard() {
     
     // NEW: Get PR2 configuration details for dynamic recommendations
     if (defectSummary && requiresCleaning(defects || '')) {
-      if (pr2Configurations && pr2Configurations.length > 0) {
+      if (repairPricingData && repairPricingData.length > 0) {
         // Find the configuration that this section meets
-        const matchingConfig = pr2Configurations.find(config => 
+        const matchingConfig = repairPricingData.find(config => 
           checkSectionMeetsPR2Requirements(section, config)
         );
         
@@ -6183,7 +6205,7 @@ export default function Dashboard() {
   };
 
   // FIXED: Smart counting system - only count sections that NEED CLEANING/SURVEYING (not all sections)
-  const countSectionsTowardMinimum = (rawSectionData: any[], pr2Configurations: any[]) => {
+  const countSectionsTowardMinimum = (rawSectionData: any[], repairPricingData: any[]) => {
     let sectionCount = 0;
     const configMatch: { [key: number]: any } = {}; // Track which config each section uses
     
@@ -6195,7 +6217,7 @@ export default function Dashboard() {
       }
       
       // Check each configuration to see if section meets requirements
-      for (const config of pr2Configurations) {
+      for (const config of repairPricingData) {
         const meetsRequirements = checkSectionMeetsPR2Requirements(section, config);
         if (meetsRequirements) {
           sectionCount++;
@@ -6230,7 +6252,7 @@ export default function Dashboard() {
     };
     
     // Use smart counting system to get total sections that meet any configuration
-    const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations || []);
+    const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], repairPricingData || []);
     const runsPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'runs per shift');
     
     // Smart counting result (now using DB8 green window) completed
@@ -6439,9 +6461,9 @@ export default function Dashboard() {
 
   // AUTO-POPULATE F690 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
   useEffect(() => {
-    if (sectionData?.length > 0 && pr2Configurations?.length > 0) {
+    if (sectionData?.length > 0 && repairPricingData?.length > 0) {
       // Trigger auto-population for ID760 configurations (cctv-jet-vac)
-      const id760Config = pr2Configurations.find(config => 
+      const id760Config = repairPricingData.find(config => 
         config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
       );
       
@@ -6456,14 +6478,14 @@ export default function Dashboard() {
         // This was overriding user-configured MM4 purple values with auto-calculated ones
       }
     }
-  }, [sectionData, pr2Configurations, currentSector.id]);
+  }, [sectionData, repairPricingData, currentSector.id]);
 
   // CRITICAL FIX: Warning check effect using sectionData (display data) instead of rawSectionData (API data)
   useEffect(() => {
-    if (sectionData?.length > 0 && pr2Configurations?.length > 0) {
+    if (sectionData?.length > 0 && repairPricingData?.length > 0) {
       console.log('🔍 DISPLAY DATA WARNING CHECK TRIGGER:', {
         sectionDataLength: sectionData.length,
-        pr2ConfigsLength: pr2Configurations.length,
+        pr2ConfigsLength: repairPricingData.length,
         sampleSections: sectionData.slice(0, 3).map(s => ({
           itemNo: s.itemNo,
           defectType: s.defectType
@@ -6486,7 +6508,7 @@ export default function Dashboard() {
         console.error('🔧 STRUCTURAL COST CHECK ERROR (display data):', error);
       }
     }
-  }, [sectionData, pr2Configurations]);
+  }, [sectionData, repairPricingData]);
 
   // Remove debugging code - data is now clean for fresh uploads
 
@@ -6783,16 +6805,16 @@ export default function Dashboard() {
 
   // DB7 MULTIPLE-BASED LOGIC: Check if section count matches multiples of minimum quantity
   const checkOrangeMinimumMet = (): boolean => {
-    if (!pr2Configurations || pr2Configurations.length === 0) {
+    if (!repairPricingData || repairPricingData.length === 0) {
       return true;
     }
     
     // Get smart counting result for all sections
-    const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
+    const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], repairPricingData);
     
     // MIGRATION FIX: Use DB8 green window quantityOptions instead of DB9 orange window minQuantityOptions
     let minQuantity = 25; // Default minimum from DB8 green window
-    pr2Configurations.forEach(config => {
+    repairPricingData.forEach(config => {
       if (config.categoryId === 'cctv-jet-vac' && config.quantityOptions) {
         const quantityOptions = config.quantityOptions || [];
         const quantityOption = quantityOptions.find((opt: any) => 
@@ -6985,7 +7007,7 @@ export default function Dashboard() {
       </span>
     );
     };
-  }, [pr2Configurations, sectionData, equipmentPriority, costRecalcTrigger]);
+  }, [repairPricingData, sectionData, equipmentPriority, costRecalcTrigger]);
 
   // REMOVED: Auto-cost trigger useEffect was causing infinite loops
   // Cost calculations continue working normally without popup dialogs
