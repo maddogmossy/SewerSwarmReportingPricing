@@ -161,30 +161,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           mm5Data: mm5Data
         };
 
-        // Clean category display names matching card definitions
-        const getCategoryDisplayName = () => {
-          if (categoryId === 'cctv') return 'CCTV';
-          if (categoryId === 'van-pack') return 'Van Pack';
-          if (categoryId === 'jet-vac') return 'Jet Vac';
-          if (categoryId === 'cctv-van-pack') return 'CCTV/Van Pack';
-          if (categoryId === 'cctv-jet-vac') return 'CCTV/Jet Vac';
-          if (categoryId === 'cctv-cleansing-root-cutting') return 'CCTV/Cleansing/Root Cutting';
-          if (categoryId === 'directional-water-cutter') return 'Directional Water Cutter';
-          if (categoryId === 'patching') return 'Patching';
-          if (categoryId === 'ambient-lining') return 'Ambient Lining';
-          if (categoryId === 'hot-cure-lining') return 'Hot Cure Lining';
-          if (categoryId === 'uv-lining') return 'UV Lining';
-          if (categoryId === 'f-robot-cutting') return 'Robotic Cutting';
-          if (categoryId === 'excavation') return 'Excavation';
-          if (categoryId === 'tankering') return 'Tankering';
-          if (categoryId === 'test-card') return 'Test Card';
-          return 'Configuration';
-        };
 
-        const getCategoryDescription = () => {
-          // Remove descriptive text as per user request (point 6)
-          return '';
-        };
 
         if (editId) {
           const response = await fetch(`/api/pr2-clean/${editId}`, {
@@ -407,15 +384,154 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     triggerAutoSave();
   };
 
-  // Handle MMP1 ID selection changes
-  const handleMMP1IdChange = async (idKey: string, checked: boolean) => {
-    if (checked) {
-      setSelectedIds(prev => [...new Set([...prev, idKey])]);
-      setIdsWithConfig(prev => [...new Set([...prev, idKey])]);
-    } else {
-      setSelectedIds(prev => prev.filter(id => id !== idKey));
-      setIdsWithConfig(prev => prev.filter(id => id !== idKey));
+  // Map MM1 IDs to database sectors for copying
+  const MMP1_ID_TO_SECTOR_MAPPING = {
+    'id7': 'id1',   // Utilities
+    'id8': 'id2',   // Adoption  
+    'id9': 'id3',   // Highways
+    'id10': 'id4',  // Insurance
+    'id11': 'id5',  // Construction
+    'id12': 'id6'   // Domestic
+  };
+
+  // Function to copy current configuration to target sector
+  const copyConfigurationToSector = async (targetSector: string) => {
+    if (!editId) {
+      console.log('❌ Cannot copy: No editId available');
+      return false;
     }
+
+    try {
+      // Get current configuration data
+      const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+      const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+      
+      const mmData = {
+        selectedPipeSize: selectedPipeSizeForMM4,
+        selectedPipeSizeId: selectedPipeSizeId,
+        mm1Colors: selectedColor,
+        mm2IdData: selectedIds,
+        mm3CustomPipeSizes: customPipeSizes,
+        mm4DataByPipeSize: mm4DataByPipeSize,
+        mm5Data: mm5Data
+      };
+
+      // Check if configuration already exists for target sector
+      const existingConfigResponse = await fetch(`/api/pr2-clean?categoryId=${categoryId}&sector=${targetSector}&pipeSize=${selectedPipeSizeForMM4}`);
+      const existingConfigs = await existingConfigResponse.json();
+      
+      if (existingConfigs && existingConfigs.length > 0) {
+        // Update existing configuration
+        const existingConfig = existingConfigs[0];
+        const response = await fetch(`/api/pr2-clean/${existingConfig.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryName: getCategoryDisplayName(),
+            description: getCategoryDescription(),
+            categoryColor: selectedColor,
+            pipeSize: selectedPipeSizeForMM4,
+            mmData: mmData,
+            sector: targetSector
+          })
+        });
+        
+        if (response.ok) {
+          console.log(`✅ Updated existing configuration for sector ${targetSector}`);
+          return true;
+        }
+      } else {
+        // Create new configuration for target sector
+        const response = await fetch('/api/pr2-clean', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryName: getCategoryDisplayName(),
+            description: getCategoryDescription(),
+            categoryColor: selectedColor,
+            pipeSize: selectedPipeSizeForMM4,
+            mmData: mmData,
+            categoryId: categoryId,
+            sector: targetSector
+          })
+        });
+        
+        if (response.ok) {
+          console.log(`✅ Created new configuration for sector ${targetSector}`);
+          return true;
+        }
+      }
+    } catch (error) {
+      console.error(`❌ Failed to copy configuration to sector ${targetSector}:`, error);
+      return false;
+    }
+    
+    return false;
+  };
+
+  // Clean category display names matching card definitions
+  const getCategoryDisplayName = () => {
+    if (categoryId === 'cctv') return 'CCTV';
+    if (categoryId === 'van-pack') return 'Van Pack';
+    if (categoryId === 'jet-vac') return 'Jet Vac';
+    if (categoryId === 'cctv-van-pack') return 'CCTV/Van Pack';
+    if (categoryId === 'cctv-jet-vac') return 'CCTV/Jet Vac';
+    if (categoryId === 'cctv-cleansing-root-cutting') return 'CCTV/Cleansing/Root Cutting';
+    if (categoryId === 'directional-water-cutter') return 'Directional Water Cutter';
+    if (categoryId === 'patching') return 'Patching';
+    if (categoryId === 'ambient-lining') return 'Ambient Lining';
+    if (categoryId === 'hot-cure-lining') return 'Hot Cure Lining';
+    if (categoryId === 'uv-lining') return 'UV Lining';
+    if (categoryId === 'f-robot-cutting') return 'Robotic Cutting';
+    if (categoryId === 'excavation') return 'Excavation';
+    if (categoryId === 'tankering') return 'Tankering';
+    if (categoryId === 'test-card') return 'Test Card';
+    return 'Configuration';
+  };
+
+  const getCategoryDescription = () => {
+    // Remove descriptive text as per user request
+    return '';
+  };
+
+  // Handle MMP1 ID selection changes with sector copying
+  const handleMMP1IdChange = async (idKey: string, checked: boolean) => {
+    console.log(`🔄 MM1 ID Change: ${idKey} = ${checked}`);
+    
+    if (checked) {
+      // Add ID to selected list
+      setSelectedIds(prev => {
+        const newSelection = [...new Set([...prev, idKey])];
+        console.log(`✅ Added ${idKey} to selection. New selection:`, newSelection);
+        return newSelection;
+      });
+      setIdsWithConfig(prev => [...new Set([...prev, idKey])]);
+      
+      // Copy configuration to corresponding sector if we have data to copy
+      const targetSector = MMP1_ID_TO_SECTOR_MAPPING[idKey as keyof typeof MMP1_ID_TO_SECTOR_MAPPING];
+      if (targetSector && editId) {
+        console.log(`📋 Copying configuration to sector ${targetSector} (MM1 ID: ${idKey})`);
+        const copySuccess = await copyConfigurationToSector(targetSector);
+        if (copySuccess) {
+          console.log(`✅ Successfully copied configuration to ${targetSector}`);
+          // Invalidate queries to refresh UI
+          queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        }
+      }
+    } else {
+      // Remove ID from selected list
+      setSelectedIds(prev => {
+        const newSelection = prev.filter(id => id !== idKey);
+        console.log(`❌ Removed ${idKey} from selection. New selection:`, newSelection);
+        return newSelection;
+      });
+      setIdsWithConfig(prev => prev.filter(id => id !== idKey));
+      
+      // Note: We don't delete configurations when unchecking - user may want to keep them
+      // They become independent once created and changes only affect the current sector
+      console.log(`ℹ️ Configuration for ${idKey} remains independent (not deleted)`);
+    }
+    
     setHasUserChanges(true);
     triggerAutoSave();
   };
