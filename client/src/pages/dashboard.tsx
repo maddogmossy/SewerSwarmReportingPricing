@@ -6714,8 +6714,39 @@ export default function Dashboard() {
       );
     }
     
-    // Show warning triangle icon for sections without pricing
-    return "⚠️";
+    // Show warning triangle icon for sections without pricing - make it clickable
+    return (
+      <span 
+        className="cursor-pointer hover:text-amber-700 transition-colors text-amber-600" 
+        title="Configuration missing - click to set up pricing"
+        onClick={() => {
+          // Trigger configuration warning dialog for day rate missing
+          console.log('🔍 MANUAL TRIANGLE CLICK DEBUG:', {
+            itemNo: section.itemNo,
+            pipeSize: section.pipeSize,
+            defectType: section.defectType,
+            sectionData: section
+          });
+          
+          setConfigWarningData({
+            warningType: 'day_rate_missing',
+            sectionData: {
+              itemNo: section.itemNo,
+              defectType: section.defectType || 'service',
+              pipeSize: section.pipeSize,
+              totalLength: parseFloat(section.totalLength || '0'),
+              debrisPercent: 0
+            },
+            configData: {
+              categoryId: 'cctv-jet-vac'
+            }
+          });
+          setShowConfigWarning(true);
+        }}
+      >
+        ⚠️
+      </span>
+    );
     };
   }, [pr2Configurations, sectionData, equipmentPriority, costRecalcTrigger]);
 
