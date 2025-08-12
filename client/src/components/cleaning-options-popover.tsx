@@ -27,14 +27,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const { toast } = useToast();
   
   // Equipment priority state with localStorage sync
-  const [equipmentPriority, setEquipmentPriority] = useState<'f690' | 'f608'>(() => {
-    return localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
+  const [equipmentPriority, setEquipmentPriority] = useState<'id760' | 'id759'>(() => {
+    return localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
   });
   
   // Sync with localStorage changes (when dashboard auto-updates priority)
   useEffect(() => {
     const handleStorageChange = () => {
-      const newPriority = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
+      const newPriority = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
       setEquipmentPriority(newPriority);
     };
     
@@ -42,7 +42,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     window.addEventListener('storage', handleStorageChange);
     
     // Also check on component mount in case priority was updated
-    const currentPriority = localStorage.getItem('equipmentPriority') === 'f608' ? 'f608' : 'f690';
+    const currentPriority = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
     if (currentPriority !== equipmentPriority) {
       setEquipmentPriority(currentPriority);
     }
@@ -53,13 +53,13 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   }, [equipmentPriority]);
   
   // Equipment options with dynamic priority ordering
-  const equipmentOptions = equipmentPriority === 'f608' ? [
+  const equipmentOptions = equipmentPriority === 'id759' ? [
     {
       id: 'cctv-van-pack',
       name: 'CCTV/Van Pack', 
       description: 'Combined CCTV inspection and cleansing operations',
       icon: Monitor,
-      configId: 'F608',
+      configId: 'A4',
       isDefault: true
     },
     {
@@ -67,7 +67,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       name: 'CCTV/Jet Vac',
       description: 'Combined CCTV inspection with jet vac services',
       icon: Video,
-      configId: 'F690',
+      configId: 'A5',
       isDefault: false
     }
   ] : [
@@ -76,7 +76,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       name: 'CCTV/Jet Vac',
       description: 'Combined CCTV inspection with jet vac services',
       icon: Video,
-      configId: 'F690',
+      configId: 'A5',
       isDefault: true
     },
     {
@@ -84,7 +84,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       name: 'CCTV/Van Pack', 
       description: 'Combined CCTV inspection and cleansing operations',
       icon: Monitor,
-      configId: 'F608',
+      configId: 'A4',
       isDefault: false
     }
   ];
@@ -157,18 +157,18 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
               <div className="flex gap-2">
                 <button
                   className={`flex-1 px-3 py-2 text-sm rounded transition-all ${
-                    equipmentPriority === 'f690'
+                    equipmentPriority === 'id760'
                       ? 'bg-blue-600 text-white shadow-md' 
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50'
                   }`}
                   onClick={() => {
-                    console.log('🔄 F690 Button Clicked - Updating priority');
-                    setEquipmentPriority('f690');
-                    localStorage.setItem('equipmentPriority', 'f690');
+                    console.log('🔄 A5 Button Clicked - Updating priority');
+                    setEquipmentPriority('id760');
+                    localStorage.setItem('equipmentPriority', 'id760');
                     localStorage.setItem('lastUserPriorityChange', Date.now().toString());
                     toast({
                       title: "Equipment Priority Updated",
-                      description: "F690 CCTV/Jet Vac now has priority for cost calculations",
+                      description: "A5 - CCTV/Jet Vac now has priority for cost calculations",
                     });
                     setIsOpen(false);
                     
@@ -176,28 +176,28 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                     if (onPricingNeeded) {
                       // Force dashboard to recalculate costs with new priority
                       const event = new CustomEvent('equipmentPriorityChanged', { 
-                        detail: { newPriority: 'f690' } 
+                        detail: { newPriority: 'id760' } 
                       });
                       window.dispatchEvent(event);
                     }
                   }}
                 >
-                  F690 CCTV/Jet Vac
+                  A5 - CCTV/Jet Vac
                 </button>
                 <button
                   className={`flex-1 px-3 py-2 text-sm rounded transition-all ${
-                    equipmentPriority === 'f608'
+                    equipmentPriority === 'id759'
                       ? 'bg-orange-600 text-white shadow-md' 
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50'
                   }`}
                   onClick={() => {
-                    console.log('🔄 F608 Button Clicked - Updating priority');
-                    setEquipmentPriority('f608');
-                    localStorage.setItem('equipmentPriority', 'f608');
+                    console.log('🔄 A4 Button Clicked - Updating priority');
+                    setEquipmentPriority('id759');
+                    localStorage.setItem('equipmentPriority', 'id759');
                     localStorage.setItem('lastUserPriorityChange', Date.now().toString());
                     toast({
                       title: "Equipment Priority Updated", 
-                      description: "F608 CCTV/Van Pack now has priority for cost calculations",
+                      description: "A4 - CCTV/Van Pack now has priority for cost calculations",
                     });
                     setIsOpen(false);
                     
@@ -205,13 +205,13 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                     if (onPricingNeeded) {
                       // Force dashboard to recalculate costs with new priority
                       const event = new CustomEvent('equipmentPriorityChanged', { 
-                        detail: { newPriority: 'f608' } 
+                        detail: { newPriority: 'id759' } 
                       });
                       window.dispatchEvent(event);
                     }
                   }}
                 >
-                  F608 CCTV/Van Pack
+                  A4 - CCTV/Van Pack
                 </button>
               </div>
             </div>
