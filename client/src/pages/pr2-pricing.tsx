@@ -799,11 +799,27 @@ export default function PR2Pricing() {
 
                   
                   // Check if configuration has actual values (for status icon logic)
+                  // ENHANCED: Check both old pricing options AND new MM4 data format
                   const hasActualValues = existingConfiguration && (
+                    // Legacy pricing options check
                     existingConfiguration.pricingOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
                     existingConfiguration.quantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
                     existingConfiguration.minQuantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
-                    existingConfiguration.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== ''))
+                    existingConfiguration.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')) ||
+                    // NEW: MM4 data format check (for MMP1 configurations like ID760)
+                    (existingConfiguration.mmData?.mm4Rows?.some(row => 
+                      (row.blueValue && row.blueValue.trim() !== '') || 
+                      (row.greenValue && row.greenValue.trim() !== '')
+                    )) ||
+                    // MM4 DataByPipeSize format check
+                    (existingConfiguration.mmData?.mm4DataByPipeSize && 
+                      Object.values(existingConfiguration.mmData.mm4DataByPipeSize).some((rows: any) => 
+                        Array.isArray(rows) && rows.some((row: any) => 
+                          (row.blueValue && row.blueValue.trim() !== '') || 
+                          (row.greenValue && row.greenValue.trim() !== '')
+                        )
+                      )
+                    )
                   );
                   
 

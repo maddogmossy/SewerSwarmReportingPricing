@@ -183,9 +183,23 @@ const generateWRCServiceInstruction = (section: any): string => {
 const isConfigurationProperlyConfigured = (config: any): boolean => {
   if (!config) return false;
   
-  // Check if any pricing options have non-empty values
+  // Check if any pricing options have non-empty values (both legacy and MM4 format)
   const hasValidPricingValues = config.pricingOptions?.some((option: any) => 
     option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
+  ) || 
+  // NEW: Also check MM4 data format (for MMP1 configurations like ID760)
+  config.mm_data?.mm4Rows?.some((row: any) => 
+    (row.blueValue && row.blueValue.trim() !== '' && row.blueValue !== '0') || 
+    (row.greenValue && row.greenValue.trim() !== '' && row.greenValue !== '0')
+  ) ||
+  // MM4 DataByPipeSize format check
+  (config.mm_data?.mm4DataByPipeSize && 
+    Object.values(config.mm_data.mm4DataByPipeSize).some((rows: any) => 
+      Array.isArray(rows) && rows.some((row: any) => 
+        (row.blueValue && row.blueValue.trim() !== '' && row.blueValue !== '0') || 
+        (row.greenValue && row.greenValue.trim() !== '' && row.greenValue !== '0')
+      )
+    )
   );
   
   // For TP2 patching configurations, we only need pricing values (cost per unit)
