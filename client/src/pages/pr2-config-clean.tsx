@@ -170,6 +170,7 @@ export default function PR2ConfigClean() {
   const autoSelectUtilities = urlParams.get('autoSelectUtilities') === 'true'; // Auto-select utilities tab in MM1
   const reportId = urlParams.get('reportId'); // Preserve current upload ID for navigation back to dashboard
   const isEditing = !!editId;
+  console.log('🔍 EDIT STATE DEBUG:', { editId, isEditing, hasEditIdInUrl: !!(urlParams.get('edit') || urlParams.get('editId') || urlParams.get('id')) });
   
   // Determine template type based on category
   const getTemplateType = (categoryId: string): 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
@@ -3525,6 +3526,7 @@ export default function PR2ConfigClean() {
 
   // Show loading during config fetch in edit mode
   if (isEditing && isLoadingConfig && !existingConfig) {
+    console.log('🔄 SHOWING CONFIG LOADING SCREEN:', { isEditing, isLoadingConfig, hasExistingConfig: !!existingConfig });
     return (
       <div className="min-h-screen bg-gray-50 p-6 relative flex items-center justify-center">
         <DevLabel id={`Loading-${editId}`} position="top-right" />
@@ -3536,6 +3538,16 @@ export default function PR2ConfigClean() {
       </div>
     );
   }
+
+  // Debug render state
+  console.log('🔍 RENDER STATE DEBUG:', { 
+    isEditing, 
+    isLoadingConfig, 
+    hasExistingConfig: !!existingConfig, 
+    isAutoCreating,
+    hasEditIdInUrl,
+    shouldShowMainForm: !isAutoCreating && (!isEditing || !isLoadingConfig || !!existingConfig)
+  });
 
   return (
     <div 
