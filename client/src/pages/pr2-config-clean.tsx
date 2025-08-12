@@ -1020,8 +1020,19 @@ export default function PR2ConfigClean() {
   
 
 
-  // MM3 Pipe Size Selection State - Single selection only (default to 100mm)
-  const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
+  // MM3 Pipe Size Selection State - Single selection only (default to URL pipeSize or 150mm for F690)
+  const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>(() => {
+    // If pipeSize provided in URL, use it (remove 'mm' suffix if present)
+    if (pipeSize) {
+      return pipeSize.toString().replace('mm', '');
+    }
+    // For F690 CCTV/Jet Vac configurations, default to 150mm
+    if (categoryId === 'cctv-jet-vac') {
+      return '150';
+    }
+    // Default fallback to 100mm for other categories
+    return '100';
+  });
   
   // Fixed pipe size IDs - consistent across sessions to prevent data loss
   const PIPE_SIZE_IDS: Record<string, number> = {
@@ -1052,7 +1063,11 @@ export default function PR2ConfigClean() {
     '1500': 15001
   };
   
-  const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(PIPE_SIZE_IDS['100']);
+  const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(() => {
+    // Initialize with correct pipe size ID based on selectedPipeSizeForMM4
+    const initialPipeSize = pipeSize?.toString().replace('mm', '') || (categoryId === 'cctv-jet-vac' ? '150' : '100');
+    return PIPE_SIZE_IDS[initialPipeSize] || PIPE_SIZE_IDS['100'];
+  });
   const [showRangeWarning, setShowRangeWarning] = useState<boolean>(false);
   const [pendingRangeValue, setPendingRangeValue] = useState<string>('');
   const [pendingRowId, setPendingRowId] = useState<number | null>(null);
