@@ -233,14 +233,17 @@ export default function PR2ConfigClean() {
   // P26 initialization removed - system now uses DB7 Math window
 
   // Load existing configuration for editing (moved up to avoid initialization error)
-  const { data: existingConfig, error: configError } = useQuery({
+  const { data: existingConfig, error: configError, isLoading: isLoadingConfig } = useQuery({
     queryKey: ['/api/pr2-clean', editId],
     queryFn: async () => {
+      console.log('🔍 FETCHING CONFIG:', editId);
       try {
         const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
         const data = await response.json();
+        console.log('✅ CONFIG FETCHED SUCCESSFULLY:', { id: editId, hasData: !!data });
         return data;
       } catch (error: any) {
+        console.log('❌ CONFIG FETCH ERROR:', error.message);
         // If configuration not found (404), check for deleted F606 and redirect to F690
         if (error.message && error.message.includes('404')) {
           if (editId === '606' || Number(editId) === 606) {
@@ -252,6 +255,7 @@ export default function PR2ConfigClean() {
           }
           // For other 404s, redirect to create mode
           const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}`;
+          console.log('🔄 404 REDIRECT to create mode:', newUrl);
           setLocation(newUrl);
           return null;
         }
@@ -739,20 +743,20 @@ export default function PR2ConfigClean() {
       }
       
       // For other categories, find existing general configuration
-      // Handle sector mapping: utilities <-> A1-A16, adoption <-> B1-B16, etc.
-      const sectorMapping: Record<string, string[]> = {
-        'utilities': ['id1', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16'],
-        'adoption': ['id2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'B12', 'B13', 'B14', 'B15', 'B16'],
-        'highways': ['id3', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C11', 'C12', 'C13', 'C14', 'C15', 'C16'], 
-        'insurance': ['id4', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'D11', 'D12', 'D13', 'D14', 'D15', 'D16'],
-        'construction': ['id5', 'E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10', 'E11', 'E12', 'E13', 'E14', 'E15', 'E16'],
-        'domestic': ['id6', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16']
+      // Simple sector mapping: utilities <-> id1, adoption <-> id2, etc.
+      const sectorMapping: Record<string, string> = {
+        'utilities': 'id1',
+        'adoption': 'id2',
+        'highways': 'id3', 
+        'insurance': 'id4',
+        'construction': 'id5',
+        'domestic': 'id6'
       };
-      const possibleSectors = sectorMapping[sector] || [sector];
+      const mappedSector = sectorMapping[sector] || sector;
       
       const existingConfig = allCategoryConfigs.find(config => 
         config.categoryId === categoryId && 
-        (config.sector === sector || possibleSectors.includes(config.sector)) && // Match frontend name and all possible database sectors
+        (config.sector === sector || config.sector === mappedSector) && // Match both frontend and database sector names
         !config.categoryName?.includes('mm') // Exclude pipe-size-specific configs
       );
       
@@ -3514,6 +3518,20 @@ export default function PR2ConfigClean() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <h2 className="text-xl font-semibold text-gray-900">Loading Configuration...</h2>
           <p className="text-gray-600 mt-2">Setting up {pipeSize}mm {categoryId.replace('-', ' ')} configuration</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading during config fetch in edit mode
+  if (isEditing && isLoadingConfig && !existingConfig) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6 relative flex items-center justify-center">
+        <DevLabel id={`Loading-${editId}`} position="top-right" />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-900">Loading Configuration {editId}...</h2>
+          <p className="text-gray-600 mt-2">Fetching configuration data</p>
         </div>
       </div>
     );
