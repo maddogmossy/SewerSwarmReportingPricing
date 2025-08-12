@@ -128,6 +128,21 @@ export default function PR2Pricing() {
     }
   });
 
+  // Fetch utilities sector configurations to access ID760 when in id1 sector
+  const { data: utilitiesConfigurationsRaw = [] } = useQuery({
+    queryKey: ['/api/pr2-clean', 'utilities'],
+    enabled: sector === 'id1', // Only load when in id1 sector
+    retry: false,
+    throwOnError: false,
+    queryFn: async () => {
+      const response = await fetch('/api/pr2-clean?sector=utilities', {
+        credentials: 'include'
+      });
+      if (!response.ok) return [];
+      return response.json();
+    }
+  });
+
   // Fetch standard categories from database
   const { data: standardCategoriesFromDB = [], isLoading: standardCategoriesLoading, error: categoriesError } = useQuery({
     queryKey: ['/api/standard-categories'],
@@ -145,6 +160,7 @@ export default function PR2Pricing() {
 
   // Ensure pr2Configurations is always an array
   const pr2Configurations = Array.isArray(pr2ConfigurationsRaw) ? pr2ConfigurationsRaw : [];
+  const utilitiesConfigurations = Array.isArray(utilitiesConfigurationsRaw) ? utilitiesConfigurationsRaw : [];
   
   // Debug: Log current sector and configurations (AFTER initialization)
   console.log(`🔍 Current Sector: ${sector}, Available configs:`, pr2Configurations.map(c => ({id: c.id, categoryId: c.categoryId, hasColor: !!c.categoryColor})));
@@ -283,6 +299,16 @@ export default function PR2Pricing() {
     // Wait for configurations to load before navigation
     if (pr2Loading) {
       return;
+    }
+    
+    // Special handling for cctv-jet-vac: check utilities sector if not found in current sector
+    if (categoryId === 'cctv-jet-vac' && sector === 'id1') {
+      const utilitiesConfig = utilitiesConfigurations.find(c => c.categoryId === 'cctv-jet-vac');
+      if (utilitiesConfig) {
+        console.log(`🔗 Found cctv-jet-vac in utilities sector (ID ${utilitiesConfig.id}), navigating there`);
+        setLocation(`/pr2-config-clean?sector=utilities&categoryId=${categoryId}&edit=${utilitiesConfig.id}&autoSelectUtilities=true`);
+        return;
+      }
     }
     
     // Check for P006 templates first (HIGHEST PRIORITY)
@@ -576,27 +602,21 @@ export default function PR2Pricing() {
                     );
                     const configToUse = existingConfig || generalConfig;
                     
-                    // CROSS-SECTOR SEARCH: Check utilities sector for ID760 if not found in current sector
-                    const [crossSectorConfig, setCrossSectorConfig] = useState(null);
+                    // CROSS-SECTOR LOOKUP: Check utilities sector for ID760 if not found in current sector
+                    const utilitiesConfig = sector === 'id1' ? 
+                      utilitiesConfigurations.find(c => c.categoryId === 'cctv-jet-vac') : null;
+                    const finalConfig = configToUse || utilitiesConfig;
                     
-                    useEffect(() => {
-                      if (!configToUse && sector === 'id1') {
-                        // Search utilities sector for cctv-jet-vac (ID760)
-                        fetch('/api/pr2-clean?sector=utilities', { credentials: 'include' })
-                          .then(res => res.json())
-                          .then(configs => {
-                            const utilitiesConfig = Array.isArray(configs) ? 
-                              configs.find(c => c.categoryId === 'cctv-jet-vac') : null;
-                            if (utilitiesConfig) {
-                              console.log('🔍 Found CCTV/Jet Vac in utilities sector:', utilitiesConfig.id);
-                              setCrossSectorConfig(utilitiesConfig);
-                            }
-                          })
-                          .catch(err => console.error('Error searching utilities sector:', err));
-                      }
-                    }, [configToUse, sector]);
-                    
-                    const finalConfig = configToUse || crossSectorConfig;
+                    console.log('🔍 CCTV/Jet Vac Config Search:', {
+                      sector,
+                      existingConfig: !!existingConfig,
+                      generalConfig: !!generalConfig,
+                      configToUse: !!configToUse,
+                      utilitiesConfig: !!utilitiesConfig,
+                      finalConfig: !!finalConfig,
+                      finalConfigId: finalConfig?.id,
+                      finalConfigSector: finalConfig?.id === 760 ? 'utilities' : sector
+                    });
                     
                     const hexToRgba = (hex: string, opacity: number) => {
                       const r = parseInt(hex.slice(1, 3), 16);
@@ -609,15 +629,19 @@ export default function PR2Pricing() {
                       <Card
                         className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: configToUse?.categoryColor 
-                            ? hexToRgba(configToUse.categoryColor, 0.3)
+                          borderColor: finalConfig?.categoryColor 
+                            ? hexToRgba(finalConfig.categoryColor, 0.3)
                             : '#e5e7eb',
                           backgroundColor: 'white'
                         }}
                         onClick={() => {
-                          if (existingConfig) {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`);
+                          if (finalConfig) {
+                            // Determine correct sector for navigation
+                            const targetSector = finalConfig.id === 760 ? 'utilities' : sector;
+                            console.log(`🔗 Navigating to config ${finalConfig.id} in sector "${targetSector}"`);
+                            setLocation(`/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&edit=${finalConfig.id}&pipeSize=${pipeSize}&autoSelectUtilities=true`);
                           } else {
+                            // Create new configuration in current sector
                             setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&autoSelectUtilities=true&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Jet Vac Configuration`)}`);
                           }
                         }}
@@ -627,12 +651,18 @@ export default function PR2Pricing() {
                           <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                           <h3 className="font-medium text-sm mb-1">
                             CCTV/Jet Vac - {pipeSize}mm
-                            {existingConfig ? (
-                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
+                            {finalConfig ? (
+                              <span className="text-xs text-blue-600 ml-1">
+                                (ID: {finalConfig.id}{finalConfig.id === 760 ? ', Utilities' : ''})
+                              </span>
                             ) : null}
                           </h3>
                           <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
-                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          {finalConfig ? (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                          ) : (
+                            <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -708,7 +738,7 @@ export default function PR2Pricing() {
                   // Check if this is a user-created category
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
-                  // Check for existing configuration (show ID for any saved config, even blank templates)
+                  // Check for existing configuration with cross-sector lookup
                   let existingConfiguration = pr2Configurations.find(config => {
                     // Direct category ID match
                     if (config.categoryId === category.id) {
@@ -761,6 +791,11 @@ export default function PR2Pricing() {
                     
                     return false;
                   });
+
+                  // CROSS-SECTOR LOOKUP: Check utilities sector for cctv-jet-vac when in id1 sector
+                  if (!existingConfiguration && category.id === 'cctv-jet-vac' && sector === 'id1') {
+                    existingConfiguration = utilitiesConfigurations.find(c => c.categoryId === 'cctv-jet-vac');
+                  }
 
                   
                   // Check if configuration has actual values (for status icon logic)
