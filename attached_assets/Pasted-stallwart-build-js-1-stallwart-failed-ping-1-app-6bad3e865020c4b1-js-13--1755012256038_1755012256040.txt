@@ -1,0 +1,1091 @@
+stallwart.build.js:1 stallwart: failed ping 1
+_app-6bad3e865020c4b1.js:13 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-6bad3e865020c4b1.js:13 [LaunchDarkly] LaunchDarkly client initialized
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'battery'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-3ea2b49328ab5055.js:1
+framework-3ea2b49328ab5055.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-3ea2b49328ab5055.js:1
+SewerSwarmSimulator:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Arn6%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🎯 ITEM 20 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 21a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 21: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 22a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 22: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 24: Object
+Console.js:61 Validation completed: Object
+Console.js:61 🔍 TRIGGERING CONFIG WARNING CHECK with sections: 29
+Console.js:61 🔍 CONFIG CHECK STATES BEFORE: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 1 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 1: Object
+Console.js:61 TP1 configuration analysis: Object
+Console.js:61 🔍 TRIGGERING SERVICE COST CHECK with sections: 29
+Console.js:61 🔍 SERVICE COST WARNING - All service sections found: Array(24)
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 1 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 1: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 1: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 2 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 2: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 2: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 3 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 3: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 4 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 4: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 4: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 5: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 5: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 6: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 7: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 8: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 9: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 9: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 10: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 11: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 11: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 12: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 12: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 ⚠️ PRIORITY WARNING: Section 13 exceeds MM4 ranges: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 13: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 MM4 Processing Check for Item 14: Object
+Console.js:61 🔍 CRITICAL CONFIG DETECTION - Item 14: Object
+Console.js:61 🔍 MM4 Dynamic Config Selection: Object
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: Object
+Console.js:61 ✅ F608 Multi-Row Cost Calculation (Row 1) Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 14: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 15: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 15: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 16: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 16: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 17: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 17: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 18: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 18: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 19: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 20: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 21: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 22: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 23: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 24: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 24: Object
+Console.js:61 🔍 SERVICE COST WARNING - Service sections with costs: 1
+Console.js:61 🔍 SERVICE COST WARNING - Dialog state: Object
+Console.js:61 🔍 SERVICE COST WARNING - Trigger condition check: Object
+Console.js:61 🔍 TRIGGERING STRUCTURAL COST CHECK with sections: 29
+Console.js:61 🔍 STRUCTURAL CHECK STATES BEFORE: Object
+Console.js:61 🚀 STRUCTURAL WARNING CHECK STARTED with data: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - All structural sections found: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: Object
+Console.js:61 🔍 MM4 Processing Check for Item 13: Object
+Console.js:61 🎯 ITEM 13 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 13a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 13a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 19a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 19a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🎯 ITEM 20 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 20a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 20a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 21a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 21: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 21a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 21a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 22a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 22: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 22a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 22a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Structural sections with costs: 0
+Console.js:61 🔍 STRUCTURAL COST WARNING - Dialog state: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Decision check details: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Trigger condition check: Object
+Console.js:61 🔍 STRUCTURAL CHECK STATES AFTER: Object
+Console.js:61 🔧 Triggering ID760 MM4-150 purple length auto-population for 29 sections
+Console.js:61 🔍 Auto-population disabled to preserve user-configured MM4 values: Array(5)
+Console.js:61 🔍 DISPLAY DATA WARNING CHECK TRIGGER: Object
+Console.js:61 🔍 TRIGGERING SERVICE COST CHECK with display data: 29
+Console.js:61 🔍 SERVICE COST WARNING - All service sections found: Array(24)
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 1 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 1: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 1: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 2 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 2: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 2: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 3 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 3: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 4 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 4: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 4: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 5: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 5: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 6: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 7: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 8: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 9: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 9: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 10: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 11: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 11: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 12: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 12: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 ⚠️ PRIORITY WARNING: Section 13 exceeds MM4 ranges: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 13: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 MM4 Processing Check for Item 14: Object
+Console.js:61 🔍 CRITICAL CONFIG DETECTION - Item 14: Object
+Console.js:61 🔍 MM4 Dynamic Config Selection: Object
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: Object
+Console.js:61 ✅ F608 Multi-Row Cost Calculation (Row 1) Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 14: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 15: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 15: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 16: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 16: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 17: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 17: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 18: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 18: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 19: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 20: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 21: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 22: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 23: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 24: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 24: Object
+Console.js:61 🔍 SERVICE COST WARNING - Service sections with costs: 1
+Console.js:61 🔍 SERVICE COST WARNING - Dialog state: Object
+Console.js:61 🔍 SERVICE COST WARNING - Trigger condition check: Object
+Console.js:61 🔍 TRIGGERING STRUCTURAL COST CHECK with display data: 29
+Console.js:61 🚀 STRUCTURAL WARNING CHECK STARTED with data: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - All structural sections found: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: Object
+Console.js:61 🔍 MM4 Processing Check for Item 13: Object
+Console.js:61 🎯 ITEM 13 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 13a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 13a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 19a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 19a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🎯 ITEM 20 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 20a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 20a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 21a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 21: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 21a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 21a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 22a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 22: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 22a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 22a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Structural sections with costs: 0
+Console.js:61 🔍 STRUCTURAL COST WARNING - Dialog state: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Decision check details: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Trigger condition check: Object
+Console.js:61 📋 DASHBOARD SECTIONS DATA - FOUND SECTIONS: Object
+Console.js:61 🚨 DASHBOARD COMPONENT RENDER - FORCED LOG: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔍 SECTIONS DATA FOUND: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔍 RAW SECTION DATA - ITEM 13 VARIATIONS: Array(2)
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 1: Object
+Console.js:61 🔍 CELL RENDER - Item 1 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 1 Object
+Console.js:61 🔍 WRC CHECK - Item 1 Object
+Console.js:61 🔍 SEVERITY BADGE DEBUG - Item 2: Object
+Console.js:61 🔍 CELL RENDER - Item 2 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 2 Object
+Console.js:61 🔍 WRC CHECK - Item 2 Object
+Console.js:61 🔍 CELL RENDER - Item 3 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 3 Object
+Console.js:61 🔍 WRC CHECK - Item 3 Object
+Console.js:61 🔥 SERVICE SECTION 3 - FORCE DEBUG: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔥 SERVICE SECTION 3 - FORCE DEBUG: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔥 SERVICE SECTION 3 - FORCE DEBUG: Object
+Console.js:61 🔍 SERVICE SECTION DEFECTS CHECK: Object
+Console.js:61 🔧 SERVICE SECTION FRONTEND LOGIC: Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 3
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 3 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔍 SERVICE COST VALIDATION CHECK: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 3: Object
+Console.js:61 🔍 CELL RENDER - Item 4 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 4 Object
+Console.js:61 🔍 WRC CHECK - Item 4 Object
+Console.js:61 🔍 CELL RENDER - Item 5 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 5 Object
+Console.js:61 🔍 WRC CHECK - Item 5 Object
+Console.js:61 🔍 CELL RENDER - Item 6 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 6 Object
+Console.js:61 🔍 WRC CHECK - Item 6 Object
+Console.js:61 🔥 SERVICE SECTION 6 - FORCE DEBUG: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔥 SERVICE SECTION 6 - FORCE DEBUG: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔥 SERVICE SECTION 6 - FORCE DEBUG: Object
+Console.js:61 🔍 SERVICE SECTION DEFECTS CHECK: Object
+Console.js:61 🔧 SERVICE SECTION FRONTEND LOGIC: Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 6
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔍 SERVICE COST VALIDATION CHECK: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 6: Object
+Console.js:61 🔍 CELL RENDER - Item 7 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 7 Object
+Console.js:61 🔍 WRC CHECK - Item 7 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 7
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 7: Object
+Console.js:61 🔍 CELL RENDER - Item 8 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 8 Object
+Console.js:61 🔍 WRC CHECK - Item 8 Object
+Console.js:61 🔥 SERVICE SECTION 8 - FORCE DEBUG: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔥 SERVICE SECTION 8 - FORCE DEBUG: Object
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 🔥 SERVICE SECTION 8 - FORCE DEBUG: Object
+Console.js:61 🔍 SERVICE SECTION DEFECTS CHECK: Object
+Console.js:61 🔧 SERVICE SECTION FRONTEND LOGIC: Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 8
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔍 SERVICE COST VALIDATION CHECK: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 8: Object
+Console.js:61 🔍 CELL RENDER - Item 9 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 9 Object
+Console.js:61 🔍 WRC CHECK - Item 9 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 9
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 9: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔵 BLUE TRIANGLE FALLBACK - Service Section: Object
+Console.js:61 🔍 CELL RENDER - Item 10 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 10 Object
+Console.js:61 🔍 WRC CHECK - Item 10 Object
+Console.js:61 🎯 ITEM 10 SEVERITY CHECK: Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 10
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 10: Object
+Console.js:61 🔍 CELL RENDER - Item 11 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 11 Object
+Console.js:61 🔍 WRC CHECK - Item 11 Object
+Console.js:61 🔍 CELL RENDER - Item 12 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 12 Object
+Console.js:61 🔍 WRC CHECK - Item 12 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 12
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 12: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔵 BLUE TRIANGLE FALLBACK - Service Section: Object
+Console.js:61 🔍 CELL RENDER - Item 13 recommendations: WRc Sewer Cleaning Manual: Critical service intervention required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 13 Object
+Console.js:61 🔍 WRC CHECK - Item 13 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 13
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 ⚠️ PRIORITY WARNING: Section 13 exceeds MM4 ranges: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 13: Object
+Console.js:61 🔍 CELL RENDER - Item 13 recommendations: WRc Drain Repair Book: Monitor condition, no immediate action required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 13 Object
+Console.js:61 🔍 WRC CHECK - Item 13 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🏗️ CALLING calculateAutoCost for STRUCTURAL: 13
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: Object
+Console.js:61 🔍 MM4 Processing Check for Item 13: Object
+Console.js:61 🎯 ITEM 13 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔍 CELL RENDER - Item 14 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 14 Object
+Console.js:61 🔍 WRC CHECK - Item 14 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 14
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 MM4 Processing Check for Item 14: Object
+Console.js:61 🔍 CRITICAL CONFIG DETECTION - Item 14: Object
+Console.js:61 🔍 MM4 Dynamic Config Selection: Object
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: Object
+Console.js:61 ✅ F608 Multi-Row Cost Calculation (Row 1) Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔍 CELL RENDER - Item 15 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 15 Object
+Console.js:61 🔍 WRC CHECK - Item 15 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 15
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 15: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔵 BLUE TRIANGLE FALLBACK - Service Section: Object
+Console.js:61 🔍 CELL RENDER - Item 16 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 16 Object
+Console.js:61 🔍 WRC CHECK - Item 16 Object
+Console.js:61 🔍 CELL RENDER - Item 17 recommendations: No action required this pipe section is at an adoptable condition
+Console.js:61 🔍 RENDER CELL CONTENT - Item 17 Object
+Console.js:61 🔍 WRC CHECK - Item 17 Object
+Console.js:61 🔍 CELL RENDER - Item 18 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 18 Object
+Console.js:61 🔍 WRC CHECK - Item 18 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 18
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 18: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔵 BLUE TRIANGLE FALLBACK - Service Section: Object
+Console.js:61 🔍 CELL RENDER - Item 19 recommendations: WRc Sewer Cleaning Manual: High-pressure jetting and cleaning required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 19 Object
+Console.js:61 🔍 WRC CHECK - Item 19 Object
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 19
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 19
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔵 BLUE TRIANGLE FALLBACK - Service Section: Object
+Console.js:61 🔍 CELL RENDER - Item 19 recommendations: WRc Drain Repair Book: Monitor condition, no immediate action required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 19 Object
+Console.js:61 🔍 WRC CHECK - Item 19 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🏗️ CALLING calculateAutoCost for STRUCTURAL: 19
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔍 CELL RENDER - Item 20 recommendations: WRc Sewer Cleaning Manual: High-pressure jetting and cleaning required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 20 Object
+Console.js:61 🔍 WRC CHECK - Item 20 Object
+Console.js:61 🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item 20
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 20
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔵 BLUE TRIANGLE FALLBACK - Service Section: Object
+Console.js:61 🔍 CELL RENDER - Item 20 recommendations: WRc Drain Repair Book: Monitor condition, no immediate action required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 20 Object
+Console.js:61 🔍 WRC CHECK - Item 20 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🏗️ CALLING calculateAutoCost for STRUCTURAL: 20
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🎯 ITEM 20 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔍 CELL RENDER - Item 21 recommendations: WRc Sewer Cleaning Manual: Intensive cleaning and possible intervention required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 21 Object
+Console.js:61 🔍 WRC CHECK - Item 21 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 21
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 21: Object
+Console.js:61 🔍 CELL RENDER - Item 21 recommendations: WRc Drain Repair Book: Monitor condition, no immediate action required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 21 Object
+Console.js:61 🔍 WRC CHECK - Item 21 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🏗️ CALLING calculateAutoCost for STRUCTURAL: 21
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 21a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 21: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔍 CELL RENDER - Item 22 recommendations: WRc Sewer Cleaning Manual: Critical service intervention required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 22 Object
+Console.js:61 🔍 WRC CHECK - Item 22 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 22
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 22: Object
+Console.js:61 🔍 CELL RENDER - Item 22 recommendations: WRc Drain Repair Book: Monitor condition, no immediate action required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 22 Object
+Console.js:61 🔍 WRC CHECK - Item 22 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🏗️ CALLING calculateAutoCost for STRUCTURAL: 22
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 22a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 22: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔍 CELL RENDER - Item 23 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 23 Object
+Console.js:61 🔍 WRC CHECK - Item 23 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 23
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🟡 SHOWING WARNING TRIANGLE for section 23: Object
+Console.js:61 🔍 CELL RENDER - Item 24 recommendations: WRc Sewer Cleaning Manual: Standard cleaning and maintenance required
+Console.js:61 🔍 RENDER CELL CONTENT - Item 24 Object
+Console.js:61 🔍 WRC CHECK - Item 24 Object
+Console.js:61 💰 COST CALCULATION ENTRY: Object
+Console.js:61 🛤️ ROUTING DECISION: Object
+Console.js:61 🧹 CALLING calculateAutoCost for SERVICE: 24
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 24: Object
+Console.js:61 📊 SERVICE COST CALCULATION RESULT: Object
+Console.js:61 🔵 BLUE TRIANGLE FALLBACK - Service Section: Object
+Console.js:61 🔧 Triggering ID760 MM4-150 purple length auto-population for 29 sections
+Console.js:61 🔍 Auto-population disabled to preserve user-configured MM4 values: Array(5)
+Console.js:61 🔍 DISPLAY DATA WARNING CHECK TRIGGER: Object
+Console.js:61 🔍 TRIGGERING SERVICE COST CHECK with display data: 29
+Console.js:61 🔍 SERVICE COST WARNING - All service sections found: Array(24)
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 1 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 1: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 1: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 2 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 2: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 2: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 3 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 3: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 EARLY SERVICE ITEM 4 ANALYSIS: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 4: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 4: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 5: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 5: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 6: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 7: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 8: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 9: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 9: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 10: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 11: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 11: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 12: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 12: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 ⚠️ PRIORITY WARNING: Section 13 exceeds MM4 ranges: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 13: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🔍 RANGE VALIDATION START: Object
+Console.js:61 🔍 RANGE CHECK ROW: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 MM4 Processing Check for Item 14: Object
+Console.js:61 🔍 CRITICAL CONFIG DETECTION - Item 14: Object
+Console.js:61 🔍 MM4 Dynamic Config Selection: Object
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: Object
+Console.js:61 ✅ F608 Multi-Row Cost Calculation (Row 1) Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 14: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 15: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 15: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 16: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 16: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 17: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 17: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 18: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 18: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 19: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 20: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 21: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 22: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 EQUIPMENT PRIORITY DEBUG: Object
+Console.js:61 🔍 SELECTED EQUIPMENT CONFIG: Object
+Console.js:61 🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue): Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 23: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 SERVICE SECTION VALIDATION TRACE: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 24: Object
+Console.js:61 🔍 SERVICE COST WARNING - Item 24: Object
+Console.js:61 🔍 SERVICE COST WARNING - Service sections with costs: 1
+Console.js:61 🔍 SERVICE COST WARNING - Dialog state: Object
+Console.js:61 🔍 SERVICE COST WARNING - Trigger condition check: Object
+Console.js:61 🔍 TRIGGERING STRUCTURAL COST CHECK with display data: 29
+Console.js:61 🚀 STRUCTURAL WARNING CHECK STARTED with data: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - All structural sections found: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: Object
+Console.js:61 🔍 MM4 Processing Check for Item 13: Object
+Console.js:61 🎯 ITEM 13 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 13a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 13a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 19: Object
+Console.js:61 🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 19a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 19a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 MM4 Processing Check for Item 20: Object
+Console.js:61 🎯 ITEM 20 F615 ROUTING DEBUG: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 20a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 20a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 21a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 21: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 21a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 21a: Object
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: Object
+Console.js:61 🔍 PRE-SERVICE VALIDATION CHECK: Object
+Console.js:61 🔍 Cleaning Check for Item 22a: Object
+Console.js:61 🔍 MM4 Processing Check for Item 22: Object
+Console.js:61 🔍 F615 Structural Defect Debug: Object
+Console.js:61 🔬 STRUCTURAL FILTER DEBUG - Item 22a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Item 22a: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Structural sections with costs: 0
+Console.js:61 🔍 STRUCTURAL COST WARNING - Dialog state: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Decision check details: Object
+Console.js:61 🔍 STRUCTURAL COST WARNING - Trigger condition check: Object
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 1

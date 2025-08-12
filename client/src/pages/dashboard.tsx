@@ -4225,6 +4225,22 @@ export default function Dashboard() {
             }
           }
           
+          // CRITICAL FIX: If no exact pipe size match found, use the first available pipe size key
+          // This handles cases where Item 3 (100mm) needs to use 150mm config from A5 CCTV/Jet Vac
+          if (!matchingPipeSizeKey && Object.keys(mm4DataByPipeSize).length > 0) {
+            const firstPipeSizeKey = Object.keys(mm4DataByPipeSize)[0];
+            matchingMM4Data = mm4DataByPipeSize[firstPipeSizeKey];
+            matchingPipeSizeKey = firstPipeSizeKey;
+            
+            console.log('🔧 PIPE SIZE FALLBACK - Using first available config:', {
+              requestedPipeSize: sectionPipeSize,
+              availablePipeSizes: Object.keys(mm4DataByPipeSize),
+              fallbackPipeSizeKey: firstPipeSizeKey,
+              itemNo: section.itemNo,
+              reason: 'No exact pipe size match found in A5 CCTV/Jet Vac configuration'
+            });
+          }
+          
           // Check if section exceeds MM4 ranges (any row)
           if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
             let sectionExceedsAllRanges = true;
