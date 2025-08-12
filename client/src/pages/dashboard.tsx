@@ -7856,6 +7856,13 @@ export default function Dashboard() {
             const pipeSize = configWarningData.sectionData?.pipeSize || '150';
             const cleanPipeSize = pipeSize.toString().replace('mm', '');
             
+            console.log('🔍 PIPE SIZE DEBUG:', {
+              originalPipeSize: configWarningData.sectionData?.pipeSize,
+              fallbackPipeSize: pipeSize,
+              cleanPipeSize: cleanPipeSize,
+              sectionData: configWarningData.sectionData
+            });
+            
             // Use sector from parameter, or current sector, or fallback to utilities
             const targetSector = sector || currentSector?.id || 'utilities';
             
