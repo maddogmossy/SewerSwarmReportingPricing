@@ -1492,11 +1492,11 @@ export default function Dashboard() {
         console.log('🔍 SERVICE COST WARNING - Blocked due to incomplete calculations:', {
           hasFirstCostCalc: !!firstCostCalc,
           hasDayRate: firstCostCalc && typeof firstCostCalc === 'object' && 'dayRate' in firstCostCalc && firstCostCalc.dayRate,
-          hasRunsPerShift: firstCostCalc && typeof firstCostCalc === 'object' && 'runsPerShift' in firstCostCalc && firstCostCalc.runsPerShift,
+          hasRunsPerShift: firstCostCalc && typeof firstCostCalc === 'object' && 'dayRate' in firstCostCalc && firstCostCalc.dayRate,
           allServiceItemsReady: serviceSectionsWithCosts.length > 0 ? allServiceItemsReady : false,
           reason: !firstCostCalc ? 'No cost calculation' : 
                   !firstCostCalc.dayRate ? 'Missing day rate' :
-                  !firstCostCalc.runsPerShift ? 'Missing runs per shift' :
+                  !firstCostCalc.dayRate ? 'Missing day rate 2' :
                   !allServiceItemsReady ? 'Service items not ready' : 'Unknown'
         });
       }
