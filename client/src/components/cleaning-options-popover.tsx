@@ -93,6 +93,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
+    console.log('🔍 CLEANING POPOVER PIPE SIZE DEBUG:', {
+      originalSectionPipeSize: sectionData.pipeSize,
+      fallbackPipeSize: pipeSize,
+      finalPipeSizeNumber: pipeSizeNumber,
+      equipmentId: equipment.id,
+      sectionData: sectionData
+    });
+    
     try {
       // Find existing configuration for the selected equipment
       const response = await fetch(`/api/pr2-clean?sector=${sectionData.sector}`);
