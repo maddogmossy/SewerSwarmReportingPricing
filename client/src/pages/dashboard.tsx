@@ -7957,12 +7957,13 @@ export default function Dashboard() {
             // **CRITICAL FIX**: Use dynamic routing instead of hardcoded IDs
             // Let the PR2 page find the correct configuration based on categoryId and sector
             
-            // **IMMEDIATE FIX**: Route to existing id907 configuration (not id760)
-            // Database query shows: id907 is the current CCTV/Jet Vac configuration for utilities
+            // **CORRECTED FIX**: Route to correct id760 (A5 - CCTV/Jet Vac) configuration
+            // id760 has the proper A1-F16 name "A5 - CCTV/Jet Vac" and utilities sector
+            // id907 is a duplicate without A1-F16 naming and should be cleaned up
             
             if (categoryId === 'cctv-jet-vac') {
-              // Route directly to id907 (current CCTV/Jet Vac configuration)
-              window.location.href = `/pr2-config-clean?id=907&sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
+              // Route directly to id760 (correct A5 - CCTV/Jet Vac configuration)
+              window.location.href = `/pr2-config-clean?id=760&sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
             } else {
               // Regular routing for other categories
               window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
