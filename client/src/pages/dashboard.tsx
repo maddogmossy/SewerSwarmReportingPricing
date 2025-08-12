@@ -4348,17 +4348,24 @@ export default function Dashboard() {
           
           const isDayRateConfigured = effectiveDayRate > 0;
           
-          console.log('🔍 F690/F608 Day Rate Validation (BUFFER CONSISTENCY FIX):', {
+          // Enhanced debugging to find buffer issue
+          const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+          const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
+          const constructedBufferKey = `${configPrefix}-${matchingPipeSizeKey}-1-blueValue`;
+          const bufferedValue = buffer[constructedBufferKey];
+          
+          console.log('🚨 DETAILED BUFFER DEBUG - Item 3 Validation:', {
             itemNo: section.itemNo,
-            equipmentPriority: equipmentPriority,
-            configId: cctvConfig.id,
-            rawDayRateValue: cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue,
-            bufferedDayRateValue: effectiveDayRate,
-            isDayRateConfigured: isDayRateConfigured,
-            willShowBlueTriangle: !isDayRateConfigured,
-            matchingPipeSizeKey: matchingPipeSizeKey,
-            bufferKey: `${cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606'}-${matchingPipeSizeKey}-1-blueValue`,
-            configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac'
+            STEP_1_matchingPipeSizeKey: matchingPipeSizeKey,
+            STEP_2_configPrefix: configPrefix,
+            STEP_3_constructedBufferKey: constructedBufferKey,
+            STEP_4_bufferedValue: bufferedValue,
+            STEP_5_rawDbValue: cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue,
+            STEP_6_finalEffectiveDayRate: effectiveDayRate,
+            STEP_7_isDayRateConfigured: isDayRateConfigured,
+            STEP_8_willShowPopup: !isDayRateConfigured,
+            ALL_BUFFER_KEYS: Object.keys(buffer).filter(k => k.includes('150')),
+            EXACT_MATCHING_KEYS: Object.keys(buffer).filter(k => k.includes('150-1501'))
           });
           
           // If day rate is not configured, return specific error information
