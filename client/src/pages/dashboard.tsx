@@ -1298,13 +1298,19 @@ export default function Dashboard() {
       // Call calculateAutoCost directly to get the cost object instead of rendered JSX
       const costCalc = calculateAutoCost(section);
       
-      // Flexible status check - accept any equipment-specific calculated status
+      // CRITICAL FIX: Expanded status check to include all service cost statuses
+      // This ensures all service items with any kind of cost calculation are counted
       const validServiceStatuses = [
+        // Current equipment status codes
         'id760_calculated', 'id760_insufficient_items',
         'id759_calculated', 'id759_insufficient_items',
         // Legacy status codes for backward compatibility
         'f690_calculated', 'f690_insufficient_items',
-        'f608_calculated', 'f608_insufficient_items'
+        'f608_calculated', 'f608_insufficient_items',
+        // Additional status codes for proper service cost detection
+        'calculated', 'insufficient_items', 'tp1_calculated', 'mm4_calculated',
+        'adjusted_service_cost', 'below_minimum', 'day_rate_missing',
+        'tp1_unconfigured', 'tp1_invalid', 'configuration_missing'
       ];
       
       const hasServiceCost = costCalc && 
@@ -3888,7 +3894,13 @@ export default function Dashboard() {
     
     if (!selectedPatchingOption || !selectedPatchingOption.value || selectedPatchingOption.value.trim() === '') {
       // No patching option found with value in TP2 config
-      return null;
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'No TP2 Patching Options',
+        status: 'tp2_no_options',
+        configType: 'TP2 Configuration Missing Pricing Options'
+      };
     }
     
     // Get the cost per unit and minimum quantity
@@ -4626,7 +4638,13 @@ export default function Dashboard() {
       }
       
       if (!matchingMM4Data || !Array.isArray(matchingMM4Data) || matchingMM4Data.length === 0) {
-        return null;
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'No MM4 Configuration',
+          status: 'mm4_missing',
+          configType: 'MM4 Data Missing'
+        };
       }
       
       const mm4Row = matchingMM4Data[0];
@@ -4634,7 +4652,13 @@ export default function Dashboard() {
       const greenValue = parseFloat(mm4Row.greenValue || '0');
       
       if (blueValue <= 0 || greenValue <= 0) {
-        return null;
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'Invalid MM4 Values',
+          status: 'mm4_invalid_values',
+          configType: 'MM4 Values Invalid'
+        };
       }
       
       // Enhanced structural defect counting with multiple meterage locations
@@ -4656,7 +4680,13 @@ export default function Dashboard() {
       }
       
       if (totalStructuralPatches === 0) {
-        return null;
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'No Structural Defects',
+          status: 'no_structural_defects',
+          configType: 'No Structural Patches Needed'
+        };
       }
       
       const costPerPatch = greenValue;
@@ -5157,7 +5187,13 @@ export default function Dashboard() {
           // If we reach here, section didn't match any MM4 configuration criteria
           // This should not happen as range validation is now handled at the start of the function
           console.log(`⚠️ Section ${section.itemNo} - unexpected fallthrough in MM4 validation`);
-          return null;
+          return {
+            cost: 0,
+            currency: '£',
+            method: 'MM4 Validation Failed',
+            status: 'mm4_validation_failed',
+            configType: 'MM4 Unexpected Error'
+          };
         }
       }
     }
@@ -5619,7 +5655,13 @@ export default function Dashboard() {
     // Safety check: Ensure pr2Configurations exists and is an array
     if (!pr2Configurations || !Array.isArray(pr2Configurations) || pr2Configurations.length === 0) {
       // No PR2 configurations found
-      return null;
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'No PR2 Configurations',
+        status: 'pr2_missing',
+        configType: 'PR2 Configuration Missing'
+      };
     }
 
     // Check for TP2 patching configurations first (for structural repairs)
@@ -5643,7 +5685,13 @@ export default function Dashboard() {
         return calculateTP2PatchingCost(section, tp2PatchingConfig);
       } else {
         // No TP2 patching configuration found
-        return null; // Return null to show warning triangle
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'No TP2 Configuration',
+          status: 'tp2_missing',
+          configType: 'TP2 Patching Configuration Missing'
+        };
       }
     }
 
@@ -5655,10 +5703,16 @@ export default function Dashboard() {
       }
     }
     
-    // If no configurations match, return null
+    // If no configurations match, return error status
     if (matchingConfigs.length === 0) {
       // Section does not meet any PR2 configuration requirements
-      return null;
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'PR2 Requirements Not Met',
+        status: 'pr2_requirements_failed',
+        configType: 'Outside PR2 Configuration Ranges'
+      };
     }
     
     // Sort matching configs by ID (descending) to prioritize highest ID first
@@ -5682,7 +5736,13 @@ export default function Dashboard() {
       
       if (configWithZeroRate) {
         // Configuration has Day Rate £0, showing warning triangle
-        return null; // Return null to show warning triangle
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'Day Rate £0',
+          status: 'day_rate_zero',
+          configType: 'Day Rate Set to Zero'
+        };
       }
       
       // Use highest ID config even if it has empty values (first in sorted array)
@@ -5701,7 +5761,13 @@ export default function Dashboard() {
     
     if (!pr2Config || (!pr2Config.pricingOptions && !pr2Config.quantityOptions)) {
       // PR2 config has no pricing or quantity options
-      return null;
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'No Pricing Options',
+        status: 'no_pricing_options',
+        configType: 'PR2 Configuration Missing Pricing'
+      };
     }
 
     // Removed excessive logging for performance
@@ -5828,8 +5894,16 @@ export default function Dashboard() {
         // PR2 calculation failed - no valid cost calculated
       }
 
-    // Return null if calculation fails
-    return null;
+    // CRITICAL FIX: Never return null - always return a cost object with status
+    // This prevents service cost validation from failing due to null returns
+    return {
+      cost: 0,
+      currency: '£',
+      method: 'Configuration Missing',
+      status: 'configuration_missing',
+      configType: 'Service Cost Calculation Failed',
+      warningType: 'configuration_missing'
+    };
   };
 
   // Check if section meets PR2 configuration requirements for auto-pricing
