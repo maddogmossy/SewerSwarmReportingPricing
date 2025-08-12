@@ -7925,9 +7925,30 @@ export default function Dashboard() {
             // Use sector from parameter, or current sector, or fallback to utilities
             const targetSector = sector || currentSector?.id || 'utilities';
             
-            // Navigate to PR2 configuration page with the specific category, sector and pipe size
-            // **CRITICAL FIX**: Add autoSelectUtilities=true to ensure sector highlighting works
-            window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
+            // **CRITICAL FIX**: Map to correct A1-F16 system
+            // cctv-jet-vac should route to A5 (CCTV/Jet Vac), not A1 (CCTV only)
+            // According to A1_F16_System_Reference.md: A5 = CCTV/Jet Vac, cardNum: 5
+            
+            console.log('🔧 A1-F16 ROUTING DEBUG:', {
+              originalCategoryId: categoryId,
+              targetSector: targetSector,
+              expectedCard: categoryId === 'cctv-jet-vac' ? 'A5' : 'Unknown',
+              pipeSize: cleanPipeSize,
+              shouldUseId760: true,
+              expectedDatabaseId: '760' // id760 for CCTV/Jet Vac configuration
+            });
+            
+            // Navigate to PR2 configuration page with the specific category, sector and pipe size  
+            // **CRITICAL FIX**: Route directly to id760 configuration for A5 (CCTV/Jet Vac)
+            // The issue is that auto-trigger should go to existing id760 config, not create new one
+            
+            if (categoryId === 'cctv-jet-vac') {
+              // Route to existing id760 configuration (A5 = CCTV/Jet Vac)
+              window.location.href = `/pr2-config-clean?id=760&sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
+            } else {
+              // Regular routing for other categories
+              window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
+            }
           }}
         />
       )}
