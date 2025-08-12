@@ -2753,7 +2753,7 @@ export default function Dashboard() {
   
   // CRITICAL DEBUG: Check if sections data is loading properly - FORCE IMMEDIATE LOG
   if (rawSectionData.length > 0) {
-    const serviceItems = rawSectionData.filter(s => s.defectType === 'service' && [3,6,8].includes(s.itemNo));
+    const serviceItems = rawSectionData.filter(s => s.defectType === 'service'); // Include ALL service items, not just [3,6,8]
     console.log('📋 DASHBOARD SECTIONS DATA - FOUND SECTIONS:', {
       currentUploadId: currentUpload?.id,
       rawSectionDataLength: rawSectionData.length,
@@ -2819,7 +2819,7 @@ export default function Dashboard() {
   if (rawSectionData && rawSectionData.length > 0) {
     console.warn('🔍 SECTIONS DATA FOUND:', {
       sectionsCount: rawSectionData.length,
-      serviceItems: rawSectionData.filter(s => s.defectType === 'service' && [3,6,8].includes(s.itemNo))
+      serviceItems: rawSectionData.filter(s => s.defectType === 'service') // Include ALL service items for warning
     });
   }
   
