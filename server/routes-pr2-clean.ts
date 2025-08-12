@@ -386,9 +386,20 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           .where(eq(pr2Configurations.userId, "system"));
       }
       
-      // Query result logging removed
+      // CRITICAL FIX: Ensure mm_data is properly serialized for all configurations
+      const serializedConfigurations = configurations.map(config => ({
+        ...config,
+        mm_data: config.mmData, // Use Drizzle field name directly
+        category_id: config.categoryId // Ensure categoryId is available as category_id too
+      }));
       
-      res.json(configurations);
+      console.log('🔧 API Serialization Fix Applied:', {
+        totalConfigs: configurations.length,
+        withMmData: serializedConfigurations.filter(c => c.mm_data !== null).length,
+        configIds: serializedConfigurations.map(c => ({ id: c.id, categoryId: c.categoryId, hasData: c.mm_data !== null }))
+      });
+      
+      res.json(serializedConfigurations);
     } catch (error) {
       console.error('Error fetching clean PR2 configurations:', error);
       
@@ -562,9 +573,21 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         return res.status(404).json({ error: 'Configuration not found' });
       }
       
-      // Configuration loading logging removed
+      // CRITICAL FIX: Ensure mm_data JSONB field is properly serialized
+      const serializedConfig = {
+        ...configuration,
+        mm_data: configuration.mmData, // Use the Drizzle field name directly
+        category_id: configuration.categoryId // Ensure categoryId is available as category_id too
+      };
       
-      res.json(configuration);
+      console.log(`🔧 API Fixed Serialization for ID ${configId}:`, {
+        hasCategoryId: !!serializedConfig.categoryId,
+        hasCategoryIdSnakeCase: !!serializedConfig.category_id,
+        hasMmData: !!serializedConfig.mm_data,
+        mmDataKeys: serializedConfig.mm_data ? Object.keys(serializedConfig.mm_data) : null
+      });
+      
+      res.json(serializedConfig);
     } catch (error) {
       console.error('Error fetching clean PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to fetch configuration' });

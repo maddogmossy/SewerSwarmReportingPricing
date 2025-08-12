@@ -1144,9 +1144,8 @@ export default function Dashboard() {
       structuralCostsCount: structuralSectionsWithCosts.length
     });
 
-    // TEMPORARY FIX: Clear old cost decisions to restore natural cost display
-    // TODO: Remove this once cost display system is verified working
-    localStorage.removeItem('appliedCostDecisions');
+    // CRITICAL FIX: DO NOT clear cost decisions - this breaks cost persistence
+    // localStorage.removeItem('appliedCostDecisions'); // DISABLED - was causing infinite cost clearing
     
     // Check if user has already applied a cost decision for current report and equipment
     const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
