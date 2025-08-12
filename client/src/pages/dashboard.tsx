@@ -1390,12 +1390,48 @@ export default function Dashboard() {
         configType: firstCostCalc && typeof firstCostCalc === 'object' && 'configType' in firstCostCalc ? firstCostCalc.configType : 'unknown'
       });
 
+      // CRITICAL FIX: Only trigger warning when ALL service costs are fully calculated
+      // Check that all service items have completed calculations (not just day rate existence)
+      const allServiceItemsReady = serviceSectionsWithCosts.every(section => {
+        const costCalc = calculateAutoCost(section);
+        if (!costCalc || typeof costCalc !== 'object' || !('status' in costCalc)) {
+          return false;
+        }
+        
+        // Service items are ready when they have calculated costs (not configuration_missing/tp1_missing)
+        const readyStatuses = [
+          'id760_calculated', 'id760_insufficient_items',
+          'id759_calculated', 'id759_insufficient_items', 
+          'calculated', 'insufficient_items', 'tp1_calculated', 'mm4_calculated',
+          'adjusted_service_cost', 'below_minimum'
+        ];
+        
+        return readyStatuses.includes(costCalc.status);
+      });
+
+      console.log('🔍 SERVICE COST WARNING - Readiness check:', {
+        totalServiceItems: serviceSectionsWithCosts.length,
+        allServiceItemsReady,
+        serviceReadinessDetails: serviceSectionsWithCosts.map(section => {
+          const costCalc = calculateAutoCost(section);
+          return {
+            itemNo: section.itemNo,
+            status: (costCalc && typeof costCalc === 'object' && 'status' in costCalc) ? costCalc.status : 'no_calc',
+            cost: (costCalc && typeof costCalc === 'object' && 'cost' in costCalc) ? costCalc.cost : 0,
+            isReady: costCalc && typeof costCalc === 'object' && 'status' in costCalc && 
+                     ['id760_calculated', 'id760_insufficient_items', 'id759_calculated', 'id759_insufficient_items', 
+                      'calculated', 'insufficient_items', 'tp1_calculated', 'mm4_calculated', 'adjusted_service_cost', 'below_minimum'].includes(costCalc.status)
+          };
+        })
+      });
+
       if (firstCostCalc && 
           typeof firstCostCalc === 'object' && 
           'dayRate' in firstCostCalc && 
           'runsPerShift' in firstCostCalc &&
           firstCostCalc.dayRate && 
-          firstCostCalc.runsPerShift) {
+          firstCostCalc.runsPerShift &&
+          allServiceItemsReady) {
         
         const serviceItems = serviceSectionsWithCosts.map(section => {
           const costCalc = calculateAutoCost(section);
@@ -1452,6 +1488,17 @@ export default function Dashboard() {
         } else {
           console.log('🔍 SERVICE COST WARNING - Service costs exactly equal day rate, no warning needed');
         }
+      } else {
+        console.log('🔍 SERVICE COST WARNING - Blocked due to incomplete calculations:', {
+          hasFirstCostCalc: !!firstCostCalc,
+          hasDayRate: firstCostCalc && typeof firstCostCalc === 'object' && 'dayRate' in firstCostCalc && firstCostCalc.dayRate,
+          hasRunsPerShift: firstCostCalc && typeof firstCostCalc === 'object' && 'runsPerShift' in firstCostCalc && firstCostCalc.runsPerShift,
+          allServiceItemsReady: serviceSectionsWithCosts.length > 0 ? allServiceItemsReady : false,
+          reason: !firstCostCalc ? 'No cost calculation' : 
+                  !firstCostCalc.dayRate ? 'Missing day rate' :
+                  !firstCostCalc.runsPerShift ? 'Missing runs per shift' :
+                  !allServiceItemsReady ? 'Service items not ready' : 'Unknown'
+        });
       }
     }
   };
