@@ -739,9 +739,20 @@ export default function PR2ConfigClean() {
       }
       
       // For other categories, find existing general configuration
+      // Handle sector mapping: utilities <-> id1, adoption <-> id2, etc.
+      const sectorMapping: Record<string, string> = {
+        'utilities': 'id1',
+        'adoption': 'id2',
+        'highways': 'id3', 
+        'insurance': 'id4',
+        'construction': 'id5',
+        'domestic': 'id6'
+      };
+      const mappedSector = sectorMapping[sector] || sector;
+      
       const existingConfig = allCategoryConfigs.find(config => 
         config.categoryId === categoryId && 
-        config.sector === sector &&
+        (config.sector === sector || config.sector === mappedSector) && // Match both frontend and database sector names
         !config.categoryName?.includes('mm') // Exclude pipe-size-specific configs
       );
       
