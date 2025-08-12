@@ -918,7 +918,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for cctv-van-pack category with F608 DevLabel
+                  // Special handling for cctv-van-pack category with A4 DevLabel
                   if (category.id === 'cctv-van-pack') {
                     return (
                       <Card
@@ -932,7 +932,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "F608"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "759"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -949,7 +949,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for cctv-jet-vac category with F690 DevLabel (matches database ID)
+                  // Special handling for cctv-jet-vac category with A5 DevLabel (matches database ID)
                   if (category.id === 'cctv-jet-vac') {
                     return (
                       <Card
@@ -963,7 +963,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "F690"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "760"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">

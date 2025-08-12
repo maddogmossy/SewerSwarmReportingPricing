@@ -112,9 +112,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
         );
         
         if (selectedConfig) {
-          // Route to existing configuration
+          // Route to existing configuration - use config's pipe size, not section pipe size
+          const configPipeSize = selectedConfig.pipeSize || pipeSizeNumber;
           const reportParam = reportId ? `&reportId=${reportId}` : '';
-          window.location.href = `/pr2-config-clean?id=${selectedConfig.id}&categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+          window.location.href = `/pr2-config-clean?id=${selectedConfig.id}&categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${configPipeSize}&autoSelectUtilities=true${reportParam}`;
         } else {
           // Create new configuration
           const reportParam = reportId ? `&reportId=${reportId}` : '';
