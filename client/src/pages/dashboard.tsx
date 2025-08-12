@@ -1028,8 +1028,8 @@ export default function Dashboard() {
       }))
     });
     
-    if (!sectionData || sectionData.length === 0) {
-      console.log('🚫 STRUCTURAL WARNING CHECK - No section data provided');
+    if (DISABLE_ALL_WARNINGS || !sectionData || sectionData.length === 0) {
+      console.log('🚫 STRUCTURAL WARNING CHECK - Disabled or no section data provided');
       return;
     }
 
@@ -1278,9 +1278,12 @@ export default function Dashboard() {
     }, 100);
   };
 
+  // EASY DISABLE: Set this to true to disable ALL warning triggers
+  const DISABLE_ALL_WARNINGS = true; // ⚠️ Set to false to re-enable warnings
+
   // Function to check if all service costs are populated and trigger warning
   const checkServiceCostCompletion = (sectionData: any[]) => {
-    if (!sectionData || sectionData.length === 0) return;
+    if (DISABLE_ALL_WARNINGS || !sectionData || sectionData.length === 0) return;
 
     // Find all service sections
     const allServiceSections = sectionData.filter(section => section.defectType === 'service');
@@ -3151,8 +3154,8 @@ export default function Dashboard() {
 
   // Function to check for configuration warning issues (MM4 outside ranges, day rate missing, etc.)
   const checkConfigurationWarnings = (sections: any[]) => {
-    // Don't show if already dismissed or already showing
-    if (configWarningDismissed || showConfigWarning) return;
+    // Don't show if disabled or already dismissed or already showing
+    if (DISABLE_ALL_WARNINGS || configWarningDismissed || showConfigWarning) return;
 
     // Get current default category from localStorage
     const currentEquipmentPriority = localStorage.getItem('equipmentPriority') || 'id760';
@@ -4311,19 +4314,35 @@ export default function Dashboard() {
             }
           }
           
-          // CRITICAL FIX: If no exact pipe size match found, use the first available pipe size key
-          // This handles cases where Item 3 (100mm) needs to use 150mm config from A5 CCTV/Jet Vac
+          // FIXED: Smart pipe size fallback prioritizing 150mm for A4 759 configuration
+          // Instead of using first available, prioritize 150mm then fall back to others
           if (!matchingPipeSizeKey && Object.keys(mm4DataByPipeSize).length > 0) {
-            const firstPipeSizeKey = Object.keys(mm4DataByPipeSize)[0];
-            matchingMM4Data = mm4DataByPipeSize[firstPipeSizeKey];
-            matchingPipeSizeKey = firstPipeSizeKey;
+            const availablePipeSizes = Object.keys(mm4DataByPipeSize);
             
-            console.log('🔧 PIPE SIZE FALLBACK - Using first available config:', {
+            // Priority order: prefer 150mm, then 225mm, then others
+            const priorityOrder = ['150', '225', '100', '300', '375', '450', '525', '600', '750', '900', '1050', '1200', '1350', '1500'];
+            
+            let selectedPipeSizeKey = availablePipeSizes[0]; // fallback to first
+            
+            // Find the highest priority available pipe size
+            for (const prioritySize of priorityOrder) {
+              const matchingKey = availablePipeSizes.find(key => key.startsWith(prioritySize + '-'));
+              if (matchingKey) {
+                selectedPipeSizeKey = matchingKey;
+                break;
+              }
+            }
+            
+            matchingMM4Data = mm4DataByPipeSize[selectedPipeSizeKey];
+            matchingPipeSizeKey = selectedPipeSizeKey;
+            
+            console.log('🔧 SMART PIPE SIZE FALLBACK - Prioritizing 150mm for A4 759:', {
               requestedPipeSize: sectionPipeSize,
-              availablePipeSizes: Object.keys(mm4DataByPipeSize),
-              fallbackPipeSizeKey: firstPipeSizeKey,
+              availablePipeSizes: availablePipeSizes,
+              selectedPipeSizeKey: selectedPipeSizeKey,
               itemNo: section.itemNo,
-              reason: 'No exact pipe size match found in A5 CCTV/Jet Vac configuration'
+              equipmentConfig: cctvConfig?.categoryId,
+              reason: 'Smart fallback prioritizing 150mm over 100mm for A4 759 configuration'
             });
           }
           
