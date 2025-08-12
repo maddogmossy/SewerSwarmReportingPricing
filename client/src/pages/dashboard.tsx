@@ -4262,23 +4262,38 @@ export default function Dashboard() {
             
             // Check each MM4 row to see if section fits within any range
             for (const mm4Row of matchingMM4Data) {
-              const purpleDebris = parseFloat(mm4Row.purpleDebris || '0');
-              const purpleLength = parseFloat(mm4Row.purpleLength || '0');
+              // CRITICAL FIX: Use buffered values for range validation instead of raw database values
+              const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+              const configId = cctvConfig.id;
+              const debrisBufferKey = `${configId}-${matchingPipeSizeKey}-${mm4Row.id}-purpleDebris`;
+              const lengthBufferKey = `${configId}-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`;
+              
+              const bufferedDebris = buffer[debrisBufferKey];
+              const bufferedLength = buffer[lengthBufferKey];
+              
+              const purpleDebris = parseFloat(bufferedDebris || mm4Row.purpleDebris || '0');
+              const purpleLength = parseFloat(bufferedLength || mm4Row.purpleLength || '0');
               
               const debrisMatch = sectionDebrisPercent <= purpleDebris;
               const lengthMatch = sectionLength <= purpleLength;
               
               console.log('🔍 RANGE CHECK ROW:', {
                 rowId: mm4Row.id,
-                purpleLength,
-                purpleDebris,
+                rawPurpleLength: mm4Row.purpleLength,
+                rawPurpleDebris: mm4Row.purpleDebris,
+                bufferedLength: bufferedLength,
+                bufferedDebris: bufferedDebris,
+                finalPurpleLength: purpleLength,
+                finalPurpleDebris: purpleDebris,
                 sectionLength,
                 sectionDebrisPercent,
                 lengthMatch,
                 debrisMatch,
                 bothMatch: debrisMatch && lengthMatch,
                 lengthExceeded: sectionLength > purpleLength,
-                debrisExceeded: sectionDebrisPercent > purpleDebris
+                debrisExceeded: sectionDebrisPercent > purpleDebris,
+                usingBufferForDebris: !!bufferedDebris,
+                usingBufferForLength: !!bufferedLength
               });
               
               if (debrisMatch && lengthMatch) {
