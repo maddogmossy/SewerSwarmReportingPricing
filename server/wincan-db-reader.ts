@@ -116,21 +116,27 @@ async function formatObservationText(observations: string[], sector: string = 'u
     return true;
   }).map(obs => enhanceObservationWithRemark(obs));
 
-  // Define observation code meanings for reference
+  // Import MSCC5 defect definitions for proper individual descriptions
+  const { MSCC5_DEFECTS } = await import('./mscc5-classifier');
+  
+  // Define observation code meanings using proper MSCC5 descriptions
   const observationCodes: { [key: string]: string } = {
-    'WL': 'Water level',
-    'D': 'Deformation',
-    'FC': 'Fracture - circumferential',
-    'FL': 'Fracture - longitudinal',
-    'CR': 'Crack',
+    'WL': MSCC5_DEFECTS.WL?.description || 'Water level',
+    'D': MSCC5_DEFECTS.DEF?.description || 'Deformation',
+    'FC': MSCC5_DEFECTS.FC?.description || 'Fracture - circumferential',
+    'FL': MSCC5_DEFECTS.FL?.description || 'Fracture - longitudinal',
+    'CR': MSCC5_DEFECTS.CR?.description || 'Crack',
+    'DES': MSCC5_DEFECTS.DES?.description || 'Deposits - fine settled',
+    'DER': MSCC5_DEFECTS.DER?.description || 'Deposits - coarse',
+    'DEC': MSCC5_DEFECTS.DEC?.description || 'Deposits - concrete',
     'JN': 'Junction',
     'LL': 'Line deviates left',
-    'LR': 'Line deviates right',
-    'RI': 'Root intrusion',
-    'JDL': 'Joint displacement - large',
-    'JDS': 'Joint displacement - small',
-    'OJM': 'Open joint - medium',
-    'OJL': 'Open joint - large',
+    'LR': 'Line deviates right', 
+    'RI': MSCC5_DEFECTS.RI?.description || 'Root intrusion',
+    'JDL': MSCC5_DEFECTS.JDL?.description || 'Joint displacement - large',
+    'JDS': MSCC5_DEFECTS.JDS?.description || 'Joint displacement - small',
+    'OJM': MSCC5_DEFECTS.OJM?.description || 'Open joint - medium',
+    'OJL': MSCC5_DEFECTS.OJL?.description || 'Open joint - large',
     'CPF': 'Catchpit/node feature'
   };
   
@@ -193,8 +199,12 @@ async function formatObservationText(observations: string[], sector: string = 'u
   // Process grouped observations
   for (const [code, items] of Object.entries(codeGroups)) {
     if (items.length === 1) {
-      // Single occurrence - use full text
-      formattedParts.push(items[0].fullText);
+      // Single occurrence - use MSCC5 description instead of raw text
+      const description = observationCodes[code] || code;
+      const meterage = items[0].meterage;
+      const detailsMatch = items[0].fullText.match(/\((.*?)\)/);
+      const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
+      formattedParts.push(`${description} at ${meterage}m${details}`);
     } else {
       // Multiple occurrences - group with description
       const description = observationCodes[code] || code;
@@ -203,8 +213,25 @@ async function formatObservationText(observations: string[], sector: string = 'u
     }
   }
   
-  // Add non-grouped observations
-  formattedParts.push(...nonGroupedObservations);
+  // Add non-grouped observations (apply MSCC5 descriptions to any missed codes)
+  const processedNonGrouped = nonGroupedObservations.map(obs => {
+    // Check if observation starts with a defect code
+    const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
+    if (codeMatch) {
+      const code = codeMatch[1];
+      const meterage = codeMatch[2];
+      const description = observationCodes[code];
+      if (description && description !== code) {
+        // Replace code with MSCC5 description while preserving details
+        const detailsMatch = obs.match(/\((.*?)\)/);
+        const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
+        return obs.replace(code, description);
+      }
+    }
+    return obs;
+  });
+  
+  formattedParts.push(...processedNonGrouped);
   
   return formattedParts.join('. ').replace(/\.\./g, '.');
 }
@@ -212,24 +239,28 @@ async function formatObservationText(observations: string[], sector: string = 'u
 // Store authentic sections in database with comprehensive duplicate prevention
 
 
-function classifyDefectByMSCC5Standards(observations: string[], sector: string = 'utilities'): { severityGrade: number, defectType: string, recommendations: string, adoptable: string } {
-  // Get available observation codes
+async function classifyDefectByMSCC5Standards(observations: string[], sector: string = 'utilities'): Promise<{ severityGrade: number, defectType: string, recommendations: string, adoptable: string }> {
+  // Import MSCC5 defect definitions for proper individual descriptions
+  const { MSCC5_DEFECTS } = await import('./mscc5-classifier');
   
-  // Define observation code meanings for reference
+  // Define observation code meanings using proper MSCC5 descriptions
   const observationCodes: { [key: string]: string } = {
-    'WL': 'Water level',
-    'D': 'Deformation',
-    'FC': 'Fracture - circumferential',
-    'FL': 'Fracture - longitudinal',
-    'CR': 'Crack',
+    'WL': MSCC5_DEFECTS.WL?.description || 'Water level',
+    'D': MSCC5_DEFECTS.DEF?.description || 'Deformation',
+    'FC': MSCC5_DEFECTS.FC?.description || 'Fracture - circumferential',
+    'FL': MSCC5_DEFECTS.FL?.description || 'Fracture - longitudinal',
+    'CR': MSCC5_DEFECTS.CR?.description || 'Crack',
+    'DES': MSCC5_DEFECTS.DES?.description || 'Deposits - fine settled',
+    'DER': MSCC5_DEFECTS.DER?.description || 'Deposits - coarse',
+    'DEC': MSCC5_DEFECTS.DEC?.description || 'Deposits - concrete',
     'JN': 'Junction',
     'LL': 'Line deviates left',
     'LR': 'Line deviates right',
-    'RI': 'Root intrusion',
-    'JDL': 'Joint displacement - large',
-    'JDS': 'Joint displacement - small',
-    'OJM': 'Open joint - medium',
-    'OJL': 'Open joint - large',
+    'RI': MSCC5_DEFECTS.RI?.description || 'Root intrusion',
+    'JDL': MSCC5_DEFECTS.JDL?.description || 'Joint displacement - large',
+    'JDS': MSCC5_DEFECTS.JDS?.description || 'Joint displacement - small',
+    'OJM': MSCC5_DEFECTS.OJM?.description || 'Open joint - medium',
+    'OJL': MSCC5_DEFECTS.OJL?.description || 'Open joint - large',
     'CPF': 'Catchpit/node feature'
   };
   
@@ -782,7 +813,7 @@ async function processSectionTable(
     } else {
       // Standard processing with observations - ENHANCED: Preserve full observation details  
       defectText = await formatObservationText(observations, sector);
-      classification = await classifyWincanObservations(defectText, sector);
+      classification = await classifyDefectByMSCC5Standards(observations, sector);
       console.log(`🔍 Using observation-based classification for section ${authenticItemNo}: "${defectText.substring(0, 100)}..."`);
     }
     
