@@ -413,7 +413,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     } catch (error) {
     }
 
-    // Build observation data mapping from SECOBS table via SECINSP
+    // Build observation data mapping from SECOBS table via SECINSP - ENHANCED: Include full descriptions
     const observationMap = new Map<string, string[]>();
     try {
       const obsData = database.prepare(`
@@ -441,9 +441,16 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           if (!observationMap.has(obs.INS_Section_FK)) {
             observationMap.set(obs.INS_Section_FK, []);
           }
+          // ENHANCED: Create complete defect description with full details
           const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
-          const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
-          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
+          const fullDescription = obs.OBS_Observation || '';
+          
+          // Build complete observation text: "DES 13.27m (Settled deposits, fine, 5% cross-sectional area loss)"
+          const completeObservation = fullDescription ? 
+            `${obs.OBS_OpCode}${position} (${fullDescription})` : 
+            `${obs.OBS_OpCode}${position}`;
+            
+          observationMap.get(obs.INS_Section_FK)!.push(completeObservation);
         }
       }
     } catch (error) {
@@ -468,6 +475,10 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     const sectionTable = tables.find(t => t.name.toUpperCase() === 'SECTION');
     
     if (sectionTable) {
+      // CRITICAL DEBUG: Check for sections 1-5 specifically
+      const debugSections = database.prepare(`SELECT OBJ_SortOrder, OBJ_Key, OBJ_Name, OBJ_Deleted, OBJ_Size1 FROM SECTION WHERE OBJ_SortOrder IN (1,2,3,4,5,17) ORDER BY OBJ_SortOrder`).all();
+      console.log(`🚨 CRITICAL DEBUG - Sections 1-5,17 in database:`, debugSections);
+      
       // Get only sections that are actually current (not deleted)
       let sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
       
@@ -477,6 +488,16 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         sectionRecords = database.prepare(`SELECT * FROM SECTION`).all();
         console.log(`🔍 Found ${sectionRecords.length} total sections`);
       }
+      
+      // CRITICAL DEBUG: Check if sections 1-5 are in the filtered results
+      const filteredDebug = sectionRecords.filter(r => [1,2,3,4,5,17].includes(r.OBJ_SortOrder));
+      console.log(`🚨 CRITICAL DEBUG - Sections 1-5,17 after filtering:`, filteredDebug.map(r => ({
+        sortOrder: r.OBJ_SortOrder,
+        key: r.OBJ_Key,
+        name: r.OBJ_Name,
+        deleted: r.OBJ_Deleted,
+        size1: r.OBJ_Size1
+      })));
       
       if (sectionRecords.length > 0) {
         console.log(`🔍 UNIFIED PROCESSING: Processing ${sectionRecords.length} sections with standardized logic`);
@@ -604,6 +625,11 @@ async function processSectionTable(
     const sortOrder = Number(record.OBJ_SortOrder);
     const secItemNo = Number(record.SEC_ItemNo);
     
+    // CRITICAL TRACE: Log all sections being processed, especially 1-5,17
+    if ([1,2,3,4,5,17].includes(sortOrder) || [1,2,3,4,5,17].includes(secItemNo)) {
+      console.log(`🚨 CRITICAL TRACE - Processing Section ${record.OBJ_Key || record.SEC_PK}: SortOrder=${sortOrder}, SEC_ItemNo=${secItemNo}, Name="${sectionName}", Size1=${record.OBJ_Size1}`);
+    }
+    
     console.log(`🔍 Section ${record.OBJ_Key || record.SEC_PK}: SortOrder=${sortOrder}, SEC_ItemNo=${secItemNo}, Name="${sectionName}"`);
     
     // Priority 1: Use SEC_ItemNo if available (GR7188 format)
@@ -643,12 +669,20 @@ async function processSectionTable(
     const startMH = manholeMap.get(record.OBJ_FromNode_REF) || 'UNKNOWN';
     const finishMH = manholeMap.get(record.OBJ_ToNode_REF) || 'UNKNOWN';
     
-    // Extract authentic pipe dimensions from database (GR7216 format)
+    // Extract authentic pipe dimensions from database - CRITICAL FIX: Prevent fallback to 150 when OBJ_Size1 exists
     let pipeSize = record.OBJ_Size1 || record.OBJ_Size2 || record.SEC_Diameter || record.SEC_Width || record.SEC_Height || 150;
     
-    // For GR7216: Extract pipe size from observation text if available
+    // Ensure it's a number but don't force conversion if already valid
+    if (typeof pipeSize === 'string' && !isNaN(Number(pipeSize))) {
+      pipeSize = Number(pipeSize);
+    } else if (typeof pipeSize !== 'number') {
+      pipeSize = 150; // Only use fallback if no valid pipe size found
+    }
+    
+    // For GR7216: Extract pipe size from observation text if available, but don't override valid database pipe sizes  
     const pipeSizeFromObs = observations.find(obs => obs.includes('mm dia'));
-    if (pipeSizeFromObs) {
+    if (pipeSizeFromObs && (pipeSize === 150 || !pipeSize)) {
+      // Only extract from observations if we don't have a valid pipe size from database
       const sizeMatch = pipeSizeFromObs.match(/(\d{2,4})mm dia/);
       if (sizeMatch) {
         pipeSize = parseInt(sizeMatch[1]);
@@ -656,7 +690,29 @@ async function processSectionTable(
       }
     }
     
-    console.log(`🔍 Final pipe size for section ${sectionName}: ${pipeSize}mm (raw DB: OBJ_Size1=${record.OBJ_Size1}, OBJ_Size2=${record.OBJ_Size2})`);
+    // CRITICAL DEBUG - Track sections 1,2,3,4,5,17 specifically
+    if ([1,2,3,4,5,17].includes(authenticItemNo)) {
+      console.log(`🚨 CRITICAL DEBUG - Section ${authenticItemNo} (${sectionName}):`, {
+        finalPipeSize: pipeSize,
+        rawOBJ_Size1: record.OBJ_Size1,
+        rawOBJ_Size2: record.OBJ_Size2,
+        numberOBJ_Size1: Number(record.OBJ_Size1),
+        numberOBJ_Size2: Number(record.OBJ_Size2),
+        typeOBJ_Size1: typeof record.OBJ_Size1,
+        willStoreAs: pipeSize.toString(),
+        fallbackTriggered: pipeSize === 150
+      });
+    }
+    
+    console.log(`🔍 PIPE SIZE DEBUG for section ${sectionName}:`, {
+      finalPipeSize: pipeSize,
+      rawOBJ_Size1: record.OBJ_Size1,
+      rawOBJ_Size2: record.OBJ_Size2,
+      numberOBJ_Size1: Number(record.OBJ_Size1),
+      numberOBJ_Size2: Number(record.OBJ_Size2),
+      typeOBJ_Size1: typeof record.OBJ_Size1,
+      willStoreAs: pipeSize.toString()
+    });
     // Extract pipe material with proper mapping for GR7216 format
     let pipeMaterial = extractAuthenticValue(record, ['SEC_Material', 'material', 'pipe_material', 'OBJ_Material']) || 'Unknown';
     
@@ -709,10 +765,10 @@ async function processSectionTable(
       };
       console.log(`🔍 Using default classification for section ${authenticItemNo} - no observations available`);
     } else {
-      // Standard processing with observations
+      // Standard processing with observations - ENHANCED: Preserve full observation details  
       defectText = await formatObservationText(observations, sector);
       classification = await classifyWincanObservations(defectText, sector);
-      console.log(`🔍 Using observation-based classification for section ${authenticItemNo}`);
+      console.log(`🔍 Using observation-based classification for section ${authenticItemNo}: "${defectText.substring(0, 100)}..."`);
     }
     
     // Get authentic severity grade from SECSTAT table if available
@@ -1037,7 +1093,15 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
     }
     
     try {
-      // Ensure all required fields have valid values
+      // CRITICAL DEBUG: Log pipe size before storage to trace 150→100 conversion
+      console.log(`🔍 STORAGE DEBUG for section ${section.itemNo}:`, {
+        originalPipeSize: section.pipeSize,
+        typePipeSize: typeof section.pipeSize,
+        willStore: section.pipeSize || '150',
+        fallbackTriggered: !section.pipeSize
+      });
+      
+      // Ensure all required fields have valid values - FIXED: Prevent incorrect fallback for pipe size
       const insertData = {
         fileUploadId: uploadId,
         itemNo: section.itemNo,
@@ -1047,7 +1111,7 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         time: section.inspectionTime || '09:00:00',
         startMH: section.startMH || 'UNKNOWN_START',
         finishMH: section.finishMH || 'UNKNOWN_END',
-        pipeSize: section.pipeSize || '150',
+        pipeSize: section.pipeSize ? section.pipeSize.toString() : '150',
         pipeMaterial: section.pipeMaterial || 'UNKNOWN',
         totalLength: section.totalLength || '0',
         lengthSurveyed: section.lengthSurveyed || '0',
