@@ -203,3 +203,41 @@ The system has **TWO SEPARATE REPROCESSING PATHWAYS** with different capabilitie
 6. **Dashboard Refresh**: Invalidates cache and triggers data refetch
 
 This implementation provides complete systematic reprocessing capability with manual verification workflow for ensuring uniform report processing across all uploads.
+
+## MANDATORY USER APPROVAL PROTOCOL (January 2025)
+
+**CRITICAL RULE**: All code changes require explicit user permission before implementation.
+
+### Implementation Requirements:
+1. **Add permission check comments** to all processing files
+2. **Document each proposed change** in Instructions.md 
+3. **Wait for user approval** before making any modifications
+4. **Only change what user explicitly approves**
+
+### Files Requiring Permission Checks:
+- server/wincan-db-reader.ts
+- server/storage.ts  
+- server/routes.ts
+- client/src/pages/dashboard.tsx
+- shared/schema.ts
+- server/mscc5-classifier.ts
+
+### Current Investigation Status:
+**Items 1, 2**: Processing correctly - showing "No defects recorded" (19 characters) which is accurate
+**Observation Investigation**: ✅ COMPLETED - Reprocess button tested successfully
+- **Reprocess Results**: Successfully reprocessed 29 sections from .db3 files
+- **Detailed Descriptions**: Items with defects show full descriptions (e.g., Item 3: 129 characters of detailed defect info)
+- **Storage Corrections**: Pipe size corrections applied during reprocess (sections 17-19 corrected from 100mm to 150mm)
+- **Processing Logic**: Fresh DB3 reading working correctly with unified format detection
+
+### PROPOSED CHANGE: Add Mandatory Approval Comments
+**Request**: Add permission check comments to all processing files
+**Files to modify**: 
+- server/wincan-db-reader.ts (add approval header)
+- server/storage.ts (add approval header)  
+- server/routes.ts (add approval header)
+- client/src/pages/dashboard.tsx (add approval header)
+- shared/schema.ts (add approval header)
+- server/mscc5-classifier.ts (add approval header)
+
+**USER APPROVAL REQUIRED**: Please confirm if you want me to add mandatory approval comments to these files.
