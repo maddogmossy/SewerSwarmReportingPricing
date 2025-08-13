@@ -4931,8 +4931,8 @@ export default function Dashboard() {
       // Manual tests removed - cleaning detection working correctly
     }
     
-    // RESTORED: Separate handling for service vs structural sections
-    // Service sections: Process MM4 for cleaning if they need it
+    // ENHANCED: Separate handling for service vs structural sections
+    // Service sections: Process MM4 for ALL service sections (cleaning, monitoring, assessments)
     // Structural sections: Use F615 patching cost calculation
     console.log(`🔍 MM4 Processing Check for Item ${section.itemNo}:`, {
       needsCleaning,
@@ -4940,14 +4940,15 @@ export default function Dashboard() {
       isRestrictedSection,
       defectType: section.defectType,
       pipeSize: section.pipeSize,
-      willProcessServiceMM4: section.defectType === 'service' && needsCleaning && repairPricingData && isRestrictedSection,
+      willProcessServiceMM4: section.defectType === 'service' && repairPricingData,
       willProcessStructuralF615: section.defectType === 'structural'
     });
     
-    // FIXED: Only process MM4 for SERVICE sections that need cleaning
-    if (section.defectType === 'service' && needsCleaning && repairPricingData && isRestrictedSection) {
-      // SERVICE SECTION MM4 PROCESSING: Only F690 (cctv-jet-vac) and F608 (cctv-van-pack) for service defects
-      // F612 (cctv) excluded - CCTV only, not for cleaning service defects
+    // FIXED: Process MM4 for ALL SERVICE sections (not just cleaning) - includes Grade 0 observations
+    // Service sections include: cleaning defects, water levels, line deviations, service connections, etc.
+    if (section.defectType === 'service' && repairPricingData) {
+      // SERVICE SECTION MM4 PROCESSING: F690 (cctv-jet-vac) and F608 (cctv-van-pack) for all service sections
+      // Includes: cleaning defects, monitoring, assessments, line deviations, service connections
       const cctvConfigs = repairPricingData.filter((config: any) => 
         ['cctv-van-pack', 'cctv-jet-vac'].includes(config.categoryId) && 
         config.sector === currentSector.id
@@ -5387,10 +5388,10 @@ export default function Dashboard() {
                 allPipeSizeConfigs: isSpecialTracking ? Object.keys(actualMmData?.mm4DataByPipeSize || {}) : undefined
               });
               
-              // Count total service items across all sections (not just defects)
+              // Count total service items across ALL sections (expanded from restricted cleaning only)
+              // Now includes all service sections: line deviations, water levels, service connections, etc.
               const totalServiceItems = sectionData?.filter(s => 
-                s.defectType === 'service' && 
-                restrictedCleaningSections.includes(s.itemNo)
+                s.defectType === 'service'
               ).length || 0;
               
               const meetsMinimumRuns = totalServiceItems >= runsPerShift;
