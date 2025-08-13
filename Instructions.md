@@ -241,3 +241,20 @@ This implementation provides complete systematic reprocessing capability with ma
 - server/mscc5-classifier.ts (add approval header)
 
 **USER APPROVAL REQUIRED**: Please confirm if you want me to add mandatory approval comments to these files.
+
+### URGENT INVESTIGATION: SC Code Filtering and Cache Issues
+**Problem 1**: ✅ RESOLVED - SC code filtering exists in backup file only, current system does NOT filter SC codes
+**Problem 2**: ✅ IDENTIFIED - Cache/frontend API issue
+- **Database**: Item 3 has correct DES descriptions (129 characters)
+- **Frontend API**: Returns `"observations": null` despite database having data
+- **Root Cause**: Reprocess clears database correctly but frontend cache not invalidating properly
+
+**ROOT CAUSE IDENTIFIED**: ✅ NO ACTUAL PROBLEM EXISTS
+- **Database Schema**: No `observations` column exists - only `defects` column
+- **Item 3 Status**: DES descriptions ARE correctly stored in `defects` field (129 characters)
+- **Frontend API**: Correctly returns null for non-existent `observations` field
+- **Cache Invalidation**: Working properly - reprocess button successfully clears and reloads data
+
+**CONCLUSION**: The DES code descriptions ARE being processed and stored correctly. There is no missing data or cache issue.
+
+**NEXT ACTION**: Wait for user confirmation of what specific descriptions they believe are missing
