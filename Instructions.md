@@ -255,6 +255,11 @@ This implementation provides complete systematic reprocessing capability with ma
 - **Frontend API**: Correctly returns null for non-existent `observations` field
 - **Cache Invalidation**: Working properly - reprocess button successfully clears and reloads data
 
-**CONCLUSION**: The DES code descriptions ARE being processed and stored correctly. There is no missing data or cache issue.
+**CRITICAL ISSUE IDENTIFIED**: ✅ DES and DER defect codes missing individual descriptions
+- **Problem**: DES and DER are being combined into one description instead of having separate individual descriptions
+- **Current**: "DES at 13.27m, 16.63m, 17.73m. DER 21.6m (Settled deposits, coarse, 5% cross-sectional area loss)"
+- **Should be**: DES = "Deposits - fine settled", DER = "Deposits - coarse" (separate individual descriptions)
+- **Root Cause**: Defect processing logic combining codes instead of creating individual descriptions
 
-**NEXT ACTION**: Wait for user confirmation of what specific descriptions they believe are missing
+**PROPOSED FIX**: Update defect processing to create individual descriptions for each defect code (DES, DER, etc.)
+**USER APPROVAL REQUIRED**: Can I fix the defect processing logic to provide individual descriptions for each defect code?
