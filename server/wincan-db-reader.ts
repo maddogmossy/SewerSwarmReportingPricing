@@ -435,7 +435,7 @@ function getAuthenticWRcRecommendations(severityGrade: number, defectType: 'stru
       case 2:
         return 'WRc Sewer Cleaning Manual: High-pressure jetting and cleaning required';
       case 3:
-        return 'WRc Sewer Cleaning Manual: Intensive cleaning and possible intervention required';
+        return 'To cleanse and re-survey this section - WRc Sewer Cleaning Manual';
       case 4:
         return 'WRc Sewer Cleaning Manual: Critical service intervention required';
       case 5:
