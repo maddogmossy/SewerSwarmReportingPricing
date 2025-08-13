@@ -276,9 +276,9 @@ This implementation provides complete systematic reprocessing capability with ma
 - **Improvement**: Single occurrences now use MSCC5 descriptions instead of raw observation text
 - **Result**: Both DES and DER will now show proper individual MSCC5 descriptions
 
-**FINAL COMPREHENSIVE FIX**: ✅ Complete MSCC5 individual description system with detailed descriptions
+**FINAL COMPREHENSIVE FIX**: ✅ Complete MSCC5 individual description system with CODE-first format
 - **Fixed**: formatObservationText function with MSCC5_DEFECTS import
 - **Fixed**: classifyDefectByMSCC5Standards function with async MSCC5_DEFECTS import  
 - **Fixed**: All function call chains to use await for async MSCC5 processing
-- **Enhanced**: Deposit observations (DES/DER/DEC) now preserve detailed descriptions in parentheses
-- **Result**: DES shows "Deposits - fine settled at X,Y,Z (Settled deposits, fine, 5% cross-sectional area loss)" format
+- **Enhanced**: Deposit observations (DES/DER/DEC) now show CODE first with detailed descriptions
+- **Result**: DES shows "DES Settled deposits, fine, 5% cross-sectional area loss at X,Y,Z" format as requested

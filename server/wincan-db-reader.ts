@@ -201,36 +201,43 @@ async function formatObservationText(observations: string[], sector: string = 'u
   // Process grouped observations
   for (const [code, items] of Object.entries(codeGroups)) {
     if (items.length === 1) {
-      // Single occurrence - use MSCC5 description instead of raw text
+      // Single occurrence - show CODE first for DES/DER/DEC, otherwise use MSCC5 description
       const description = observationCodes[code] || code;
       const meterage = items[0].meterage;
       const detailsMatch = items[0].fullText.match(/\((.*?)\)/);
-      const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
-      formattedParts.push(`${description} at ${meterage}m${details}`);
+      
+      if (code === 'DES' || code === 'DER' || code === 'DEC') {
+        // For deposits, show CODE first with detailed description
+        const details = detailsMatch ? detailsMatch[1] : description;
+        formattedParts.push(`${code} ${details} at ${meterage}m`);
+      } else {
+        // For other codes, use standard format
+        const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
+        formattedParts.push(`${description} at ${meterage}m${details}`);
+      }
     } else {
       // Multiple occurrences - determine if they have different detail levels
       const description = observationCodes[code] || code;
       const positions = items.map(item => item.meterage).join('m, ');
       
-      // CRITICAL FIX: For DES/DER/DEC, preserve detailed descriptions properly
+      // CRITICAL FIX: For DES/DER/DEC, show CODE first with detailed descriptions
       if (code === 'DES' || code === 'DER' || code === 'DEC') {
         // Check if any item has detailed descriptions in parentheses
         const itemsWithDetails = items.filter(item => item.fullText.includes('('));
-        const itemsWithoutDetails = items.filter(item => !item.fullText.includes('('));
         
         if (itemsWithDetails.length > 0) {
           // Extract the detailed description from any item that has it
           const detailedItem = itemsWithDetails[0];
           const detailsMatch = detailedItem.fullText.match(/\((.*?)\)/);
-          const fullDetails = detailsMatch ? ` (${detailsMatch[1]})` : '';
+          const fullDetails = detailsMatch ? detailsMatch[1] : description;
           
-          // Group all positions together with the detailed description
+          // Group all positions together - show CODE first, then full description
           const allPositions = items.map(item => item.meterage).join('m, ');
-          formattedParts.push(`${description} at ${allPositions}m${fullDetails}`);
+          formattedParts.push(`${code} ${fullDetails} at ${allPositions}m`);
         } else {
-          // No detailed descriptions - use standard grouping
+          // No detailed descriptions - show code with MSCC5 description
           const allPositions = items.map(item => item.meterage).join('m, ');
-          formattedParts.push(`${description} at ${allPositions}m`);
+          formattedParts.push(`${code} ${description} at ${allPositions}m`);
         }
       } else {
         // Standard grouping for other defect codes
