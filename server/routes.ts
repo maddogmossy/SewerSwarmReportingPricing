@@ -425,6 +425,109 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Reprocess existing upload endpoint - reads fresh from .db3 files
+  app.post('/api/reprocess/:uploadId', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      console.log(`🔄 REPROCESS REQUEST: Starting reprocessing for upload ${uploadId}`);
+      
+      // Get the upload record to find the original files
+      const upload = await db.select().from(fileUploads)
+        .where(eq(fileUploads.id, uploadId))
+        .limit(1);
+      
+      if (upload.length === 0) {
+        return res.status(404).json({ error: 'Upload not found' });
+      }
+      
+      const fileUpload = upload[0];
+      console.log(`🔄 REPROCESS: Found upload record for ${fileUpload.fileName}`);
+      
+      // Update status to processing
+      await db.update(fileUploads)
+        .set({ status: "processing" })
+        .where(eq(fileUploads.id, uploadId));
+      
+      // Clear existing sections completely
+      console.log(`🔄 REPROCESS: Clearing existing ${uploadId} section data`);
+      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+      
+      // Find the actual .db3 files based on the original filename
+      const mainDbPath = fileUpload.filePath;
+      const metaDbPath = fileUpload.filePath.replace('.db3', '_Meta.db3');
+      
+      console.log(`🔄 REPROCESS: Reading fresh from files:`);
+      console.log(`🔄 Main DB: ${mainDbPath}`);
+      console.log(`🔄 Meta DB: ${metaDbPath}`);
+      
+      // Validate files exist
+      const fs = await import('fs');
+      if (!fs.existsSync(mainDbPath)) {
+        await db.update(fileUploads)
+          .set({ status: "failed" })
+          .where(eq(fileUploads.id, uploadId));
+        return res.status(400).json({ error: 'Main database file not found on filesystem' });
+      }
+      
+      try {
+        // Import and use Wincan database reader for fresh processing
+        const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
+        
+        // Process fresh from .db3 files with latest logic
+        console.log(`🔄 REPROCESS: Processing ${mainDbPath} with sector ${fileUpload.sector}`);
+        const result = await readWincanDatabase(mainDbPath, fileUpload.sector || 'utilities', uploadId);
+        const sections = result.sections;
+        const detectedFormat = result.detectedFormat;
+        
+        console.log(`🔄 REPROCESS: Extracted ${sections.length} sections, format: ${detectedFormat}`);
+        
+        // Store sections with latest storage logic (includes pipe size corrections)
+        if (sections.length > 0) {
+          await storeWincanSections(sections, uploadId);
+        }
+        
+        // Update status to completed
+        await db.update(fileUploads)
+          .set({ 
+            status: "completed",
+            extractedData: JSON.stringify({
+              sectionsCount: sections.length,
+              extractionType: "reprocessed_from_db3",
+              detectedFormat: detectedFormat,
+              reprocessedAt: new Date().toISOString()
+            })
+          })
+          .where(eq(fileUploads.id, uploadId));
+        
+        console.log(`✅ REPROCESS COMPLETE: ${sections.length} sections reprocessed successfully`);
+        
+        res.json({
+          success: true,
+          message: `Successfully reprocessed ${sections.length} sections from .db3 files`,
+          sectionsCount: sections.length,
+          detectedFormat: detectedFormat,
+          uploadId: uploadId
+        });
+        
+      } catch (processingError) {
+        console.error(`❌ REPROCESS ERROR:`, processingError);
+        await db.update(fileUploads)
+          .set({ status: "failed" })
+          .where(eq(fileUploads.id, uploadId));
+        
+        res.status(500).json({ 
+          error: 'Reprocessing failed: ' + processingError.message,
+          uploadId: uploadId
+        });
+      }
+      
+    } catch (error) {
+      console.error('Reprocess endpoint error:', error);
+      res.status(500).json({ error: 'Reprocessing failed: ' + error.message });
+    }
+  });
+
   // File upload endpoint for database files only
   app.post("/api/upload", uploadMultiple.any(), async (req: Request, res: Response) => {
     try {
