@@ -196,15 +196,7 @@ async function formatObservationText(observations: string[], sector: string = 'u
   // STEP 4: Build formatted text with grouped observations
   const formattedParts: string[] = [];
   
-  // DEBUG: Log what we're processing for detailed investigation
-  if (Object.keys(codeGroups).includes('DES') || Object.keys(codeGroups).includes('DEC')) {
-    console.log(`🔍 DEPOSIT DEBUG - Processing grouped observations:`, {
-      codeGroups: Object.fromEntries(
-        Object.entries(codeGroups).filter(([code]) => ['DES', 'DEC', 'DER'].includes(code))
-      ),
-      originalObservations: observations.filter(obs => obs.includes('DES') || obs.includes('DEC') || obs.includes('DER'))
-    });
-  }
+
   
   // Process grouped observations
   for (const [code, items] of Object.entries(codeGroups)) {
@@ -841,13 +833,7 @@ async function processSectionTable(
     let defectText: string;
     let classification: any;
     
-    // CRITICAL DEBUG - Log Item 3 specifically
-    if (authenticItemNo === 3) {
-      console.log(`🚨 ITEM 3 DEBUG - Raw observations:`, {
-        count: observations.length,
-        observations: observations
-      });
-    }
+
     
     if (observations.length === 0) {
       // Fallback logic for sections without observations
