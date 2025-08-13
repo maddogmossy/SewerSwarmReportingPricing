@@ -2424,10 +2424,10 @@ export default function Dashboard() {
           }
           
           // Check if this is a valid cost calculation (not a failed configuration)
-          // FIXED: Allow MM4 configurations with valid costs to display, even if marked as mm4_outside_ranges
+          // ENHANCED: Expanded to include all valid service and structural cost statuses
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
-            costCalculation.cost > 0 && 
-            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status);
+            costCalculation.cost >= 0 && // Allow £0 costs for minimum not met scenarios
+            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed'].includes(costCalculation.status);
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
@@ -2528,15 +2528,23 @@ export default function Dashboard() {
             
             // Fallback: Generic warning triangles for unknown issues
             if (section.defectType === 'service') {
-              // CRITICAL DEBUG: Trace why service sections hit this fallback path
+              // ENHANCED DEBUG: Trace why service sections hit this fallback path with detailed status analysis
               console.log('🔵 BLUE TRIANGLE FALLBACK - Service Section:', {
                 itemNo: section.itemNo,
                 defectType: section.defectType,
                 severityGrade: section.severityGrade,
                 hasDefectsRequiringCost,
                 finalHasDefectsRequiringCost: typeof finalHasDefectsRequiringCost !== 'undefined' ? finalHasDefectsRequiringCost : 'UNDEFINED',
-                costCalculation: typeof costCalculation !== 'undefined' ? costCalculation : 'UNDEFINED',
-                reasonForBlueTriangle: 'Service section with no valid cost calculation result'
+                costCalculation: typeof costCalculation !== 'undefined' ? {
+                  status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
+                  cost: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
+                  method: costCalculation && 'method' in costCalculation ? costCalculation.method : 'NO_METHOD',
+                  hasValidCost: costCalculation && 'cost' in costCalculation && costCalculation.cost >= 0,
+                  statusNotExcluded: costCalculation && 'status' in costCalculation ? 
+                    !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed'].includes(costCalculation.status) : false,
+                  fullObject: costCalculation
+                } : 'UNDEFINED',
+                reasonForBlueTriangle: 'Service section with no valid cost calculation result - check isValidCostCalculation logic'
               });
               
               return (
