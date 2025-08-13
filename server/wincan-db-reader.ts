@@ -201,7 +201,8 @@ async function formatObservationText(observations: string[], sector: string = 'u
     console.log(`🔍 DEPOSIT DEBUG - Processing grouped observations:`, {
       codeGroups: Object.fromEntries(
         Object.entries(codeGroups).filter(([code]) => ['DES', 'DEC', 'DER'].includes(code))
-      )
+      ),
+      originalObservations: observations.filter(obs => obs.includes('DES') || obs.includes('DEC') || obs.includes('DER'))
     });
   }
   
@@ -219,25 +220,25 @@ async function formatObservationText(observations: string[], sector: string = 'u
       const description = observationCodes[code] || code;
       const positions = items.map(item => item.meterage).join('m, ');
       
-      // CRITICAL FIX: For DES, distinguish between fine/coarse deposits
-      if (code === 'DES' || code === 'DER') {
-        // Separate by detail level - some DES may be "fine settled", others may be "coarse"
-        const simpleItems = items.filter(item => !item.fullText.includes('(') || item.fullText.includes('fine'));
-        const detailedItems = items.filter(item => item.fullText.includes('(') && !item.fullText.includes('fine'));
+      // CRITICAL FIX: For DES/DER/DEC, preserve detailed descriptions properly
+      if (code === 'DES' || code === 'DER' || code === 'DEC') {
+        // Check if any item has detailed descriptions in parentheses
+        const itemsWithDetails = items.filter(item => item.fullText.includes('('));
+        const itemsWithoutDetails = items.filter(item => !item.fullText.includes('('));
         
-        if (simpleItems.length > 0) {
-          const simplePositions = simpleItems.map(item => item.meterage).join('m, ');
-          formattedParts.push(`${description} at ${simplePositions}m`);
-        }
-        
-        if (detailedItems.length > 0) {
-          // Handle detailed items separately with their specific descriptions
-          for (const detailedItem of detailedItems) {
-            const detailsMatch = detailedItem.fullText.match(/\((.*?)\)/);
-            const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
-            const itemDescription = detailedItem.fullText.includes('coarse') ? 'Deposits - coarse' : description;
-            formattedParts.push(`${itemDescription} at ${detailedItem.meterage}m${details}`);
-          }
+        if (itemsWithDetails.length > 0) {
+          // Extract the detailed description from any item that has it
+          const detailedItem = itemsWithDetails[0];
+          const detailsMatch = detailedItem.fullText.match(/\((.*?)\)/);
+          const fullDetails = detailsMatch ? ` (${detailsMatch[1]})` : '';
+          
+          // Group all positions together with the detailed description
+          const allPositions = items.map(item => item.meterage).join('m, ');
+          formattedParts.push(`${description} at ${allPositions}m${fullDetails}`);
+        } else {
+          // No detailed descriptions - use standard grouping
+          const allPositions = items.map(item => item.meterage).join('m, ');
+          formattedParts.push(`${description} at ${allPositions}m`);
         }
       } else {
         // Standard grouping for other defect codes
@@ -839,6 +840,14 @@ async function processSectionTable(
     // Format defect text from observations with enhanced formatting or use default for sections without observations
     let defectText: string;
     let classification: any;
+    
+    // CRITICAL DEBUG - Log Item 3 specifically
+    if (authenticItemNo === 3) {
+      console.log(`🚨 ITEM 3 DEBUG - Raw observations:`, {
+        count: observations.length,
+        observations: observations
+      });
+    }
     
     if (observations.length === 0) {
       // Fallback logic for sections without observations
