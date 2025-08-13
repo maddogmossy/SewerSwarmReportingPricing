@@ -261,5 +261,18 @@ This implementation provides complete systematic reprocessing capability with ma
 - **Should be**: DES = "Deposits - fine settled", DER = "Deposits - coarse" (separate individual descriptions)
 - **Root Cause**: Defect processing logic combining codes instead of creating individual descriptions
 
-**PROPOSED FIX**: Update defect processing to create individual descriptions for each defect code (DES, DER, etc.)
-**USER APPROVAL REQUIRED**: Can I fix the defect processing logic to provide individual descriptions for each defect code?
+**DETAILED FIX PLAN**: Restore individual defect code descriptions (this was working before)
+
+**Files requiring modification**:
+1. `server/wincan-db-reader.ts` - Fix defect parsing to extract individual codes
+2. `server/mscc5-classifier.ts` - Ensure individual descriptions are applied per code
+3. Possibly storage layer to ensure individual defects are stored properly
+
+**Expected outcome**:
+- DES at 13.27m, 16.63m, 17.73m → "DES: Deposits - fine settled at 13.27m, 16.63m, 17.73m"  
+- DER 21.6m (5% cross-sectional area loss) → "DER: Deposits - coarse at 21.6m (5% cross-sectional area loss)"
+- LL 29.82m → "LL: Line deviates left at 29.82m"
+
+**MANDATORY PERMISSION REQUEST**: 
+User has specified that AI must not change any files without explicit permission.
+**Please confirm approval to proceed with fixing the defect code description logic.**
