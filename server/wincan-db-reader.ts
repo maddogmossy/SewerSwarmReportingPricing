@@ -196,6 +196,15 @@ async function formatObservationText(observations: string[], sector: string = 'u
   // STEP 4: Build formatted text with grouped observations
   const formattedParts: string[] = [];
   
+  // DEBUG: Log what we're processing for detailed investigation
+  if (Object.keys(codeGroups).includes('DES') || Object.keys(codeGroups).includes('DEC')) {
+    console.log(`🔍 DEPOSIT DEBUG - Processing grouped observations:`, {
+      codeGroups: Object.fromEntries(
+        Object.entries(codeGroups).filter(([code]) => ['DES', 'DEC', 'DER'].includes(code))
+      )
+    });
+  }
+  
   // Process grouped observations
   for (const [code, items] of Object.entries(codeGroups)) {
     if (items.length === 1) {
@@ -206,10 +215,41 @@ async function formatObservationText(observations: string[], sector: string = 'u
       const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
       formattedParts.push(`${description} at ${meterage}m${details}`);
     } else {
-      // Multiple occurrences - group with description
+      // Multiple occurrences - determine if they have different detail levels
       const description = observationCodes[code] || code;
       const positions = items.map(item => item.meterage).join('m, ');
-      formattedParts.push(`${description} at ${positions}m`);
+      
+      // CRITICAL FIX: For DES, distinguish between fine/coarse deposits
+      if (code === 'DES' || code === 'DER') {
+        // Separate by detail level - some DES may be "fine settled", others may be "coarse"
+        const simpleItems = items.filter(item => !item.fullText.includes('(') || item.fullText.includes('fine'));
+        const detailedItems = items.filter(item => item.fullText.includes('(') && !item.fullText.includes('fine'));
+        
+        if (simpleItems.length > 0) {
+          const simplePositions = simpleItems.map(item => item.meterage).join('m, ');
+          formattedParts.push(`${description} at ${simplePositions}m`);
+        }
+        
+        if (detailedItems.length > 0) {
+          // Handle detailed items separately with their specific descriptions
+          for (const detailedItem of detailedItems) {
+            const detailsMatch = detailedItem.fullText.match(/\((.*?)\)/);
+            const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
+            const itemDescription = detailedItem.fullText.includes('coarse') ? 'Deposits - coarse' : description;
+            formattedParts.push(`${itemDescription} at ${detailedItem.meterage}m${details}`);
+          }
+        }
+      } else {
+        // Standard grouping for other defect codes
+        const detailedOccurrence = items.find(item => item.fullText.includes('('));
+        if (detailedOccurrence) {
+          const detailsMatch = detailedOccurrence.fullText.match(/\((.*?)\)/);
+          const details = detailsMatch ? ` (${detailsMatch[1]})` : '';
+          formattedParts.push(`${description} at ${positions}m${details}`);
+        } else {
+          formattedParts.push(`${description} at ${positions}m`);
+        }
+      }
     }
   }
   
