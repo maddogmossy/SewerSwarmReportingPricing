@@ -5278,14 +5278,15 @@ export default function Dashboard() {
             const purpleLength = parseFloat(getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'));
             
             // Check if section matches this MM4 configuration criteria
-            const debrisMatch = sectionDebrisPercent <= purpleDebris;
-            const lengthMatch = sectionLength <= purpleLength;
+            // ENHANCED: For service sections (including observations), handle empty purple fields as unlimited
+            const debrisMatch = purpleDebris === 0 ? true : sectionDebrisPercent <= purpleDebris;
+            const lengthMatch = purpleLength === 0 ? true : sectionLength <= purpleLength;
             
             // FIXED: Remove forced Item 3 test failure that was causing immediate popup
             const adjustedLengthMatch = lengthMatch;
-            // ENHANCED: For F608 multi-row configurations, allow rows with only greenValue (Row 2) or only blueValue (Row 1)
-            // CRITICAL FIX: Always require blueValue (day rate) for valid cost calculation - without it, show blue triangle
-            const hasValidRate = blueValue > 0 && (greenValue > 0 || purpleDebris > 0);
+            // ENHANCED: For service sections, only require valid day rate (blue) and minimum quantities (green)
+            // Purple fields are optional for service sections (Grade 0 observations, monitoring, etc.)
+            const hasValidRate = blueValue > 0 && greenValue > 0;
             
             // CRITICAL DEBUG: Item 3 length validation to fix "Length Out of Range" popup
             if (section.itemNo === 3) {
