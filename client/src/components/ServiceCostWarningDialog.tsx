@@ -144,7 +144,7 @@ export default function ServiceCostWarningDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto" id="sercw1">
         <DialogHeader>
           <DialogTitle className="text-blue-600 flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-blue-600" />
