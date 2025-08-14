@@ -676,8 +676,7 @@ export default function Dashboard() {
       console.log('🧹 Cleared cost decisions for report after equipment priority change:', currentReportId);
       
       // Reset warning dialog states to allow fresh warnings
-      setServiceCostWarningDismissed(false);
-      setStructuralCostWarningDismissed(false);
+      // Warning dialog state management removed
       
       // Force sections data to refresh with new priority
       setTimeout(() => {
@@ -2569,6 +2568,17 @@ export default function Dashboard() {
   // Helper function to check if section meets minimum quantities
   const meetsMinimumQuantities = (section: any): boolean => {
     const costCalculation = calculateAutoCost(section);
+    
+    // CRITICAL FIX: Check for incomplete range configurations that should show red
+    if (costCalculation && (costCalculation.status === 'mm4_outside_ranges' || costCalculation.status === 'mm4_incomplete_config')) {
+      console.log('🔍 INCOMPLETE CONFIG CHECK:', {
+        itemNo: section.itemNo,
+        status: costCalculation.status,
+        shouldShowRed: true
+      });
+      return false; // Force red display for incomplete configurations
+    }
+    
     return costCalculation ? !('showRedTriangle' in costCalculation && costCalculation.showRedTriangle) : true;
   };
 
@@ -2669,9 +2679,7 @@ export default function Dashboard() {
     console.log('🧹 Cleared cost decisions for export to ensure fresh cost review:', currentReportId);
     
     // Reset service cost warning dismissed state and clear existing data
-    setServiceCostWarningDismissed(false);
-    setServiceCostData(null);
-    setShowServiceCostWarning(false);
+    // Service cost warning state management removed
     
     // Use setTimeout to ensure state updates happen before check
     setTimeout(() => {
@@ -3461,8 +3469,50 @@ export default function Dashboard() {
               const bufferedDebris = buffer[debrisBufferKey];
               const bufferedLength = buffer[lengthBufferKey];
               
-              const purpleDebris = parseFloat(bufferedDebris || mm4Row.purpleDebris || '0');
-              const purpleLength = parseFloat(bufferedLength || mm4Row.purpleLength || '0');
+              const rawPurpleDebris = bufferedDebris || mm4Row.purpleDebris || '';
+              const rawPurpleLength = bufferedLength || mm4Row.purpleLength || '';
+              
+              // CRITICAL: Check for incomplete configuration - empty strings should trigger red warnings
+              const hasValidDebris = rawPurpleDebris !== '' && !isNaN(parseFloat(rawPurpleDebris));
+              const hasValidLength = rawPurpleLength !== '' && !isNaN(parseFloat(rawPurpleLength));
+              
+              if (!hasValidDebris || !hasValidLength) {
+                console.log('🚨 INCOMPLETE RANGE CONFIG DETECTED:', {
+                  itemNo: section.itemNo,
+                  configId: cctvConfig.id,
+                  rawPurpleDebris,
+                  rawPurpleLength,
+                  hasValidDebris,
+                  hasValidLength,
+                  willShowRed: true
+                });
+                
+                return {
+                  cost: 0,
+                  currency: '£',
+                  method: 'Incomplete Configuration',
+                  status: 'mm4_incomplete_config',
+                  recommendation: 'Configuration incomplete: missing debris % or length ranges',
+                  warningType: 'incomplete_config',
+                  sectionData: {
+                    itemNo: section.itemNo,
+                    defectType: 'service',
+                    pipeSize: section.pipeSize?.toString().replace('mm', ''),
+                    totalLength: sectionLength,
+                    debrisPercent: sectionDebrisPercent
+                  },
+                  configData: {
+                    categoryId: cctvConfig.categoryId,
+                    maxDebris: hasValidDebris ? parseFloat(rawPurpleDebris) : 'missing',
+                    maxLength: hasValidLength ? parseFloat(rawPurpleLength) : 'missing',
+                    minLength: 0,
+                    actualDayRate: parseFloat(mm4Row.blueValue || '0')
+                  }
+                };
+              }
+              
+              const purpleDebris = parseFloat(rawPurpleDebris);
+              const purpleLength = parseFloat(rawPurpleLength);
               
               const debrisMatch = sectionDebrisPercent <= purpleDebris;
               const lengthMatch = sectionLength <= purpleLength;

@@ -166,23 +166,32 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50'
                   }`}
                   onClick={() => {
-                    console.log('🔄 A5 Button Clicked - Updating priority');
-                    setEquipmentPriority('id760');
-                    localStorage.setItem('equipmentPriority', 'id760');
-                    localStorage.setItem('lastUserPriorityChange', Date.now().toString());
-                    toast({
-                      title: "Equipment Priority Updated",
-                      description: "A5 - CCTV/Jet Vac now has priority for cost calculations",
-                    });
-                    setIsOpen(false);
-                    
-                    // Trigger React state update instead of page refresh
-                    if (onPricingNeeded) {
-                      // Force dashboard to recalculate costs with new priority
-                      const event = new CustomEvent('equipmentPriorityChanged', { 
-                        detail: { newPriority: 'id760' } 
+                    try {
+                      console.log('🔄 A5 Button Clicked - Updating priority');
+                      setEquipmentPriority('id760');
+                      localStorage.setItem('equipmentPriority', 'id760');
+                      localStorage.setItem('lastUserPriorityChange', Date.now().toString());
+                      toast({
+                        title: "Equipment Priority Updated",
+                        description: "A5 - CCTV/Jet Vac now has priority for cost calculations",
                       });
-                      window.dispatchEvent(event);
+                      setIsOpen(false);
+                      
+                      // Trigger React state update instead of page refresh
+                      if (onPricingNeeded) {
+                        // Force dashboard to recalculate costs with new priority
+                        const event = new CustomEvent('equipmentPriorityChanged', { 
+                          detail: { newPriority: 'id760' } 
+                        });
+                        window.dispatchEvent(event);
+                      }
+                    } catch (error) {
+                      console.error('🚨 A5 Equipment Priority Error:', error);
+                      toast({
+                        title: "Configuration Error",
+                        description: "A5 priority update failed. Please try again.",
+                        variant: "destructive"
+                      });
                     }
                   }}
                 >
@@ -195,23 +204,32 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50'
                   }`}
                   onClick={() => {
-                    console.log('🔄 A4 Button Clicked - Updating priority');
-                    setEquipmentPriority('id759');
-                    localStorage.setItem('equipmentPriority', 'id759');
-                    localStorage.setItem('lastUserPriorityChange', Date.now().toString());
-                    toast({
-                      title: "Equipment Priority Updated", 
-                      description: "A4 - CCTV/Van Pack now has priority for cost calculations",
-                    });
-                    setIsOpen(false);
-                    
-                    // Trigger React state update instead of page refresh
-                    if (onPricingNeeded) {
-                      // Force dashboard to recalculate costs with new priority
-                      const event = new CustomEvent('equipmentPriorityChanged', { 
-                        detail: { newPriority: 'id759' } 
+                    try {
+                      console.log('🔄 A4 Button Clicked - Updating priority');
+                      setEquipmentPriority('id759');
+                      localStorage.setItem('equipmentPriority', 'id759');
+                      localStorage.setItem('lastUserPriorityChange', Date.now().toString());
+                      toast({
+                        title: "Equipment Priority Updated", 
+                        description: "A4 - CCTV/Van Pack now has priority for cost calculations",
                       });
-                      window.dispatchEvent(event);
+                      setIsOpen(false);
+                      
+                      // Trigger React state update instead of page refresh
+                      if (onPricingNeeded) {
+                        // Force dashboard to recalculate costs with new priority
+                        const event = new CustomEvent('equipmentPriorityChanged', { 
+                          detail: { newPriority: 'id759' } 
+                        });
+                        window.dispatchEvent(event);
+                      }
+                    } catch (error) {
+                      console.error('🚨 A4 Equipment Priority Error:', error);
+                      toast({
+                        title: "Configuration Error",
+                        description: "A4 priority update failed. Please try again.",
+                        variant: "destructive"
+                      });
                     }
                   }}
                 >
