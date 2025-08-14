@@ -327,14 +327,8 @@ async function classifyDefectByMSCC5Standards(observations: string[], sector: st
     }
   }
   
-  // Default classification for unknown observations
-  let maxSeverity = 1;
-  let defectType = 'service';
-  let recommendations = 'Routine inspection recommended';
-  let adoptable = 'Adoptable';
-  
   // Check for line deviations (LL, LR) - these are Grade 0 observations per WRc MSCC5 standards
-  // Note: Line deviations should not override higher severity defects
+  // CRITICAL: Check this FIRST before setting any default values
   const hasLineDeviations = observations.some(obs => 
     obs.includes('LL ') || obs.includes('LR ') || 
     obs.toLowerCase().includes('line deviates')
@@ -347,6 +341,22 @@ async function classifyDefectByMSCC5Standards(observations: string[], sector: st
     obs.includes('JN ') || // Junctions are also observations
     obs.toLowerCase().includes('junction')
   );
+  
+  // CRITICAL FIX: Return Grade 0 immediately for line deviations only (before any other logic)
+  if (hasOnlyLineDeviations) {
+    return {
+      severityGrade: 0,
+      defectType: 'service',
+      recommendations: 'No action required this pipe section is at an adoptable condition',
+      adoptable: 'Yes'
+    };
+  }
+  
+  // Default classification for unknown observations (only if not line deviations only)
+  let maxSeverity = 1;
+  let defectType = 'service';
+  let recommendations = 'Routine inspection recommended';
+  let adoptable = 'Adoptable';
   
   // Check for high-severity structural defects
   const hasStructuralDefects = observations.some(obs => 
@@ -399,15 +409,7 @@ async function classifyDefectByMSCC5Standards(observations: string[], sector: st
     adoptable = 'Conditional';
   }
   
-  // Only return Grade 0 if there are ONLY line deviations and no other defects
-  if (hasOnlyLineDeviations) {
-    return {
-      severityGrade: 0,
-      defectType: 'service',
-      recommendations: 'No action required this pipe section is at an adoptable condition',
-      adoptable: 'Yes'
-    };
-  }
+  // Note: Line deviation Grade 0 logic moved to top of function to prevent interference
   
   return {
     severityGrade: maxSeverity,
@@ -738,8 +740,31 @@ async function processSectionTable(
     console.log(`🔍 Section ${sectionKey}: Found ${observations.length} observations`);
     if (observations.length > 0) {
       console.log(`🔍 Sample observations for ${sectionKey}:`, observations.slice(0, 3));
+      
+      // CRITICAL ITEM 9 DEBUG - Track where Line deviates left comes from
+      if (sectionKey.includes('FW04') || record.OBJ_SortOrder === 9) {
+        console.log(`🚨 ITEM 9 DEBUG - FOUND OBSERVATIONS:`, {
+          sectionKey,
+          sortOrder: record.OBJ_SortOrder,
+          allObservations: observations,
+          observationSource: 'observationMap',
+          mapKey: record.OBJ_PK
+        });
+      }
     } else {
       console.log(`🔍 DEBUG: Looking for observations with key ${record.OBJ_PK}, available keys:`, Array.from(observationMap.keys()).slice(0, 5));
+      
+      // CRITICAL ITEM 9 DEBUG - Track empty observations
+      if (sectionKey.includes('FW04') || record.OBJ_SortOrder === 9) {
+        console.log(`🚨 ITEM 9 DEBUG - NO OBSERVATIONS:`, {
+          sectionKey,
+          sortOrder: record.OBJ_SortOrder,
+          observations: [],
+          observationSource: 'observationMap',
+          mapKey: record.OBJ_PK,
+          willUseDefault: 'Yes - should be Grade 0'
+        });
+      }
     }
     
     // Don't skip sections without observations - process them with default classification
@@ -961,11 +986,36 @@ async function processSectionTable(
         adoptable: 'Yes'
       };
       console.log(`🔍 Using default classification for section ${authenticItemNo} - no observations available`);
+      
+      // CRITICAL ITEM 9 DEBUG
+      if (authenticItemNo === 9) {
+        console.log(`🚨 ITEM 9 DEBUG - DEFAULT PATH:`, {
+          itemNo: authenticItemNo,
+          sectionKey,
+          observationsLength: observations.length,
+          defectText,
+          classification,
+          path: 'DEFAULT - NO OBSERVATIONS'
+        });
+      }
     } else {
       // Standard processing with observations - ENHANCED: Preserve full observation details  
       defectText = await formatObservationText(observations, sector);
       classification = await classifyDefectByMSCC5Standards(observations, sector);
       console.log(`🔍 Using observation-based classification for section ${authenticItemNo}: "${defectText.substring(0, 100)}..."`);
+      
+      // CRITICAL ITEM 9 DEBUG
+      if (authenticItemNo === 9) {
+        console.log(`🚨 ITEM 9 DEBUG - OBSERVATION PATH:`, {
+          itemNo: authenticItemNo,
+          sectionKey,
+          observationsLength: observations.length,
+          rawObservations: observations,
+          formattedDefectText: defectText,
+          classification,
+          path: 'OBSERVATION PROCESSING'
+        });
+      }
     }
     
     // Get authentic severity grade from SECSTAT table if available
