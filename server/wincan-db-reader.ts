@@ -755,8 +755,18 @@ async function processSectionTable(
     let inspectionDirection = 'downstream'; // Default
     
     if (flowDirection !== null && flowDirection !== undefined) {
-      // Wincan standard: 1 = upstream, 0 = downstream (corrected interpretation)
-      inspectionDirection = flowDirection === 1 ? 'upstream' : 'downstream';
+      // Use manhole numbering to determine actual flow direction
+      // Extract numbers from manhole names for comparison
+      const fromNum = parseInt(fromMH.match(/\d+/)?.[0] || '0');
+      const toNum = parseInt(toMH.match(/\d+/)?.[0] || '0');
+      
+      // If fromMH number > toMH number, it's an upstream inspection
+      // If fromMH number < toMH number, it's a downstream inspection
+      if (fromNum > toNum) {
+        inspectionDirection = 'upstream';
+      } else {
+        inspectionDirection = 'downstream';
+      }
     }
     
     // UPSTREAM/DOWNSTREAM RULE APPLICATION:
