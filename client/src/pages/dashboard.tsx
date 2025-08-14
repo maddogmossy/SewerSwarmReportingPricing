@@ -6059,15 +6059,7 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen bg-slate-50">
-      {/* Validation Warning Popup */}
-      <ValidationWarningPopup
-        issue={validationWarnings.currentIssue}
-        currentIndex={validationWarnings.currentIndex}
-        totalCount={validationWarnings.totalCount}
-        onNext={validationWarnings.nextIssue}
-        onDismissAll={validationWarnings.dismissAll}
-        isVisible={validationWarnings.isVisible}
-      />
+      {/* Warning system components removed */}
       
       {/* Navigation */}
       <div className="bg-white border-b border-slate-200 p-4">
