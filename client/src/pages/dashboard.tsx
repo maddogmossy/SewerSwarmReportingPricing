@@ -57,7 +57,8 @@ import {
   ArrowLeft,
   Info,
   Wrench,
-  Truck
+  Truck,
+  X
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -715,6 +716,18 @@ export default function Dashboard() {
       window.removeEventListener('equipmentPriorityChanged', handleEquipmentPriorityChange as EventListener);
     };
   }, [reportId, queryClient]);
+
+  // Sequential Configuration Warning System - Trigger for synthetic dashboards  
+  useEffect(() => {
+    if (rawSectionData && rawSectionData.length > 0 && !sequentialWarningProcessed) {
+      // Delay to allow other warnings to settle
+      const timer = setTimeout(() => {
+        checkServiceCostCompletion(rawSectionData);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [rawSectionData, sequentialWarningProcessed]);
   
   // Force component re-render when equipment priority changes
   const [costRecalcTrigger, setCostRecalcTrigger] = useState(0);
@@ -861,6 +874,23 @@ export default function Dashboard() {
     configData?: any;
   } | null>(null);
   const [configWarningDismissed, setConfigWarningDismissed] = useState(false);
+
+  // Sequential Configuration Warning System for Synthetic Dashboards
+  interface ConfigurationIssue {
+    itemNo: number;
+    issueType: 'missing_mm4' | 'missing_day_rate' | 'pipe_size_mismatch' | 'missing_ranges' | 'equipment_invalid';
+    description: string;
+    navigationUrl: string;
+    configId?: number;
+    categoryId?: string;
+    sector?: string;
+    pipeSize?: string;
+  }
+
+  const [configurationIssues, setConfigurationIssues] = useState<ConfigurationIssue[]>([]);
+  const [currentIssueIndex, setCurrentIssueIndex] = useState(0);
+  const [showSequentialConfigWarning, setShowSequentialConfigWarning] = useState(false);
+  const [sequentialWarningProcessed, setSequentialWarningProcessed] = useState(false);
 
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
@@ -1320,11 +1350,175 @@ export default function Dashboard() {
   };
 
   // EASY DISABLE: Set this to true to disable ALL warning triggers
-  const DISABLE_ALL_WARNINGS = true; // ⚠️ Set to false to re-enable warnings
+  const DISABLE_ALL_WARNINGS = false; // ✅ Warnings re-enabled for cost confirmation and configuration validation
+
+  // Function to detect if dashboard contains synthetic data (items 1-24)
+  const isSyntheticDashboard = (sectionData: any[]) => {
+    if (!sectionData || sectionData.length === 0) return false;
+    
+    // Check if data appears to be generated rather than from uploaded files
+    const hasSequentialItems = sectionData.length >= 20 && 
+                               sectionData.every(section => section.itemNo >= 1 && section.itemNo <= 27);
+    
+    // Additional synthetic indicators
+    const hasNoFileUpload = sectionData.some(section => !section.uploadId || section.uploadId === null);
+    const hasSequentialNumbering = sectionData.filter(s => s.itemNo <= 24).length >= 20;
+    
+    console.log('🔍 SYNTHETIC DASHBOARD CHECK:', {
+      sectionCount: sectionData.length,
+      hasSequentialItems,
+      hasNoFileUpload,
+      hasSequentialNumbering,
+      isSynthetic: hasSequentialItems && hasSequentialNumbering
+    });
+    
+    return hasSequentialItems && hasSequentialNumbering;
+  };
+
+  // Function to scan for configuration issues in synthetic dashboards
+  const scanConfigurationIssues = (sectionData: any[]): ConfigurationIssue[] => {
+    if (!isSyntheticDashboard(sectionData)) return [];
+    
+    const issues: ConfigurationIssue[] = [];
+    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+    
+    // Scan items 1-24 for configuration issues
+    const itemsToScan = sectionData.filter(section => section.itemNo >= 1 && section.itemNo <= 24);
+    
+    for (const section of itemsToScan) {
+      const costCalc = calculateAutoCost(section);
+      
+      if (costCalc && typeof costCalc === 'object' && 'status' in costCalc) {
+        const status = costCalc.status;
+        const unconfiguredStatuses = [
+          'id760_insufficient_items',
+          'id759_insufficient_items', 
+          'configuration_missing',
+          'day_rate_missing',
+          'tp1_unconfigured',
+          'tp1_invalid'
+        ];
+        
+        if (unconfiguredStatuses.includes(status)) {
+          let issueType: ConfigurationIssue['issueType'] = 'missing_mm4';
+          let description = '';
+          let configId = equipmentPriority === 'id759' ? 759 : 760;
+          let categoryId = 'cctv-jet-vac'; // Default category
+          let sector = 'utilities'; // Default sector
+          let pipeSize = section.pipeSize?.replace('mm', '') || '150';
+          
+          // Determine issue type and description based on status
+          switch (status) {
+            case 'id760_insufficient_items':
+            case 'id759_insufficient_items':
+              issueType = 'missing_mm4';
+              description = `Item ${section.itemNo}: Missing MM4 configuration data for ${pipeSize}mm pipe with ${equipmentPriority.toUpperCase()} equipment. Configure day rates and pricing to enable cost calculations.`;
+              break;
+            case 'day_rate_missing':
+              issueType = 'missing_day_rate';
+              description = `Item ${section.itemNo}: Day rate missing for ${pipeSize}mm pipe configuration. Set blue value (day rate) to enable proper cost validation.`;
+              break;
+            case 'configuration_missing':
+              issueType = 'pipe_size_mismatch';
+              description = `Item ${section.itemNo}: No configuration found for ${pipeSize}mm pipe size. Create pipe-size-specific configuration for this equipment type.`;
+              break;
+            case 'tp1_unconfigured':
+            case 'tp1_invalid':
+              issueType = 'equipment_invalid';
+              description = `Item ${section.itemNo}: Equipment configuration invalid or incomplete for ${pipeSize}mm pipe. Review and update equipment settings.`;
+              break;
+            default:
+              issueType = 'missing_mm4';
+              description = `Item ${section.itemNo}: Configuration issue detected for ${pipeSize}mm pipe. Review MM4 data and equipment settings.`;
+          }
+          
+          // Construct navigation URL
+          const reportParam = currentReportId ? `&reportId=${currentReportId}` : '';
+          const navigationUrl = `/pr2-config-clean?id=${configId}&categoryId=${categoryId}&sector=${sector}&pipeSize=${pipeSize}&autoSelectUtilities=true${reportParam}`;
+          
+          issues.push({
+            itemNo: section.itemNo,
+            issueType,
+            description,
+            navigationUrl,
+            configId,
+            categoryId,
+            sector,
+            pipeSize
+          });
+        }
+      }
+    }
+    
+    console.log('🔍 CONFIGURATION ISSUES DETECTED:', {
+      totalIssues: issues.length,
+      itemsWithIssues: issues.map(i => i.itemNo),
+      issueTypes: issues.map(i => i.issueType)
+    });
+    
+    return issues;
+  };
+
+  // Handler for sequential configuration warning navigation
+  const handleConfigurationIssueNavigation = () => {
+    if (configurationIssues.length > 0 && currentIssueIndex < configurationIssues.length) {
+      const currentIssue = configurationIssues[currentIssueIndex];
+      console.log('🔗 NAVIGATING TO CONFIGURATION:', currentIssue.navigationUrl);
+      window.location.href = currentIssue.navigationUrl;
+    }
+  };
+
+  // Handler for moving to next configuration issue
+  const handleNextConfigurationIssue = () => {
+    const nextIndex = currentIssueIndex + 1;
+    
+    if (nextIndex < configurationIssues.length) {
+      setCurrentIssueIndex(nextIndex);
+    } else {
+      // All issues processed, close sequential warning system
+      setShowSequentialConfigWarning(false);
+      setConfigurationIssues([]);
+      setCurrentIssueIndex(0);
+      setSequentialWarningProcessed(true);
+      
+      // Trigger service/structural cost checks after configuration issues resolved
+      setTimeout(() => {
+        if (rawSectionData && rawSectionData.length > 0) {
+          console.log('🔄 Configuration issues resolved, checking service/structural costs');
+          checkServiceCostCompletion(rawSectionData);
+        }
+      }, 500);
+    }
+  };
+
+  // Handler for dismissing all configuration issues
+  const handleDismissAllConfigurationIssues = () => {
+    setShowSequentialConfigWarning(false);
+    setConfigurationIssues([]);
+    setCurrentIssueIndex(0);
+    setSequentialWarningProcessed(true);
+    
+    console.log('🚫 All configuration issues dismissed by user');
+  };
 
   // Function to check if all service costs are populated and trigger warning
   const checkServiceCostCompletion = (sectionData: any[]) => {
     if (DISABLE_ALL_WARNINGS || !sectionData || sectionData.length === 0) return;
+    
+    // For synthetic dashboards, first check configuration issues
+    if (isSyntheticDashboard(sectionData) && !sequentialWarningProcessed) {
+      const issues = scanConfigurationIssues(sectionData);
+      
+      if (issues.length > 0) {
+        console.log('🔍 SYNTHETIC DASHBOARD: Configuration issues found, showing sequential warnings');
+        setConfigurationIssues(issues);
+        setCurrentIssueIndex(0);
+        setShowSequentialConfigWarning(true);
+        return; // Don't proceed with service cost checks until configuration issues resolved
+      } else {
+        setSequentialWarningProcessed(true); // Mark as processed if no issues
+      }
+    }
 
     // Find all service sections
     const allServiceSections = sectionData.filter(section => section.defectType === 'service');
@@ -8423,6 +8617,56 @@ export default function Dashboard() {
             }
           }}
         />
+      )}
+
+      {/* Sequential Configuration Warning Dialog for Synthetic Dashboards */}
+      {showSequentialConfigWarning && configurationIssues.length > 0 && (
+        <Dialog open={showSequentialConfigWarning} onOpenChange={() => setShowSequentialConfigWarning(false)}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  <span>Configuration Required</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDismissAllConfigurationIssues}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </DialogTitle>
+              {configurationIssues.length > 1 && (
+                <div className="text-sm text-muted-foreground">
+                  Issue {currentIssueIndex + 1} of {configurationIssues.length}
+                </div>
+              )}
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="text-sm text-gray-600">
+                {configurationIssues[currentIssueIndex]?.description}
+              </div>
+              <div className="flex space-x-2">
+                <Button 
+                  onClick={handleDismissAllConfigurationIssues}
+                  variant="outline"
+                  size="sm"
+                >
+                  Skip All
+                </Button>
+                <Button 
+                  onClick={handleConfigurationIssueNavigation}
+                  size="sm"
+                  className="flex-1"
+                >
+                  Got It - Configure Now
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
