@@ -1671,17 +1671,24 @@ export default function Dashboard() {
 
         const totalServiceCost = serviceItems.reduce((sum, item) => sum + item.currentCost, 0);
         
-        // Check service cost vs day rate - Enhanced warning system should trigger for BOTH scenarios
+        // CRITICAL FIX: Only trigger Service Cost Day Rate Warning when costs turn RED (minimum not met)
         const dayRate = firstCostCalc.dayRate || 0;
         const isServiceCostBelowDayRate = totalServiceCost < dayRate;
         const isServiceCostAboveDayRate = totalServiceCost > dayRate;
-        const shouldTriggerServiceWarning = isServiceCostBelowDayRate || isServiceCostAboveDayRate;
+        
+        // Check if orange minimum is met to determine if costs are red
+        const orangeMinimumMet = checkOrangeMinimumMet();
+        
+        // WARNING SHOULD ONLY TRIGGER WHEN COSTS ARE RED (not meeting orange minimum) AND there are cost deviations
+        const shouldTriggerServiceWarning = !orangeMinimumMet && (isServiceCostBelowDayRate || isServiceCostAboveDayRate);
         
         console.log('🔍 SERVICE COST WARNING - Cost analysis:', {
           totalServiceCost,
           dayRate,
           isServiceCostBelowDayRate,
           isServiceCostAboveDayRate,
+          orangeMinimumMet,
+          costsAreRed: !orangeMinimumMet,
           shouldTriggerServiceWarning,
           serviceItemsCount: serviceItems.length,
           serviceItemDetails: serviceItems.map(item => ({
@@ -1690,10 +1697,11 @@ export default function Dashboard() {
           })),
           comparison: `${totalServiceCost} vs ${dayRate}`,
           costScenario: isServiceCostBelowDayRate ? 'Shortfall to minimum' : isServiceCostAboveDayRate ? 'Excess over minimum' : 'Equals minimum',
-          willTriggerWarning: shouldTriggerServiceWarning
+          willTriggerWarning: shouldTriggerServiceWarning,
+          triggerLogic: `Cost deviation: ${isServiceCostBelowDayRate || isServiceCostAboveDayRate} AND Costs are red: ${!orangeMinimumMet} = ${shouldTriggerServiceWarning}`
         });
 
-        // Show service warning for BOTH cost scenarios (below OR above day rate) - Enhanced warning system
+        // Show service warning ONLY when costs are RED (orange minimum not met) AND there are cost deviations
         if (shouldTriggerServiceWarning) {
           console.log('🔄 SERVICE COST WARNING - Triggering warning dialog');
           
