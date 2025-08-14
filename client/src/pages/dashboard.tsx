@@ -643,11 +643,11 @@ export default function Dashboard() {
     const clearOldPatterns = () => {
       const keys = Object.keys(localStorage);
       const oldPatternKeys = keys.filter(key => 
-        key.includes('-1051-') || key.includes('760-150-1051') || key.includes('759-150-1051')
+        key.includes('-1051-') || key.includes('760-150-1501') || key.includes('759-150-1501')
       );
       
       if (oldPatternKeys.length > 0) {
-        console.log('🧹 CLEARING OLD ID PATTERNS from localStorage (including 759-150-1051):', oldPatternKeys);
+        console.log('🧹 CLEARING OLD ID PATTERNS from localStorage (including 759-150-1501):', oldPatternKeys);
         oldPatternKeys.forEach(key => localStorage.removeItem(key));
         
         // Also clear inputBuffer which may contain old patterns
@@ -1682,9 +1682,9 @@ export default function Dashboard() {
         // WARNING SHOULD ONLY TRIGGER WHEN COSTS ARE RED (not meeting orange minimum) AND there are cost deviations
         const shouldTriggerServiceWarning = !orangeMinimumMet && (isServiceCostBelowDayRate || isServiceCostAboveDayRate);
         
-        // Service cost warning logic - only trigger when costs are red AND there are deviations
+        // Service cost warning logic - only trigger AFTER visual indicators (triangles and red costs) are displayed
 
-        // Show service warning ONLY when costs are RED (orange minimum not met) AND there are cost deviations
+        // Show service warning ONLY AFTER costs are visually RED and triangles are displayed
         if (shouldTriggerServiceWarning) {
           
           setServiceCostData({
@@ -1695,12 +1695,18 @@ export default function Dashboard() {
             configType: (firstCostCalc && 'configType' in firstCostCalc) ? firstCostCalc.configType : 'F608 Van Pack'
           });
 
-          // Auto-trigger dialog after a short delay to allow costs to render
+          // Auto-trigger dialog after extended delay to allow visual indicators to render first
           setTimeout(() => {
-            setIsExportWorkflow(false); // Not from export workflow
-            setShowServiceCostWarning(true);
-            localStorage.setItem('lastServiceWarningTime', Date.now().toString());
-          }, 1000);
+            // Verify visual indicators are present before triggering warning
+            const costsAreVisuallyRed = document.querySelector('.text-red-600') !== null;
+            const trianglesAreVisible = document.querySelector('.text-amber-600') !== null;
+            
+            if (costsAreVisuallyRed || trianglesAreVisible) {
+              setIsExportWorkflow(false); // Not from export workflow
+              setShowServiceCostWarning(true);
+              localStorage.setItem('lastServiceWarningTime', Date.now().toString());
+            }
+          }, 2000); // Extended delay for visual confirmation
         }
       } else {
         console.log('🔍 SERVICE COST WARNING - Blocked due to incomplete calculations:', {
@@ -4547,7 +4553,7 @@ export default function Dashboard() {
           selectedConfig: cctvConfig?.id,
           selectedCategoryId: cctvConfig?.categoryId,
           wouldUseID760: equipmentPriority !== 'id759',
-          id760PurpleLengths: id760Config?.mmData?.mm4DataByPipeSize?.['150-1051']?.map(row => row.purpleLength)
+          id760PurpleLengths: id760Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
         });
         
         if (!cctvConfig) {
@@ -4597,7 +4603,7 @@ export default function Dashboard() {
           let matchingMM4Data: any = [];
           let matchingPipeSizeKey = '';
           
-          // Try to find exact pipe size match (e.g., "150-1051")
+          // Try to find exact pipe size match (e.g., "150-1501")
           for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
             const [keyPipeSize] = pipeSizeKey.split('-');
             
@@ -4801,7 +4807,7 @@ export default function Dashboard() {
           const constructedBufferKey = `${configId}-${matchingPipeSizeKey}-1-blueValue`;
           const bufferedValue = buffer[constructedBufferKey];
           
-          console.log('🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1051-1-blueValue):', {
+          console.log('🚨 FINAL DEBUG - Item 3 Validation (Expected: 760-150-1501-1-blueValue):', {
             itemNo: section.itemNo,
             STEP_1_configId: configId,
             STEP_2_matchingPipeSizeKey: matchingPipeSizeKey,
@@ -4811,11 +4817,11 @@ export default function Dashboard() {
             STEP_6_finalEffectiveDayRate: effectiveDayRate,
             STEP_7_isDayRateConfigured: isDayRateConfigured,
             STEP_8_willShowPopup: !isDayRateConfigured,
-            USER_REPORTED_KEY: '760-150-1051-1-blueValue',
+            USER_REPORTED_KEY: '760-150-1501-1-blueValue',
             USER_REPORTED_VALUE: '1850',
-            EXACT_MATCH_TEST: buffer['760-150-1051-1-blueValue'],
+            EXACT_MATCH_TEST: buffer['760-150-1501-1-blueValue'],
             ALL_760_150_KEYS: Object.keys(buffer).filter(k => k.includes('760-150')),
-            BUFFER_KEY_MISMATCH: constructedBufferKey !== '760-150-1051-1-blueValue' ? 'KEY MISMATCH DETECTED' : 'KEY MATCHES'
+            BUFFER_KEY_MISMATCH: constructedBufferKey !== '760-150-1501-1-blueValue' ? 'KEY MISMATCH DETECTED' : 'KEY MATCHES'
           });
           
           // If day rate is not configured, return specific error information

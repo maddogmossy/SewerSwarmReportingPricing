@@ -995,11 +995,11 @@ export default function PR2ConfigClean() {
   });
   
   // Fixed pipe size IDs - consistent across sessions to prevent data loss
-  // CRITICAL FIX: Updated 150mm ID to match actual buffer data (1051 not 1501)
+  // RESTORED: 150mm ID returned to original 1501 pattern to match authentic data
   const PIPE_SIZE_IDS: Record<string, number> = {
     '100': 1001,
     '125': 1251,
-    '150': 1051, // FIXED: Changed from 1501 to 1051 to match buffer data
+    '150': 1501, // RESTORED: Changed back from 1051 to 1501 to restore authentic data
     '175': 1751,
     '200': 2001,
     '225': 2251,
