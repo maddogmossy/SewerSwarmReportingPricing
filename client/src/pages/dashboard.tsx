@@ -3021,6 +3021,10 @@ export default function Dashboard() {
   // We'll check this after we fetch the section data below
   const currentUpload = potentialCurrentUpload;
 
+  // FIXED: Use conditional rendering instead of history manipulation to prevent visual interruption
+  // Calculate effective reportId without manipulating browser history mid-render
+  const effectiveReportId = reportId || currentUpload?.id;
+
   // FIXED: Removed cache invalidation useEffect that was causing infinite loops
   // Cache invalidation will be handled by React Query automatically
 
@@ -3071,10 +3075,6 @@ export default function Dashboard() {
       console.log('💾 Saved last used report ID:', currentUpload.id);
     }
   }, [currentUpload?.id]);
-
-  // FIXED: Use conditional rendering instead of history manipulation to prevent visual interruption
-  // Calculate effective reportId without manipulating browser history mid-render
-  const effectiveReportId = reportId || currentUpload?.id;
 
   // Sequential Configuration Warning System - Trigger for synthetic dashboards  
   useEffect(() => {
