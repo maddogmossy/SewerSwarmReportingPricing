@@ -335,15 +335,21 @@ async function classifyDefectByMSCC5Standards(observations: string[], sector: st
   );
   
   // Line deviations alone (without other defects) result in Grade 0
+  // ENHANCED: Include water levels (WL) as Grade 0 observations per WRc MSCC5 standards
   const hasOnlyLineDeviations = hasLineDeviations && observations.every(obs => 
     obs.includes('LL ') || obs.includes('LR ') || 
     obs.toLowerCase().includes('line deviates') ||
-    obs.includes('JN ') || // Junctions are also observations
-    obs.toLowerCase().includes('junction')
+    obs.includes('WL ') || obs.toLowerCase().includes('water level') || // Water levels are Grade 0 observations
+    obs.includes('MH ') || obs.includes('MHF ') || // Manholes
+    obs.includes('JN ') || obs.toLowerCase().includes('junction') // Junctions are also observations
   );
   
   // CRITICAL FIX: Return Grade 0 immediately for line deviations only (before any other logic)
   if (hasOnlyLineDeviations) {
+    console.log(`🚨 LINE DEVIATION FIX: Section with only observations detected - returning Grade 0`);
+    console.log(`🔍 Observations:`, observations);
+    console.log(`🔍 hasLineDeviations:`, hasLineDeviations);
+    console.log(`🔍 hasOnlyLineDeviations:`, hasOnlyLineDeviations);
     return {
       severityGrade: 0,
       defectType: 'service',
@@ -552,6 +558,18 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           if (!observationMap.has(obs.INS_Section_FK)) {
             observationMap.set(obs.INS_Section_FK, []);
           }
+          
+          // CRITICAL ITEM 9 DEBUG - Track observations being added to map
+          if (obs.INS_Section_FK === 'ad9b4b46-8eda-4aa9-82e5-206ed0a908be') {
+            console.log(`🚨 ITEM 9 DEBUG - OBSERVATION MAPPING:`, {
+              sectionFK: obs.INS_Section_FK,
+              opCode: obs.OBS_OpCode,
+              distance: obs.OBS_Distance,
+              description: obs.OBS_Observation,
+              willInclude: obs.OBS_OpCode !== 'MH' && obs.OBS_OpCode !== 'MHF'
+            });
+          }
+          
           // ENHANCED: Create complete defect description with full details
           const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
           const fullDescription = obs.OBS_Observation || '';
@@ -728,41 +746,86 @@ async function processSectionTable(
   for (const record of sectionRecords) {
     const sectionKey = record.OBJ_Key || record.OBJ_Name || 'UNKNOWN';
     
+    // UNIFIED ITEM NUMBER ASSIGNMENT - Use consistent logic for all database formats
+    let authenticItemNo = 0;
+    const sectionName = record.OBJ_Key || '';
+    const sortOrder = Number(record.OBJ_SortOrder);
+    const secItemNo = Number(record.SEC_ItemNo);
+    
+    // Priority 1: Use SEC_ItemNo if available (GR7188 format)
+    if (secItemNo && secItemNo > 0) {
+      authenticItemNo = secItemNo;
+    }
+    // Priority 2: Use OBJ_SortOrder if available (most common field)
+    else if (sortOrder && sortOrder > 0) {
+      authenticItemNo = sortOrder;
+    }
+    // Priority 3: Extract from section name patterns if available
+    else if (sectionName) {
+      const itemMatch = sectionName.match(/(\d+)/);
+      if (itemMatch) {
+        authenticItemNo = parseInt(itemMatch[1]);
+      }
+    }
+    // Priority 4: Use sequential fallback
+    else {
+      authenticItemNo = authenticSections.length + 1;
+    }
+    
+    // CRITICAL ITEM 9 DEBUG - Track all sections being processed
+    if (record.OBJ_SortOrder === 9 || sectionKey === 'FW04X' || authenticItemNo === 9) {
+      console.log(`🚨 ITEM 9 DEBUG - PROCESSING ENTRY:`, {
+        sectionKey,
+        sortOrder: record.OBJ_SortOrder,
+        authenticItemNo,
+        pk: record.OBJ_PK,
+        willSkip: sectionKey.startsWith('NOD_') ? 'YES - NOD_ section' : 'NO - pipe section'
+      });
+    }
+    
     // Skip NOD_ sections (manholes/nodes) - only process pipe sections
     if (sectionKey.startsWith('NOD_')) {
       console.log(`🔍 UNIFIED: Skipping NOD_ section ${sectionKey} - not a pipe section`);
       continue; // Skip this section entirely
     }
     
-    // Get observation data for this section - FIXED: Use correct key mapping
-    const observations = observationMap.get(record.OBJ_PK) || [];
+    // Get observation data for this section - QUALITY ASSURED: Use correct key mapping with uniform processing
+    const rawObservations = observationMap.get(record.OBJ_PK) || [];
     
-    console.log(`🔍 Section ${sectionKey}: Found ${observations.length} observations`);
+    // QUALITY CONTROL: Ensure uniform processing - no artificial observation creation
+    // Each report must be processed the same without artificial data generation
+    const observations = rawObservations.filter(obs => obs && obs.trim() !== '');
+    
+    console.log(`🔍 Section ${sectionKey}: Found ${observations.length} authentic observations`);
     if (observations.length > 0) {
       console.log(`🔍 Sample observations for ${sectionKey}:`, observations.slice(0, 3));
       
-      // CRITICAL ITEM 9 DEBUG - Track where Line deviates left comes from
-      if (sectionKey.includes('FW04') || record.OBJ_SortOrder === 9) {
+      // CRITICAL ITEM 9 DEBUG - Track where observations come from
+      if (sectionKey === 'FW04X' || record.OBJ_SortOrder === 9 || authenticItemNo === 9) {
         console.log(`🚨 ITEM 9 DEBUG - FOUND OBSERVATIONS:`, {
           sectionKey,
           sortOrder: record.OBJ_SortOrder,
-          allObservations: observations,
-          observationSource: 'observationMap',
+          authenticItemNo,
+          rawObservations,
+          filteredObservations: observations,
+          observationSource: 'authentic database',
           mapKey: record.OBJ_PK
         });
       }
     } else {
-      console.log(`🔍 DEBUG: Looking for observations with key ${record.OBJ_PK}, available keys:`, Array.from(observationMap.keys()).slice(0, 5));
+      console.log(`🔍 UNIFORM PROCESSING: Section ${sectionKey} has no authentic observations - will use Grade 0 default`);
       
-      // CRITICAL ITEM 9 DEBUG - Track empty observations
-      if (sectionKey.includes('FW04') || record.OBJ_SortOrder === 9) {
+      // CRITICAL ITEM 9 DEBUG - Track empty observations  
+      if (sectionKey === 'FW04X' || record.OBJ_SortOrder === 9 || authenticItemNo === 9) {
         console.log(`🚨 ITEM 9 DEBUG - NO OBSERVATIONS:`, {
           sectionKey,
           sortOrder: record.OBJ_SortOrder,
-          observations: [],
-          observationSource: 'observationMap',
+          authenticItemNo,
+          rawObservations,
+          filteredObservations: observations,
+          observationSource: 'authentic database',
           mapKey: record.OBJ_PK,
-          willUseDefault: 'Yes - should be Grade 0'
+          willUseDefault: 'Yes - Grade 0 per uniform processing rules'
         });
       }
     }
@@ -773,51 +836,14 @@ async function processSectionTable(
       // Continue processing with fallback logic
     }
     
-    // UNIFIED ITEM NUMBER ASSIGNMENT - Use consistent logic for all database formats
-    let authenticItemNo = 0;
-    const sectionName = record.OBJ_Key || '';
-    const sortOrder = Number(record.OBJ_SortOrder);
-    const secItemNo = Number(record.SEC_ItemNo);
-    
     // CRITICAL TRACE: Log all sections being processed, especially 1-5,17
     if ([1,2,3,4,5,17].includes(sortOrder) || [1,2,3,4,5,17].includes(secItemNo)) {
       console.log(`🚨 CRITICAL TRACE - Processing Section ${record.OBJ_Key || record.SEC_PK}: SortOrder=${sortOrder}, SEC_ItemNo=${secItemNo}, Size1=${record.OBJ_Size1}, Size2=${record.OBJ_Size2}`);
     }
     
-    console.log(`🔍 Section ${record.OBJ_Key || record.SEC_PK}: SortOrder=${sortOrder}, SEC_ItemNo=${secItemNo}, Name="${sectionName}"`);
+    console.log(`🔍 Section ${record.OBJ_Key || record.SEC_PK}: SortOrder=${sortOrder}, SEC_ItemNo=${secItemNo}, Name="${sectionName}", Item=${authenticItemNo}"`);
     
-    // Priority 1: Use SEC_ItemNo if available (GR7188 format)
-    if (secItemNo && secItemNo > 0) {
-      authenticItemNo = secItemNo;
-      console.log(`🔍 UNIFIED: Using SEC_ItemNo ${secItemNo} as Item ${authenticItemNo}`);
-    }
-    // Priority 2: Use OBJ_SortOrder if available (most common field)
-    else if (sortOrder && sortOrder > 0) {
-      authenticItemNo = sortOrder;
-      console.log(`🔍 UNIFIED: Using OBJ_SortOrder ${sortOrder} as Item ${authenticItemNo}`);
-    }
-    // Priority 3: Extract from section name patterns if available
-    else if (sectionName.includes('Item')) {
-      const itemMatch = sectionName.match(/Item\s+(\d+)a?/i);
-      if (itemMatch) {
-        authenticItemNo = parseInt(itemMatch[1]);
-        console.log(`🔍 UNIFIED: Extracted item number ${authenticItemNo} from section name "${sectionName}"`);
-      }
-    }
-    // Priority 4: Extract from S-format patterns (S1.015 → Item 1)
-    else if (sectionName.match(/S\d+\.(\d+)/)) {
-      const match = sectionName.match(/S\d+\.(\d+)/);
-      if (match) {
-        // Convert S1.015 → Item 1, S1.016 → Item 2, etc.
-        authenticItemNo = parseInt(match[1]) - 14;
-        console.log(`🔍 UNIFIED: Converted S-format ${sectionName} to Item ${authenticItemNo}`);
-      }
-    }
-    // Fallback: Use processing order (should rarely be needed)
-    else {
-      authenticItemNo = authenticSections.length + 1;
-      console.log(`🔍 UNIFIED FALLBACK: Using sequential item number ${authenticItemNo} for "${sectionName}"`);
-    }
+    console.log(`🔍 UNIFIED: Assigned Item ${authenticItemNo} to section ${sectionKey} (method: ${secItemNo > 0 ? 'SEC_ItemNo' : sortOrder > 0 ? 'OBJ_SortOrder' : 'fallback'})`);
 
     // Extract manhole information using GUID references with flow direction logic
     const fromMH = manholeMap.get(record.OBJ_FromNode_REF) || 'UNKNOWN';
@@ -977,43 +1003,43 @@ async function processSectionTable(
 
     
     if (observations.length === 0) {
-      // Fallback logic for sections without observations
-      defectText = 'No inspection data recorded';
+      // UNIFORM PROCESSING: Sections without authentic observations get consistent Grade 0 classification
+      defectText = 'No defects recorded';
       classification = {
         severityGrade: 0,
         defectType: 'service',
         recommendations: 'No action required - no defects recorded',
         adoptable: 'Yes'
       };
-      console.log(`🔍 Using default classification for section ${authenticItemNo} - no observations available`);
+      console.log(`🔍 UNIFORM PROCESSING: Section ${authenticItemNo} has no authentic observations - applying Grade 0 classification`);
       
       // CRITICAL ITEM 9 DEBUG
       if (authenticItemNo === 9) {
-        console.log(`🚨 ITEM 9 DEBUG - DEFAULT PATH:`, {
+        console.log(`🚨 ITEM 9 DEBUG - UNIFORM NO OBSERVATIONS PATH:`, {
           itemNo: authenticItemNo,
           sectionKey,
           observationsLength: observations.length,
           defectText,
           classification,
-          path: 'DEFAULT - NO OBSERVATIONS'
+          path: 'UNIFORM - NO ARTIFICIAL OBSERVATIONS'
         });
       }
     } else {
-      // Standard processing with observations - ENHANCED: Preserve full observation details  
+      // UNIFORM PROCESSING: Sections with authentic observations use standard WRc MSCC5 classification
       defectText = await formatObservationText(observations, sector);
       classification = await classifyDefectByMSCC5Standards(observations, sector);
-      console.log(`🔍 Using observation-based classification for section ${authenticItemNo}: "${defectText.substring(0, 100)}..."`);
+      console.log(`🔍 UNIFORM PROCESSING: Section ${authenticItemNo} has ${observations.length} authentic observations`);
       
       // CRITICAL ITEM 9 DEBUG
       if (authenticItemNo === 9) {
-        console.log(`🚨 ITEM 9 DEBUG - OBSERVATION PATH:`, {
+        console.log(`🚨 ITEM 9 DEBUG - AUTHENTIC OBSERVATION PATH:`, {
           itemNo: authenticItemNo,
           sectionKey,
           observationsLength: observations.length,
           rawObservations: observations,
-          formattedDefectText: defectText,
+          formattedDefectText: defectText.substring(0, 100),
           classification,
-          path: 'OBSERVATION PROCESSING'
+          path: 'UNIFORM - AUTHENTIC OBSERVATIONS ONLY'
         });
       }
     }
@@ -1041,9 +1067,40 @@ async function processSectionTable(
       const hasServiceDefects = observations.some(obs =>
         obs.includes('DER ') || obs.includes('DES ') || obs.includes('DEE ') || // Deposits/encrustation
         obs.includes('blockage') || obs.includes('deposits') || obs.includes('restriction') ||
-        obs.includes('WL ') || obs.includes('ISJ ') || obs.includes('infiltration') || // Water level, infiltration
-        obs.includes('RI ') || obs.includes('root') || obs.includes('LR ') || obs.includes('LL ') // Roots, line deviations
+        obs.includes('RI ') || obs.includes('root') // Roots only - NOT line deviations
       );
+      
+      // CRITICAL: Line deviations (LL/LR) and water levels (WL) are Grade 0 observations, NOT service defects
+      const hasOnlyObservations = observations.every(obs =>
+        obs.includes('LL ') || obs.includes('LR ') || // Line deviations
+        obs.includes('WL ') || // Water levels  
+        obs.includes('MH ') || obs.includes('MHF ') || // Manholes
+        obs.includes('JN ') || obs.toLowerCase().includes('junction') || // Junctions
+        obs.toLowerCase().includes('line deviates') ||
+        obs.toLowerCase().includes('water level')
+      );
+      
+      // DEBUG: Check why Item 9 isn't being detected
+      if (authenticItemNo === 9) {
+        console.log(`🚨 ITEM 9 DEBUG - OBSERVATION CLASSIFICATION:`, {
+          itemNo: authenticItemNo,
+          observations: observations,
+          hasStructuralDefects,
+          hasServiceDefects,
+          hasOnlyObservations,
+          observationChecks: observations.map(obs => ({
+            text: obs,
+            hasLL: obs.includes('LL '),
+            hasLR: obs.includes('LR '),
+            hasWL: obs.includes('WL '),
+            hasMH: obs.includes('MH '),
+            hasMHF: obs.includes('MHF '),
+            hasJN: obs.includes('JN '),
+            hasLineDeviates: obs.toLowerCase().includes('line deviates'),
+            hasWaterLevel: obs.toLowerCase().includes('water level')
+          }))
+        });
+      }
       
       // Check if we need to split into multiple entries for mixed defects
       console.log(`🔍 MULTI-DEFECT CHECK for Item ${authenticItemNo}:`, {
@@ -1054,16 +1111,22 @@ async function processSectionTable(
         sampleObservations: observations.slice(0, 3)
       });
       
-      if (hasStructuralDefects && hasServiceDefects && grades.structural !== null && grades.service !== null) {
+      // CRITICAL: Check for observation-only sections first before applying SECSTAT grades
+      if (hasOnlyObservations) {
+        console.log(`🚨 ITEM ${authenticItemNo} CONTAINS ONLY OBSERVATIONS - FORCING GRADE 0 PER WRc MSCC5 STANDARDS`);
+        severityGrade = 0;
+        defectType = 'observation';
+        classification.recommendations = 'No action required - pipe observed in acceptable structural and service condition';
+        classification.adoptable = 'Yes';
+      } else if (hasStructuralDefects && hasServiceDefects && grades.structural !== null && grades.service !== null) {
         console.log(`✅ TRIGGERING MULTI-DEFECT SPLITTING for Item ${authenticItemNo}`);
         console.log(`🔍 Will create: Service (Grade ${grades.service}) + Structural${grades.structural ? ' (Grade ' + grades.structural + ')' : ''}`);
         
-        // Create service defect entry
+        // Create service defect entry - EXCLUDE line deviations and water levels
         const serviceObservations = observations.filter(obs =>
           obs.includes('DER ') || obs.includes('DES ') || obs.includes('DEE ') || // Deposits/encrustation 
           obs.includes('blockage') || obs.includes('deposits') || obs.includes('restriction') ||
-          obs.includes('WL ') || obs.includes('ISJ ') || obs.includes('infiltration') || // Water/infiltration
-          obs.includes('RI ') || obs.includes('root') || obs.includes('LL ') || obs.includes('LR ')
+          obs.includes('RI ') || obs.includes('root') // Roots only - NOT line deviations or water levels
         );
         
         if (serviceObservations.length > 0) {
@@ -1155,9 +1218,28 @@ async function processSectionTable(
       defectType = 'service';
       console.log(`🔍 Applied grade 0 override for item ${authenticItemNo} (no observable defects)`);
     } else {
-      // Use MSCC5 classification for sections with observable defects
-      severityGrade = classification.severityGrade;
-      defectType = classification.defectType;
+      // CRITICAL: Check for line deviations and water levels that should be Grade 0 before final storage
+      const defectTextLower = defectText.toLowerCase();
+      const hasOnlyObservationCodes = defectTextLower.includes('line deviates') && 
+        !defectTextLower.includes('deposit') && 
+        !defectTextLower.includes('fracture') && 
+        !defectTextLower.includes('crack') && 
+        !defectTextLower.includes('deformation') &&
+        !defectTextLower.includes('joint displacement') &&
+        !defectTextLower.includes('root');
+        
+      if (hasOnlyObservationCodes) {
+        console.log(`🚨 FINAL CLASSIFICATION FIX: Item ${authenticItemNo} contains only observations - forcing Grade 0`);
+        console.log(`🔍 Defect text: ${defectText.substring(0, 100)}`);
+        severityGrade = 0;
+        defectType = 'observation';
+        classification.recommendations = 'No action required - pipe observed in acceptable structural and service condition';
+        classification.adoptable = 'Yes';
+      } else {
+        // Use MSCC5 classification for sections with observable defects
+        severityGrade = classification.severityGrade;
+        defectType = classification.defectType;
+      }
       console.log(`🔍 Using MSCC5 classification for item ${authenticItemNo} with defects: ${defectType} grade ${severityGrade}`);
     }
     
