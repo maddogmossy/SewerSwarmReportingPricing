@@ -755,8 +755,8 @@ async function processSectionTable(
     let inspectionDirection = 'downstream'; // Default
     
     if (flowDirection !== null && flowDirection !== undefined) {
-      // Wincan standard: 1 = downstream, 0 = upstream
-      inspectionDirection = flowDirection === 1 ? 'downstream' : 'upstream';
+      // Wincan standard: 1 = upstream, 0 = downstream (corrected interpretation)
+      inspectionDirection = flowDirection === 1 ? 'upstream' : 'downstream';
     }
     
     // UPSTREAM/DOWNSTREAM RULE APPLICATION:
