@@ -334,19 +334,19 @@ async function classifyDefectByMSCC5Standards(observations: string[], sector: st
   let adoptable = 'Adoptable';
   
   // Check for line deviations (LL, LR) - these are Grade 0 observations per WRc MSCC5 standards
+  // Note: Line deviations should not override higher severity defects
   const hasLineDeviations = observations.some(obs => 
     obs.includes('LL ') || obs.includes('LR ') || 
     obs.toLowerCase().includes('line deviates')
   );
   
-  if (hasLineDeviations) {
-    return {
-      severityGrade: 0,
-      defectType: 'service',
-      recommendations: 'No action required this pipe section is at an adoptable condition',
-      adoptable: 'Yes'
-    };
-  }
+  // Line deviations alone (without other defects) result in Grade 0
+  const hasOnlyLineDeviations = hasLineDeviations && observations.every(obs => 
+    obs.includes('LL ') || obs.includes('LR ') || 
+    obs.toLowerCase().includes('line deviates') ||
+    obs.includes('JN ') || // Junctions are also observations
+    obs.toLowerCase().includes('junction')
+  );
   
   // Check for high-severity structural defects
   const hasStructuralDefects = observations.some(obs => 
@@ -384,6 +384,29 @@ async function classifyDefectByMSCC5Standards(observations: string[], sector: st
     maxSeverity = 3;
     defectType = 'service';
     recommendations = 'Cleaning recommended';
+  }
+  
+  // Handle deposits specifically (DES, DER codes)
+  const hasDeposits = observations.some(obs => 
+    obs.includes('DES ') || obs.includes('DER ') ||
+    obs.toLowerCase().includes('deposits')
+  );
+  
+  if (hasDeposits && maxSeverity < 2) {
+    maxSeverity = 2;
+    defectType = 'service';
+    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+    adoptable = 'Conditional';
+  }
+  
+  // Only return Grade 0 if there are ONLY line deviations and no other defects
+  if (hasOnlyLineDeviations) {
+    return {
+      severityGrade: 0,
+      defectType: 'service',
+      recommendations: 'No action required this pipe section is at an adoptable condition',
+      adoptable: 'Yes'
+    };
   }
   
   return {
@@ -1183,19 +1206,33 @@ async function classifyWincanObservations(observationText: string, sector: strin
     recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
     adoptable = 'Conditional';
   }
-  // Line deviations (LL, LR) are observations only - Grade 0 per WRc MSCC5 standards
-  else if (upperText.includes('LINE DEVIATES') || upperText.includes('LL ') || upperText.includes('LR ')) {
-    defectType = 'service';
-    severityGrade = 0;
-    recommendations = 'No action required this pipe section is at an adoptable condition';
-    adoptable = 'Yes';
-  }
-  // Root intrusion and deposits are service defects
+  // Root intrusion and deposits are service defects - check these BEFORE line deviations
   else if (upperText.includes('ROOT') || upperText.includes('DEPOSIT') || upperText.includes('DER') || upperText.includes('DES')) {
     defectType = 'service';
-    severityGrade = 1;
+    severityGrade = 2; // Deposits should be Grade 2 per MSCC5 standards
     recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
     adoptable = 'Conditional';
+  }
+  // Line deviations (LL, LR) are observations only - Grade 0 per WRc MSCC5 standards
+  // Only apply if no other defects are present
+  else if (upperText.includes('LINE DEVIATES') || upperText.includes('LL ') || upperText.includes('LR ')) {
+    // Check if there are other defects in the text
+    const hasOtherDefects = upperText.includes('DEPOSIT') || upperText.includes('DER') || upperText.includes('DES') ||
+                           upperText.includes('ROOT') || upperText.includes('CRACK') || upperText.includes('FRACTURE') ||
+                           upperText.includes('JOINT') || upperText.includes('DEFORMATION');
+    
+    if (!hasOtherDefects) {
+      defectType = 'service';
+      severityGrade = 0;
+      recommendations = 'No action required this pipe section is at an adoptable condition';
+      adoptable = 'Yes';
+    } else {
+      // Fall through to default classification for mixed defects
+      defectType = 'service';
+      severityGrade = 2;
+      recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+      adoptable = 'Conditional';
+    }
   }
   else {
     // Default classification - only for sections with actual defect text
