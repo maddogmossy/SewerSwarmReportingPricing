@@ -39,6 +39,7 @@ This is a full-stack TypeScript application (React/Express) designed for documen
 - **Upstream/Downstream Manhole Reference Fix**: Implemented authentic inspection direction system using SECINSP.INS_InspectionDir field from WinCan database.
 - **Item 9 Line Deviation Classification Investigation**: Confirmed Item 9 contains authentic observations in SECOBS table (MH|0, WL|0, LL|1.87, MHF|2.59). The real issue identified: line deviations (LL/LR codes) are being incorrectly classified as Grade 1 service defects instead of Grade 0 observations per WRc MSCC5 standards.
 - **Bend Logic Investigation**: Current system treats REST/BEND as simple observation codes (Grade 0) without conditional logic. MISSING FEATURE: No conditional logic found that says "bends can be ignored unless there are structural recommendations for lining and patches".
+- **Defect Text Standardization**: Standardized Grade 0 defect text across processing pipeline from "No defects recorded" to "No service or structural defect found" for consistency. Updated wincan-db-reader.ts lines 1010, 1337, and 1472 to use uniform wording that matches MSCC5 classifier expectations. This ensures consistent presentation of sections without observable defects per WRc MSCC5 standards.
 
 ## System Architecture
 

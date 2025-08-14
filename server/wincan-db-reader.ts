@@ -1004,14 +1004,14 @@ async function processSectionTable(
     
     if (observations.length === 0) {
       // UNIFORM PROCESSING: Sections without authentic observations get consistent Grade 0 classification
-      defectText = 'No defects recorded';
+      defectText = 'No service or structural defect found';
       classification = {
         severityGrade: 0,
         defectType: 'service',
-        recommendations: 'No action required - no defects recorded',
+        recommendations: 'No action required this pipe section is at an adoptable condition',
         adoptable: 'Yes'
       };
-      console.log(`🔍 UNIFORM PROCESSING: Section ${authenticItemNo} has no authentic observations - applying Grade 0 classification`);
+      console.log(`🔍 UNIFORM PROCESSING: Section ${authenticItemNo} has no authentic observations - applying Grade 0 classification with standardized text`);
       
       // CRITICAL ITEM 9 DEBUG
       if (authenticItemNo === 9) {
@@ -1212,7 +1212,7 @@ async function processSectionTable(
     }
     
     // Special handling for sections with no defects
-    if (!defectText || defectText.trim() === '' || defectText === 'No service or structural defect found' || defectText === 'No defects recorded') {
+    if (!defectText || defectText.trim() === '' || defectText === 'No service or structural defect found') {
       // If there are no observable defects, the section should be grade 0 regardless of SECSTAT
       severityGrade = 0;
       defectType = 'service';
@@ -1331,7 +1331,7 @@ async function classifyWincanObservations(observationText: string, sector: strin
   let defectType: 'structural' | 'service' = 'service';
   
   // If no defects text, return Grade 0
-  if (!observationText || observationText.trim() === '' || observationText === 'No defects recorded') {
+  if (!observationText || observationText.trim() === '' || observationText === 'No service or structural defect found') {
     return { 
       severityGrade: 0, 
       recommendations: 'No action required this pipe section is at an adoptable condition', 
@@ -1466,7 +1466,7 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         pipeMaterial: section.pipeMaterial || 'UNKNOWN',
         totalLength: section.totalLength || '0',
         lengthSurveyed: section.lengthSurveyed || '0',
-        defects: section.defects || 'No defects recorded',
+        defects: section.defects || 'No service or structural defect found',
         defectType: section.defectType || 'service',
         recommendations: section.recommendations || 'No action required',
         severityGrade: section.severityGrade || 0,
