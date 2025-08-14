@@ -594,13 +594,28 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         console.log(`🚨 CRITICAL DEBUG - Sections 1-5,17 raw data:`, simpleDebug.slice(0, 3));
       }
       
-      // Get only sections that are actually current (not deleted)
-      let sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
+      // Get sections with authentic inspection direction data from SECINSP table
+      let sectionRecords = database.prepare(`
+        SELECT 
+          s.*,
+          si.INS_InspectionDir as AUTHENTIC_INSPECTION_DIR,
+          si.INS_StartManhole as AUTHENTIC_START_MANHOLE
+        FROM SECTION s 
+        LEFT JOIN SECINSP si ON s.OBJ_PK = si.INS_Section_FK
+        WHERE s.OBJ_Deleted IS NULL OR s.OBJ_Deleted = ''
+      `).all();
       
-      // If no records found with deleted filter, try getting all records
+      // If no records found with deleted filter, try getting all records with SECINSP join
       if (sectionRecords.length === 0) {
         console.log('🔍 No sections found with deleted filter, trying all sections...');
-        sectionRecords = database.prepare(`SELECT * FROM SECTION`).all();
+        sectionRecords = database.prepare(`
+          SELECT 
+            s.*,
+            si.INS_InspectionDir as AUTHENTIC_INSPECTION_DIR,
+            si.INS_StartManhole as AUTHENTIC_START_MANHOLE
+          FROM SECTION s 
+          LEFT JOIN SECINSP si ON s.OBJ_PK = si.INS_Section_FK
+        `).all();
         console.log(`🔍 Found ${sectionRecords.length} total sections`);
       }
       
@@ -783,39 +798,43 @@ async function processSectionTable(
     const fromMH = manholeMap.get(record.OBJ_FromNode_REF) || 'UNKNOWN';
     const toMH = manholeMap.get(record.OBJ_ToNode_REF) || 'UNKNOWN';
     
-    // Apply authentic inspection direction logic from database
+    // Apply authentic inspection direction logic from SECINSP table
     let startMH: string;
     let finishMH: string;
     
-    // Read authentic inspection direction from OBJ_FlowDir field
-    // OBJ_FlowDir: 1 = downstream, 0 = upstream (based on Wincan standards)
-    const flowDirection = record.OBJ_FlowDir;
+    // Read authentic inspection direction from SECINSP.INS_InspectionDir field (most reliable)
+    const authenticInspectionDir = record.AUTHENTIC_INSPECTION_DIR;
+    const fallbackFlowDir = record.OBJ_FlowDir;
     let inspectionDirection = 'downstream'; // Default
     
-    // CRITICAL: Manual override for known upstream inspections
-    // Item 1 is confirmed as upstream survey regardless of OBJ_FlowDir value
-    if (authenticItemNo === 1) {
-      inspectionDirection = 'upstream';
-      console.log(`🚨🚨🚨 MANUAL UPSTREAM OVERRIDE for Item ${authenticItemNo}: Forcing upstream inspection direction`);
-      console.log(`BEFORE MANHOLE REVERSAL: fromMH=${fromMH}, toMH=${toMH}`);
-    }
-    else if (flowDirection !== null && flowDirection !== undefined) {
-      // Use authentic OBJ_FlowDir field to determine inspection direction
-      // OBJ_FlowDir: 1 = downstream, 0 = upstream (based on Wincan standards)
-      if (flowDirection === 0) {
+    // Use authentic inspection direction from SECINSP table if available
+    if (authenticInspectionDir !== null && authenticInspectionDir !== undefined) {
+      // INS_InspectionDir: 1 = downstream, 2 = upstream (based on database analysis)
+      if (authenticInspectionDir === 2) {
         inspectionDirection = 'upstream';
       } else {
         inspectionDirection = 'downstream';
       }
+      console.log(`🔍 AUTHENTIC INSPECTION DIR for Item ${authenticItemNo}: Using SECINSP.INS_InspectionDir=${authenticInspectionDir} → ${inspectionDirection}`);
+    }
+    // Fallback to OBJ_FlowDir if SECINSP data not available
+    else if (fallbackFlowDir !== null && fallbackFlowDir !== undefined) {
+      // OBJ_FlowDir: 1 = downstream, 0 = upstream (based on Wincan standards)
+      if (fallbackFlowDir === 0) {
+        inspectionDirection = 'upstream';
+      } else {
+        inspectionDirection = 'downstream';
+      }
+      console.log(`🔍 FALLBACK FLOW DIR for Item ${authenticItemNo}: Using SECTION.OBJ_FlowDir=${fallbackFlowDir} → ${inspectionDirection}`);
     }
     
     console.log(`🔍 FLOW DIRECTION DEBUG for Item ${authenticItemNo}:`, {
-      flowDirection,
+      authenticInspectionDir,
+      fallbackFlowDir,
       inspectionDirection,
       fromMH,
       toMH,
-      willReverse: inspectionDirection === 'upstream',
-      manualOverride: authenticItemNo === 1
+      willReverse: inspectionDirection === 'upstream'
     });
     
     // UPSTREAM/DOWNSTREAM RULE APPLICATION:
