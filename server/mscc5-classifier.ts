@@ -608,13 +608,15 @@ export class MSCC5Classifier {
     }
     
     // Check for specific observation keywords that indicate non-defective conditions
+    // CURRENT LOGIC: 'rest bend' keyword triggers observation-only classification
+    // MISSING: Conditional bend logic based on structural recommendations for lining/patches
     const observationKeywords = [
       'water level',
       'line deviates',
       'general remark',
       'pipe material',
       'vertical dimension',
-      'rest bend',
+      'rest bend',  // Always Grade 0 - no conditional structural checking
       'changes to',
       'polyvinyl',
       'polypropylene',
@@ -1062,6 +1064,9 @@ export class MSCC5Classifier {
     }
     
     // Define observation codes that are NOT defects (just survey observations)
+    // NOTE: Current bend handling treats REST/BEND as simple observations (Grade 0)
+    // MISSING LOGIC: No conditional logic found that says "bends can be ignored unless 
+    // there are structural recommendations for lining and patches"
     const observationCodes = ['LL', 'REM', 'MCPP', 'REST', 'BEND', 'WL', 'RE', 'BRF', 'JN', 'LR'];
     
     // Check if defectText contains only observation codes (not actual defects)
