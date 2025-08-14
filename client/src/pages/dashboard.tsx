@@ -716,18 +716,6 @@ export default function Dashboard() {
       window.removeEventListener('equipmentPriorityChanged', handleEquipmentPriorityChange as EventListener);
     };
   }, [reportId, queryClient]);
-
-  // Sequential Configuration Warning System - Trigger for synthetic dashboards  
-  useEffect(() => {
-    if (rawSectionData && rawSectionData.length > 0 && !sequentialWarningProcessed) {
-      // Delay to allow other warnings to settle
-      const timer = setTimeout(() => {
-        checkServiceCostCompletion(rawSectionData);
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [rawSectionData, sequentialWarningProcessed]);
   
   // Force component re-render when equipment priority changes
   const [costRecalcTrigger, setCostRecalcTrigger] = useState(0);
@@ -3101,6 +3089,18 @@ export default function Dashboard() {
       console.log('💾 Saved last used report ID:', currentUpload.id);
     }
   }, [currentUpload?.id]);
+
+  // Sequential Configuration Warning System - Trigger for synthetic dashboards  
+  useEffect(() => {
+    if (rawSectionData && rawSectionData.length > 0 && !sequentialWarningProcessed) {
+      // Delay to allow other warnings to settle
+      const timer = setTimeout(() => {
+        checkServiceCostCompletion(rawSectionData);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [rawSectionData, sequentialWarningProcessed]);
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
