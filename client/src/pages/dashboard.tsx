@@ -14,11 +14,7 @@ import { DataIntegrityWarning } from "@/components/data-integrity-warning";
 import { SectorStandardsDisplay } from "@/components/sector-standards-display";
 import { ReportValidationStatus } from "@/components/ReportValidationStatus";
 import { PatchRepairPricingDialog } from "@/components/PatchRepairPricingDialog";
-import { ValidationWarningPopup } from "@/components/ValidationWarningPopup";
-import { useValidationWarnings } from "@/hooks/useValidationWarnings";
-import ServiceCostWarningDialog from "@/components/ServiceCostWarningDialog";
-import StructuralCostWarningDialog from "@/components/StructuralCostWarningDialog";
-import { ConfigurationWarningDialog } from "@/components/ConfigurationWarningDialog";
+
 import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
 import { RepairOptionsPopover } from "@/components/repair-options-popover";
 import { validateReportExportReadiness, ValidationResult, ReportSection, TravelInfo } from "@shared/report-validation";
@@ -696,8 +692,7 @@ export default function Dashboard() {
             
             // Slight delay to allow cost recalculation before checking warnings
             setTimeout(() => {
-              checkServiceCostCompletion(rawSectionData);
-              checkStructuralCostCompletion(rawSectionData);
+              // Warning system calls removed
             }, 100);
           }
         }, 200);
@@ -823,56 +818,7 @@ export default function Dashboard() {
     message: ''
   });
 
-  // Validation warning popup system
-  const validationWarnings = useValidationWarnings();
 
-  // Service cost warning dialog state
-  const [showServiceCostWarning, setShowServiceCostWarning] = useState(false);
-  const [serviceCostWarningDismissed, setServiceCostWarningDismissed] = useState(false);
-  const [serviceCostData, setServiceCostData] = useState<{
-    serviceItems: { itemNo: number; currentCost: number; method: string; defects: string }[];
-    dayRate: number;
-    runsPerShift: number;
-    totalServiceCost: number;
-    configType: string;
-  } | null>(null);
-
-  // Structural cost warning dialog state
-  const [showStructuralCostWarning, setShowStructuralCostWarning] = useState(false);
-  const [structuralCostWarningDismissed, setStructuralCostWarningDismissed] = useState(false);
-  const [structuralCostData, setStructuralCostData] = useState<{
-    structuralItems: { itemNo: number; currentCost: number; method: string; defects: string; patchCount?: number; costPerPatch?: number }[];
-    dayRate: number;
-    minPatches: number;
-    totalStructuralCost: number;
-    configType: string;
-  } | null>(null);
-  
-  // Configuration Warning Dialog State
-  const [showConfigWarning, setShowConfigWarning] = useState(false);
-  const [configWarningData, setConfigWarningData] = useState<{
-    warningType: 'day_rate_missing' | 'debris_out_of_range' | 'length_out_of_range' | 'both_out_of_range' | 'config_missing';
-    sectionData: any;
-    configData?: any;
-  } | null>(null);
-  const [configWarningDismissed, setConfigWarningDismissed] = useState(false);
-
-  // Sequential Configuration Warning System for Synthetic Dashboards
-  interface ConfigurationIssue {
-    itemNo: number;
-    issueType: 'missing_mm4' | 'missing_day_rate' | 'pipe_size_mismatch' | 'missing_ranges' | 'equipment_invalid';
-    description: string;
-    navigationUrl: string;
-    configId?: number;
-    categoryId?: string;
-    sector?: string;
-    pipeSize?: string;
-  }
-
-  const [configurationIssues, setConfigurationIssues] = useState<ConfigurationIssue[]>([]);
-  const [currentIssueIndex, setCurrentIssueIndex] = useState(0);
-  const [showSequentialConfigWarning, setShowSequentialConfigWarning] = useState(false);
-  const [sequentialWarningProcessed, setSequentialWarningProcessed] = useState(false);
 
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
@@ -979,743 +925,17 @@ export default function Dashboard() {
     return new Set();
   });
 
-  // Handler for service cost warning dialog
-  const handleServiceCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
-    console.log('🔄 Applying new service costs:', newCosts);
-    
-    // Store adjusted costs in local state
-    const newAdjustedCosts = new Map(adjustedServiceCosts);
-    newCosts.forEach(({ itemNo, newCost }) => {
-      newAdjustedCosts.set(itemNo, newCost);
-      console.log(`🔄 Set adjusted cost for item ${itemNo}: £${newCost.toFixed(2)}`);
-    });
-    setAdjustedServiceCosts(newAdjustedCosts);
-    
-    toast({
-      title: "Service Costs Updated",
-      description: `Updated costs for ${newCosts.length} service items to meet day rate requirements`,
-    });
-    
-    // Close the dialog and reset export workflow flag
-    setShowServiceCostWarning(false);
-    setServiceCostData(null);
-    setIsExportWorkflow(false);
-    
-    console.log('🔄 Service costs applied - triggering structural check');
-    
-    // Force structural warning check after state cleanup
-    setTimeout(() => {
-      if (rawSectionData && rawSectionData.length > 0) {
-        console.log('🔄 Triggering delayed structural warning check');
-        checkStructuralCostCompletion(rawSectionData);
-      }
-    }, 100);
-  };
 
-  // Handler for structural cost warning dialog
-  const handleStructuralCostApply = (newCosts: { itemNo: number; newCost: number }[]) => {
-    console.log('🔄 Applying new structural costs:', newCosts);
-    
-    // Store adjusted costs in local state
-    const newAdjustedCosts = new Map(adjustedStructuralCosts);
-    const newAppliedItems = new Set(appliedStructuralPricing);
-    
-    newCosts.forEach(({ itemNo, newCost }) => {
-      newAdjustedCosts.set(itemNo, newCost);
-      newAppliedItems.add(itemNo); // Mark this item as having applied pricing
-      console.log(`🔄 Set adjusted cost for item ${itemNo}: £${newCost.toFixed(2)} - marked as applied`);
-    });
-    
-    setAdjustedStructuralCosts(newAdjustedCosts);
-    setAppliedStructuralPricing(newAppliedItems);
-    
-    // Save decision to localStorage to prevent repeated warnings
-    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-    const currentEquipmentType = equipmentPriority; // 'id760' or 'id759'
-    
-    if (currentReportId && currentEquipmentType) {
-      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-      
-      const newDecision = {
-        reportId: currentReportId,
-        equipmentType: currentEquipmentType,
-        decisionType: 'structural',
-        appliedCosts: newCosts,
-        timestamp: Date.now()
-      };
-      
-      // Remove any existing structural decision for this report/equipment combination
-      const filteredDecisions = existingDecisions.filter((decision: any) => 
-        !(decision.reportId === currentReportId && 
-          decision.equipmentType === currentEquipmentType && 
-          decision.decisionType === 'structural')
-      );
-      
-      filteredDecisions.push(newDecision);
-      localStorage.setItem('appliedCostDecisions', JSON.stringify(filteredDecisions));
-      
-      console.log('💾 Structural cost decision saved to localStorage:', newDecision);
-    }
-    
-    toast({
-      title: "Structural Costs Applied",
-      description: `Applied structural pricing for ${newCosts.length} items - prices now shown in green`,
-    });
-    
-    // Close the dialog and reset export workflow flag
-    setShowStructuralCostWarning(false);
-    setStructuralCostData(null);
-    setIsExportWorkflow(false);
-    
-    console.log('🔄 Structural costs applied - waiting for export signal');
-  };
 
-  // Function to check if all structural costs are populated and trigger warning
-  const checkStructuralCostCompletion = (sectionData: any[]) => {
-    console.log('🚀 STRUCTURAL WARNING CHECK STARTED with data:', {
-      sectionDataLength: sectionData?.length || 0,
-      hasData: !!sectionData,
-      sampleSections: sectionData?.slice(0, 3)?.map(s => ({
-        itemNo: s.itemNo,
-        defectType: s.defectType,
-        letterSuffix: s.letterSuffix
-      }))
-    });
-    
-    if (DISABLE_ALL_WARNINGS || !sectionData || sectionData.length === 0) {
-      console.log('🚫 STRUCTURAL WARNING CHECK - Disabled or no section data provided');
-      return;
-    }
 
-    // Find all structural sections
-    const allStructuralSections = sectionData.filter(section => section.defectType === 'structural');
-    console.log('🔍 STRUCTURAL COST WARNING - All structural sections found:', {
-      totalSections: sectionData.length,
-      structuralSectionsCount: allStructuralSections.length,
-      structuralSections: allStructuralSections.map(s => ({
-        itemNo: s.itemNo,
-        letterSuffix: s.letterSuffix,
-        defectType: s.defectType,
-        defects: s.defects?.substring(0, 50)
-      }))
-    });
 
-    // Find structural sections with valid F615 costs (for cost warning check)
-    const structuralSectionsWithCosts = sectionData.filter(section => {
-      if (section.defectType !== 'structural') return false;
-      
-      // Call calculateAutoCost to get cost details
-      const costCalc = calculateAutoCost(section);
-      
-      // Deep debug every step of the filter
-      console.log(`🔬 STRUCTURAL FILTER DEBUG - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-        defectType: section.defectType,
-        costCalc: costCalc,
-        costCalcType: typeof costCalc,
-        costCalcIsObject: costCalc && typeof costCalc === 'object',
-        hasCostProperty: costCalc && typeof costCalc === 'object' && 'cost' in costCalc,
-        costValue: costCalc && typeof costCalc === 'object' && 'cost' in costCalc ? costCalc.cost : 'N/A',
-        costGreaterThanZero: costCalc && typeof costCalc === 'object' && 'cost' in costCalc && costCalc.cost > 0,
-        hasStatusProperty: costCalc && typeof costCalc === 'object' && 'status' in costCalc,
-        statusValue: costCalc && typeof costCalc === 'object' && 'status' in costCalc ? costCalc.status : 'N/A',
-        statusMatches: costCalc && typeof costCalc === 'object' && 'status' in costCalc && 
-                      (costCalc.status === 'f615_calculated' || costCalc.status === 'f615_patching' || costCalc.status === 'combined_calculated' || costCalc.status === 'adjusted_structural_cost')
-      });
-      
-      const hasValidStructuralCost = costCalc && 
-                                    typeof costCalc === 'object' && 
-                                    'cost' in costCalc && 
-                                    costCalc.cost > 0 &&
-                                    'status' in costCalc &&
-                                    (costCalc.status === 'f615_calculated' || 
-                                     costCalc.status === 'f615_patching' ||
-                                     costCalc.status === 'combined_calculated' ||
-                                     costCalc.status === 'adjusted_structural_cost');
-      
-      console.log(`🔍 STRUCTURAL COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-        defectType: section.defectType,
-        defects: section.defects?.substring(0, 50),
-        costCalc: costCalc && typeof costCalc === 'object' ? {
-          status: 'status' in costCalc ? costCalc.status : 'unknown',
-          cost: 'cost' in costCalc ? costCalc.cost : 0,
-          method: 'method' in costCalc ? costCalc.method : 'unknown',
-          dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
-          patchCount: 'patchCount' in costCalc ? costCalc.patchCount : 0
-        } : 'no cost calc',
-        hasValidStructuralCost,
-        FINAL_FILTER_RESULT: hasValidStructuralCost
-      });
-      
-      return hasValidStructuralCost;
-    });
+  // Warning system removed - clean dashboard foundation
 
-    console.log('🔍 STRUCTURAL COST WARNING - Structural sections with costs:', structuralSectionsWithCosts.length);
-    console.log('🔍 STRUCTURAL COST WARNING - Dialog state:', {
-      showStructuralCostWarning,
-      hasStructuralCostData: !!structuralCostData,
-      structuralCostsCount: structuralSectionsWithCosts.length
-    });
 
-    // CRITICAL FIX: DO NOT clear cost decisions - this breaks cost persistence
-    // localStorage.removeItem('appliedCostDecisions'); // DISABLED - was causing infinite cost clearing
-    
-    // Check if user has already applied a cost decision for current report and equipment
-    const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-    const currentEquipmentType = equipmentPriority; // 'id760' or 'id759'
-    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-    
-    const existingStructuralDecision = existingDecisions.find((decision: any) => 
-      decision.reportId === currentReportId && 
-      decision.equipmentType === currentEquipmentType && 
-      decision.decisionType === 'structural'
-    );
 
-    console.log('🔍 STRUCTURAL COST WARNING - Decision check details:', {
-      allDecisions: existingDecisions,
-      currentReportId,
-      currentEquipmentType,
-      existingStructuralDecision,
-      decisionMatch: existingDecisions.map((d: any) => ({
-        reportIdMatch: d.reportId === currentReportId,
-        equipmentTypeMatch: d.equipmentType === currentEquipmentType,
-        decisionTypeMatch: d.decisionType === 'structural',
-        decision: d
-      }))
-    });
+  // Configuration warning functions removed with warning system
 
-    console.log('🔍 STRUCTURAL COST WARNING - Trigger condition check:', {
-      structuralSectionsWithCosts: structuralSectionsWithCosts.length,
-      showStructuralCostWarning,
-      structuralCostData: !!structuralCostData,
-      structuralCostWarningDismissed,
-      existingStructuralDecision: !!existingStructuralDecision,
-      currentEquipmentType,
-      shouldTrigger: structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !existingStructuralDecision
-    });
-
-    // Reset dismissed state when new data is available BUT ONLY if no existing decision and equipment priority changed
-    if (structuralSectionsWithCosts.length > 0 && structuralCostWarningDismissed && !existingStructuralDecision) {
-      const lastPriorityChange = localStorage.getItem('lastUserPriorityChange');
-      const lastStructuralWarningTime = localStorage.getItem('lastStructuralWarningTime') || '0';
-      
-      if (lastPriorityChange && parseInt(lastPriorityChange) > parseInt(lastStructuralWarningTime)) {
-        console.log('🔄 STRUCTURAL COST WARNING - Resetting dismissed state for equipment priority change');
-        setStructuralCostWarningDismissed(false);
-      }
-    }
-
-    // Only trigger if we have structural sections with valid costs, haven't shown the dialog yet, and no cost decision exists
-    if (structuralSectionsWithCosts.length > 0 && !showStructuralCostWarning && !structuralCostData && !structuralCostWarningDismissed && !existingStructuralDecision) {
-      // Get the first structural item's config details for reference
-      const firstStructuralSection = structuralSectionsWithCosts[0];
-      const firstCostCalc = calculateAutoCost(firstStructuralSection);
-      
-      console.log('🔍 STRUCTURAL COST WARNING - First structural item config details:', {
-        itemNo: firstStructuralSection.itemNo,
-        costCalc: firstCostCalc,
-        equipmentPriority: equipmentPriority,
-        configType: firstCostCalc && typeof firstCostCalc === 'object' && 'configType' in firstCostCalc ? firstCostCalc.configType : 'unknown'
-      });
-
-      if (firstCostCalc && 
-          typeof firstCostCalc === 'object' && 
-          'dayRate' in firstCostCalc && 
-          'patchCount' in firstCostCalc) {
-        
-        // Calculate total structural cost and other metrics
-        const structuralItems = structuralSectionsWithCosts.map(section => {
-          const costCalc = calculateAutoCost(section);
-          
-          // Special handling for Item 19 - combined F619+F615 work
-          let displayMethod = typeof costCalc === 'object' && 'method' in costCalc ? costCalc.method : 'F615 Patching';
-          let patchCount = typeof costCalc === 'object' && 'patchCount' in costCalc ? costCalc.patchCount : 1;
-          
-          if (section.itemNo === 19 && costCalc && typeof costCalc === 'object' && 'status' in costCalc && costCalc.status === 'combined_calculated') {
-            // For Item 19 combined work, show both cut and patches
-            displayMethod = 'F619 Robotic Cutting + F615 Patching';
-            // Item 19 has 1 cut + 2 patches, but we'll show it as "1 cut & 2 patches" in the component
-            patchCount = 3; // Total work units (1 cut + 2 patches)
-          }
-          
-          return {
-            itemNo: section.itemNo,
-            currentCost: typeof costCalc === 'object' && 'cost' in costCalc ? costCalc.cost : 0,
-            method: displayMethod,
-            defects: section.defects || '',
-            patchCount: patchCount,
-            costPerPatch: typeof costCalc === 'object' && 'costPerPatch' in costCalc ? costCalc.costPerPatch : 0,
-            isCombinedWork: section.itemNo === 19 && costCalc && typeof costCalc === 'object' && 'status' in costCalc && costCalc.status === 'combined_calculated'
-          };
-        });
-        
-        const totalStructuralCost = structuralItems.reduce((sum, item) => sum + item.currentCost, 0);
-        const totalPatchCount = structuralItems.reduce((sum, item) => sum + (item.patchCount || 1), 0);
-        
-        // Check structural cost vs day rate - Enhanced warning system should trigger for BOTH scenarios
-        const dayRate = firstCostCalc.dayRate || 0;
-        const isStructuralCostBelowDayRate = totalStructuralCost < dayRate;
-        const isStructuralCostAboveDayRate = totalStructuralCost > dayRate;
-        const shouldTriggerStructuralWarning = isStructuralCostBelowDayRate || isStructuralCostAboveDayRate;
-        
-        console.log('🔍 STRUCTURAL COST WARNING - Cost analysis:', {
-          totalStructuralCost,
-          dayRate,
-          totalPatchCount,
-          isStructuralCostBelowDayRate,
-          isStructuralCostAboveDayRate,
-          shouldTriggerStructuralWarning,
-          structuralItemsCount: structuralItems.length,
-          structuralItemDetails: structuralItems.map(item => ({
-            itemNo: item.itemNo,
-            currentCost: item.currentCost,
-            patchCount: item.patchCount,
-            costPerPatch: item.costPerPatch
-          })),
-          comparison: `${totalStructuralCost} vs ${dayRate}`,
-          costScenario: isStructuralCostBelowDayRate ? 'Shortfall to minimum' : isStructuralCostAboveDayRate ? 'Excess over minimum' : 'Equals minimum',
-          willTriggerWarning: shouldTriggerStructuralWarning
-        });
-        
-        // Show structural warning for BOTH cost scenarios (below OR above day rate) - Enhanced warning system
-        if (shouldTriggerStructuralWarning) {
-          console.log('🔄 STRUCTURAL COST WARNING - Triggering warning dialog');
-          console.log('🔄 STRUCTURAL COST WARNING - Setting dialog data and state');
-          
-          const warningData = {
-            structuralItems,
-            dayRate: dayRate,
-            minPatches: dayRate > 0 ? Math.ceil(dayRate / (structuralItems[0]?.costPerPatch || 1)) : totalPatchCount,
-            totalStructuralCost,
-            configType: firstCostCalc.configType || 'F615 Patching'
-          };
-          
-          console.log('🔄 STRUCTURAL COST WARNING - Warning data:', warningData);
-          
-          // Auto-trigger dialog after a short delay to allow costs to render
-          setTimeout(() => {
-            setStructuralCostData(warningData);
-            setShowStructuralCostWarning(true);
-            localStorage.setItem('lastStructuralWarningTime', Date.now().toString());
-            console.log('🔄 STRUCTURAL COST WARNING - State set, dialog should now be visible');
-          }, 1500);
-        } else {
-          console.log('🔍 STRUCTURAL COST WARNING - Structural costs exactly equal day rate, no warning needed');
-        }
-      }
-    }
-  };
-
-  // State to track if export should happen after service cost dialog
-  const [shouldExportAfterServiceCost, setShouldExportAfterServiceCost] = useState(false);
-  // State to track if dialog was triggered from export workflow
-  const [isExportWorkflow, setIsExportWorkflow] = useState(false);
-
-  // Handler for service cost warning dialog cancel
-  const handleServiceCostCancel = () => {
-    console.log('🚫 Service cost warning dismissed by user');
-    
-    // Mark as dismissed so it won't show again until export is attempted
-    setServiceCostWarningDismissed(true);
-    
-    // Close the dialog and reset export workflow flag
-    setShowServiceCostWarning(false);
-    setServiceCostData(null);
-    setIsExportWorkflow(false);
-    
-    // Force structural warning check after state cleanup
-    setTimeout(() => {
-      if (rawSectionData && rawSectionData.length > 0) {
-        console.log('🔄 Triggering delayed structural warning check after cancel');
-        checkStructuralCostCompletion(rawSectionData);
-      }
-    }, 100);
-  };
-
-  // EASY DISABLE: Set this to true to disable ALL warning triggers
-  const DISABLE_ALL_WARNINGS = false; // ✅ Warnings re-enabled for cost confirmation and configuration validation
-
-  // Function to detect if dashboard contains synthetic data (items 1-24)
-  const isSyntheticDashboard = (sectionData: any[]) => {
-    if (!sectionData || sectionData.length === 0) return false;
-    
-    // Check if data appears to be generated rather than from uploaded files
-    const hasSequentialItems = sectionData.length >= 20 && 
-                               sectionData.every(section => section.itemNo >= 1 && section.itemNo <= 27);
-    
-    // Additional synthetic indicators
-    const hasNoFileUpload = sectionData.some(section => !section.uploadId || section.uploadId === null);
-    const hasSequentialNumbering = sectionData.filter(s => s.itemNo <= 24).length >= 20;
-    
-    console.log('🔍 SYNTHETIC DASHBOARD CHECK:', {
-      sectionCount: sectionData.length,
-      hasSequentialItems,
-      hasNoFileUpload,
-      hasSequentialNumbering,
-      isSynthetic: hasSequentialItems && hasSequentialNumbering
-    });
-    
-    return hasSequentialItems && hasSequentialNumbering;
-  };
-
-  // Function to scan for configuration issues in synthetic dashboards
-  const scanConfigurationIssues = (sectionData: any[]): ConfigurationIssue[] => {
-    if (!isSyntheticDashboard(sectionData)) return [];
-    
-    const issues: ConfigurationIssue[] = [];
-    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-    
-    // Scan items 1-24 for configuration issues
-    const itemsToScan = sectionData.filter(section => section.itemNo >= 1 && section.itemNo <= 24);
-    
-    for (const section of itemsToScan) {
-      const costCalc = calculateAutoCost(section);
-      
-      if (costCalc && typeof costCalc === 'object' && 'status' in costCalc) {
-        const status = costCalc.status;
-        const unconfiguredStatuses = [
-          'id760_insufficient_items',
-          'id759_insufficient_items', 
-          'configuration_missing',
-          'day_rate_missing',
-          'tp1_unconfigured',
-          'tp1_invalid'
-        ];
-        
-        if (unconfiguredStatuses.includes(status)) {
-          let issueType: ConfigurationIssue['issueType'] = 'missing_mm4';
-          let description = '';
-          let configId = equipmentPriority === 'id759' ? 759 : 760;
-          let categoryId = 'cctv-jet-vac'; // Default category
-          let sector = 'utilities'; // Default sector
-          let pipeSize = section.pipeSize?.replace('mm', '') || '150';
-          
-          // Determine issue type and description based on status
-          switch (status) {
-            case 'id760_insufficient_items':
-            case 'id759_insufficient_items':
-              issueType = 'missing_mm4';
-              description = `Item ${section.itemNo}: Missing MM4 configuration data for ${pipeSize}mm pipe with ${equipmentPriority.toUpperCase()} equipment. Configure day rates and pricing to enable cost calculations.`;
-              break;
-            case 'day_rate_missing':
-              issueType = 'missing_day_rate';
-              description = `Item ${section.itemNo}: Day rate missing for ${pipeSize}mm pipe configuration. Set blue value (day rate) to enable proper cost validation.`;
-              break;
-            case 'configuration_missing':
-              issueType = 'pipe_size_mismatch';
-              description = `Item ${section.itemNo}: No configuration found for ${pipeSize}mm pipe size. Create pipe-size-specific configuration for this equipment type.`;
-              break;
-            case 'tp1_unconfigured':
-            case 'tp1_invalid':
-              issueType = 'equipment_invalid';
-              description = `Item ${section.itemNo}: Equipment configuration invalid or incomplete for ${pipeSize}mm pipe. Review and update equipment settings.`;
-              break;
-            default:
-              issueType = 'missing_mm4';
-              description = `Item ${section.itemNo}: Configuration issue detected for ${pipeSize}mm pipe. Review MM4 data and equipment settings.`;
-          }
-          
-          // Construct navigation URL
-          const reportParam = currentReportId ? `&reportId=${currentReportId}` : '';
-          const navigationUrl = `/pr2-config-clean?id=${configId}&categoryId=${categoryId}&sector=${sector}&pipeSize=${pipeSize}&autoSelectUtilities=true${reportParam}`;
-          
-          issues.push({
-            itemNo: section.itemNo,
-            issueType,
-            description,
-            navigationUrl,
-            configId,
-            categoryId,
-            sector,
-            pipeSize
-          });
-        }
-      }
-    }
-    
-    console.log('🔍 CONFIGURATION ISSUES DETECTED:', {
-      totalIssues: issues.length,
-      itemsWithIssues: issues.map(i => i.itemNo),
-      issueTypes: issues.map(i => i.issueType)
-    });
-    
-    return issues;
-  };
-
-  // Handler for sequential configuration warning navigation
-  const handleConfigurationIssueNavigation = () => {
-    if (configurationIssues.length > 0 && currentIssueIndex < configurationIssues.length) {
-      const currentIssue = configurationIssues[currentIssueIndex];
-      console.log('🔗 NAVIGATING TO CONFIGURATION:', currentIssue.navigationUrl);
-      window.location.href = currentIssue.navigationUrl;
-    }
-  };
-
-  // Handler for moving to next configuration issue
-  const handleNextConfigurationIssue = () => {
-    const nextIndex = currentIssueIndex + 1;
-    
-    if (nextIndex < configurationIssues.length) {
-      setCurrentIssueIndex(nextIndex);
-    } else {
-      // All issues processed, close sequential warning system
-      setShowSequentialConfigWarning(false);
-      setConfigurationIssues([]);
-      setCurrentIssueIndex(0);
-      setSequentialWarningProcessed(true);
-      
-      // Trigger service/structural cost checks after configuration issues resolved
-      setTimeout(() => {
-        if (rawSectionData && rawSectionData.length > 0) {
-          console.log('🔄 Configuration issues resolved, checking service/structural costs');
-          checkServiceCostCompletion(rawSectionData);
-        }
-      }, 500);
-    }
-  };
-
-  // Handler for dismissing all configuration issues
-  const handleDismissAllConfigurationIssues = () => {
-    setShowSequentialConfigWarning(false);
-    setConfigurationIssues([]);
-    setCurrentIssueIndex(0);
-    setSequentialWarningProcessed(true);
-    
-    console.log('🚫 All configuration issues dismissed by user');
-  };
-
-  // Function to check if all service costs are populated and trigger warning
-  const checkServiceCostCompletion = (sectionData: any[]) => {
-    if (DISABLE_ALL_WARNINGS || !sectionData || sectionData.length === 0) return;
-    
-    // For synthetic dashboards, first check configuration issues
-    if (isSyntheticDashboard(sectionData) && !sequentialWarningProcessed) {
-      const issues = scanConfigurationIssues(sectionData);
-      
-      if (issues.length > 0) {
-        console.log('🔍 SYNTHETIC DASHBOARD: Configuration issues found, showing sequential warnings');
-        setConfigurationIssues(issues);
-        setCurrentIssueIndex(0);
-        setShowSequentialConfigWarning(true);
-        return; // Don't proceed with service cost checks until configuration issues resolved
-      } else {
-        setSequentialWarningProcessed(true); // Mark as processed if no issues
-      }
-    }
-
-    // Find all service sections
-    const allServiceSections = sectionData.filter(section => section.defectType === 'service');
-    console.log('🔍 SERVICE COST WARNING - All service sections found:', allServiceSections.map(s => ({
-      itemNo: s.itemNo,
-      letterSuffix: s.letterSuffix,
-      defectType: s.defectType,
-      defects: s.defects
-    })));
-
-    // Find all service sections with costs (including insufficient items)
-    const serviceSectionsWithCosts = sectionData.filter(section => {
-      if (section.defectType !== 'service') return false;
-      
-      // Call calculateAutoCost directly to get the cost object instead of rendered JSX
-      const costCalc = calculateAutoCost(section);
-      
-      // CRITICAL FIX: Expanded status check to include all service cost statuses
-      // This ensures all service items with any kind of cost calculation are counted
-      const validServiceStatuses = [
-        // Current equipment status codes
-        'id760_calculated', 'id760_insufficient_items',
-        'id759_calculated', 'id759_insufficient_items',
-        // Legacy status codes for backward compatibility
-        'f690_calculated', 'f690_insufficient_items',
-        'f608_calculated', 'f608_insufficient_items',
-        // Additional status codes for proper service cost detection
-        'calculated', 'insufficient_items', 'tp1_calculated', 'mm4_calculated',
-        'adjusted_service_cost', 'below_minimum', 'day_rate_missing',
-        'tp1_unconfigured', 'tp1_invalid', 'configuration_missing'
-      ];
-      
-      // CRITICAL FIX: Include ALL service items that have cost calculations, even if cost is 0
-      // Service cost warning should show items needing configuration (cost=0) AND items with calculated costs
-      const hasServiceCost = costCalc && 
-                           typeof costCalc === 'object' && 
-                           'status' in costCalc &&
-                           validServiceStatuses.includes(costCalc.status);
-      
-      console.log(`🔍 SERVICE COST WARNING - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-        defectType: section.defectType,
-        equipmentPriority: equipmentPriority,
-        validServiceStatuses: validServiceStatuses,
-        costCalc: costCalc && typeof costCalc === 'object' ? {
-          status: 'status' in costCalc ? costCalc.status : 'unknown',
-          cost: 'cost' in costCalc ? costCalc.cost : 0,
-          method: 'method' in costCalc ? costCalc.method : 'unknown',
-          dayRate: 'dayRate' in costCalc ? costCalc.dayRate : 0,
-          runsPerShift: 'runsPerShift' in costCalc ? costCalc.runsPerShift : 0
-        } : 'no cost calc',
-        statusMatch: costCalc && typeof costCalc === 'object' && 'status' in costCalc && validServiceStatuses.includes(costCalc.status),
-        hasServiceCost
-      });
-      
-      return hasServiceCost;
-    });
-
-    console.log('🔍 SERVICE COST WARNING - Service sections with costs:', serviceSectionsWithCosts.length);
-    console.log('🔍 SERVICE COST WARNING - Dialog state:', {
-      showServiceCostWarning,
-      hasServiceCostData: !!serviceCostData,
-      serviceSectionsCount: serviceSectionsWithCosts.length
-    });
-
-    // Check if user has already applied a cost decision for current report and equipment
-    const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-    const currentEquipmentType = equipmentPriority; // 'id760' or 'id759'
-    const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-    
-    const existingServiceDecision = existingDecisions.find((decision: any) => 
-      decision.reportId === currentReportId && 
-      decision.equipmentType === currentEquipmentType && 
-      decision.decisionType === 'service'
-    );
-
-    console.log('🔍 SERVICE COST WARNING - Trigger condition check:', {
-      serviceSectionsWithCosts: serviceSectionsWithCosts.length,
-      showServiceCostWarning,
-      serviceCostData: !!serviceCostData,
-      serviceCostWarningDismissed,
-      existingServiceDecision: !!existingServiceDecision,
-      currentEquipmentType,
-      shouldTrigger: serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed && !existingServiceDecision
-    });
-
-    // Reset dismissed state when new data is available BUT ONLY if no existing decision and equipment priority changed
-    if (serviceSectionsWithCosts.length > 0 && serviceCostWarningDismissed && !existingServiceDecision) {
-      const lastPriorityChange = localStorage.getItem('lastUserPriorityChange');
-      const lastWarningTime = localStorage.getItem('lastServiceWarningTime') || '0';
-      
-      if (lastPriorityChange && parseInt(lastPriorityChange) > parseInt(lastWarningTime)) {
-        console.log('🔄 SERVICE COST WARNING - Resetting dismissed state for equipment priority change');
-        setServiceCostWarningDismissed(false);
-      }
-    }
-
-    // Only trigger if we have service items, haven't shown the dialog yet, it hasn't been dismissed, AND no cost decision exists
-    if (serviceSectionsWithCosts.length > 0 && !showServiceCostWarning && !serviceCostData && !serviceCostWarningDismissed && !existingServiceDecision) {
-      // Get the first service item's config details for reference
-      const firstServiceSection = serviceSectionsWithCosts[0];
-      const firstCostCalc = calculateAutoCost(firstServiceSection);
-      
-      console.log('🔍 SERVICE COST WARNING - First service item config details:', {
-        itemNo: firstServiceSection.itemNo,
-        costCalc: firstCostCalc,
-        equipmentPriority: equipmentPriority,
-        configType: firstCostCalc && typeof firstCostCalc === 'object' && 'configType' in firstCostCalc ? firstCostCalc.configType : 'unknown'
-      });
-
-      // CRITICAL FIX: Only trigger warning when ALL service costs are fully calculated
-      // Check that all service items have completed calculations (not just day rate existence)
-      const allServiceItemsReady = serviceSectionsWithCosts.every(section => {
-        const costCalc = calculateAutoCost(section);
-        if (!costCalc || typeof costCalc !== 'object' || !('status' in costCalc)) {
-          return false;
-        }
-        
-        // Service items are ready when they have calculated costs (not configuration_missing/tp1_missing)
-        const readyStatuses = [
-          'id760_calculated', 'id760_insufficient_items',
-          'id759_calculated', 'id759_insufficient_items', 
-          'calculated', 'insufficient_items', 'tp1_calculated', 'mm4_calculated',
-          'adjusted_service_cost', 'below_minimum'
-        ];
-        
-        return readyStatuses.includes(costCalc.status);
-      });
-
-      console.log('🔍 SERVICE COST WARNING - Readiness check:', {
-        totalServiceItems: serviceSectionsWithCosts.length,
-        allServiceItemsReady,
-        serviceReadinessDetails: serviceSectionsWithCosts.map(section => {
-          const costCalc = calculateAutoCost(section);
-          return {
-            itemNo: section.itemNo,
-            status: (costCalc && typeof costCalc === 'object' && 'status' in costCalc) ? costCalc.status : 'no_calc',
-            cost: (costCalc && typeof costCalc === 'object' && 'cost' in costCalc) ? costCalc.cost : 0,
-            isReady: costCalc && typeof costCalc === 'object' && 'status' in costCalc && 
-                     ['id760_calculated', 'id760_insufficient_items', 'id759_calculated', 'id759_insufficient_items', 
-                      'calculated', 'insufficient_items', 'tp1_calculated', 'mm4_calculated', 'adjusted_service_cost', 'below_minimum'].includes(costCalc.status)
-          };
-        })
-      });
-
-      if (firstCostCalc && 
-          typeof firstCostCalc === 'object' && 
-          'dayRate' in firstCostCalc && 
-          'runsPerShift' in firstCostCalc &&
-          firstCostCalc.dayRate && 
-          firstCostCalc.runsPerShift &&
-          allServiceItemsReady) {
-        
-        const serviceItems = serviceSectionsWithCosts.map(section => {
-          const costCalc = calculateAutoCost(section);
-          return {
-            itemNo: section.itemNo,
-            currentCost: (costCalc && typeof costCalc === 'object' && 'cost' in costCalc) ? costCalc.cost : 0,
-            method: (costCalc && typeof costCalc === 'object' && 'method' in costCalc) ? costCalc.method : 'Unknown',
-            defects: section.defects || 'No details available'
-          };
-        });
-
-        const totalServiceCost = serviceItems.reduce((sum, item) => sum + item.currentCost, 0);
-        
-        // CRITICAL FIX: Only trigger Service Cost Day Rate Warning when costs turn RED (minimum not met)
-        const dayRate = firstCostCalc.dayRate || 0;
-        const isServiceCostBelowDayRate = totalServiceCost < dayRate;
-        const isServiceCostAboveDayRate = totalServiceCost > dayRate;
-        
-        // Check if orange minimum is met to determine if costs are red
-        const orangeMinimumMet = checkOrangeMinimumMet();
-        
-        // WARNING SHOULD ONLY TRIGGER WHEN COSTS ARE RED (not meeting orange minimum) AND there are cost deviations
-        const shouldTriggerServiceWarning = !orangeMinimumMet && (isServiceCostBelowDayRate || isServiceCostAboveDayRate);
-        
-        // Service cost warning logic - only trigger AFTER visual indicators (triangles and red costs) are displayed
-
-        // Show service warning ONLY AFTER costs are visually RED and triangles are displayed
-        if (shouldTriggerServiceWarning) {
-          
-          setServiceCostData({
-            serviceItems,
-            dayRate: dayRate,
-            runsPerShift: firstCostCalc.runsPerShift,
-            totalServiceCost,
-            configType: (firstCostCalc && 'configType' in firstCostCalc) ? firstCostCalc.configType : 'F608 Van Pack'
-          });
-
-          // Auto-trigger dialog after extended delay to allow visual indicators to render first
-          setTimeout(() => {
-            // Verify visual indicators are present before triggering warning
-            const costsAreVisuallyRed = document.querySelector('.text-red-600') !== null;
-            const trianglesAreVisible = document.querySelector('.text-amber-600') !== null;
-            
-            if (costsAreVisuallyRed || trianglesAreVisible) {
-              setIsExportWorkflow(false); // Not from export workflow
-              setShowServiceCostWarning(true);
-              localStorage.setItem('lastServiceWarningTime', Date.now().toString());
-            }
-          }, 2000); // Extended delay for visual confirmation
-        }
-      } else {
-        console.log('🔍 SERVICE COST WARNING - Blocked due to incomplete calculations:', {
-          hasFirstCostCalc: !!firstCostCalc,
-          hasDayRate: firstCostCalc && typeof firstCostCalc === 'object' && 'dayRate' in firstCostCalc && firstCostCalc.dayRate,
-          hasRunsPerShift: firstCostCalc && typeof firstCostCalc === 'object' && 'dayRate' in firstCostCalc && firstCostCalc.dayRate,
-          allServiceItemsReady: serviceSectionsWithCosts.length > 0 ? allServiceItemsReady : false,
-          reason: !firstCostCalc ? 'No cost calculation' : 
-                  !firstCostCalc.dayRate ? 'Missing day rate' :
-                  !firstCostCalc.dayRate ? 'Missing day rate 2' :
-                  !allServiceItemsReady ? 'Service items not ready' : 'Unknown'
-        });
-      }
-    }
-  };
+  // Warning system functions removed - clean foundation
 
 
 
@@ -3073,10 +2293,7 @@ export default function Dashboard() {
   // Sequential Configuration Warning System - Trigger for synthetic dashboards  
   useEffect(() => {
     if (rawSectionData && rawSectionData.length > 0 && !sequentialWarningProcessed) {
-      // Delay to allow other warnings to settle
-      const timer = setTimeout(() => {
-        checkServiceCostCompletion(rawSectionData);
-      }, 1000);
+      // Warning system calls removed
       
       return () => clearTimeout(timer);
     }
@@ -3349,29 +2566,9 @@ export default function Dashboard() {
         }
 
         // Check for service cost completion and trigger warning dialog
-        try {
-          console.log('🔍 TRIGGERING SERVICE COST CHECK with sections:', rawSectionData.length);
-          checkServiceCostCompletion(rawSectionData);
-        } catch (error) {
-          console.error('🔧 SERVICE COST CHECK ERROR:', error);
-        }
+        // Warning system calls removed
 
-        // Check for structural cost completion and trigger warning dialog
-        try {
-          console.log('🔍 TRIGGERING STRUCTURAL COST CHECK with sections:', rawSectionData.length);
-          console.log('🔍 STRUCTURAL CHECK STATES BEFORE:', {
-            showStructuralCostWarning,
-            structuralCostData: !!structuralCostData,
-            structuralCostWarningDismissed
-          });
-          checkStructuralCostCompletion(rawSectionData);
-          console.log('🔍 STRUCTURAL CHECK STATES AFTER:', {
-            showStructuralCostWarning,
-            structuralCostData: !!structuralCostData
-          });
-        } catch (error) {
-          console.error('🔧 STRUCTURAL COST CHECK ERROR:', error);
-        }
+        // Warning system calls removed
       } catch (error) {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
@@ -3882,11 +3079,7 @@ export default function Dashboard() {
         console.log('🔄 Export: Found service items:', serviceItems.length);
         
         if (serviceItems.length > 0) {
-          // Service items exist - check for warning and defer export
-          setIsExportWorkflow(true); // Mark as export workflow
-          checkServiceCostCompletion(rawSectionData);
-          console.log('🔄 Export: Service cost check triggered - export deferred until dialog handled');
-          return; // Don't export yet - wait for dialog response
+          // Warning system calls removed - export directly now
         }
       }
       
@@ -6841,20 +6034,9 @@ export default function Dashboard() {
       });
 
       // Check for service cost completion and trigger warning dialog using display data
-      try {
-        console.log('🔍 TRIGGERING SERVICE COST CHECK with display data:', sectionData.length);
-        checkServiceCostCompletion(sectionData);
-      } catch (error) {
-        console.error('🔧 SERVICE COST CHECK ERROR (display data):', error);
-      }
+      // Warning system calls removed
 
-      // Check for structural cost completion and trigger warning dialog using display data
-      try {
-        console.log('🔍 TRIGGERING STRUCTURAL COST CHECK with display data:', sectionData.length);
-        checkStructuralCostCompletion(sectionData);
-      } catch (error) {
-        console.error('🔧 STRUCTURAL COST CHECK ERROR (display data):', error);
-      }
+      // Warning system calls removed
     }
   }, [sectionData, repairPricingData]);
 
@@ -8429,128 +7611,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Service Cost Warning Dialog */}
-      {serviceCostData && (
-        <ServiceCostWarningDialog
-          isOpen={showServiceCostWarning}
-          onClose={handleServiceCostCancel}
-          serviceItems={serviceCostData.serviceItems}
-          dayRate={serviceCostData.dayRate}
-          runsPerShift={serviceCostData.runsPerShift}
-          totalServiceCost={serviceCostData.totalServiceCost}
-          configType={serviceCostData.configType}
-          onApply={handleServiceCostApply}
-          onComplete={() => setShouldExportAfterServiceCost(true)}
-          isExportWorkflow={isExportWorkflow}
-        />
-      )}
-
-      {/* Structural Cost Warning Dialog */}
-      {structuralCostData && (
-        <StructuralCostWarningDialog
-          isOpen={showStructuralCostWarning}
-          onClose={() => {
-            setShowStructuralCostWarning(false);
-            setStructuralCostData(null);
-            setStructuralCostWarningDismissed(true);
-            setIsExportWorkflow(false);
-          }}
-          structuralItems={structuralCostData.structuralItems}
-          dayRate={structuralCostData.dayRate}
-          minPatches={structuralCostData.minPatches}
-          totalStructuralCost={structuralCostData.totalStructuralCost}
-          configType={structuralCostData.configType}
-          onApply={handleStructuralCostApply}
-          isExportWorkflow={isExportWorkflow}
-          onComplete={() => {
-            console.log('🔄 Structural Cost Warning Dialog: onComplete called - triggering export');
-            performExport();
-          }}
-        />
-      )}
-
-      {/* Configuration Warning Dialog */}
-      {configWarningData && (
-        <ConfigurationWarningDialog
-          isOpen={showConfigWarning}
-          onClose={() => {
-            setShowConfigWarning(false);
-            setConfigWarningData(null);
-            setConfigWarningDismissed(true);
-          }}
-          warningType={configWarningData.warningType}
-          sectionData={{
-            ...configWarningData.sectionData,
-            sector: currentSector?.id || 'utilities'
-          }}
-          configData={configWarningData.configData}
-          onNavigateToConfig={(categoryId, sector) => {
-            console.log(`🔄 NAVIGATING TO CONFIG: ${categoryId}`, {
-              sectionData: configWarningData.sectionData,
-              pipeSize: configWarningData.sectionData?.pipeSize,
-              sector: sector || currentSector?.id || 'utilities'
-            });
-            
-            // Get the pipe size from the warning data to navigate to the correct MM4 section
-            // **CRITICAL FIX**: For CCTV/Jet Vac, ensure we get the correct pipe size from Item 3 data
-            let pipeSize = configWarningData.sectionData?.pipeSize;
-            
-            // **FIXED**: Apply 150mm priority for BOTH CCTV configurations (A4 Van Pack + A5 Jet Vac)
-            if ((categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack') && (!pipeSize || pipeSize === '100')) {
-              // Look up the actual pipe size from the sections data for the triggering item
-              const triggerItemNo = configWarningData.sectionData?.itemNo;
-              console.log('🔧 PIPE SIZE CORRECTION for Item:', triggerItemNo, 'Category:', categoryId);
-              // Force 150mm for both cctv-jet-vac (A5) and cctv-van-pack (A4) as per requirements
-              pipeSize = '150';
-            } else {
-              pipeSize = pipeSize || '150';
-            }
-            
-            const cleanPipeSize = pipeSize.toString().replace('mm', '');
-            
-            console.log('🔍 PIPE SIZE DEBUG:', {
-              originalPipeSize: configWarningData.sectionData?.pipeSize,
-              fallbackPipeSize: pipeSize,
-              cleanPipeSize: cleanPipeSize,
-              sectionData: configWarningData.sectionData
-            });
-            
-            // Use sector from parameter, or current sector, or fallback to utilities
-            const targetSector = sector || currentSector?.id || 'utilities';
-            
-            // **CRITICAL FIX**: Map to correct A1-F16 system
-            // cctv-jet-vac should route to A5 (CCTV/Jet Vac), not A1 (CCTV only)
-            // According to A1_F16_System_Reference.md: A5 = CCTV/Jet Vac, cardNum: 5
-            
-            // **CRITICAL FIX**: Dynamically find the correct configuration ID instead of hardcoded values
-            // The database now shows id907 for cctv-jet-vac, not id760
-            
-            console.log('🔧 DYNAMIC ROUTING DEBUG:', {
-              originalCategoryId: categoryId,
-              targetSector: targetSector,
-              expectedCard: categoryId === 'cctv-jet-vac' ? 'CCTV/Jet Vac' : 'Unknown',
-              pipeSize: cleanPipeSize,
-              needsDynamicLookup: true
-            });
-            
-            // Navigate to PR2 configuration page with the specific category, sector and pipe size  
-            // **CRITICAL FIX**: Use dynamic routing instead of hardcoded IDs
-            // Let the PR2 page find the correct configuration based on categoryId and sector
-            
-            // **CORRECTED FIX**: Route to correct id760 (A5 - CCTV/Jet Vac) configuration
-            // id760 has the proper A1-F16 name "A5 - CCTV/Jet Vac" and utilities sector
-            // id907 is a duplicate without A1-F16 naming and should be cleaned up
-            
-            if (categoryId === 'cctv-jet-vac') {
-              // Route directly to id760 (correct A5 - CCTV/Jet Vac configuration)
-              window.location.href = `/pr2-config-clean?id=760&sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
-            } else {
-              // Regular routing for other categories
-              window.location.href = `/pr2-config-clean?sector=${targetSector}&categoryId=${categoryId}&pipeSize=${cleanPipeSize}&autoSelectUtilities=true`;
-            }
-          }}
-        />
-      )}
+      {/* Warning dialogs removed - clean dashboard foundation */}
 
       {/* Sequential Configuration Warning Dialog for Synthetic Dashboards */}
       {showSequentialConfigWarning && configurationIssues.length > 0 && (
@@ -8565,7 +7626,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={handleDismissAllConfigurationIssues}
+                  onClick={() => setShowSequentialConfigWarning(false)}
                   className="h-6 w-6 p-0"
                 >
                   <X className="h-4 w-4" />
@@ -8573,28 +7634,21 @@ export default function Dashboard() {
               </DialogTitle>
               {configurationIssues.length > 1 && (
                 <div className="text-sm text-muted-foreground">
-                  Issue {currentIssueIndex + 1} of {configurationIssues.length}
+                  Issue {1} of {configurationIssues.length}
                 </div>
               )}
             </DialogHeader>
             <div className="space-y-4">
               <div className="text-sm text-gray-600">
-                {configurationIssues[currentIssueIndex]?.description}
+                Configuration dialog disabled with warning system removal
               </div>
               <div className="flex space-x-2">
                 <Button 
-                  onClick={handleDismissAllConfigurationIssues}
+                  onClick={() => setShowSequentialConfigWarning(false)}
                   variant="outline"
                   size="sm"
                 >
-                  Skip All
-                </Button>
-                <Button 
-                  onClick={handleConfigurationIssueNavigation}
-                  size="sm"
-                  className="flex-1"
-                >
-                  Got It - Configure Now
+                  Close
                 </Button>
               </div>
             </div>
