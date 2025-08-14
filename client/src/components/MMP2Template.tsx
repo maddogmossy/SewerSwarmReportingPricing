@@ -152,6 +152,7 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
     const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     console.log(`🔍 MM4 Data for key "${pipeSizeKey}":`, mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }]);
     console.log('📊 All MM4 data by pipe size:', mm4DataByPipeSize);
+    // CRITICAL FIX: Always preserve authentic user data without forced deletions
     return mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
   };
 

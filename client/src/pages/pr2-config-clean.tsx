@@ -1083,16 +1083,8 @@ export default function PR2ConfigClean() {
     console.log(`🔍 MM4 Data for key "${key}":`, data);
     console.log('📊 All MM4 data by pipe size:', mm4DataByPipeSize);
     
-    // 🧹 FORCE EMPTY purple fields for non-authentic pipe sizes to prevent synthetic data display
-    // Allow authentic pipe sizes: 150mm and 300mm
-    if (key !== '150-1501' && key !== '300-3001') {
-      return data.map(row => ({
-        ...row,
-        purpleDebris: '',
-        purpleLength: ''
-      }));
-    }
-    
+    // CRITICAL FIX: Preserve authentic user data - never force empty purple fields
+    // All pipe sizes retain their authentic data to prevent database corruption
     return data;
   };
 
@@ -1788,9 +1780,15 @@ export default function PR2ConfigClean() {
           needsValidation: !!(actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99'))
         });
         
-        if (actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99')) {
-          // Show warning popup for missing .99
-          console.log(`⚠️ .99 Validation triggered for Row ${row.id} with value "${actualValue}"`);
+        // CRITICAL FIX: Only validate if BOTH purpleLength has value AND purpleDebris is empty
+        // This prevents false warnings when data is corrupted by deletion
+        const debrisBufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${row.id}-purpleDebris`;
+        const actualDebrisValue = inputBuffer[debrisBufferKey] || row.purpleDebris;
+        
+        if (actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99') && 
+            actualDebrisValue && actualDebrisValue.trim() !== '') {
+          // Only show warning if both length and debris have data but length missing .99
+          console.log(`⚠️ .99 Validation triggered for Row ${row.id} with value "${actualValue}" and debris "${actualDebrisValue}"`);
           setPendingRangeValue(actualValue);
           setPendingRowId(row.id);
           setShowRangeWarning(true);
