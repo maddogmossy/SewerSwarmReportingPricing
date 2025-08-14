@@ -999,7 +999,7 @@ export default function PR2ConfigClean() {
   const PIPE_SIZE_IDS: Record<string, number> = {
     '100': 1001,
     '125': 1251,
-    '150': 1501, // RESTORED: Changed back from 1051 to 1501 to restore authentic data
+    '150': 1501, // Authentic 150mm pipe size ID pattern
     '175': 1751,
     '200': 2001,
     '225': 2251,

@@ -638,28 +638,22 @@ export default function Dashboard() {
     return stored === 'id759' ? 'id759' : 'id760';
   });
 
-  // CRITICAL FIX: Clear old 1051 patterns from localStorage cache on component mount
+  // Clear old patterns from localStorage cache on component mount
   useEffect(() => {
     const clearOldPatterns = () => {
       const keys = Object.keys(localStorage);
       const oldPatternKeys = keys.filter(key => 
-        key.includes('-1051-') || key.includes('760-150-1501') || key.includes('759-150-1501')
+        key.includes('760-150-1501') || key.includes('759-150-1501')
       );
       
       if (oldPatternKeys.length > 0) {
-        console.log('🧹 CLEARING OLD ID PATTERNS from localStorage (including 759-150-1501):', oldPatternKeys);
+        console.log('🧹 CLEARING OLD PATTERNS from localStorage:', oldPatternKeys);
         oldPatternKeys.forEach(key => localStorage.removeItem(key));
         
         // Also clear inputBuffer which may contain old patterns
         const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-        const updatedBuffer = {};
-        for (const [key, value] of Object.entries(inputBuffer)) {
-          if (!key.includes('-1051-')) {
-            updatedBuffer[key] = value;
-          }
-        }
-        localStorage.setItem('inputBuffer', JSON.stringify(updatedBuffer));
-        console.log('🧹 CLEARED inputBuffer old patterns, kept:', Object.keys(updatedBuffer));
+        localStorage.setItem('inputBuffer', JSON.stringify(inputBuffer));
+        console.log('🧹 InputBuffer maintained:', Object.keys(inputBuffer));
       }
     };
     
@@ -5265,7 +5259,7 @@ export default function Dashboard() {
         let matchingMM4Data = null;
         let matchingPipeSizeKey = null;
         
-        // CRITICAL FIX: Handle both old (1051) and new (1501) ID patterns during transition
+        // Using authentic 1501 ID patterns
         const targetPipeSize = sectionPipeSize?.replace('mm', '');
         
         console.log('🔍 PIPE SIZE MATCHING DEBUG:', {
