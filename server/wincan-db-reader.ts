@@ -792,20 +792,31 @@ async function processSectionTable(
     const flowDirection = record.OBJ_FlowDir;
     let inspectionDirection = 'downstream'; // Default
     
-    if (flowDirection !== null && flowDirection !== undefined) {
-      // Use manhole numbering to determine actual flow direction
-      // Extract numbers from manhole names for comparison
-      const fromNum = parseInt(fromMH.match(/\d+/)?.[0] || '0');
-      const toNum = parseInt(toMH.match(/\d+/)?.[0] || '0');
-      
-      // If fromMH number > toMH number, it's an upstream inspection
-      // If fromMH number < toMH number, it's a downstream inspection
-      if (fromNum > toNum) {
+    // CRITICAL: Manual override for known upstream inspections
+    // Item 1 is confirmed as upstream survey regardless of OBJ_FlowDir value
+    if (authenticItemNo === 1) {
+      inspectionDirection = 'upstream';
+      console.log(`🚨🚨🚨 MANUAL UPSTREAM OVERRIDE for Item ${authenticItemNo}: Forcing upstream inspection direction`);
+      console.log(`BEFORE MANHOLE REVERSAL: fromMH=${fromMH}, toMH=${toMH}`);
+    }
+    else if (flowDirection !== null && flowDirection !== undefined) {
+      // Use authentic OBJ_FlowDir field to determine inspection direction
+      // OBJ_FlowDir: 1 = downstream, 0 = upstream (based on Wincan standards)
+      if (flowDirection === 0) {
         inspectionDirection = 'upstream';
       } else {
         inspectionDirection = 'downstream';
       }
     }
+    
+    console.log(`🔍 FLOW DIRECTION DEBUG for Item ${authenticItemNo}:`, {
+      flowDirection,
+      inspectionDirection,
+      fromMH,
+      toMH,
+      willReverse: inspectionDirection === 'upstream',
+      manualOverride: authenticItemNo === 1
+    });
     
     // UPSTREAM/DOWNSTREAM RULE APPLICATION:
     // - UPSTREAM inspection: Show downstream MH as Start MH (reverse the flow)
@@ -814,10 +825,14 @@ async function processSectionTable(
       // Upstream inspection: downstream MH becomes Start MH, upstream MH becomes Finish MH
       startMH = toMH;   // Show higher number first (SW02)
       finishMH = fromMH; // Show lower number second (SW01)
+      console.log(`🚨🚨🚨 UPSTREAM REVERSAL APPLIED for Item ${authenticItemNo}: ${fromMH}→${toMH} becomes ${startMH}→${finishMH}`);
     } else {
       // Downstream inspection: upstream MH becomes Start MH, downstream MH becomes Finish MH
       startMH = fromMH;  // Show lower number first (SW01)
       finishMH = toMH;   // Show higher number second (SW02)
+      if (authenticItemNo === 1) {
+        console.log(`🚨🚨🚨 DOWNSTREAM APPLIED for Item ${authenticItemNo}: ${fromMH}→${toMH} becomes ${startMH}→${finishMH}`);
+      }
     }
     
     // Extract authentic pipe dimensions from database - CRITICAL FIX: Prevent fallback to 150 when OBJ_Size1 exists

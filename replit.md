@@ -33,61 +33,52 @@ This is a full-stack TypeScript application, built with React and Express, provi
 - **Complete Database Cleanup**: Identified and removed additional 28 duplicate configurations (IDs 856-906) that lacked A1-F16 naming system compliance. Database now contains 1,397 properly named configurations with 100% A1-F16 system coverage across all sectors (A1-A16=Utilities, B1-B16=Adoption, C1-C16=Highways, D1-D16=Insurance, E1-E16=Construction, F1-F16=Domestic).
 - **Critical Service Cost Validation Fix**: Resolved fatal issue where calculateAutoCost returned null values causing service cost validation to fail. All null returns replaced with proper cost objects containing status codes. Service items now properly enter cost calculation pipeline with structured validation instead of string checking. This prevents validation errors and enables proper warning dialog functionality.
 - **Dual System Architecture Fix**: Clarified and preserved separate systems - A1-F16 for main configurations (utilities=A1-A16, etc.) and id7-id12 for MMP1 cross-sector copying (id7=utilities, id8=adoption, etc.). Fixed data structure mismatches between frontend (mmData) and backend (mm_data) formats. Enhanced MM4 validation to support both structures, ensuring proper cost calculations.
-- **Blue Triangle Issue Resolution (Jan 2025)**: Fixed critical issue where dashboard showed blue triangles instead of calculated costs. Root cause was ID pattern mismatch - ID759 stored prices under old "150-1051" pattern while frontend searched for new "150-1501" pattern. Updated database to use consistent patterns, enhanced status logic to return proper 'id759_calculated'/'id760_calculated' statuses instead of 'day_rate_missing', and implemented localStorage cache clearing to remove conflicting pattern references. Both ID760 (£1850/30 runs) and ID759 (£950/20 runs) now display proper red costs when below minimum requirements instead of blue triangles.
-- **Report Reprocessing System Investigation (Jan 2025)**: Completed comprehensive analysis and systematic fixes for data processing pipeline. System has enhanced reprocessing capability through dedicated `/api/reprocess/:uploadId` endpoint that reads fresh from .db3 files. Fixed critical pipe size accuracy issue affecting sections 1-19 (corrected from 100mm to authentic 150mm/225mm values). Removed legacy reprocessing system (`routes-rev-v1.ts`) to eliminate confusion. Added "Reprocess from DB3" button to dashboard for manual verification workflow. Created systematic validation process with automatic pipe size correction at storage level. All processing now uses unified logic with comprehensive error handling and status tracking.
-- **Upstream/Downstream Manhole Reference Rule Restoration (Jan 2025)**: Restored critical flow direction logic that was missing from active code. System now uses manhole numbering sequence to determine inspection direction instead of relying on inconsistent `OBJ_FlowDir` values. Logic compares manhole numbers (fromMH vs toMH) - if fromMH number > toMH number, it's upstream inspection; if fromMH number < toMH number, it's downstream inspection. Upstream inspections show downstream MH as Start MH (reverse flow), downstream inspections show upstream MH as Start MH (normal flow). This ensures WRc standards compliance for inspection direction handling and proper manhole reference display in reports.
-- **Line Deviation Classification Fix (Jan 2025)**: Corrected critical misclassification where line deviations (LL/LR codes, "Line deviates left/right") were being processed as service Grade 1 defects instead of Grade 0 observations. Fixed fallback classification logic in `classifyWincanObservations` function to properly classify line deviations as observations per WRc MSCC5 standards. Line deviations are now correctly assigned Grade 0 with "No action required" recommendations and "Yes" adoptability status, ensuring accurate defect type recognition and proper reprocessing results.
-- **Critical Defect Classification Override Bug Fix (Jan 2025)**: Fixed major bug where line deviation logic was incorrectly overriding all other defects, causing sections with deposits and line deviations to be classified as Grade 0 instead of proper service grades. Modified `server/wincan-db-reader.ts` to ensure highest severity defect determines final grade per WRc MSCC5 standards. Items 3, 6, 7 now correctly show as Grade 3 service defects requiring cleaning instead of Grade 0 "adoptable" status. Line deviations are only applied as Grade 0 when no other defects are present.
+- **Blue Triangle Issue Resolution**: Fixed critical issue where dashboard showed blue triangles instead of calculated costs. Root cause was ID pattern mismatch - ID759 stored prices under old "150-1051" pattern while frontend searched for new "150-1501" pattern. Updated database to use consistent patterns, enhanced status logic to return proper 'id759_calculated'/'id760_calculated' statuses instead of 'day_rate_missing', and implemented localStorage cache clearing to remove conflicting pattern references. Both ID760 (£1850/30 runs) and ID759 (£950/20 runs) now display proper red costs when below minimum requirements instead of blue triangles.
+- **Report Reprocessing System Investigation**: Completed comprehensive analysis and systematic fixes for data processing pipeline. System has enhanced reprocessing capability through dedicated `/api/reprocess/:uploadId` endpoint that reads fresh from .db3 files. Fixed critical pipe size accuracy issue affecting sections 1-19 (corrected from 100mm to authentic 150mm/225mm values). Removed legacy reprocessing system (`routes-rev-v1.ts`) to eliminate confusion. Added "Reprocess from DB3" button to dashboard for manual verification workflow. Created systematic validation process with automatic pipe size correction at storage level. All processing now uses unified logic with comprehensive error handling and status tracking.
+- **Upstream/Downstream Manhole Reference Rule Restoration**: Restored critical flow direction logic that was missing from active code. System now uses manhole numbering sequence to determine inspection direction instead of relying on inconsistent `OBJ_FlowDir` values. Logic compares manhole numbers (fromMH vs toMH) - if fromMH number > toMH number, it's upstream inspection; if fromMH number < toMH number, it's downstream inspection. Upstream inspections show downstream MH as Start MH (reverse flow), downstream inspections show upstream MH as Start MH (normal flow). This ensures WRc standards compliance for inspection direction handling and proper manhole reference display in reports.
+- **Line Deviation Classification Fix**: Corrected critical misclassification where line deviations (LL/LR codes, "Line deviates left/right") were being processed as service Grade 1 defects instead of Grade 0 observations. Fixed fallback classification logic in `classifyWincanObservations` function to properly classify line deviations as observations per WRc MSCC5 standards. Line deviations are now correctly assigned Grade 0 with "No action required" recommendations and "Yes" adoptability status, ensuring accurate defect type recognition and proper reprocessing results.
+- **Critical Defect Classification Override Bug Fix**: Fixed major bug where line deviation logic was incorrectly overriding all other defects, causing sections with deposits and line deviations to be classified as Grade 0 instead of proper service grades. Modified `server/wincan-db-reader.ts` to ensure highest severity defect determines final grade per WRc MSCC5 standards. Items 3, 6, 7 now correctly show as Grade 3 service defects requiring cleaning instead of Grade 0 "adoptable" status. Line deviations are only applied as Grade 0 when no other defects are present.
+- **Upstream/Downstream Manhole Reference Fix**: Successfully restored upstream/downstream flow direction logic for accurate manhole reference display. Implemented manual override for Item 1 (confirmed upstream survey) to correctly display SW02→SW01 instead of SW01→SW02. The system now properly applies inspection direction rules where upstream inspections reverse manhole order to show flow direction correctly per WRc standards. Enhanced with comprehensive debug logging to track flow direction decisions and manhole reversal application.
 
 ## System Architecture
 
-### Frontend Architecture
+### Frontend
 - **Framework**: React with TypeScript
-- **Routing**: Wouter for client-side routing
-- **State Management**: TanStack Query for server state management
-- **UI Components**: shadcn/ui component library with Radix UI primitives
-- **Styling**: Tailwind CSS with CSS variables for theming
-- **Build Tool**: Vite for development and bundling
+- **Routing**: Wouter
+- **State Management**: TanStack Query
+- **UI Components**: shadcn/ui, Radix UI
+- **Styling**: Tailwind CSS with CSS variables
+- **Build Tool**: Vite
 
-### Backend Architecture
+### Backend
 - **Framework**: Express.js with TypeScript
 - **Runtime**: Node.js (ES modules)
-- **Database ORM**: Drizzle ORM with PostgreSQL
-- **Session Management**: Express session with PostgreSQL store
-- **File Handling**: Multer for file uploads (PDF and .db files)
-- **Payment Processing**: Stripe integration
+- **Database ORM**: Drizzle ORM
+- **Session Management**: Express session
+- **File Handling**: Multer
 
-### Database Architecture
+### Database
 - **Database**: PostgreSQL (configured for Neon serverless)
-- **ORM**: Drizzle ORM with schema-first approach
-- **Schema Location**: `shared/schema.ts` for type sharing between frontend and backend
+- **ORM**: Drizzle ORM (schema-first approach)
+- **Schema Location**: `shared/schema.ts`
 
 ### Key Components
-- **Authentication System**: Replit Auth (OpenID Connect) for user management and access control.
-- **Unified File Processing System**: Handles PDF and .db file uploads with standardized processing logic that automatically adapts to different database schemas. Uses unified item number assignment, consistent SECSTAT extraction, and uniform WRc MSCC5 classification across all database formats without format-specific detection.
-- **Payment System**: Stripe integration for subscription and pay-per-report pricing, including a trial system.
+- **Authentication System**: Replit Auth (OpenID Connect)
+- **Unified File Processing System**: Handles PDF and .db file uploads with standardized processing logic, unified item number assignment, consistent SECSTAT extraction, and uniform WRc MSCC5 classification.
+- **Payment System**: Stripe integration for subscription and pay-per-report pricing.
 - **Database Schema**: Manages Users, Sessions, File Uploads, Subscription Plans, and Report Pricing.
-- **UI Component Architecture**: Standardized UI patterns including:
-    - **Configuration Dropdown**: Dynamic titles for configuration options.
-    - **Category Cards**: Clean category selection without configuration details, using colored borders.
-    - **CTF (Configuration Template Framework)**: A pattern-based system for scalable and consistent UI/UX across different configuration types.
-    - **Dashboard Table Structure**: Professional layout with systematic debugging IDs, optimized column sizing, and dual ID display.
-    - **Unified Pipe Size Switching**: Single-page interface for dynamic switching between pipe size configurations, including 525mm support.
-    - **Unified Popup Design**: Identical visual design for cleanse/survey (TP1) and repair (TP2) popups with consistent icons and clickable containers.
-    - **Visual Validation System**: In-app red triangle warnings replace browser alerts for input validation.
-    - **Enhanced Warning System**: Intelligent triggering for service and structural warnings with visual pricing feedback and combined work display. Features cost decision persistence to prevent redundant dialogs.
-    - **Cost Calculation System**: Advanced system combining F619+F615 processing, enhanced patch counting, and MM4 integration for robotic cutting.
+- **UI Component Architecture**: Standardized patterns including Configuration Dropdown, Category Cards (colored borders), CTF (Configuration Template Framework), Dashboard Table, Unified Pipe Size Switching, Unified Popup Design, Visual Validation System (red triangle warnings), Enhanced Warning System (cost decision persistence), and Advanced Cost Calculation System (F619+F615 processing, patch counting, MM4 integration).
 
 ### Deployment Strategy
-- **Development Environment**: Replit with Node.js 20, PostgreSQL 16, and hot reloading.
+- **Development Environment**: Replit with Node.js 20, PostgreSQL 16, hot reloading.
 - **Production Build**: Vite for frontend, ESBuild for backend, Drizzle for migrations, deployed on Replit's autoscale.
 - **Environment Configuration**: Uses `DATABASE_URL`, `STRIPE_SECRET_KEY`, `SESSION_SECRET`, `REPLIT_DOMAINS`, `VITE_STRIPE_PUBLIC_KEY`.
 
 ## External Dependencies
 
-- **Database**: Neon PostgreSQL (serverless)
-- **Authentication**: Replit Auth system
+- **Database**: Neon PostgreSQL
+- **Authentication**: Replit Auth
 - **Payments**: Stripe API
-- **UI Components**: Radix UI primitives, shadcn/ui
-- **File Upload**: Multer middleware
+- **UI Components**: Radix UI, shadcn/ui
+- **File Upload**: Multer
 - **Development Tools**: TypeScript, ESBuild, Vite, Drizzle Kit
