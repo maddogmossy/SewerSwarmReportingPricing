@@ -675,7 +675,7 @@ export default function Dashboard() {
       
       // Clear cost decisions when equipment priority changes to trigger new warnings
       const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
+      const currentReportId = reportId || 'current'; // Use reportId directly or fallback
       
       // Remove decisions for this report (since equipment priority changed)
       const filteredDecisions = existingDecisions.filter((decision: any) => 
@@ -3026,8 +3026,8 @@ export default function Dashboard() {
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-line-deviation-fix'], // Stable cache key for WRc fix
-    enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
+    queryKey: [`/api/uploads/${effectiveReportId}/sections`, 'wrc-line-deviation-fix'], // Stable cache key for WRc fix
+    enabled: !!(effectiveReportId && currentUpload && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
@@ -3064,18 +3064,6 @@ export default function Dashboard() {
     });
   }
 
-  // AUTO-NAVIGATION: If no reportId in URL but we have a current upload, navigate to it
-  useEffect(() => {
-    if (!reportId && currentUpload && !sectionsLoading) {
-      // Only navigate if we're not already on the correct URL
-      const currentUrl = window.location.pathname + window.location.search;
-      const targetUrl = `/dashboard?reportId=${currentUpload.id}`;
-      if (currentUrl !== targetUrl) {
-        window.history.replaceState(null, '', targetUrl);
-      }
-    }
-  }, [reportId, currentUpload, sectionsLoading]);
-
   // SAVE LAST USED REPORT: Save current report to localStorage when it changes
   useEffect(() => {
     if (currentUpload?.id) {
@@ -3083,6 +3071,10 @@ export default function Dashboard() {
       console.log('💾 Saved last used report ID:', currentUpload.id);
     }
   }, [currentUpload?.id]);
+
+  // FIXED: Use conditional rendering instead of history manipulation to prevent visual interruption
+  // Calculate effective reportId without manipulating browser history mid-render
+  const effectiveReportId = reportId || currentUpload?.id;
 
   // Sequential Configuration Warning System - Trigger for synthetic dashboards  
   useEffect(() => {
@@ -6647,8 +6639,8 @@ export default function Dashboard() {
 
   // Fetch individual defects for multiple defects per section
   const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/defects`],
-    enabled: !!currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"),
+    queryKey: [`/api/uploads/${effectiveReportId}/defects`],
+    enabled: !!effectiveReportId && currentUpload && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
