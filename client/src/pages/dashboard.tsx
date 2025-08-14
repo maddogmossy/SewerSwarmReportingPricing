@@ -3031,7 +3031,7 @@ export default function Dashboard() {
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
     queryKey: [`/api/uploads/${effectiveReportId}/sections`, 'wrc-line-deviation-fix'], // Stable cache key for WRc fix
-    enabled: !!(effectiveReportId && currentUpload && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
+    enabled: !!effectiveReportId, // FIXED: Simplified enable logic - only need valid reportId to prevent loops
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
@@ -3094,13 +3094,15 @@ export default function Dashboard() {
   // FORCE DEBUG: Log every single time this component renders
   console.warn('🚨 DASHBOARD COMPONENT RENDER - FORCED LOG:', {
     timestamp: Date.now(),
+    effectiveReportId,
     currentUploadId: currentUpload?.id,
     sectionsLoading,
     rawSectionDataExists: !!rawSectionData,
     rawSectionDataLength: rawSectionData?.length || 0,
     hasAuthenticData,
     sectionsError: sectionsError?.message || 'no error',
-    queryEnabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"))
+    queryEnabled: !!effectiveReportId, // FIXED: Updated to match simplified enable logic
+    currentUploadStatus: currentUpload?.status || 'no upload'
   });
   
   // IMMEDIATE SECTION DATA CHECK
@@ -6640,7 +6642,7 @@ export default function Dashboard() {
   // Fetch individual defects for multiple defects per section
   const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
     queryKey: [`/api/uploads/${effectiveReportId}/defects`],
-    enabled: !!effectiveReportId && currentUpload && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"),
+    enabled: !!effectiveReportId, // FIXED: Simplified enable logic to match sections query
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
