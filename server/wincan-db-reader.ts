@@ -333,6 +333,21 @@ async function classifyDefectByMSCC5Standards(observations: string[], sector: st
   let recommendations = 'Routine inspection recommended';
   let adoptable = 'Adoptable';
   
+  // Check for line deviations (LL, LR) - these are Grade 0 observations per WRc MSCC5 standards
+  const hasLineDeviations = observations.some(obs => 
+    obs.includes('LL ') || obs.includes('LR ') || 
+    obs.toLowerCase().includes('line deviates')
+  );
+  
+  if (hasLineDeviations) {
+    return {
+      severityGrade: 0,
+      defectType: 'service',
+      recommendations: 'No action required this pipe section is at an adoptable condition',
+      adoptable: 'Yes'
+    };
+  }
+  
   // Check for high-severity structural defects
   const hasStructuralDefects = observations.some(obs => 
     obs.includes('Deformation') || obs.includes('Fracture') || obs.includes('Crack') ||
@@ -1168,12 +1183,12 @@ async function classifyWincanObservations(observationText: string, sector: strin
     recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
     adoptable = 'Conditional';
   }
-  // Line deviations (LL, LR) are service defects according to WRc standards
+  // Line deviations (LL, LR) are observations only - Grade 0 per WRc MSCC5 standards
   else if (upperText.includes('LINE DEVIATES') || upperText.includes('LL ') || upperText.includes('LR ')) {
     defectType = 'service';
-    severityGrade = 1;
-    recommendations = 'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
-    adoptable = 'Conditional';
+    severityGrade = 0;
+    recommendations = 'No action required this pipe section is at an adoptable condition';
+    adoptable = 'Yes';
   }
   // Root intrusion and deposits are service defects
   else if (upperText.includes('ROOT') || upperText.includes('DEPOSIT') || upperText.includes('DER') || upperText.includes('DES')) {
