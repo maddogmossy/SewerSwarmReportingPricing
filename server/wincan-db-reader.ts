@@ -741,9 +741,36 @@ async function processSectionTable(
       console.log(`🔍 UNIFIED FALLBACK: Using sequential item number ${authenticItemNo} for "${sectionName}"`);
     }
 
-    // Extract manhole information using GUID references
-    const startMH = manholeMap.get(record.OBJ_FromNode_REF) || 'UNKNOWN';
-    const finishMH = manholeMap.get(record.OBJ_ToNode_REF) || 'UNKNOWN';
+    // Extract manhole information using GUID references with flow direction logic
+    const fromMH = manholeMap.get(record.OBJ_FromNode_REF) || 'UNKNOWN';
+    const toMH = manholeMap.get(record.OBJ_ToNode_REF) || 'UNKNOWN';
+    
+    // Apply authentic inspection direction logic from database
+    let startMH: string;
+    let finishMH: string;
+    
+    // Read authentic inspection direction from OBJ_FlowDir field
+    // OBJ_FlowDir: 1 = downstream, 0 = upstream (based on Wincan standards)
+    const flowDirection = record.OBJ_FlowDir;
+    let inspectionDirection = 'downstream'; // Default
+    
+    if (flowDirection !== null && flowDirection !== undefined) {
+      // Wincan standard: 1 = downstream, 0 = upstream
+      inspectionDirection = flowDirection === 1 ? 'downstream' : 'upstream';
+    }
+    
+    // UPSTREAM/DOWNSTREAM RULE APPLICATION:
+    // - UPSTREAM inspection: Show downstream MH as Start MH (reverse the flow)
+    // - DOWNSTREAM inspection: Show upstream MH as Start MH (normal flow)
+    if (inspectionDirection === 'upstream') {
+      // Upstream inspection: downstream MH becomes Start MH, upstream MH becomes Finish MH
+      startMH = toMH;   // Show higher number first (SW02)
+      finishMH = fromMH; // Show lower number second (SW01)
+    } else {
+      // Downstream inspection: upstream MH becomes Start MH, downstream MH becomes Finish MH
+      startMH = fromMH;  // Show lower number first (SW01)
+      finishMH = toMH;   // Show higher number second (SW02)
+    }
     
     // Extract authentic pipe dimensions from database - CRITICAL FIX: Prevent fallback to 150 when OBJ_Size1 exists
     let pipeSize = record.OBJ_Size1 || record.OBJ_Size2 || record.SEC_Diameter || record.SEC_Width || record.SEC_Height || 150;
