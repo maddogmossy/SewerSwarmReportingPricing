@@ -1682,28 +1682,10 @@ export default function Dashboard() {
         // WARNING SHOULD ONLY TRIGGER WHEN COSTS ARE RED (not meeting orange minimum) AND there are cost deviations
         const shouldTriggerServiceWarning = !orangeMinimumMet && (isServiceCostBelowDayRate || isServiceCostAboveDayRate);
         
-        console.log('🔍 SERVICE COST WARNING - Cost analysis:', {
-          totalServiceCost,
-          dayRate,
-          isServiceCostBelowDayRate,
-          isServiceCostAboveDayRate,
-          orangeMinimumMet,
-          costsAreRed: !orangeMinimumMet,
-          shouldTriggerServiceWarning,
-          serviceItemsCount: serviceItems.length,
-          serviceItemDetails: serviceItems.map(item => ({
-            itemNo: item.itemNo,
-            currentCost: item.currentCost
-          })),
-          comparison: `${totalServiceCost} vs ${dayRate}`,
-          costScenario: isServiceCostBelowDayRate ? 'Shortfall to minimum' : isServiceCostAboveDayRate ? 'Excess over minimum' : 'Equals minimum',
-          willTriggerWarning: shouldTriggerServiceWarning,
-          triggerLogic: `Cost deviation: ${isServiceCostBelowDayRate || isServiceCostAboveDayRate} AND Costs are red: ${!orangeMinimumMet} = ${shouldTriggerServiceWarning}`
-        });
+        // Service cost warning logic - only trigger when costs are red AND there are deviations
 
         // Show service warning ONLY when costs are RED (orange minimum not met) AND there are cost deviations
         if (shouldTriggerServiceWarning) {
-          console.log('🔄 SERVICE COST WARNING - Triggering warning dialog');
           
           setServiceCostData({
             serviceItems,
@@ -1719,8 +1701,6 @@ export default function Dashboard() {
             setShowServiceCostWarning(true);
             localStorage.setItem('lastServiceWarningTime', Date.now().toString());
           }, 1000);
-        } else {
-          console.log('🔍 SERVICE COST WARNING - Service costs exactly equal day rate, no warning needed');
         }
       } else {
         console.log('🔍 SERVICE COST WARNING - Blocked due to incomplete calculations:', {
@@ -7210,71 +7190,29 @@ export default function Dashboard() {
     return meetsMinimum;
   };
 
-  // Cost calculation function for enhanced table - using useMemo to ensure reactivity with equipment priority
-  const calculateCost = useMemo(() => {
-    return (section: any): string | JSX.Element => {
-      // DEBUG: Track ALL sections entering cost calculation to see which TP2 sections are missing
-      if (section.itemNo >= 13 && section.itemNo <= 21) {
-        // Cost calculation debug completed
-      }
-      
-      // FIXED: Simplified defect detection logic for both old and new severity grade systems
-      const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
-      
-      // Check for defects using multiple detection methods
-      const hasDefects = (
-        // New JSONB severity grades (TP2 sections like Item 20)
-        (section.severityGrades?.structural && section.severityGrades.structural > 0) ||
-        (section.severityGrades?.service && section.severityGrades.service > 0) ||
-        // Old severity grade system
-        (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
-        // Direct defect type check for structural sections
-        (section.defectType === 'structural' && section.defects && section.defects.trim().length > 0)
-      );
-      
-      // DEBUG: Log Item 20 specifically to track why it might fail
-      if (section.itemNo === 20) {
-        console.log('🔍 ITEM 20 DEFECT DETECTION:', {
-          itemNo: section.itemNo,
-          defectType: section.defectType,
-          severityGrades: section.severityGrades,
-          severityGrade: section.severityGrade,
-          hasDefects: hasDefects,
-          needsStructuralRepair: needsStructuralRepair,
-          defectsText: section.defects
-        });
-      }
-      
-      // If no defects detected, return £0.00
-      if (!hasDefects) {
-        if (section.itemNo >= 13 && section.itemNo <= 21) {
-          console.log(`⚠️ TP2 section ${section.itemNo} filtered out - no defects detected`);
-        }
-        return "£0.00";
-      }
-      
-      // DEBUG: Confirm Item 20 passes defect detection and proceeds to cost calculation
-      if (section.itemNo === 20) {
-        console.log('✅ ITEM 20 PASSED DEFECT DETECTION - Proceeding to calculateAutoCost()');
-      }
-      
-      // REMOVED: Auto-cost mode logic that was causing infinite loops
-      // Cost calculations now use standard PR2 configuration logic only
+  // Simplified cost calculation function - removed useMemo to prevent screen flashing
+  const calculateCost = (section: any): string | JSX.Element => {
+    // FIXED: Simplified defect detection logic for both old and new severity grade systems
+    const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
+    
+    // Check for defects using multiple detection methods
+    const hasDefects = (
+      // New JSONB severity grades (TP2 sections like Item 20)
+      (section.severityGrades?.structural && section.severityGrades.structural > 0) ||
+      (section.severityGrades?.service && section.severityGrades.service > 0) ||
+      // Old severity grade system
+      (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
+      // Direct defect type check for structural sections
+      (section.defectType === 'structural' && section.defects && section.defects.trim().length > 0)
+    );
+    
+    // If no defects detected, return £0.00
+    if (!hasDefects) {
+      return "£0.00";
+    }
     
     // For defective sections, use PR2 configuration calculations
     const autoCost = calculateAutoCost(section);
-    
-    // CRITICAL DEBUG: Log what calculateAutoCost returns for items showing warning triangles
-    if ([7, 15, 21, 22, 23].includes(section.itemNo)) {
-      console.log(`🔍 COST DISPLAY DEBUG - Item ${section.itemNo}:`, {
-        autoCost: autoCost,
-        hasCostProperty: autoCost ? 'cost' in autoCost : false,
-        costValue: autoCost && 'cost' in autoCost ? autoCost.cost : null,
-        costGreaterThanZero: autoCost && 'cost' in autoCost ? autoCost.cost > 0 : false,
-        willShowCost: !!(autoCost && 'cost' in autoCost && autoCost.cost > 0),
-        willShowTriangle: !(autoCost && 'cost' in autoCost && autoCost.cost > 0)
-      });
-    }
     
     if (autoCost && 'cost' in autoCost && autoCost.cost > 0) {
       // Check for MM4 insufficient runs status - show RED cost with warning popup
@@ -7354,12 +7292,6 @@ export default function Dashboard() {
         title="Configuration missing - click to set up pricing"
         onClick={() => {
           // Trigger configuration warning dialog for day rate missing
-          console.log('🔍 MANUAL TRIANGLE CLICK DEBUG:', {
-            itemNo: section.itemNo,
-            pipeSize: section.pipeSize,
-            defectType: section.defectType,
-            sectionData: section
-          });
           
           setConfigWarningData({
             warningType: 'day_rate_missing',
@@ -7380,8 +7312,7 @@ export default function Dashboard() {
         ⚠️
       </span>
     );
-    };
-  }, [repairPricingData, sectionData, equipmentPriority, costRecalcTrigger]);
+  };
 
   // REMOVED: Auto-cost trigger useEffect was causing infinite loops
   // Cost calculations continue working normally without popup dialogs
