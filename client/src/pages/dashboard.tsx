@@ -1813,10 +1813,10 @@ export default function Dashboard() {
           }
           
           // Check if this is a valid cost calculation (not a failed configuration)
-          // CRITICAL FIX: Exclude insufficient quantity statuses to force red triangles instead of green costs
+          // MODERNIZED: Removed all TP1 legacy status codes - using only MM4-based validation
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
             costCalculation.cost >= 0 && 
-            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing', 'quantity_insufficient', 'id759_insufficient_items', 'id760_insufficient_items'].includes(costCalculation.status);
+            !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing', 'quantity_insufficient', 'id759_insufficient_items', 'id760_insufficient_items', 'mm4_pipe_config_missing'].includes(costCalculation.status);
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
@@ -1828,7 +1828,7 @@ export default function Dashboard() {
               costGreaterThanZero: costCalculation && 'cost' in costCalculation && costCalculation.cost > 0,
               status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
               statusNotInExcludeList: costCalculation && 'status' in costCalculation ? 
-                !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status) : false,
+                !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config'].includes(costCalculation.status) : false,
               isValidCostCalculation,
               willShowCost: isValidCostCalculation ? 'YES_COST' : 'BLUE_TRIANGLE'
             });
@@ -1942,7 +1942,7 @@ export default function Dashboard() {
                   method: costCalculation && 'method' in costCalculation ? costCalculation.method : 'NO_METHOD',
                   hasValidCost: costCalculation && 'cost' in costCalculation && costCalculation.cost >= 0,
                   statusNotExcluded: costCalculation && 'status' in costCalculation ? 
-                    !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed'].includes(costCalculation.status) : false,
+                    !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing'].includes(costCalculation.status) : false,
                   fullObject: costCalculation
                 } : 'UNDEFINED',
                 reasonForBlueTriangle: 'Service section with no valid cost calculation result - check isValidCostCalculation logic'
@@ -2873,12 +2873,12 @@ export default function Dashboard() {
       return {
         cost: 0,
         currency: '£',
-        method: 'TP1 Unconfigured',
-        status: 'tp1_unconfigured',
-        patchingType: 'TP1 Cleaning (Unconfigured)',
+        method: 'Configuration Missing',
+        status: 'configuration_missing',
+        patchingType: 'Cleaning Configuration Required',
         defectCount: 0,
         costPerUnit: 0,
-        recommendation: 'Configure TP1 day rate and runs per shift values'
+        recommendation: 'Configure day rate and runs per shift values'
       };
     }
     
@@ -2891,12 +2891,12 @@ export default function Dashboard() {
       return {
         cost: 0,
         currency: '£',
-        method: 'TP1 Invalid Values',
-        status: 'tp1_invalid',
-        patchingType: 'TP1 Cleaning (Invalid Values)',
+        method: 'Invalid Configuration',
+        status: 'mm4_validation_failed',
+        patchingType: 'Configuration Validation Failed',
         defectCount: 0,
         costPerUnit: 0,
-        recommendation: 'TP1 configuration has invalid values'
+        recommendation: 'Configuration has invalid values - please check day rate and runs'
       };
     }
     
