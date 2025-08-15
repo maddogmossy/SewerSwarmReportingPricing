@@ -124,11 +124,11 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
   DEF: {
     code: 'DEF',
     description: 'Deformity',
-    type: 'service',
+    type: 'structural',
     default_grade: 3,
-    risk: 'Progressive service deterioration affecting flow',
-    recommended_action: 'Service assessment and repair',
-    action_type: 2
+    risk: 'Progressive structural deterioration affecting pipe integrity',
+    recommended_action: 'Structural assessment and repair',
+    action_type: 1
   },
   OJL: {
     code: 'OJL',
@@ -899,18 +899,18 @@ export class MSCC5Classifier {
       for (let i = 0; i < defects.length; i++) {
         const defect = defects[i];
         await db.insert(sectionDefects).values({
-          file_upload_id: fileUploadId,
-          item_no: itemNo,
-          defect_sequence: i + 1,
-          defect_code: defect.defectCode,
+          fileUploadId: fileUploadId,
+          itemNo: itemNo,
+          defectSequence: i + 1,
+          defectCode: defect.defectCode,
           meterage: defect.meterage,
           percentage: defect.percentage,
           description: defect.description,
-          mscc5_grade: defect.mscc5Grade,
-          defect_type: this.getDefectType(defect.defectCode),
+          mscc5Grade: defect.mscc5Grade,
+          defectType: this.getDefectType(defect.defectCode),
           recommendation: defect.recommendation,
-          operation_type: defect.operationType,
-          estimated_cost: defect.estimatedCost
+          operationType: defect.operationType,
+          estimatedCost: defect.estimatedCost
         });
       }
       
