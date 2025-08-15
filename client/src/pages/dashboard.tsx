@@ -2360,7 +2360,7 @@ export default function Dashboard() {
       // Load BOTH id760 and id759 configurations simultaneously 
       const configRequests = [
         { categoryId: 'cctv-jet-vac', equipmentId: 'id760', label: 'CCTV/Jet Vac' },
-        { categoryId: 'van-pack', equipmentId: 'id759', label: 'Van Pack' }
+        { categoryId: 'cctv-van-pack', equipmentId: 'id759', label: 'Van Pack' }
       ];
       
       const allConfigs = [];
