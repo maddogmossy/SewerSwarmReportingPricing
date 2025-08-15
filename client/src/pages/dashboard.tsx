@@ -1869,7 +1869,7 @@ export default function Dashboard() {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
-                  title={`${('method' in costCalculation) ? costCalculation.method : 'PR2'}: ${('currency' in costCalculation) ? costCalculation.currency : '£'}${costCalculation.cost.toFixed(2)}\nStatus: ${isConfigComplete ? 'Configuration complete' : 'Configuration incomplete'}`}
+                  title={`${('method' in costCalculation) ? costCalculation.method : 'PR2'}: ${('currency' in costCalculation) ? costCalculation.currency : '£'}${costCalculation.cost.toFixed(2)}\nStatus: Pending final validation`}
                 >
                   <span className={`text-xs font-semibold ${costColor}`}>
                     {('currency' in costCalculation) ? costCalculation.currency : '£'}{costCalculation.cost.toFixed(2)}
