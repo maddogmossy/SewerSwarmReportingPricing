@@ -1198,16 +1198,26 @@ async function processSectionTable(
         continue; // Skip creating the combined entry
       }
       
-      // Single defect type - use appropriate grade
+      // CRITICAL FIX: Structural defects take priority over service for classification
       if (hasStructuralDefects && grades.structural !== null) {
         severityGrade = grades.structural;
         defectType = 'structural';
+        console.log(`🔧 STRUCTURAL PRIORITY: Item ${authenticItemNo} classified as structural (Grade ${severityGrade})`);
       } else if (hasServiceDefects && grades.service !== null) {
         severityGrade = grades.service;
         defectType = 'service';
+        console.log(`🔧 SERVICE CLASSIFICATION: Item ${authenticItemNo} classified as service (Grade ${severityGrade})`);
       } else if (grades.service !== null) {
         // Default to service grade
         severityGrade = grades.service;
+        defectType = 'service';
+        console.log(`🔧 DEFAULT SERVICE: Item ${authenticItemNo} defaulted to service (Grade ${severityGrade})`);
+      }
+      
+      // ENHANCED FIX: Force structural classification for deformity defects (Item 19 fix)
+      if (defectText.toLowerCase().includes('deformity') || defectText.toLowerCase().includes('deformed')) {
+        defectType = 'structural';
+        console.log(`🚨 DEFORMITY DETECTED: Item ${authenticItemNo} FORCED to structural due to deformity defects`);
       }
     }
     

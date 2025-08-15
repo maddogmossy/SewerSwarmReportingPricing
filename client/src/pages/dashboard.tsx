@@ -1908,6 +1908,20 @@ export default function Dashboard() {
                 );
               }
               
+              // CRITICAL FIX: Handle quantity insufficient status for red validation (Items 3,6,7,8,10,13,14,15)
+              if (costCalculation.status === 'quantity_insufficient' || costCalculation.warningType === 'quantity_validation') {
+                return (
+                  <div 
+                    className="flex items-center justify-center p-1 rounded"
+                    title={`Insufficient quantity: ${costCalculation.configData?.totalServiceItems || 0} service items found, minimum ${costCalculation.configData?.requiredRuns || 20} runs required`}
+                  >
+                    <span className="text-xs font-semibold text-red-600">
+                      £{costCalculation.cost ? costCalculation.cost.toFixed(2) : '0.00'}
+                    </span>
+                  </div>
+                );
+              }
+              
               // Show regular warning triangle (configuration popup will auto-trigger)
               const triangleColor = section.defectType === 'service' ? "text-blue-500" : "text-orange-500";
               
@@ -4516,6 +4530,37 @@ export default function Dashboard() {
               
               // FIXED: Red validation - show red when total service items don't justify minimum runs
               const meetsMinimumRuns = totalServiceItems >= runsPerShift;
+              
+              // FORCE RED STATUS: Override incomplete config status to show proper red validation
+              // when we have valid rates but insufficient quantities (Items 3,6,7,8,10,13,14,15)
+              if (hasValidRate && !meetsMinimumRuns && blueValue > 0 && greenValue > 0) {
+                console.log(`🔴 FORCING RED STATUS for Item ${section.itemNo}:`, {
+                  hasValidRate: true,
+                  meetsMinimumRuns: false,
+                  totalServiceItems: totalServiceItems,
+                  requiredRuns: runsPerShift,
+                  shouldShowRed: true,
+                  overridingIncompleteStatus: true
+                });
+                
+                const ratePerRun = blueValue / greenValue;
+                const calculatedCost = ratePerRun;
+                
+                return {
+                  cost: calculatedCost,
+                  currency: '£',
+                  method: `CCTV (${greenValue} runs)`,
+                  status: 'quantity_insufficient',
+                  recommendation: `Insufficient quantity: Only ${totalServiceItems} service items found, minimum ${runsPerShift} runs required`,
+                  warningType: 'quantity_validation',
+                  configData: {
+                    totalServiceItems: totalServiceItems,
+                    requiredRuns: runsPerShift,
+                    dayRate: blueValue,
+                    runsPerShift: greenValue
+                  }
+                };
+              }
               
               // Enhanced debug for quantity validation issues (Items 3,6,7,8,10,13,14,15)
               if ([3,6,7,8,10,13,14,15].includes(section.itemNo)) {
