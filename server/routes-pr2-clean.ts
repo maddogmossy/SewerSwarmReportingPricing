@@ -119,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // F-Series auto-numbering function
   const getNextFSeriesNumber = async (): Promise<number> => {
     // Known F-series assignments
-    const knownFSeries = [606, 608, 611, 612, 614, 615, 619, 620, 621, 622, 623, 624];
+    const knownConfigIds = [759, 760, 611, 612, 614, 615, 619, 620, 621, 622, 623, 624];
     
     // Get all existing categories to check for any existing F-series numbers
     const existingCategories = await db
@@ -135,9 +135,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       .filter(num => num !== null);
     
     // Combine known and existing F-numbers, then find the next available
-    const allUsedNumbers = [...new Set([...knownFSeries, ...existingFNumbers])].sort((a, b) => a - b);
+    const allUsedNumbers = [...new Set([...knownConfigIds, ...existingFNumbers])].sort((a, b) => a - b);
     
-    // Find the next available F-number starting from F625
+    // Find the next available ID starting from 625
     let nextNumber = 625;
     while (allUsedNumbers.includes(nextNumber)) {
       nextNumber++;
@@ -324,7 +324,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         });
         
         // Filter by userId, sector, and categoryId using BOTH mapped sector ID AND original sector name
-        // This handles the transition period where some configs use 'utilities' and others use 'id1'
+        // Handle standard sector names
         try {
           // CRITICAL DEBUG: Test the actual query that's being executed
           console.log('🔍 DRIZZLE QUERY DEBUG:', {
@@ -341,11 +341,11 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
             .where(and(
               eq(pr2Configurations.userId, "system"),
               eq(pr2Configurations.categoryId, categoryId),
-              // Query BOTH the mapped sector (id1) AND the original sector (utilities)
+              // Query the requested sector
               sql`(${pr2Configurations.sector} = ${databaseSectorId} OR ${pr2Configurations.sector} = ${sector})`
             ));
           
-          // Prioritize original sector name over mapped sector ID (utilities over id1)
+          // Use the requested sector name
           // This ensures A5 (ID 760, utilities) takes priority over duplicates
           configurations.sort((a, b) => {
             if (a.sector === sector && b.sector !== sector) return -1;
@@ -482,8 +482,8 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   // DISABLED: Auto-generation removed - use F615 for all patching
   app.post('/api/pr2-clean/auto-detect-pipe-size', async (req, res) => {
     try {
-      // Return F615 for all patching requests - no auto-generation
-      res.json({ id: 615, message: 'Using F615 for all patching configurations' });
+      // Return ID615 for all patching requests - no auto-generation
+      res.json({ id: 615, message: 'Using ID615 for all patching configurations' });
       return;
       
 

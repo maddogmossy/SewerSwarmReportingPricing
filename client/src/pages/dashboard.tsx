@@ -621,13 +621,8 @@ export default function Dashboard() {
   const [equipmentPriority, setEquipmentPriority] = useState<'id760' | 'id759'>(() => {
     // FIXED: ID760 as default to match equipment selection UI default button
     const stored = localStorage.getItem('equipmentPriority');
-    if (stored === 'f690' || stored === 'f606') {
-      // Auto-migrate old f690/f606 preference to id760 (default)
-      localStorage.setItem('equipmentPriority', 'id760');
-      return 'id760';
-    }
-    if (stored === 'f608') {
-      // Auto-migrate old f608 preference to id760 (default)
+    if (stored === 'f690' || stored === 'f606' || stored === 'f608') {
+      // Auto-migrate old f-series preferences to id760 (default)
       localStorage.setItem('equipmentPriority', 'id760');
       return 'id760';
     }
@@ -1717,7 +1712,7 @@ export default function Dashboard() {
         
         // FORCE CACHE REFRESH FOR DATABASE UPDATE - clear stale MM4 data
         if (section.itemNo === 10 && repairPricingData) {
-          const cacheKey = `mm4-data-606`;
+          const cacheKey = `mm4-data-760`;
           if (localStorage.getItem(cacheKey)) {
             console.log('🔄 CLEARING STALE MM4 CACHE for Item 10 database update');
             localStorage.removeItem(cacheKey);
@@ -3781,7 +3776,7 @@ export default function Dashboard() {
               currency: '£',
               method: 'Day Rate Not Configured',
               status: 'day_rate_missing',
-              configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'F608 Van Pack' : 'F690 Jet Vac',
+              configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
               warningType: 'day_rate_missing',
               sectionData: {
                 itemNo: section.itemNo,
@@ -3801,25 +3796,25 @@ export default function Dashboard() {
 
     // CRITICAL FIX: Also validate F615 structural configurations for day rate
     if (section.defectType === 'structural' && repairPricingData && repairPricingData.length > 0) {
-      // Find F615 patching configuration
-      const f615Config = repairPricingData.find(config => config.categoryId === 'patching' && config.sector === 'utilities');
+      // Find ID615 patching configuration
+      const patchingConfig = repairPricingData.find(config => config.categoryId === 'patching' && config.sector === 'utilities');
       
-      if (f615Config) {
+      if (patchingConfig) {
         // Check if day rate is properly configured in MM4 blue value (single source of truth)
-        const dayRateValue = f615Config.mm_data?.mm4Rows?.[0]?.blueValue;
+        const dayRateValue = patchingConfig.mm_data?.mm4Rows?.[0]?.blueValue;
         const isStructuralDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
         
-        console.log('🔍 F615 Day Rate Validation:', {
+        console.log('🔍 ID615 Day Rate Validation:', {
           itemNo: section.itemNo,
-          configId: f615Config.id,
+          configId: patchingConfig.id,
           dayRateValue: dayRateValue,
           isDayRateConfigured: isStructuralDayRateConfigured,
           willShowOrangeTriangle: !isStructuralDayRateConfigured,
-          mm4DataExists: !!f615Config.mm_data,
-          mm4RowsExists: !!f615Config.mm_data?.mm4Rows,
-          mm4RowsLength: f615Config.mm_data?.mm4Rows?.length || 0,
-          firstRowBlueValue: f615Config.mm_data?.mm4Rows?.[0]?.blueValue,
-          fullMM4Data: f615Config.mm_data?.mm4Rows?.[0]
+          mm4DataExists: !!patchingConfig.mm_data,
+          mm4RowsExists: !!patchingConfig.mm_data?.mm4Rows,
+          mm4RowsLength: patchingConfig.mm_data?.mm4Rows?.length || 0,
+          firstRowBlueValue: patchingConfig.mm_data?.mm4Rows?.[0]?.blueValue,
+          fullMM4Data: patchingConfig.mm_data?.mm4Rows?.[0]
         });
         
         // If day rate is not configured, return specific error information  
@@ -3829,7 +3824,7 @@ export default function Dashboard() {
             currency: '£',
             method: 'Day Rate Not Configured',
             status: 'day_rate_missing',
-            configType: 'F615 Patching',
+            configType: 'ID615 Patching',
             warningType: 'day_rate_missing',
             sectionData: {
               itemNo: section.itemNo,
@@ -3839,7 +3834,7 @@ export default function Dashboard() {
               debrisPercent: 0
             },
             configData: {
-              categoryId: f615Config.categoryId
+              categoryId: patchingConfig.categoryId
             }
           };
         }
@@ -4099,7 +4094,7 @@ export default function Dashboard() {
     // FIXED: Process MM4 for ALL SERVICE sections (not just cleaning) - includes Grade 0 observations
     // Service sections include: cleaning defects, water levels, line deviations, service connections, etc.
     if (section.defectType === 'service' && repairPricingData) {
-      // SERVICE SECTION MM4 PROCESSING: F690 (cctv-jet-vac) and F608 (cctv-van-pack) for all service sections
+      // SERVICE SECTION MM4 PROCESSING: ID760 (cctv-jet-vac) and ID759 (cctv-van-pack) for all service sections
       // Includes: cleaning defects, monitoring, assessments, line deviations, service connections
       const cctvConfigs = repairPricingData.filter((config: any) => 
         ['cctv-van-pack', 'cctv-jet-vac'].includes(config.categoryId) && 

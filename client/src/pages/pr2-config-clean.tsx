@@ -243,16 +243,8 @@ export default function PR2ConfigClean() {
         return data;
       } catch (error: any) {
         console.log('❌ CONFIG FETCH ERROR:', error.message);
-        // If configuration not found (404), check for deleted F606 and redirect to F690
+        // If configuration not found (404), redirect to create mode
         if (error.message && error.message.includes('404')) {
-          if (editId === '606' || Number(editId) === 606) {
-            // F606 was replaced by F690 - redirect to F690 configuration
-            const newUrl = `/pr2-config-clean?edit=690&categoryId=cctv-jet-vac&sector=${sector}`;
-            console.log('🔄 Redirecting deleted F606 to F690:', { from: editId, to: 690, newUrl });
-            setLocation(newUrl);
-            return null;
-          }
-          // For other 404s, redirect to create mode
           const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}`;
           console.log('🔄 404 REDIRECT to create mode:', newUrl);
           setLocation(newUrl);
@@ -725,9 +717,9 @@ export default function PR2ConfigClean() {
         const hasId = currentParams.get('id') === '615';
         
         if (!hasId) {
-          console.log('🔄 PATCHING REDIRECT - No ID parameter, redirecting to F615');
-          const f615Config = allCategoryConfigs.find(config => config.id === 615);
-          if (f615Config) {
+          console.log('🔄 PATCHING REDIRECT - No ID parameter, redirecting to ID615');
+          const patchingConfig = allCategoryConfigs.find(config => config.id === 615);
+          if (patchingConfig) {
             const hasAutoSelect = currentParams.get('autoSelectUtilities') === 'true' || autoSelectUtilities;
             const autoSelectParam = hasAutoSelect ? '&autoSelectUtilities=true' : '';
             const pipeSizeParam = pipeSize ? `&pipeSize=${pipeSize}` : '';
@@ -742,15 +734,7 @@ export default function PR2ConfigClean() {
       }
       
       // For other categories, find existing general configuration
-      // Simple sector mapping: utilities <-> id1, adoption <-> id2, etc.
-      const sectorMapping: Record<string, string> = {
-        'utilities': 'id1',
-        'adoption': 'id2',
-        'highways': 'id3', 
-        'insurance': 'id4',
-        'construction': 'id5',
-        'domestic': 'id6'
-      };
+      // Sector mapping removed - using direct sector names only
       const mappedSector = sectorMapping[sector] || sector;
       
       const existingConfig = allCategoryConfigs.find(config => 
@@ -3635,8 +3619,8 @@ export default function PR2ConfigClean() {
                         'jet-vac': 'P027',             // Jet Vac only
                       },
                       'adoption': {
-                        'cctv-jet-vac': 'P106',        // F606 - CCTV/Jet Vac
-                        'cctv-van-pack': 'P108',       // F608 - CCTV/Van Pack
+                        'cctv-jet-vac': 'A5',          // ID760 - CCTV/Jet Vac
+                        'cctv-van-pack': 'A4',         // ID759 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P111', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P112',                // F612 - CCTV only
                         'directional-water-cutter': 'P114', // F614 - Directional Water Cutter
@@ -3649,8 +3633,8 @@ export default function PR2ConfigClean() {
                         'tankering': 'P124',           // F624 - Tankering
                       },
                       'highways': {
-                        'cctv-jet-vac': 'P206',        // F606 - CCTV/Jet Vac
-                        'cctv-van-pack': 'P208',       // F608 - CCTV/Van Pack
+                        'cctv-jet-vac': 'B5',          // ID760 - CCTV/Jet Vac
+                        'cctv-van-pack': 'B4',         // ID759 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P211', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P212',                // F612 - CCTV only
                         'directional-water-cutter': 'P214', // F614 - Directional Water Cutter
@@ -3663,8 +3647,8 @@ export default function PR2ConfigClean() {
                         'tankering': 'P224',           // F624 - Tankering
                       },
                       'insurance': {
-                        'cctv-jet-vac': 'P306',        // F606 - CCTV/Jet Vac
-                        'cctv-van-pack': 'P308',       // F608 - CCTV/Van Pack
+                        'cctv-jet-vac': 'C5',          // ID760 - CCTV/Jet Vac
+                        'cctv-van-pack': 'C4',         // ID759 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P311', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P312',                // F612 - CCTV only
                         'directional-water-cutter': 'P314', // F614 - Directional Water Cutter
@@ -3677,8 +3661,8 @@ export default function PR2ConfigClean() {
                         'tankering': 'P324',           // F624 - Tankering
                       },
                       'construction': {
-                        'cctv-jet-vac': 'P406',        // F606 - CCTV/Jet Vac
-                        'cctv-van-pack': 'P408',       // F608 - CCTV/Van Pack
+                        'cctv-jet-vac': 'D5',          // ID760 - CCTV/Jet Vac
+                        'cctv-van-pack': 'D4',         // ID759 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P411', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P412',                // F612 - CCTV only
                         'directional-water-cutter': 'P414', // F614 - Directional Water Cutter
@@ -3691,8 +3675,8 @@ export default function PR2ConfigClean() {
                         'tankering': 'P424',           // F624 - Tankering
                       },
                       'domestic': {
-                        'cctv-jet-vac': 'P506',        // F606 - CCTV/Jet Vac
-                        'cctv-van-pack': 'P508',       // F608 - CCTV/Van Pack
+                        'cctv-jet-vac': 'F5',          // ID760 - CCTV/Jet Vac
+                        'cctv-van-pack': 'F4',         // ID759 - CCTV/Van Pack
                         'cctv-cleansing-root-cutting': 'P511', // F611 - CCTV/Cleansing/Root Cutting
                         'cctv': 'P512',                // F612 - CCTV only
                         'directional-water-cutter': 'P514', // F614 - Directional Water Cutter
@@ -3712,8 +3696,8 @@ export default function PR2ConfigClean() {
                   // Get F-Series number from categoryId
                   const getFSeriesNumber = (categoryId: string): string => {
                     const fSeriesMap: Record<string, string> = {
-                      'cctv-jet-vac': 'F606',
-                      'cctv-van-pack': 'F608', 
+                      'cctv-jet-vac': 'ID760',
+                      'cctv-van-pack': 'ID759', 
                       'cctv-cleansing-root-cutting': 'F611',
                       'cctv': 'F612',
                       'directional-water-cutter': 'F614',

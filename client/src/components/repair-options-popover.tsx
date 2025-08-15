@@ -16,13 +16,13 @@ interface RepairOptionsPopoverProps {
 }
 
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded, reportId }: RepairOptionsPopoverProps) {
-  // DIRECT ROUTING TO F615: Route directly to F615 patching configuration
+  // DIRECT ROUTING TO ID615: Route directly to ID615 patching configuration
   const handleDirectClick = async () => {
     // Extract pipe size from section data
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    // Route directly to F615 configuration (ID 615) with auto-select utilities and preserve reportId
+    // Route directly to ID615 configuration (ID 615) with auto-select utilities and preserve reportId
     const reportParam = reportId ? `&reportId=${reportId}` : '';
     window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
   };

@@ -1,10 +1,10 @@
 // Fallback data for when database is unavailable
-export const FALLBACK_F690_CONFIG = {
-  id: 690,
+export const FALLBACK_ID760_CONFIG = {
+  id: 760,
   userId: 'system',
   sector: 'utilities',
   categoryId: 'cctv-jet-vac',
-  categoryName: 'F690 CCTV/Jet Vac',
+  categoryName: 'ID760 CCTV/Jet Vac',
   pipeSize: '150',
   pipeSizeId: 1501,
   templateType: 'MMP1',
@@ -124,13 +124,13 @@ export const FALLBACK_VEHICLE_RATES = [
 
 // Complete fallback configurations for all essential categories
 export const FALLBACK_CONFIGURATIONS = [
-  // F690 CCTV/Jet Vac
+  // ID760 CCTV/Jet Vac
   {
-    id: 690,
+    id: 760,
     userId: 'test-user',
     sector: 'utilities', 
     categoryId: 'cctv-jet-vac',
-    categoryName: 'F690 CCTV/Jet Vac',
+    categoryName: 'ID760 CCTV/Jet Vac',
     pipeSize: '150',
     pipeSizeId: 1501,
     templateType: 'MMP1',
@@ -158,13 +158,13 @@ export const FALLBACK_CONFIGURATIONS = [
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  // F608 CCTV Van Pack
+  // ID759 CCTV Van Pack
   {
-    id: 608,
+    id: 759,
     userId: 'test-user',
     sector: 'utilities',
     categoryId: 'cctv-van-pack',
-    categoryName: 'F608 CCTV Van Pack', 
+    categoryName: 'ID759 CCTV Van Pack', 
     pipeSize: '150',
     pipeSizeId: 1501,
     templateType: 'MMP1',
@@ -192,13 +192,13 @@ export const FALLBACK_CONFIGURATIONS = [
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  // F615 Patching
+  // ID615 Patching
   {
     id: 615,
     userId: 'test-user', 
     sector: 'utilities',
     categoryId: 'patching',
-    categoryName: 'F615 Patching',
+    categoryName: 'ID615 Patching',
     pipeSize: '150',
     pipeSizeId: 1501,
     templateType: 'TP2',
