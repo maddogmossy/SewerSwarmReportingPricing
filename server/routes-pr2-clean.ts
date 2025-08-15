@@ -326,6 +326,15 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         // Filter by userId, sector, and categoryId using BOTH mapped sector ID AND original sector name
         // This handles the transition period where some configs use 'utilities' and others use 'id1'
         try {
+          // CRITICAL DEBUG: Test the actual query that's being executed
+          console.log('🔍 DRIZZLE QUERY DEBUG:', {
+            userId: "system",
+            categoryId: categoryId,
+            databaseSectorId: databaseSectorId,
+            sector: sector,
+            queryWillSearch: `WHERE userId='system' AND categoryId='${categoryId}' AND (sector='${databaseSectorId}' OR sector='${sector}')`
+          });
+          
           configurations = await db
             .select()
             .from(pr2Configurations)
