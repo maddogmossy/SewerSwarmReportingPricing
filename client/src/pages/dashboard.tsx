@@ -3364,25 +3364,19 @@ export default function Dashboard() {
         const preferredConfig = equipmentPriority === 'id759' ? id759Config : id760Config;
         const alternativeConfig = equipmentPriority === 'id759' ? id760Config : id759Config;
         
-        // Check if preferred config has valid MM4 day rate data
-        const preferredHasValidData = preferredConfig?.mm_data?.mm4Rows?.[0]?.blueValue && 
-                                    preferredConfig.mm_data.mm4Rows[0].blueValue.trim() !== '' &&
-                                    parseFloat(preferredConfig.mm_data.mm4Rows[0].blueValue) > 0;
+        // CRITICAL FIX: Always respect user's equipment priority choice
+        // Don't override user's explicit A5/A4 selection based on data availability
+        cctvConfig = preferredConfig;
         
-        const alternativeHasValidData = alternativeConfig?.mm_data?.mm4Rows?.[0]?.blueValue && 
-                                      alternativeConfig.mm_data.mm4Rows[0].blueValue.trim() !== '' &&
-                                      parseFloat(alternativeConfig.mm_data.mm4Rows[0].blueValue) > 0;
-        
-        if (preferredHasValidData) {
-          cctvConfig = preferredConfig;
-          console.log('✅ Using preferred configuration with valid MM4 data:', cctvConfig.id);
-        } else if (alternativeHasValidData) {
-          cctvConfig = alternativeConfig;
-          console.log('🔄 Falling back to alternative configuration with valid MM4 data:', cctvConfig.id);
-        } else {
-          cctvConfig = preferredConfig; // Use preferred even if data is missing (will show proper error)
-          console.log('⚠️ Using preferred configuration despite missing MM4 data:', cctvConfig?.id);
-        }
+        console.log('✅ RESPECTING USER CHOICE - Configuration selected:', {
+          configId: cctvConfig?.id,
+          categoryId: cctvConfig?.categoryId,
+          equipmentPriority: equipmentPriority,
+          userChoice: equipmentPriority === 'id759' ? 'A4 - CCTV/Van Pack' : 'A5 - CCTV/Jet Vac',
+          hasValidData: cctvConfig?.mm_data?.mm4Rows?.[0]?.blueValue && 
+                       cctvConfig.mm_data.mm4Rows[0].blueValue.trim() !== '' &&
+                       parseFloat(cctvConfig.mm_data.mm4Rows[0].blueValue) > 0
+        });
         
         console.log('🔍 SELECTED EQUIPMENT CONFIG:', {
           selectedConfig: cctvConfig?.id,
@@ -4091,21 +4085,32 @@ export default function Dashboard() {
       let cctvConfig;
       let shouldUpdatePriority = false;
       
+      // CRITICAL FIX: Respect user's exact equipment priority choice
       if (userPrefersId759 && id759Config) {
         // User chose ID759 and it's available
         cctvConfig = id759Config;
+        console.log('✅ A4 SELECTED - User prefers ID759 and config available');
       } else if (!userPrefersId759 && id760Config) {
-        // User chose ID760 explicitly and it's available
+        // CRITICAL: User chose ID760 explicitly and it's available
         cctvConfig = id760Config;
+        console.log('✅ A5 SELECTED - User prefers ID760 and config available');
+      } else if (userPrefersId759 && !id759Config && id760Config) {
+        // User wants ID759 but it's not available, fallback to ID760
+        cctvConfig = id760Config;
+        console.log('🔄 A5 FALLBACK - User wants A4 but only A5 available');
+      } else if (!userPrefersId759 && !id760Config && id759Config) {
+        // User wants ID760 but it's not available, fallback to ID759
+        cctvConfig = id759Config;
+        console.log('🔄 A4 FALLBACK - User wants A5 but only A4 available');
       } else if (id759Config) {
-        // FIXED: Prefer ID759 as default when available (was previously defaulting to ID760)
+        // No user preference, default to ID759
         cctvConfig = id759Config;
         shouldUpdatePriority = true;
-        console.log('🔄 Using ID759 as default - preferred over ID760');
+        console.log('🔄 DEFAULT A4 - No preference, using ID759');
       } else {
-        // Fallback to ID760 only if ID759 not available
+        // Final fallback to ID760
         cctvConfig = id760Config;
-        console.log('🔄 Using ID760 as fallback - ID759 not available');
+        console.log('🔄 DEFAULT A5 - Final fallback to ID760');
       }
       
       // Sync equipment priority with actual selection (only when needed and not recently changed by user)
