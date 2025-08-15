@@ -4272,7 +4272,48 @@ export default function Dashboard() {
           });
         }
         
-        // CRITICAL FIX: Missing pipe size configuration should show blue triangles
+        // CRITICAL PRIORITY FIX: Check quantity validation FIRST before pipe configuration
+        // This ensures insufficient quantities show RED triangles even when configurations are missing
+        
+        // Count unique service items across entire dataset for quantity validation
+        const uniqueServiceItems = new Set();
+        sectionData?.forEach(s => {
+          if (s.defectType === 'service' && s.severityGrade && parseInt(s.severityGrade) > 0) {
+            uniqueServiceItems.add(s.itemNo);
+          }
+        });
+        const totalServiceItems = uniqueServiceItems.size;
+        
+        // Get minimum runs requirement from any available configuration 
+        const firstMM4Row = Object.values(mm4DataByPipeSize)[0]?.[0];
+        const requiredRuns = firstMM4Row ? parseFloat(firstMM4Row.greenValue || '30') : 30;
+        const meetsMinimumRuns = totalServiceItems >= requiredRuns;
+        
+        // FORCE RED STATUS: Return insufficient quantity status BEFORE checking pipe configuration
+        if (!meetsMinimumRuns) {
+          console.log(`🔴 QUANTITY INSUFFICIENT PRIORITY - Item ${section.itemNo}:`, {
+            totalServiceItems: totalServiceItems,
+            requiredRuns: requiredRuns,
+            meetsMinimumRuns: false,
+            status: 'RED - Insufficient quantity overrides missing pipe config',
+            overrideReason: 'Quantity validation has higher priority than configuration validation'
+          });
+          
+          return {
+            cost: 0,
+            currency: '£',
+            method: 'Insufficient Quantity',
+            status: 'quantity_insufficient',
+            recommendation: `Insufficient quantity: Only ${totalServiceItems} service items found, minimum ${requiredRuns} runs required`,
+            warningType: 'quantity_validation',
+            configData: {
+              totalServiceItems: totalServiceItems,
+              requiredRuns: requiredRuns
+            }
+          };
+        }
+
+        // SECONDARY CHECK: Missing pipe size configuration should show blue triangles (only if quantity sufficient)
         if (!matchingMM4Data || !Array.isArray(matchingMM4Data) || matchingMM4Data.length === 0) {
           // Enhanced debug for missing pipe size configs (Items 20, 21, 22, 23)
           if ([20, 21, 22, 23].includes(section.itemNo)) {
