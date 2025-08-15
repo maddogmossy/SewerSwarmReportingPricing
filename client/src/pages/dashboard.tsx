@@ -1816,7 +1816,7 @@ export default function Dashboard() {
           // MODERNIZED: Removed all TP1 legacy status codes - using only MM4-based validation
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
             costCalculation.cost >= 0 && 
-            !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing', 'quantity_insufficient', 'id759_insufficient_items', 'id760_insufficient_items', 'mm4_pipe_config_missing'].includes(costCalculation.status);
+            !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing', 'mm4_pipe_config_missing'].includes(costCalculation.status);
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
@@ -1893,22 +1893,10 @@ export default function Dashboard() {
                 );
               }
               
-              // CRITICAL FIX: Handle all quantity insufficient statuses for red triangles
-              if (costCalculation.status === 'quantity_insufficient' || 
-                  costCalculation.status === 'id759_insufficient_items' ||
-                  costCalculation.status === 'id760_insufficient_items' ||
-                  costCalculation.warningType === 'quantity_validation') {
-                return (
-                  <div 
-                    className="flex items-center justify-center p-1 rounded"
-                    title={`Insufficient quantity: ${costCalculation.configData?.totalServiceItems || costCalculation.totalServiceItems || 0} service items found, minimum ${costCalculation.configData?.requiredRuns || costCalculation.minimumQuantity || 20} runs required`}
-                  >
-                    <TriangleAlert className="h-4 w-4 text-red-600" />
-                  </div>
-                );
-              }
+              // REMOVED: Legacy red triangle system for quantity insufficient - modernized validation
               
               // Show regular warning triangle (configuration popup will auto-trigger)
+              // MODERNIZED: Service sections show blue triangles, structural sections show orange triangles
               const triangleColor = section.defectType === 'service' ? "text-blue-500" : "text-orange-500";
               
               console.log(`🟡 SHOWING WARNING TRIANGLE for section ${section.itemNo}:`, {
@@ -4272,48 +4260,8 @@ export default function Dashboard() {
           });
         }
         
-        // CRITICAL PRIORITY FIX: Check quantity validation FIRST before pipe configuration
-        // This ensures insufficient quantities show RED triangles even when configurations are missing
-        
-        // Count unique service items across entire dataset for quantity validation
-        const uniqueServiceItems = new Set();
-        sectionData?.forEach(s => {
-          if (s.defectType === 'service' && s.severityGrade && parseInt(s.severityGrade) > 0) {
-            uniqueServiceItems.add(s.itemNo);
-          }
-        });
-        const totalServiceItems = uniqueServiceItems.size;
-        
-        // Get minimum runs requirement from any available configuration 
-        const firstMM4Row = Object.values(mm4DataByPipeSize)[0]?.[0];
-        const requiredRuns = firstMM4Row ? parseFloat(firstMM4Row.greenValue || '30') : 30;
-        const meetsMinimumRuns = totalServiceItems >= requiredRuns;
-        
-        // FORCE RED STATUS: Return insufficient quantity status BEFORE checking pipe configuration
-        if (!meetsMinimumRuns) {
-          console.log(`🔴 QUANTITY INSUFFICIENT PRIORITY - Item ${section.itemNo}:`, {
-            totalServiceItems: totalServiceItems,
-            requiredRuns: requiredRuns,
-            meetsMinimumRuns: false,
-            status: 'RED - Insufficient quantity overrides missing pipe config',
-            overrideReason: 'Quantity validation has higher priority than configuration validation'
-          });
-          
-          return {
-            cost: 0,
-            currency: '£',
-            method: 'Insufficient Quantity',
-            status: 'quantity_insufficient',
-            recommendation: `Insufficient quantity: Only ${totalServiceItems} service items found, minimum ${requiredRuns} runs required`,
-            warningType: 'quantity_validation',
-            configData: {
-              totalServiceItems: totalServiceItems,
-              requiredRuns: requiredRuns
-            }
-          };
-        }
-
-        // SECONDARY CHECK: Missing pipe size configuration should show blue triangles (only if quantity sufficient)
+        // MODERNIZED VALIDATION: No red triangles - only blue (missing config) and orange (other issues)
+        // Missing pipe size configuration should show blue triangles
         if (!matchingMM4Data || !Array.isArray(matchingMM4Data) || matchingMM4Data.length === 0) {
           // Enhanced debug for missing pipe size configs (Items 20, 21, 22, 23)
           if ([20, 21, 22, 23].includes(section.itemNo)) {
@@ -4490,49 +4438,7 @@ export default function Dashboard() {
               });
             }
             
-            // CRITICAL FIX: Check quantity validation FIRST, before other validation criteria
-            // This ensures insufficient quantity shows red regardless of debris/length validation
-            if (hasValidRate) {
-              const dayRate = blueValue; 
-              const runsPerShift = greenValue;
-              
-              // Count unique service items for quantity validation
-              const uniqueServiceItems = new Set();
-              sectionData?.forEach(s => {
-                if (s.defectType === 'service' && s.severityGrade && parseInt(s.severityGrade) > 0) {
-                  uniqueServiceItems.add(s.itemNo);
-                }
-              });
-              const totalServiceItems = uniqueServiceItems.size;
-              const meetsMinimumRuns = totalServiceItems >= runsPerShift;
-
-              // FORCE RED STATUS: Return early for insufficient quantities
-              if (!meetsMinimumRuns) {
-                console.log(`🔴 QUANTITY INSUFFICIENT - Item ${section.itemNo}:`, {
-                  totalServiceItems: totalServiceItems,
-                  requiredRuns: runsPerShift,
-                  meetsMinimumRuns: false,
-                  status: 'RED - Insufficient quantity',
-                  overrideValidation: true
-                });
-                
-                const ratePerRun = dayRate / runsPerShift;
-                return {
-                  cost: ratePerRun,
-                  currency: '£',
-                  method: `CCTV (${runsPerShift} runs)`,
-                  status: 'quantity_insufficient',
-                  recommendation: `Insufficient quantity: Only ${totalServiceItems} service items found, minimum ${runsPerShift} runs required`,
-                  warningType: 'quantity_validation',
-                  configData: {
-                    totalServiceItems: totalServiceItems,
-                    requiredRuns: runsPerShift,
-                    dayRate: dayRate,
-                    runsPerShift: runsPerShift
-                  }
-                };
-              }
-            }
+            // MODERNIZED VALIDATION: No quantity-based red triangles - removed legacy system
 
             if (debrisMatch && adjustedLengthMatch && hasValidRate) {
               // Section matches MM4 criteria - calculate cost
