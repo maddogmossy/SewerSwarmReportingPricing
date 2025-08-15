@@ -734,12 +734,11 @@ export default function PR2ConfigClean() {
       }
       
       // For other categories, find existing general configuration
-      // Sector mapping removed - using direct sector names only
-      const mappedSector = sectorMapping[sector] || sector;
+      // Use sector name directly
       
       const existingConfig = allCategoryConfigs.find(config => 
         config.categoryId === categoryId && 
-        (config.sector === sector || config.sector === mappedSector) && // Match both frontend and database sector names
+        config.sector === sector &&
         !config.categoryName?.includes('mm') // Exclude pipe-size-specific configs
       );
       
