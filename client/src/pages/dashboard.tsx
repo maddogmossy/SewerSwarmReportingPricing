@@ -1440,7 +1440,7 @@ export default function Dashboard() {
           // Routing logic for sections 21-23 and subsections
 
           // MSCC5 RULE: Route based on INDIVIDUAL section defectType, not cross-section checking
-          // Service defects route to TP1, structural defects route to TP2
+          // Service defects route to cleaning configurations, structural defects route to repair configurations
           if (isServiceDefect || (needsCleaning && !isStructuralDefect)) {
             // Check if any CLEANING PR2 configurations exist AND have actual values configured (exclude patching)
             const validConfigurations = repairPricingData?.filter(config => 
@@ -1908,7 +1908,7 @@ export default function Dashboard() {
                 );
               }
               
-              // CRITICAL FIX: Handle all quantity insufficient statuses for red validation
+              // CRITICAL FIX: Handle all quantity insufficient statuses for red triangles
               if (costCalculation.status === 'quantity_insufficient' || 
                   costCalculation.status === 'id759_insufficient_items' ||
                   costCalculation.status === 'id760_insufficient_items' ||
@@ -1918,9 +1918,7 @@ export default function Dashboard() {
                     className="flex items-center justify-center p-1 rounded"
                     title={`Insufficient quantity: ${costCalculation.configData?.totalServiceItems || costCalculation.totalServiceItems || 0} service items found, minimum ${costCalculation.configData?.requiredRuns || costCalculation.minimumQuantity || 20} runs required`}
                   >
-                    <span className="text-xs font-semibold text-red-600">
-                      £{costCalculation.cost ? costCalculation.cost.toFixed(2) : '0.00'}
-                    </span>
+                    <TriangleAlert className="h-4 w-4 text-red-600" />
                   </div>
                 );
               }
