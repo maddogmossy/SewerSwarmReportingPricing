@@ -1863,9 +1863,9 @@ export default function Dashboard() {
               );
             }
             
-            // Check if orange minimum is met to determine cost color
-            const orangeMinimumMet = checkOrangeMinimumMet();
-            const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600";
+            // FIXED: Check configuration completeness instead of legacy orange minimum
+            const isConfigComplete = checkConfigurationComplete(section);
+            const costColor = isConfigComplete ? "text-green-700" : "text-red-600";
             
             // For TP2 patching, show cost with patching type info
             if ('patchingType' in costCalculation && costCalculation.patchingType) {
@@ -1884,7 +1884,7 @@ export default function Dashboard() {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
-                  title={`${('method' in costCalculation) ? costCalculation.method : 'PR2'}: ${('currency' in costCalculation) ? costCalculation.currency : '£'}${costCalculation.cost.toFixed(2)}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
+                  title={`${('method' in costCalculation) ? costCalculation.method : 'PR2'}: ${('currency' in costCalculation) ? costCalculation.currency : '£'}${costCalculation.cost.toFixed(2)}\nStatus: ${isConfigComplete ? 'Configuration complete' : 'Configuration incomplete'}`}
                 >
                   <span className={`text-xs font-semibold ${costColor}`}>
                     {('currency' in costCalculation) ? costCalculation.currency : '£'}{costCalculation.cost.toFixed(2)}
@@ -5962,37 +5962,50 @@ export default function Dashboard() {
     );
   };
 
-  // DB7 MULTIPLE-BASED LOGIC: Check if section count matches multiples of minimum quantity
-  const checkOrangeMinimumMet = (): boolean => {
-    if (!repairPricingData || repairPricingData.length === 0) {
-      return true;
+  // FIXED: Configuration completeness check - replaces legacy orange minimum logic
+  const checkConfigurationComplete = (section: any): boolean => {
+    const costCalculation = calculateAutoCost(section);
+    
+    // If no cost calculation, assume incomplete
+    if (!costCalculation) {
+      return false;
     }
     
-    // Get smart counting result for all sections
-    const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], repairPricingData);
+    // Check for incomplete configuration status codes
+    if (costCalculation.status === 'mm4_incomplete_config' || 
+        costCalculation.status === 'mm4_outside_ranges') {
+      return false;
+    }
     
-    // MIGRATION FIX: Use DB8 green window quantityOptions instead of DB9 orange window minQuantityOptions
-    let minQuantity = 25; // Default minimum from DB8 green window
-    repairPricingData.forEach(config => {
-      if (config.categoryId === 'cctv-jet-vac' && config.quantityOptions) {
-        const quantityOptions = config.quantityOptions || [];
-        const quantityOption = quantityOptions.find((opt: any) => 
-          opt.label?.toLowerCase().includes('runs per shift') && opt.enabled && opt.value
-        );
-        if (quantityOption) {
-          const quantityValue = parseFloat(quantityOption.value || '0');
-          if (quantityValue > 0) {
-            minQuantity = quantityValue;
-          }
+    // Check if this is A4 CCTV van pack - ensure proper validation
+    if (section.defectType === 'service') {
+      // Find CCTV configuration for this section
+      const cctvConfig = repairPricingData?.find(config => 
+        config.categoryId === 'cctv-van-pack' || config.categoryId === 'cctv-jet-vac'
+      );
+      
+      if (cctvConfig && cctvConfig.mmData) {
+        const mm4DataByPipeSize = cctvConfig.mmData.mm4DataByPipeSize || {};
+        const pipeSize = section.pipeSize?.toString().replace('mm', '') || '150';
+        const pipeSizeKey = `${pipeSize}-${pipeSize}1`;
+        const mm4Data = mm4DataByPipeSize[pipeSizeKey];
+        
+        if (mm4Data && mm4Data.length > 0) {
+          const mm4Row = mm4Data[0];
+          // Check blue, green, and purple fields for completeness
+          const hasBlueValue = mm4Row.blueValue && mm4Row.blueValue.trim() !== '';
+          const hasGreenValue = mm4Row.greenValue && mm4Row.greenValue.trim() !== '';
+          const hasPurpleDebris = mm4Row.purpleDebris && mm4Row.purpleDebris.trim() !== '';
+          const hasPurpleLength = mm4Row.purpleLength && mm4Row.purpleLength.trim() !== '';
+          
+          // All fields must be complete for A4 configurations
+          return hasBlueValue && hasGreenValue && hasPurpleDebris && hasPurpleLength;
         }
       }
-    });
+    }
     
-    // DB8 GREEN WINDOW LOGIC: Check if section count meets or exceeds DB8 quantity threshold
-    const meetsMinimum = sectionCount >= minQuantity;
-    
-    
-    return meetsMinimum;
+    // For other configurations, assume complete if cost calculation exists
+    return true;
   };
 
   // Simplified cost calculation function - removed useMemo to prevent screen flashing
@@ -6065,14 +6078,14 @@ export default function Dashboard() {
       // Check if this item has applied structural pricing (green highlight)
       const hasAppliedStructuralPricing = appliedStructuralPricing.has(section.itemNo);
       
-      // Orange minimum check - logging removed
-      // Check if orange minimum is met to determine cost color
-      const orangeMinimumMet = checkOrangeMinimumMet();
+      // Configuration completeness check - replaces legacy orange logic
+      // FIXED: Check configuration completeness instead of legacy orange minimum
+      const isConfigComplete = checkConfigurationComplete(section);
       
-      // Determine cost color: applied structural pricing = green, otherwise orange minimum check
+      // Determine cost color: applied structural pricing = green, otherwise configuration check
       const costColor = hasAppliedStructuralPricing 
         ? "text-green-600 bg-green-50 border border-green-200 rounded px-2 py-1" 
-        : (orangeMinimumMet ? "text-green-600" : "text-red-600");
+        : (isConfigComplete ? "text-green-600" : "text-red-600");
       
       // Orange minimum result - logging removed
       
@@ -6082,7 +6095,7 @@ export default function Dashboard() {
           className={`${costColor} font-medium cursor-help`}
           title={hasAppliedStructuralPricing 
             ? `Applied structural pricing: £${autoCost.cost.toFixed(2)}\nStatus: Applied via structural warning dialog`
-            : `Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}\nPer-length rate: £${autoCost.cost.toFixed(2)}`
+            : `Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${isConfigComplete ? 'Configuration complete' : 'Configuration incomplete'}\nPer-length rate: £${autoCost.cost.toFixed(2)}`
           }
         >
           £{autoCost.cost.toFixed(2)}
