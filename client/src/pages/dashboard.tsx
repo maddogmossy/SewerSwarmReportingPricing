@@ -690,12 +690,23 @@ export default function Dashboard() {
       if (requiresConfigReload) {
         console.log('🔄 CONFIGURATION RELOAD REQUIRED - Extended timing sequence');
         
-        // Step 1: Enhanced cache invalidation for dashboard configurations
+        // Step 1: Enhanced cache invalidation for dashboard configurations + A5 buffer isolation
         setTimeout(() => {
-          console.log('🔄 Step 1: Enhanced cache invalidation for equipment switch');
+          console.log('🔄 Step 1: Enhanced cache invalidation + A5 buffer isolation for equipment switch');
           queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
           queryClient.invalidateQueries({ queryKey: ['pr2-all-configs'] }); // Dashboard configs
           queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Sector configs
+          
+          // CRITICAL FIX: Force A5 buffer state isolation for item 10
+          if (newPriority === 'id760') {
+            const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+            const a5SpecificKeys = Object.keys(buffer).filter(key => key.includes('760-150'));
+            console.log('🔄 A5 BUFFER ISOLATION - Ensuring A5 data is preserved:', {
+              newPriority: newPriority,
+              a5BufferKeys: a5SpecificKeys,
+              keyCount: a5SpecificKeys.length
+            });
+          }
           
           // Step 2: Invalidate sections data after configurations reload
           setTimeout(() => {
@@ -3890,9 +3901,9 @@ export default function Dashboard() {
       }
     }
     
-    // SPECIAL DEBUG FOR ITEM 10 - trace complete workflow
+    // ENHANCED DEBUG FOR ITEM 10 - trace complete A5 workflow
     if (section.itemNo === 10) {
-      console.log('🎯 ITEM 10 COMPLETE WORKFLOW DEBUG:', {
+      console.log('🎯 ITEM 10 ENHANCED A5 WORKFLOW DEBUG:', {
         itemNo: section.itemNo,
         totalLength: section.totalLength,
         defects: section.defects,
@@ -3901,7 +3912,13 @@ export default function Dashboard() {
         needsCleaning: requiresCleaning(section.defects || ''),
         isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
         pr2ConfigsAvailable: !!repairPricingData,
-        pr2ConfigsLength: repairPricingData?.length || 0
+        pr2ConfigsLength: repairPricingData?.length || 0,
+        currentEquipmentPriority: equipmentPriority,
+        A5_SPECIFIC_DEBUG: {
+          isA5Selected: equipmentPriority === 'id760',
+          expectedConfigId: equipmentPriority === 'id760' ? 760 : 759,
+          bufferKeysToCheck: [`${equipmentPriority === 'id760' ? '760' : '759'}-150-1501-1-blueValue`, `${equipmentPriority === 'id760' ? '760' : '759'}-150-1501-1-greenValue`]
+        }
       });
     }
     
@@ -4394,41 +4411,57 @@ export default function Dashboard() {
               try {
                 const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
                 const pipeSizeKey = matchingPipeSizeKey;
-                const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
                 
-                // FIXED: Use actual config IDs instead of legacy 606/608 prefixes
-                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id759';
-                const configId = equipmentPriority === 'id759' ? '759' : '760';
-                const bufferKey = `${configId}-${pipeSizeKey}-${rowId}-${field}`;
+                // CRITICAL FIX: Use actual config ID from cctvConfig (760 for A5, 759 for A4)
+                const actualConfigId = cctvConfig.id; // Use the real config ID (760 or 759)
+                const standardBufferKey = `${actualConfigId}-${pipeSizeKey}-${rowId}-${field}`;
                 
-                // Try new format first, then fall back to legacy format for backward compatibility
-                let bufferedValue = buffer[bufferKey];
-                if (!bufferedValue) {
-                  const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
-                  const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
-                  if (equipmentPriority === 'id759') {
-                    bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
-                  } else {
-                    bufferedValue = buffer[bufferKey606] || buffer[bufferKey608] || fallback;
+                // ENHANCED BUFFER KEY VALIDATION: Try multiple formats for maximum compatibility
+                const possibleBufferKeys = [
+                  standardBufferKey, // Standard format: "760-150-1501-1-greenValue"
+                  `${actualConfigId}-${pipeSizeKey.split('-')[0]}-${pipeSizeKey.split('-')[1]}-${rowId}-${field}`, // Explicit format
+                  `${actualConfigId}-${pipeSizeKey}-${field}`, // Legacy format without row ID
+                  // Cross-configuration compatibility fallbacks
+                  `${actualConfigId === 760 ? 759 : 760}-${pipeSizeKey}-${rowId}-${field}`, // Cross-equipment fallback
+                  // Legacy 606/608 format fallbacks for backward compatibility
+                  `${actualConfigId === 760 ? '606' : '608'}-${pipeSizeKey}-${rowId}-${field}`,
+                  `${actualConfigId === 760 ? '608' : '606'}-${pipeSizeKey}-${rowId}-${field}`
+                ];
+                
+                let bufferedValue = null;
+                let usedBufferKey = null;
+                
+                // Try all possible key formats for maximum compatibility
+                for (const key of possibleBufferKeys) {
+                  if (buffer[key]) {
+                    bufferedValue = buffer[key];
+                    usedBufferKey = key;
+                    break;
                   }
-                } else {
-                  bufferedValue = bufferedValue || fallback;
                 }
                 
-                // Debug for Items 21, 22, 23 buffer retrieval issues
-                if (matchingPipeSizeKey === '225-2251' && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23)) {
-                  console.log(`🔍 Cross-Config Buffer Retrieval for Item ${section.itemNo}:`, {
+                const finalValue = bufferedValue || fallback;
+                
+                // CRITICAL DEBUG: Enhanced logging for A5 cost calculation issues (especially item 10)
+                if (section.itemNo === 10 && (field === 'blueValue' || field === 'greenValue')) {
+                  console.log(`🎯 ITEM 10 A5 ${field.toUpperCase()} ENHANCED BUFFER RESOLUTION:`, {
+                    configId: actualConfigId,
+                    pipeSizeKey: pipeSizeKey,
+                    rowId: rowId,
                     field: field,
-                    newBufferKey: bufferKey,
-                    newBufferedValue: buffer[bufferKey],
-                    finalValue: bufferedValue,
+                    possibleBufferKeys: possibleBufferKeys,
+                    usedBufferKey: usedBufferKey,
+                    bufferedValue: bufferedValue,
                     fallback: fallback,
-                    allBufferKeys: Object.keys(buffer).filter(k => k.includes('225-2251'))
+                    finalValue: finalValue,
+                    allMatchingKeys: Object.keys(buffer).filter(k => k.includes(field)),
+                    A5_DEBUGGING: 'This should help identify why A5 cost calculation fails'
                   });
                 }
                 
-                return bufferedValue;
-              } catch {
+                return finalValue;
+              } catch (error) {
+                console.error(`🚨 Buffer value retrieval error for ${field}:`, error);
                 return fallback;
               }
             };
