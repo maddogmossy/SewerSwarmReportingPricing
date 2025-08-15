@@ -93,4 +93,3 @@ This full-stack TypeScript application (React/Express) is designed for document 
 - **Payments**: Stripe API
 - **UI Components**: Radix UI, shadcn/ui
 - **File Upload**: Multer
-- **Development Tools**: TypeScript, ESBuild, Vite, Drizzle Kit
