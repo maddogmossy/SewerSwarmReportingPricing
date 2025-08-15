@@ -690,10 +690,12 @@ export default function Dashboard() {
       if (requiresConfigReload) {
         console.log('🔄 CONFIGURATION RELOAD REQUIRED - Extended timing sequence');
         
-        // Step 1: Invalidate PR2 configurations first (longer delay)
+        // Step 1: Enhanced cache invalidation for dashboard configurations
         setTimeout(() => {
-          console.log('🔄 Step 1: Invalidating PR2 configurations');
+          console.log('🔄 Step 1: Enhanced cache invalidation for equipment switch');
           queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+          queryClient.invalidateQueries({ queryKey: ['pr2-all-configs'] }); // Dashboard configs
+          queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Sector configs
           
           // Step 2: Invalidate sections data after configurations reload
           setTimeout(() => {
@@ -2377,14 +2379,15 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // FIXED: Load ALL PR2 configurations independently (id760 AND id759) - don't force equipment priority choice
-  // This allows users to switch between equipment types without refetching data
+  // FIXED: Load ALL PR2 configurations with responsive cache invalidation
+  // Include equipment priority in query key for proper cache segmentation
   const { data: allPR2Configurations = [] } = useQuery({
-    queryKey: ['pr2-all-configs', currentSector.id], // Removed equipmentPriority dependency
+    queryKey: ['pr2-all-configs', currentSector.id, equipmentPriority], // Added equipmentPriority for cache segmentation
     queryFn: async () => {
-      console.log('🔍 DASHBOARD PR2 CONFIG FETCH - INDEPENDENT LOADING:', {
+      console.log('🔍 DASHBOARD PR2 CONFIG FETCH - RESPONSIVE LOADING:', {
         sector: currentSector.id,
-        approach: 'Load all configurations, select by equipment priority in cost calculation',
+        equipmentPriority: equipmentPriority,
+        approach: 'Load all configurations with immediate cache invalidation support',
         timestamp: Date.now()
       });
       
@@ -2416,7 +2419,8 @@ export default function Dashboard() {
           console.log(`🔍 Loaded ${config.label} (${config.equipmentId}):`, {
             categoryId: config.categoryId,
             configCount: data.length,
-            hasValidConfigs: data.length > 0
+            hasValidConfigs: data.length > 0,
+            blueValues: data.map(c => c.mm_data?.mm4Rows?.[0]?.blueValue || 'missing')
           });
         } catch (error) {
           console.error(`❌ Failed to load ${config.label} configuration:`, error);
@@ -2427,6 +2431,7 @@ export default function Dashboard() {
         totalConfigs: allConfigs.length,
         id760Count: allConfigs.filter(c => c.equipmentId === 'id760').length,
         id759Count: allConfigs.filter(c => c.equipmentId === 'id759').length,
+        equipmentPriority: equipmentPriority,
         configDetails: allConfigs.map(c => ({
           id: c.id,
           equipmentId: c.equipmentId,
@@ -2440,10 +2445,10 @@ export default function Dashboard() {
       return allConfigs;
     },
     enabled: !!currentSector?.id,
-    staleTime: 300000, // Cache for 5 minutes since configurations don't change often
-    gcTime: 600000, // Keep in cache for 10 minutes
-    refetchOnMount: false, // Don't refetch on mount since data is stable
-    refetchOnWindowFocus: false // Don't refetch on window focus
+    staleTime: 30000, // Reduced from 5 minutes to 30 seconds for faster updates
+    gcTime: 120000, // Reduced from 10 minutes to 2 minutes for more responsive cache
+    refetchOnMount: true, // CRITICAL FIX: Allow cache invalidation to work
+    refetchOnWindowFocus: false // Don't refetch on window focus to avoid excessive requests
   });
 
   // FIXED: Select appropriate configuration based on current equipment priority
@@ -3684,21 +3689,49 @@ export default function Dashboard() {
           // Get buffered day rate using identical logic to cost calculation
           let effectiveDayRate = 0;
           
-          // CRITICAL FIX: Use current ID format, not legacy 606/608 format
+          // CRITICAL FIX: Standardized buffer key format with enhanced validation
           try {
             const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
             const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id759';
             
-            // Use actual config ID (760) instead of legacy prefix (606)
-            const configId = cctvConfig.id; // This should be 760 for A5 CCTV/Jet Vac
+            // Use actual config ID with standardized buffer key format
+            const configId = cctvConfig.id;
             const bufferKey = `${configId}-${matchingPipeSizeKey}-1-blueValue`;
             
-            // First try to get buffered value, then fall back to database value
-            const bufferedDayRate = buffer[bufferKey];
+            // Enhanced buffer key validation - try multiple formats for compatibility
+            const possibleKeys = [
+              bufferKey, // Standard format: "760-150-1501-1-blueValue"
+              `${configId}-${matchingPipeSizeKey.split('-')[0]}-${matchingPipeSizeKey.split('-')[1]}-1-blueValue`, // Explicit format
+              `${configId}-${matchingPipeSizeKey}-blueValue`, // Legacy format without row ID
+            ];
+            
+            let bufferedDayRate = null;
+            let usedBufferKey = null;
+            
+            for (const key of possibleKeys) {
+              if (buffer[key]) {
+                bufferedDayRate = buffer[key];
+                usedBufferKey = key;
+                break;
+              }
+            }
+            
             const dbDayRate = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
             const finalDayRate = bufferedDayRate || dbDayRate || '0';
             
             effectiveDayRate = parseFloat(finalDayRate);
+            
+            // Enhanced debugging for buffer key resolution
+            console.log('🔍 ENHANCED BUFFER KEY RESOLUTION:', {
+              configId: configId,
+              matchingPipeSizeKey: matchingPipeSizeKey,
+              possibleKeys: possibleKeys,
+              usedBufferKey: usedBufferKey,
+              bufferedValue: bufferedDayRate,
+              dbValue: dbDayRate,
+              finalValue: finalDayRate,
+              effectiveDayRate: effectiveDayRate
+            });
           } catch {
             // Final fallback to database value
             const dbDayRate = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;

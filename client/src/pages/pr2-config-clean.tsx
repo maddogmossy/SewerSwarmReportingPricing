@@ -1598,11 +1598,27 @@ export default function PR2ConfigClean() {
         }
         // Don't create new configurations during auto-save - only update existing ones
         
-        // Invalidate ALL queries to refresh data across the entire app
+        // ENHANCED CACHE INVALIDATION: Target specific query keys and force immediate dashboard refresh
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
         queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Dashboard sector configs
         queryClient.invalidateQueries({ queryKey: ['all-pr2-configs-for-tp2'] }); // TP2 validation configs  
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
+        
+        // CRITICAL FIX: Invalidate dashboard configuration cache with equipment priority variants
+        queryClient.invalidateQueries({ queryKey: ['pr2-all-configs'] }); // Invalidate all variants
+        queryClient.invalidateQueries({ queryKey: ['pr2-all-configs', sector] }); // Sector-specific
+        queryClient.invalidateQueries({ queryKey: ['pr2-all-configs', sector, 'id759'] }); // A4 specific
+        queryClient.invalidateQueries({ queryKey: ['pr2-all-configs', sector, 'id760'] }); // A5 specific
+        
+        console.log('✅ ENHANCED CACHE INVALIDATION - Configuration saved and dashboard refreshed:', {
+          configId: editId,
+          sector: sector,
+          categoryId: categoryId,
+          invalidatedQueries: [
+            'pr2-clean', 'pr2-configs', 'all-pr2-configs-for-tp2', 
+            'pr2-configurations', 'pr2-all-configs with variants'
+          ]
+        });
         
       } catch (error) {
         console.error('❌ Auto-save failed:', error);
