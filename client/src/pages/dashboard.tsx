@@ -3699,7 +3699,7 @@ export default function Dashboard() {
             STEP_7_hasValidDayRate: hasValidDayRate,
             STEP_8_willShowPopup: !hasValidDayRate,
             USER_REPORTED_KEY: '760-150-1501-1-blueValue',
-            USER_REPORTED_VALUE: '1850',
+            USER_REPORTED_VALUE: '1650',
             EXACT_MATCH_TEST: buffer['760-150-1501-1-blueValue'],
             ALL_760_150_KEYS: Object.keys(buffer).filter(k => k.includes('760-150')),
             BUFFER_KEY_MISMATCH: constructedBufferKey !== '760-150-1501-1-blueValue' ? 'KEY MISMATCH DETECTED' : 'KEY MATCHES'
