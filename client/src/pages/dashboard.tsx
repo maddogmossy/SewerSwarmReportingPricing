@@ -1896,6 +1896,18 @@ export default function Dashboard() {
             // Show warning triangle when no pricing is configured with specific error details
             // First check if costCalculation has specific warning information
             if (costCalculation && 'warningType' in costCalculation && costCalculation.warningType) {
+              // CRITICAL FIX: Handle missing pipe configuration status for blue triangles (Items 20, 21, 22, 23)
+              if (costCalculation.status === 'mm4_pipe_config_missing' || costCalculation.warningType === 'missing_config') {
+                return (
+                  <div 
+                    className="flex items-center justify-center p-1 rounded"
+                    title={`Missing ${costCalculation.configData?.requestedPipeSize}mm pipe configuration - Configure in ${costCalculation.configData?.categoryId} settings`}
+                  >
+                    <TriangleAlert className="h-4 w-4 text-blue-500" />
+                  </div>
+                );
+              }
+              
               // Show regular warning triangle (configuration popup will auto-trigger)
               const triangleColor = section.defectType === 'service' ? "text-blue-500" : "text-orange-500";
               
@@ -4260,20 +4272,38 @@ export default function Dashboard() {
           });
         }
         
-        // CRITICAL STATUS FIX: If no MM4 data found, return proper insufficient status instead of day_rate_missing
+        // CRITICAL FIX: Missing pipe size configuration should show blue triangles
         if (!matchingMM4Data || !Array.isArray(matchingMM4Data) || matchingMM4Data.length === 0) {
-          const statusCode = equipmentPriority === 'id759' ? 'id759_insufficient_items' : 'id760_insufficient_items';
-          console.log('❌ NO MM4 DATA FOUND - Returning proper status:', {
+          // Enhanced debug for missing pipe size configs (Items 20, 21, 22, 23)
+          if ([20, 21, 22, 23].includes(section.itemNo)) {
+            console.log(`🔍 MISSING PIPE CONFIG DEBUG - Item ${section.itemNo}:`, {
+              sectionPipeSize: sectionPipeSize,
+              availablePipeSizes: Object.keys(actualMmData?.mm4DataByPipeSize || {}),
+              shouldShowBlueTriangle: true,
+              equipmentPriority: equipmentPriority
+            });
+          }
+          
+          const statusCode = 'mm4_pipe_config_missing';
+          console.log('🔵 PIPE CONFIG MISSING - Blue triangle status:', {
             sectionId: section.itemNo,
+            sectionPipeSize: sectionPipeSize,
             equipmentPriority,
             statusCode,
-            explanation: 'No MM4 configuration data available for this equipment/pipe size combination'
+            explanation: `No ${sectionPipeSize}mm pipe configuration found - should display blue triangle`
           });
           
           return {
             cost: 0,
             status: statusCode,
-            details: `No MM4 configuration found for ${sectionPipeSize} pipe with ${equipmentPriority}`
+            method: 'Configuration Missing',
+            details: `No ${sectionPipeSize}mm pipe configuration found for ${equipmentPriority}`,
+            warningType: 'missing_config',
+            configData: {
+              categoryId: cctvConfig?.categoryId || 'unknown',
+              requestedPipeSize: sectionPipeSize,
+              availablePipeSizes: Object.keys(actualMmData?.mm4DataByPipeSize || {})
+            }
           };
         }
         
@@ -4478,13 +4508,26 @@ export default function Dashboard() {
                 allPipeSizeConfigs: isSpecialTracking ? Object.keys(actualMmData?.mm4DataByPipeSize || {}) : undefined
               });
               
-              // Count total service items across ALL sections (expanded from restricted cleaning only)
-              // Now includes all service sections: line deviations, water levels, service connections, etc.
+              // CRITICAL FIX: Proper minimum quantity validation
+              // Count total service items across ALL sections that need cleaning
               const totalServiceItems = sectionData?.filter(s => 
-                s.defectType === 'service'
+                s.defectType === 'service' && s.severityGrade && parseInt(s.severityGrade) > 0
               ).length || 0;
               
+              // FIXED: Red validation - show red when total service items don't justify minimum runs
               const meetsMinimumRuns = totalServiceItems >= runsPerShift;
+              
+              // Enhanced debug for quantity validation issues (Items 3,6,7,8,10,13,14,15)
+              if ([3,6,7,8,10,13,14,15].includes(section.itemNo)) {
+                console.log(`🔍 QUANTITY VALIDATION DEBUG - Item ${section.itemNo}:`, {
+                  totalServiceItems: totalServiceItems,
+                  runsPerShift: runsPerShift,
+                  meetsMinimumRuns: meetsMinimumRuns,
+                  shouldShowRed: !meetsMinimumRuns,
+                  expectedStatus: meetsMinimumRuns ? 'green' : 'red',
+                  currentLogic: `${totalServiceItems} >= ${runsPerShift} = ${meetsMinimumRuns}`
+                });
+              }
               
               return {
                 cost: totalCost, // Display calculated service cost
