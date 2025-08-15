@@ -1813,10 +1813,10 @@ export default function Dashboard() {
           }
           
           // Check if this is a valid cost calculation (not a failed configuration)
-          // ENHANCED: Expanded to include all valid service and structural cost statuses
+          // CRITICAL FIX: Exclude insufficient quantity statuses to force red triangles instead of green costs
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
-            costCalculation.cost >= 0 && // Allow £0 costs for minimum not met scenarios
-            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing'].includes(costCalculation.status);
+            costCalculation.cost >= 0 && 
+            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing', 'quantity_insufficient', 'id759_insufficient_items', 'id760_insufficient_items'].includes(costCalculation.status);
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
@@ -1835,37 +1835,22 @@ export default function Dashboard() {
           }
           
           if (isValidCostCalculation) {
-            // Special handling for adjusted service costs - always show in green
-            if (costCalculation.status === 'adjusted_service_cost') {
+            // REMOVED: Special green handling for adjusted costs - use red until final confirmation
+            if (costCalculation.status === 'adjusted_service_cost' || costCalculation.status === 'adjusted_structural_cost') {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
-                  title={`${costCalculation.method}: £${costCalculation.cost.toFixed(2)}\nThis cost has been adjusted to meet day rate requirements`}
+                  title={`${costCalculation.method}: £${costCalculation.cost.toFixed(2)}\nThis cost has been adjusted to meet day rate requirements - pending final confirmation`}
                 >
-                  <span className="text-xs font-semibold text-green-600">
-                    £{costCalculation.cost.toFixed(2)}
-                  </span>
-                </div>
-              );
-            }
-
-            // Special handling for adjusted structural costs - always show in green
-            if (costCalculation.status === 'adjusted_structural_cost') {
-              return (
-                <div 
-                  className="flex items-center justify-center p-1 rounded" 
-                  title={`${costCalculation.method}: £${costCalculation.cost.toFixed(2)}\nThis cost has been adjusted to meet day rate requirements`}
-                >
-                  <span className="text-xs font-semibold text-green-600">
+                  <span className="text-xs font-semibold text-red-600">
                     £{costCalculation.cost.toFixed(2)}
                   </span>
                 </div>
               );
             }
             
-            // FIXED: Check configuration completeness instead of legacy orange minimum
-            const isConfigComplete = checkConfigurationComplete(section);
-            const costColor = isConfigComplete ? "text-green-700" : "text-red-600";
+            // REMOVED: All green cost display logic - only show costs when fully validated and confirmed
+            const costColor = "text-red-600"; // Always red until final user confirmation
             
             // For TP2 patching, show cost with patching type info
             if ('patchingType' in costCalculation && costCalculation.patchingType) {
