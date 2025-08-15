@@ -103,22 +103,22 @@ const MMP1_IDS = [
 // Removed P26 Upper Level Data Structure - deprecated
 // REMOVED - Now using database queries directly
 
-// Category ID to page ID mapping (matching pr2-pricing.tsx devId values)
+// Category ID to A1-F16 page ID mapping
 const CATEGORY_PAGE_IDS = {
-  'cctv': 'p15',
-  'van-pack': 'p16', 
-  'jet-vac': 'p17',
-  'cctv-van-pack': 'p18',
-  'cctv-jet-vac': 'p19',
-  'directional-water-cutter': 'p20',
-  'ambient-lining': 'p21',
-  'hot-cure-lining': 'p22',
-  'uv-lining': 'p23',
-  'ims-cutting': 'p24',
-  'excavation': 'p25',
-  'patching': 'TP1',
-  'f-robot-cutting': 'p4', // TP3 Template - ID4 Robotic Cutting
-  'tankering': 'p27'
+  'cctv': 'A1',
+  'van-pack': 'A2', 
+  'jet-vac': 'A3',
+  'cctv-van-pack': 'A4',
+  'cctv-jet-vac': 'A5',
+  'directional-water-cutter': 'A6',
+  'ambient-lining': 'A9',
+  'hot-cure-lining': 'A10',
+  'uv-lining': 'A11',
+  'ims-cutting': 'A12',
+  'excavation': 'A13',
+  'patching': 'A8',
+  'robot-cutting': 'A14',
+  'tankering': 'A15'
 };
 
 const SECTOR_CONFIG = {
@@ -133,7 +133,7 @@ const SECTOR_CONFIG = {
 // Define SECTOR_OPTIONS based on SECTORS array
 const SECTOR_OPTIONS = SECTORS;
 
-// Color options for P006a templates
+// Color options for MM4-225 templates
 const COLOR_OPTIONS = [
   { name: 'Blue', hex: '#3b82f6' },
   { name: 'Green', hex: '#10b981' },
@@ -1807,7 +1807,7 @@ export default function PR2ConfigClean() {
     setLocation(dashboardUrl);
   };
 
-  // Handle sector toggle for P006a templates
+  // Handle sector toggle for MM4-225 templates
   const handleSectorToggle = (sectorId: string) => {
     setSelectedSectors(prev => {
       if (prev.includes(sectorId)) {

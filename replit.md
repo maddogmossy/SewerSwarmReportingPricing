@@ -28,7 +28,7 @@ This full-stack TypeScript application processes documents, integrates payments,
 - F606→F690 Configuration Migration: Completed full migration from deleted F606 configurations to F690. All hardcoded references updated (UI components, routing, equipment priority defaults, status codes, and navigation). Added automatic redirect from deleted F606 URLs to F690 configurations.
 - A1-F16 Sector Card System: Restructured PR2 configurations with logical sector-based naming (Utilities=A1-A16, Adoption=B1-B16, Highways=C1-C16, Insurance=D1-D16, Construction=E1-E16, Domestic=F1-F16). Each sector gets identical equipment types.
 - Unified Database ID System: DevLabels display actual database IDs (756, 757, 790, etc.) instead of hardcoded F-numbers. All 96 category cards (6 sectors × 16 categories) have complete database records with proper A1-F16 naming and unified ID display.
-- Multi-Sector Configuration Copying: Implemented P003 MMP1 ID7-12 sector copying system. Users configure rates in one sector (e.g., id7/Utilities), then select additional sector IDs (id8-12) to automatically copy pricing and calculations.
+- Multi-Sector Configuration Copying: Implemented MMP1 ID7-12 sector copying system. Users configure rates in one sector (e.g., id7/Utilities), then select additional sector IDs (id8-12) to automatically copy pricing and calculations.
 - Critical Service Cost Validation Fix: Resolved fatal issue where calculateAutoCost returned null values causing service cost validation to fail. All null returns replaced with proper cost objects containing status codes.
 - Dual System Architecture Fix: Clarified and preserved separate systems - A1-F16 for main configurations (utilities=A1-16, etc.) and id7-id12 for MMP1 cross-sector copying (id7=utilities, id8=adoption, etc.). Fixed data structure mismatches between frontend (mmData) and backend (mm_data) formats.
 - Blue Triangle Issue Resolution: Fixed critical issue where dashboard showed blue triangles instead of calculated costs. Root cause was ID pattern mismatch.
@@ -69,7 +69,7 @@ This full-stack TypeScript application processes documents, integrates payments,
 - **Database ORM**: Drizzle ORM
 - **Session Management**: Express session
 - **File Handling**: Multer
-- **Technical Implementations**: Unified File Processing System handles PDF and .db file uploads with standardized processing, item number assignment, SECSTAT extraction, and uniform WRc MSCC5 classification. Advanced Cost Calculation System integrates F619+F615 processing, patch counting, and MM4 integration.
+- **Technical Implementations**: Unified File Processing System handles PDF and .db file uploads with standardized processing, item number assignment, SECSTAT extraction, and uniform WRc MSCC5 classification. Advanced Cost Calculation System integrates database ID processing, patch counting, and MM4 integration.
 
 ### Database
 - **Database**: PostgreSQL (configured for Neon serverless)

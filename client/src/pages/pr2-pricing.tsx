@@ -311,24 +311,24 @@ export default function PR2Pricing() {
       }
     }
     
-    // Check for P006 templates first (HIGHEST PRIORITY)
+    // Check for MM4-150 templates first (HIGHEST PRIORITY)
     let existingConfig = pr2Configurations.find(config => {
-      if (categoryId === 'cctv' && config.categoryId?.startsWith('P006-CCTV-')) {
+      if (categoryId === 'cctv' && config.categoryId?.startsWith('MM4-150-CCTV-')) {
         return true;
       }
-      // Add other P006 template checks here if needed
+      // Add other MM4-150 template checks here if needed
       return false;
     });
 
-    // If no P006 template found, check for P006a templates (SECOND PRIORITY) 
+    // If no MM4-150 template found, check for MM4-225 templates (SECOND PRIORITY) 
     if (!existingConfig) {
       existingConfig = pr2Configurations.find(config => {
-        if (categoryId === 'cctv' && config.categoryId === 'cctv-p006a') return true;
-        if (categoryId === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
-        if (categoryId === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
-        if (categoryId === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
-        if (categoryId === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
-        if (categoryId === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
+        if (categoryId === 'cctv' && config.categoryId === 'cctv-mm4-225') return true;
+        if (categoryId === 'van-pack' && config.categoryId === 'van-pack-mm4-225') return true;
+        if (categoryId === 'jet-vac' && config.categoryId === 'jet-vac-mm4-225') return true;
+        if (categoryId === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-mm4-225') return true;
+        if (categoryId === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-mm4-225') return true;
+        if (categoryId === 'patching-mm4-225' && config.categoryId === 'patching-mm4-225') return true;
         return false;
       });
     }
