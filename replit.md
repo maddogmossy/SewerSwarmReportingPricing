@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application streamlines document processing, integrates payments, and ensures compliance for documents in regulated industries (Utilities, Adoption, Highways). It uniformly processes various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, incorporating an intelligent cost decision persistence system. The project aims to provide a robust, reliable, and user-friendly platform for efficient and compliant document analysis, enhancing operational efficiency and ensuring regulatory adherence in highly regulated sectors.
+This full-stack TypeScript application processes documents, integrates payments, and ensures compliance for regulated industries (Utilities, Adoption, Highways). It uniformly processes various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, incorporating an intelligent cost decision persistence system. The project's ambition is to provide a robust, reliable, and user-friendly platform for efficient and compliant document analysis, enhancing operational efficiency and ensuring regulatory adherence in highly regulated sectors.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
@@ -30,7 +30,7 @@ This full-stack TypeScript application streamlines document processing, integrat
 - Unified Database ID System: DevLabels display actual database IDs (756, 757, 790, etc.) instead of hardcoded F-numbers. All 96 category cards (6 sectors × 16 categories) have complete database records with proper A1-F16 naming and unified ID display.
 - Multi-Sector Configuration Copying: Implemented P003 MMP1 ID7-12 sector copying system. Users configure rates in one sector (e.g., id7/Utilities), then select additional sector IDs (id8-12) to automatically copy pricing and calculations.
 - Critical Service Cost Validation Fix: Resolved fatal issue where calculateAutoCost returned null values causing service cost validation to fail. All null returns replaced with proper cost objects containing status codes.
-- Dual System Architecture Fix: Clarified and preserved separate systems - A1-F16 for main configurations (utilities=A1-A16, etc.) and id7-id12 for MMP1 cross-sector copying (id7=utilities, id8=adoption, etc.). Fixed data structure mismatches between frontend (mmData) and backend (mm_data) formats.
+- Dual System Architecture Fix: Clarified and preserved separate systems - A1-F16 for main configurations (utilities=A1-16, etc.) and id7-id12 for MMP1 cross-sector copying (id7=utilities, id8=adoption, etc.). Fixed data structure mismatches between frontend (mmData) and backend (mm_data) formats.
 - Blue Triangle Issue Resolution: Fixed critical issue where dashboard showed blue triangles instead of calculated costs. Root cause was ID pattern mismatch.
 - Report Reprocessing System Investigation: Enhanced reprocessing capability through dedicated `/api/reprocess/:uploadId` endpoint that reads fresh from .db3 files. Added "Reprocess from DB3" button to dashboard for manual verification workflow.
 - Upstream/Downstream Manhole Reference Rule Restoration: Restored critical flow direction logic using manhole numbering sequence to determine inspection direction (fromMH vs toMH).
