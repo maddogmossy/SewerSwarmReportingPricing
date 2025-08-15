@@ -2420,6 +2420,17 @@ export default function Dashboard() {
   const repairPricingData = allPR2Configurations.filter(config => 
     config.equipmentId === equipmentPriority
   );
+  
+  // CRITICAL DEBUG: Equipment priority and configuration filtering
+  console.log('🔍 EQUIPMENT PRIORITY FILTERING DEBUG:', {
+    currentEquipmentPriority: equipmentPriority,
+    allConfigsLoaded: allPR2Configurations.length,
+    id760Configs: allPR2Configurations.filter(c => c.equipmentId === 'id760').length,
+    id759Configs: allPR2Configurations.filter(c => c.equipmentId === 'id759').length,
+    filteredConfigs: repairPricingData.length,
+    selectedConfigIds: repairPricingData.map(c => c.id),
+    selectedCategoryIds: repairPricingData.map(c => c.categoryId)
+  });
 
   // Check if a section has approved repair pricing configuration 
   const hasApprovedRepairPricing = (section: any): { hasApproved: boolean, pricingConfig?: any, actualCost?: string } => {
@@ -4427,6 +4438,18 @@ export default function Dashboard() {
               const dayRate = effectiveDayRate; // Blue window is day rate (or inherited from Row 1)
               const runsPerShift = greenValue; // Green window is runs per shift
               const ratePerRun = dayRate > 0 && runsPerShift > 0 ? dayRate / runsPerShift : 0; // Calculate rate per run
+              
+              // CRITICAL DEBUG: A4 cost calculation analysis
+              if (cctvConfig.categoryId === 'cctv-van-pack') {
+                console.log('🔍 A4 COST CALCULATION DEBUG:', {
+                  sectionId: section.itemNo,
+                  dayRate: dayRate,
+                  runsPerShift: runsPerShift,
+                  ratePerRun: ratePerRun,
+                  expectedRatePerRun: dayRate / runsPerShift,
+                  calculationCheck: `£${dayRate} ÷ ${runsPerShift} = £${(dayRate / runsPerShift).toFixed(2)}`
+                });
+              }
               
               // For service defects, calculate cost based on rate per run
               const totalCost = ratePerRun; // Single run cost for this section
