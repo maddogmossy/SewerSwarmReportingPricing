@@ -617,21 +617,21 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
   const queryClient = useQueryClient();
   
-  // Equipment priority state with localStorage sync - ID760/ID907 replaces F690
+  // Equipment priority state with localStorage sync - ID759 default for complete configuration
   const [equipmentPriority, setEquipmentPriority] = useState<'id760' | 'id759'>(() => {
-    // Updated: ID760/ID907 replaces F690 as default after configuration migration
+    // FIXED: ID759 as default for complete configuration validation
     const stored = localStorage.getItem('equipmentPriority');
     if (stored === 'f690' || stored === 'f606') {
-      // Auto-migrate old f690/f606 preference to id760
-      localStorage.setItem('equipmentPriority', 'id760');
-      return 'id760';
+      // Auto-migrate old f690/f606 preference to id759 (complete config)
+      localStorage.setItem('equipmentPriority', 'id759');
+      return 'id759';
     }
     if (stored === 'f608') {
       // Auto-migrate old f608 preference to id759
       localStorage.setItem('equipmentPriority', 'id759');
       return 'id759';
     }
-    return stored === 'id759' ? 'id759' : 'id760';
+    return stored === 'id760' ? 'id760' : 'id759';
   });
 
   // Clear old patterns from localStorage cache on component mount
@@ -3688,7 +3688,7 @@ export default function Dashboard() {
           // CRITICAL FIX: Use current ID format, not legacy 606/608 format
           try {
             const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-            const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id760';
+            const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id759';
             
             // Use actual config ID (760) instead of legacy prefix (606)
             const configId = cctvConfig.id; // This should be 760 for A5 CCTV/Jet Vac
@@ -4076,7 +4076,7 @@ export default function Dashboard() {
       );
       
       // Selection logic: Respect user's equipment priority choice first
-      // Priority: User preference > ID760 default > Available config as fallback
+      // FIXED: Priority: User preference > ID759 default (complete config) > Available config as fallback
       const userPrefersId759 = equipmentPriority === 'id759';
       const id760ActualData = id760Config?.mmData || id760Config?.mm_data;
       const id760HasValidMM4 = id760ActualData?.mm4Rows?.some((row: any) => 
@@ -4352,27 +4352,31 @@ export default function Dashboard() {
                 const pipeSizeKey = matchingPipeSizeKey;
                 const configPrefix = cctvConfig.categoryId === 'cctv-van-pack' ? '608' : '606';
                 
-                // EQUIPMENT PRIORITY FIX: Respect equipment priority order - F690 first by default
-                const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
-                const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
+                // FIXED: Use actual config IDs instead of legacy 606/608 prefixes
+                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id759';
+                const configId = equipmentPriority === 'id759' ? '759' : '760';
+                const bufferKey = `${configId}-${pipeSizeKey}-${rowId}-${field}`;
                 
-                // Priority: ID760 (A5 - CCTV/Jet Vac) default, ID759 (A4 - CCTV/Van Pack) only if explicitly chosen
-                const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id760';
-                let bufferedValue;
-                if (equipmentPriority === 'id759') {
-                  bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
+                // Try new format first, then fall back to legacy format for backward compatibility
+                let bufferedValue = buffer[bufferKey];
+                if (!bufferedValue) {
+                  const bufferKey608 = `608-${pipeSizeKey}-${rowId}-${field}`;
+                  const bufferKey606 = `606-${pipeSizeKey}-${rowId}-${field}`;
+                  if (equipmentPriority === 'id759') {
+                    bufferedValue = buffer[bufferKey608] || buffer[bufferKey606] || fallback;
+                  } else {
+                    bufferedValue = buffer[bufferKey606] || buffer[bufferKey608] || fallback;
+                  }
                 } else {
-                  bufferedValue = buffer[bufferKey606] || buffer[bufferKey608] || fallback;
+                  bufferedValue = bufferedValue || fallback;
                 }
                 
                 // Debug for Items 21, 22, 23 buffer retrieval issues
                 if (matchingPipeSizeKey === '225-2251' && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23)) {
                   console.log(`🔍 Cross-Config Buffer Retrieval for Item ${section.itemNo}:`, {
                     field: field,
-                    bufferKey608: bufferKey608,
-                    bufferKey606: bufferKey606,
-                    bufferedValue608: buffer[bufferKey608],
-                    bufferedValue606: buffer[bufferKey606],
+                    newBufferKey: bufferKey,
+                    newBufferedValue: buffer[bufferKey],
                     finalValue: bufferedValue,
                     fallback: fallback,
                     allBufferKeys: Object.keys(buffer).filter(k => k.includes('225-2251'))
@@ -4417,7 +4421,7 @@ export default function Dashboard() {
                 },
                 matchingPipeSizeKey: matchingPipeSizeKey,
                 cctvConfigCategoryId: cctvConfig.categoryId,
-                equipmentPriority: localStorage.getItem('equipmentPriority') || 'f690',
+                equipmentPriority: localStorage.getItem('equipmentPriority') || 'id759',
                 RAW_COMPARISON: `30.24m section vs ${purpleLength}m config = ${lengthMatch ? 'PASS' : 'FAIL - CAUSES POPUP'}`
               });
             }
