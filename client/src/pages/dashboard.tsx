@@ -4526,11 +4526,15 @@ export default function Dashboard() {
                 allPipeSizeConfigs: isSpecialTracking ? Object.keys(actualMmData?.mm4DataByPipeSize || {}) : undefined
               });
               
-              // CRITICAL FIX: Proper minimum quantity validation
-              // Count total service items across ALL sections that need cleaning
-              const totalServiceItems = sectionData?.filter(s => 
-                s.defectType === 'service' && s.severityGrade && parseInt(s.severityGrade) > 0
-              ).length || 0;
+              // CRITICAL FIX: Count unique service items (not individual records)
+              // Handle split items correctly - items can have both service AND structural records
+              const uniqueServiceItems = new Set();
+              sectionData?.forEach(s => {
+                if (s.defectType === 'service' && s.severityGrade && parseInt(s.severityGrade) > 0) {
+                  uniqueServiceItems.add(s.itemNo);
+                }
+              });
+              const totalServiceItems = uniqueServiceItems.size;
               
               // FIXED: Red validation - show red when total service items don't justify minimum runs
               const meetsMinimumRuns = totalServiceItems >= runsPerShift;
