@@ -4369,61 +4369,42 @@ export default function Dashboard() {
             const purpleDebris = parseFloat(getBufferedValue(mm4Row.id, 'purpleDebris', mm4Row.purpleDebris || '0'));
             const purpleLength = parseFloat(getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'));
             
-            // Check if section matches this MM4 configuration criteria
-            // ENHANCED: For service sections (including observations), handle empty purple fields as unlimited
-            const debrisMatch = purpleDebris === 0 ? true : sectionDebrisPercent <= purpleDebris;
-            const lengthMatch = purpleLength === 0 ? true : sectionLength <= purpleLength;
-            
-            // FIXED: Remove forced Item 3 test failure that was causing immediate popup
-            const adjustedLengthMatch = lengthMatch;
-            // ENHANCED: For service sections, only require valid day rate (blue) and minimum quantities (green)
-            // Purple fields are optional for service sections (Grade 0 observations, monitoring, etc.)
+            // MODERNIZED: Cost calculation separate from purple UI validation
+            // For cost calculation, only require blue (day rate) and green (runs) values
+            // Purple fields are UI-only and don't affect cost calculation
             const hasValidRate = blueValue > 0 && greenValue > 0;
             
-            // CRITICAL DEBUG: Item 3 length validation to fix "Length Out of Range" popup
+            // MODERNIZED: Purple fields only used for UI display, not cost calculation
             if (section.itemNo === 3) {
-              console.log(`🚨 ITEM 3 LENGTH DEBUGGING:`, {
-                POPUP_ISSUE: 'Item 3 shows Length Out of Range - diagnosing',
+              console.log(`🚨 ITEM 3 COST CALCULATION - PURPLE INDEPENDENT:`, {
+                CALCULATION_STATUS: 'Cost calculation no longer depends on purple fields',
                 itemNo: section.itemNo,
                 sectionLength: sectionLength,
                 purpleLength: purpleLength,
-                purpleLengthFromMM4Row: mm4Row.purpleLength,
-                purpleLengthFromBuffer: getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'),
-                lengthMatch: lengthMatch,
-                bufferKeys: {
-                  f690Key: `606-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`,
-                  f608Key: `608-${matchingPipeSizeKey}-${mm4Row.id}-purpleLength`
-                },
-                matchingPipeSizeKey: matchingPipeSizeKey,
-                cctvConfigCategoryId: cctvConfig.categoryId,
-                equipmentPriority: localStorage.getItem('equipmentPriority') || 'id759',
-                RAW_COMPARISON: `30.24m section vs ${purpleLength}m config = ${lengthMatch ? 'PASS' : 'FAIL - CAUSES POPUP'}`
+                hasValidRate: hasValidRate,
+                blueValue: blueValue,
+                greenValue: greenValue,
+                willCalculateCost: hasValidRate,
+                equipmentPriority: localStorage.getItem('equipmentPriority') || 'id759'
               });
             }
             
             // DEBUG: Item 3 and Item 13 Row 3 and Items 21-23 validation tracking
             if (section.itemNo === 3 || (section.itemNo === 13 && mm4Row.id === 3) || section.itemNo === 21 || section.itemNo === 22 || section.itemNo === 23) {
-              console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} VALIDATION [${section.itemNo === 3 ? 'FOCUSED' : 'NORMAL'}]:`, {
-                CRITICAL_STATUS_CHECK: 'This log shows validation results before cost calculation',
+              console.log(`🧮 ITEM ${section.itemNo} ROW ${mm4Row.id} MODERNIZED VALIDATION:`, {
+                MODERNIZED_STATUS: 'Cost calculation only needs blue and green values',
                 itemNo: section.itemNo,
                 rowId: mm4Row.id,
                 sectionPipeSize: sectionPipeSize,
-                sectionDebrisPercent: sectionDebrisPercent,
-                purpleDebris: purpleDebris,
-                debrisMatch: debrisMatch,
-                sectionLength: sectionLength,
-                purpleLength: purpleLength,
-                lengthMatch: lengthMatch,
-                CRITICAL_LENGTH_COMPARISON: `${sectionLength}m vs ${purpleLength}m = ${lengthMatch ? 'PASS' : 'FAIL'}`,
                 blueValue: blueValue,
                 greenValue: greenValue,
                 hasValidRate: hasValidRate,
-                willProceedToCalculation: debrisMatch && lengthMatch && hasValidRate,
-                validationBreakdown: {
-                  debrisCheck: `${sectionDebrisPercent}% ≤ ${purpleDebris}% = ${debrisMatch}`,
-                  lengthCheck: `${sectionLength}m ≤ ${purpleLength}m = ${lengthMatch}`,
-                  adjustedLengthCheck: `Same as lengthCheck`,
-                  rateCheck: `hasValidRate = ${hasValidRate}`
+                willProceedToCalculation: hasValidRate,
+                purpleFieldsForUIOnly: {
+                  sectionDebrisPercent: sectionDebrisPercent,
+                  purpleDebris: purpleDebris,
+                  sectionLength: sectionLength,
+                  purpleLength: purpleLength
                 },
                 rawMM4RowData: {
                   id: mm4Row.id,
@@ -4433,14 +4414,14 @@ export default function Dashboard() {
                 },
                 specialF608_225Check: matchingPipeSizeKey === '225-2251' ? {
                   expectedCalculation: `£${blueValue} ÷ ${greenValue} runs = £${blueValue > 0 && greenValue > 0 ? (blueValue / greenValue).toFixed(2) : 'N/A'} per run`,
-                  configStatus: `225mm Row ${mm4Row.id} - Blue: £${blueValue}, Green: ${greenValue} runs, Purple Debris: ${purpleDebris}%, Purple Length: ${purpleLength}m`
+                  configStatus: `225mm Row ${mm4Row.id} - Blue: £${blueValue}, Green: ${greenValue} runs`
                 } : undefined
               });
             }
             
             // MODERNIZED VALIDATION: No quantity-based red triangles - removed legacy system
 
-            if (debrisMatch && adjustedLengthMatch && hasValidRate) {
+            if (hasValidRate) {
               // Section matches MM4 criteria - calculate cost
               // F690/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
               // Blue value = day rate (e.g., £1850 per day) - can be inherited from Row 1
@@ -4495,8 +4476,8 @@ export default function Dashboard() {
                 ratePerRun: ratePerRun, // Calculated rate per run
                 totalCost: totalCost, // Total cost for this section
                 minimumQuantity: greenValue, // Required minimum from green window
-                debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
-                lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`,
+                purpleDebrisForUI: `${purpleDebris}%`,
+                purpleLengthForUI: `${purpleLength}m`,
                 configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
                 inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0,
                 expectedCalculation: `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run`,
