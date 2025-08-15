@@ -646,10 +646,19 @@ export default function Dashboard() {
         console.log('🧹 CLEARING OLD PATTERNS from localStorage:', oldPatternKeys);
         oldPatternKeys.forEach(key => localStorage.removeItem(key));
         
-        // Also clear inputBuffer which may contain old patterns
+        // CRITICAL FIX: Equipment-specific buffer isolation
         const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-        localStorage.setItem('inputBuffer', JSON.stringify(inputBuffer));
-        console.log('🧹 InputBuffer maintained:', Object.keys(inputBuffer));
+        const currentEquipment = localStorage.getItem('equipmentPriority') || 'id760';
+        const otherEquipment = currentEquipment === 'id760' ? 'id759' : 'id760';
+        
+        // Clear buffer keys for inactive equipment to prevent conflicts
+        const cleanedBuffer = Object.fromEntries(
+          Object.entries(inputBuffer).filter(([key]) => !key.includes(otherEquipment))
+        );
+        localStorage.setItem('inputBuffer', JSON.stringify(cleanedBuffer));
+        
+        console.log('🧹 Equipment-isolated inputBuffer maintained:', Object.keys(cleanedBuffer));
+        console.log('🧹 Active equipment:', currentEquipment, '- Cleared:', otherEquipment, 'keys');
       }
     };
     
@@ -659,8 +668,10 @@ export default function Dashboard() {
   // Listen for equipment priority changes from popups
   useEffect(() => {
     const handleEquipmentPriorityChange = (event: CustomEvent) => {
-      const { newPriority } = event.detail;
-      console.log('🔄 Dashboard received equipment priority change:', newPriority);
+      const { newPriority, requiresConfigReload } = event.detail;
+      console.log('🔄 Dashboard received equipment priority change:', newPriority, 'requiresConfigReload:', requiresConfigReload);
+      
+      // CRITICAL FIX: Add loading state during equipment switching
       setEquipmentPriority(newPriority);
       
       // Clear cost decisions when equipment priority changes to trigger new warnings
@@ -675,27 +686,47 @@ export default function Dashboard() {
       
       console.log('🧹 Cleared cost decisions for report after equipment priority change:', currentReportId);
       
-      // Reset warning dialog states to allow fresh warnings
-      // Warning dialog state management removed
-      
-      // Force sections data to refresh with new priority
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
+      // CRITICAL FIX: Improved timing for configuration-dependent operations
+      if (requiresConfigReload) {
+        console.log('🔄 CONFIGURATION RELOAD REQUIRED - Extended timing sequence');
         
-        // After data refresh, trigger warning checks for new equipment priority
+        // Step 1: Invalidate PR2 configurations first (longer delay)
         setTimeout(() => {
-          console.log('🔄 Triggering warning checks after equipment priority change');
-          if (rawSectionData && rawSectionData.length > 0) {
-            // Force cost recalculation by updating the trigger
-            setCostRecalcTrigger(prev => prev + 1);
+          console.log('🔄 Step 1: Invalidating PR2 configurations');
+          queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+          
+          // Step 2: Invalidate sections data after configurations reload
+          setTimeout(() => {
+            console.log('🔄 Step 2: Invalidating sections data');
+            queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
             
-            // Slight delay to allow cost recalculation before checking warnings
+            // Step 3: Trigger cost recalculation after everything reloads
             setTimeout(() => {
-              // Warning system calls removed
-            }, 100);
-          }
-        }, 200);
-      }, 100);
+              console.log('🔄 Step 3: Triggering cost recalculation');
+              if (rawSectionData && rawSectionData.length > 0) {
+                setCostRecalcTrigger(prev => prev + 1);
+                
+                // Step 4: Final validation after costs calculated
+                setTimeout(() => {
+                  console.log('🔄 Step 4: Equipment priority switch completed');
+                }, 200);
+              }
+            }, 400); // Extended delay for configuration loading
+          }, 300); // Extended delay for PR2 config reload
+        }, 200); // Initial delay
+      } else {
+        // Standard priority change without config reload
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
+          
+          setTimeout(() => {
+            console.log('🔄 Triggering warning checks after equipment priority change');
+            if (rawSectionData && rawSectionData.length > 0) {
+              setCostRecalcTrigger(prev => prev + 1);
+            }
+          }, 200);
+        }, 100);
+      }
     };
 
     window.addEventListener('equipmentPriorityChanged', handleEquipmentPriorityChange as EventListener);

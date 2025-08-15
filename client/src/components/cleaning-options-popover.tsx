@@ -167,21 +167,42 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                   }`}
                   onClick={() => {
                     try {
-                      console.log('🔄 A5 Button Clicked - Updating priority');
+                      console.log('🔄 A5 Button Clicked - Updating priority with buffer isolation');
+                      
+                      // CRITICAL FIX: Clear conflicting A4 buffer keys before switching to A5
+                      const keys = Object.keys(localStorage);
+                      const a4BufferKeys = keys.filter(key => 
+                        key.includes('759-150-1501') || 
+                        key.includes('inputBuffer') && localStorage.getItem(key)?.includes('759')
+                      );
+                      
+                      console.log('🧹 CLEARING A4 BUFFER KEYS:', a4BufferKeys);
+                      a4BufferKeys.forEach(key => localStorage.removeItem(key));
+                      
+                      // Clear equipment-specific buffer namespace
+                      const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+                      const cleanedBuffer = Object.fromEntries(
+                        Object.entries(inputBuffer).filter(([key]) => !key.includes('759'))
+                      );
+                      localStorage.setItem('inputBuffer', JSON.stringify(cleanedBuffer));
+                      
                       setEquipmentPriority('id760');
                       localStorage.setItem('equipmentPriority', 'id760');
                       localStorage.setItem('lastUserPriorityChange', Date.now().toString());
+                      
                       toast({
                         title: "Equipment Priority Updated",
                         description: "A5 - CCTV/Jet Vac now has priority for cost calculations",
                       });
                       setIsOpen(false);
                       
-                      // Trigger React state update instead of page refresh
+                      // CRITICAL FIX: Add loading delay to ensure A5 configuration loads properly
                       if (onPricingNeeded) {
-                        // Force dashboard to recalculate costs with new priority
+                        console.log('🔄 Triggering A5 configuration reload with delay');
+                        
+                        // Force immediate priority change event
                         const event = new CustomEvent('equipmentPriorityChanged', { 
-                          detail: { newPriority: 'id760' } 
+                          detail: { newPriority: 'id760', requiresConfigReload: true } 
                         });
                         window.dispatchEvent(event);
                       }
@@ -205,21 +226,42 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                   }`}
                   onClick={() => {
                     try {
-                      console.log('🔄 A4 Button Clicked - Updating priority');
+                      console.log('🔄 A4 Button Clicked - Updating priority with buffer isolation');
+                      
+                      // CRITICAL FIX: Clear conflicting A5 buffer keys before switching to A4
+                      const keys = Object.keys(localStorage);
+                      const a5BufferKeys = keys.filter(key => 
+                        key.includes('760-150-1501') || 
+                        key.includes('inputBuffer') && localStorage.getItem(key)?.includes('760')
+                      );
+                      
+                      console.log('🧹 CLEARING A5 BUFFER KEYS:', a5BufferKeys);
+                      a5BufferKeys.forEach(key => localStorage.removeItem(key));
+                      
+                      // Clear equipment-specific buffer namespace
+                      const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
+                      const cleanedBuffer = Object.fromEntries(
+                        Object.entries(inputBuffer).filter(([key]) => !key.includes('760'))
+                      );
+                      localStorage.setItem('inputBuffer', JSON.stringify(cleanedBuffer));
+                      
                       setEquipmentPriority('id759');
                       localStorage.setItem('equipmentPriority', 'id759');
                       localStorage.setItem('lastUserPriorityChange', Date.now().toString());
+                      
                       toast({
                         title: "Equipment Priority Updated", 
                         description: "A4 - CCTV/Van Pack now has priority for cost calculations",
                       });
                       setIsOpen(false);
                       
-                      // Trigger React state update instead of page refresh
+                      // CRITICAL FIX: Add loading delay to ensure A4 configuration loads properly
                       if (onPricingNeeded) {
-                        // Force dashboard to recalculate costs with new priority
+                        console.log('🔄 Triggering A4 configuration reload with delay');
+                        
+                        // Force immediate priority change event
                         const event = new CustomEvent('equipmentPriorityChanged', { 
-                          detail: { newPriority: 'id759' } 
+                          detail: { newPriority: 'id759', requiresConfigReload: true } 
                         });
                         window.dispatchEvent(event);
                       }
