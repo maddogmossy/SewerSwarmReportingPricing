@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application (React/Express) facilitates document analysis and compliance checking for regulated industries (Utilities, Adoption, Highways). It streamlines document processing, integrates payments, and leverages Replit authentication. The system ensures uniform processing of various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, incorporating an intelligent cost decision persistence system. The project's vision is to provide a robust, reliable, and user-friendly platform for efficient and compliant document analysis in highly regulated sectors, aiming for a significant market position by enhancing operational efficiency and ensuring regulatory adherence.
+This full-stack TypeScript application (React/Express) provides document analysis and compliance checking for regulated industries (Utilities, Adoption, Highways). It streamlines document processing, integrates payments, and leverages Replit authentication. The system ensures uniform processing of various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, incorporating an intelligent cost decision persistence system. The project aims to provide a robust, reliable, and user-friendly platform for efficient and compliant document analysis in highly regulated sectors, aiming for a significant market position by enhancing operational efficiency and ensuring regulatory adherence.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
