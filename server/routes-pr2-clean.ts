@@ -205,97 +205,109 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       const sector = req.query.sector as string;
       const categoryId = req.query.categoryId as string;
       
-      // Helper function to generate P-number for categoryId lookups
-      const generatePNumber = (categoryId: string, sector: string): string => {
-        const P_NUMBER_MAPPING = {
+      // Helper function to generate A1-F16 page ID for categoryId lookups
+      const generatePageId = (categoryId: string, sector: string): string => {
+        const PAGE_ID_MAPPING = {
           'utilities': { 
-            'cctv': 'P012', 
-            'cctv-jet-vac': 'P006', 
-            'cctv-van-pack': 'P008', 
-            'patching': 'P015',
-            'jet-vac': 'P010',
-            'van-pack': 'P011',
-            'directional-water-cutter': 'P014',
-            'ambient-lining': 'P020',
-            'hot-cure-lining': 'P021',
-            'uv-lining': 'P022',
-            'excavation': 'P023',
-            'tankering': 'P024'
+            'cctv': 'A1', 
+            'van-pack': 'A2', 
+            'jet-vac': 'A3',
+            'cctv-van-pack': 'A4', 
+            'cctv-jet-vac': 'A5', 
+            'cctv-cleansing-root-cutting': 'A6',
+            'directional-water-cutter': 'A7',
+            'patching': 'A8',
+            'f-robot-cutting': 'A9',
+            'ambient-lining': 'A10',
+            'hot-cure-lining': 'A11',
+            'uv-lining': 'A12',
+            'excavation': 'A13',
+            'tankering': 'A14'
           },
           'adoption': { 
-            'cctv': 'P112', 
-            'cctv-jet-vac': 'P106', 
-            'cctv-van-pack': 'P108', 
-            'patching': 'P115',
-            'jet-vac': 'P110',
-            'van-pack': 'P111',
-            'directional-water-cutter': 'P114',
-            'ambient-lining': 'P120',
-            'hot-cure-lining': 'P121',
-            'uv-lining': 'P122',
-            'excavation': 'P123',
-            'tankering': 'P124'
+            'cctv': 'B1', 
+            'van-pack': 'B2', 
+            'jet-vac': 'B3',
+            'cctv-van-pack': 'B4', 
+            'cctv-jet-vac': 'B5', 
+            'cctv-cleansing-root-cutting': 'B6',
+            'directional-water-cutter': 'B7',
+            'patching': 'B8',
+            'f-robot-cutting': 'B9',
+            'ambient-lining': 'B10',
+            'hot-cure-lining': 'B11',
+            'uv-lining': 'B12',
+            'excavation': 'B13',
+            'tankering': 'B14'
           },
           'highways': { 
-            'cctv': 'P212', 
-            'cctv-jet-vac': 'P206', 
-            'cctv-van-pack': 'P208', 
-            'patching': 'P215',
-            'jet-vac': 'P210',
-            'van-pack': 'P211',
-            'directional-water-cutter': 'P214',
-            'ambient-lining': 'P220',
-            'hot-cure-lining': 'P221',
-            'uv-lining': 'P222',
-            'excavation': 'P223',
-            'tankering': 'P224'
+            'cctv': 'C1', 
+            'van-pack': 'C2', 
+            'jet-vac': 'C3',
+            'cctv-van-pack': 'C4', 
+            'cctv-jet-vac': 'C5', 
+            'cctv-cleansing-root-cutting': 'C6',
+            'directional-water-cutter': 'C7',
+            'patching': 'C8',
+            'f-robot-cutting': 'C9',
+            'ambient-lining': 'C10',
+            'hot-cure-lining': 'C11',
+            'uv-lining': 'C12',
+            'excavation': 'C13',
+            'tankering': 'C14'
           },
           'insurance': { 
-            'cctv': 'P312', 
-            'cctv-jet-vac': 'P306', 
-            'cctv-van-pack': 'P308', 
-            'patching': 'P315',
-            'jet-vac': 'P310',
-            'van-pack': 'P311',
-            'directional-water-cutter': 'P314',
-            'ambient-lining': 'P320',
-            'hot-cure-lining': 'P321',
-            'uv-lining': 'P322',
-            'excavation': 'P323',
-            'tankering': 'P324'
+            'cctv': 'D1', 
+            'van-pack': 'D2', 
+            'jet-vac': 'D3',
+            'cctv-van-pack': 'D4', 
+            'cctv-jet-vac': 'D5', 
+            'cctv-cleansing-root-cutting': 'D6',
+            'directional-water-cutter': 'D7',
+            'patching': 'D8',
+            'f-robot-cutting': 'D9',
+            'ambient-lining': 'D10',
+            'hot-cure-lining': 'D11',
+            'uv-lining': 'D12',
+            'excavation': 'D13',
+            'tankering': 'D14'
           },
           'construction': { 
-            'cctv': 'P412', 
-            'cctv-jet-vac': 'P406', 
-            'cctv-van-pack': 'P408', 
-            'patching': 'P415',
-            'jet-vac': 'P410',
-            'van-pack': 'P411',
-            'directional-water-cutter': 'P414',
-            'ambient-lining': 'P420',
-            'hot-cure-lining': 'P421',
-            'uv-lining': 'P422',
-            'excavation': 'P423',
-            'tankering': 'P424'
+            'cctv': 'E1', 
+            'van-pack': 'E2', 
+            'jet-vac': 'E3',
+            'cctv-van-pack': 'E4', 
+            'cctv-jet-vac': 'E5', 
+            'cctv-cleansing-root-cutting': 'E6',
+            'directional-water-cutter': 'E7',
+            'patching': 'E8',
+            'f-robot-cutting': 'E9',
+            'ambient-lining': 'E10',
+            'hot-cure-lining': 'E11',
+            'uv-lining': 'E12',
+            'excavation': 'E13',
+            'tankering': 'E14'
           },
           'domestic': { 
-            'cctv': 'P512', 
-            'cctv-jet-vac': 'P506', 
-            'cctv-van-pack': 'P508', 
-            'patching': 'P515',
-            'jet-vac': 'P510',
-            'van-pack': 'P511',
-            'directional-water-cutter': 'P514',
-            'ambient-lining': 'P520',
-            'hot-cure-lining': 'P521',
-            'uv-lining': 'P522',
-            'excavation': 'P523',
-            'tankering': 'P524'
+            'cctv': 'F1', 
+            'van-pack': 'F2', 
+            'jet-vac': 'F3',
+            'cctv-van-pack': 'F4', 
+            'cctv-jet-vac': 'F5', 
+            'cctv-cleansing-root-cutting': 'F6',
+            'directional-water-cutter': 'F7',
+            'patching': 'F8',
+            'f-robot-cutting': 'F9',
+            'ambient-lining': 'F10',
+            'hot-cure-lining': 'F11',
+            'uv-lining': 'F12',
+            'excavation': 'F13',
+            'tankering': 'F14'
           }
         };
 
-        // Get P-number for this sector and category, or fallback to original categoryId
-        const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+        // Get A1-F16 page ID for this sector and category, or fallback to original categoryId
+        const sectorMapping = PAGE_ID_MAPPING[sector as keyof typeof PAGE_ID_MAPPING];
         return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
       };
       
@@ -629,107 +641,119 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         mmData
       } = req.body;
 
-      // Generate sector-specific P-number for categoryId to ensure data isolation
-      const generatePNumber = (categoryId: string, sector: string): string => {
-        const P_NUMBER_MAPPING = {
+      // Generate sector-specific A1-F16 page ID for categoryId to ensure data isolation
+      const generateSectorPageId = (categoryId: string, sector: string): string => {
+        const PAGE_ID_MAPPING = {
           'utilities': { 
-            'cctv': 'P012', 
-            'cctv-jet-vac': 'P006', 
-            'cctv-van-pack': 'P008', 
-            'patching': 'P015',
-            'jet-vac': 'P010',
-            'van-pack': 'P011',
-            'directional-water-cutter': 'P014',
-            'ambient-lining': 'P020',
-            'hot-cure-lining': 'P021',
-            'uv-lining': 'P022',
-            'excavation': 'P023',
-            'tankering': 'P024'
+            'cctv': 'A1', 
+            'van-pack': 'A2', 
+            'jet-vac': 'A3',
+            'cctv-van-pack': 'A4', 
+            'cctv-jet-vac': 'A5', 
+            'cctv-cleansing-root-cutting': 'A6',
+            'directional-water-cutter': 'A7',
+            'patching': 'A8',
+            'f-robot-cutting': 'A9',
+            'ambient-lining': 'A10',
+            'hot-cure-lining': 'A11',
+            'uv-lining': 'A12',
+            'excavation': 'A13',
+            'tankering': 'A14'
           },
           'adoption': { 
-            'cctv': 'P112', 
-            'cctv-jet-vac': 'P106', 
-            'cctv-van-pack': 'P108', 
-            'patching': 'P115',
-            'jet-vac': 'P110',
-            'van-pack': 'P111',
-            'directional-water-cutter': 'P114',
-            'ambient-lining': 'P120',
-            'hot-cure-lining': 'P121',
-            'uv-lining': 'P122',
-            'excavation': 'P123',
-            'tankering': 'P124'
+            'cctv': 'B1', 
+            'van-pack': 'B2', 
+            'jet-vac': 'B3',
+            'cctv-van-pack': 'B4', 
+            'cctv-jet-vac': 'B5', 
+            'cctv-cleansing-root-cutting': 'B6',
+            'directional-water-cutter': 'B7',
+            'patching': 'B8',
+            'f-robot-cutting': 'B9',
+            'ambient-lining': 'B10',
+            'hot-cure-lining': 'B11',
+            'uv-lining': 'B12',
+            'excavation': 'B13',
+            'tankering': 'B14'
           },
           'highways': { 
-            'cctv': 'P212', 
-            'cctv-jet-vac': 'P206', 
-            'cctv-van-pack': 'P208', 
-            'patching': 'P215',
-            'jet-vac': 'P210',
-            'van-pack': 'P211',
-            'directional-water-cutter': 'P214',
-            'ambient-lining': 'P220',
-            'hot-cure-lining': 'P221',
-            'uv-lining': 'P222',
-            'excavation': 'P223',
-            'tankering': 'P224'
+            'cctv': 'C1', 
+            'van-pack': 'C2', 
+            'jet-vac': 'C3',
+            'cctv-van-pack': 'C4', 
+            'cctv-jet-vac': 'C5', 
+            'cctv-cleansing-root-cutting': 'C6',
+            'directional-water-cutter': 'C7',
+            'patching': 'C8',
+            'f-robot-cutting': 'C9',
+            'ambient-lining': 'C10',
+            'hot-cure-lining': 'C11',
+            'uv-lining': 'C12',
+            'excavation': 'C13',
+            'tankering': 'C14'
           },
           'insurance': { 
-            'cctv': 'P312', 
-            'cctv-jet-vac': 'P306', 
-            'cctv-van-pack': 'P308', 
-            'patching': 'P315',
-            'jet-vac': 'P310',
-            'van-pack': 'P311',
-            'directional-water-cutter': 'P314',
-            'ambient-lining': 'P320',
-            'hot-cure-lining': 'P321',
-            'uv-lining': 'P322',
-            'excavation': 'P323',
-            'tankering': 'P324'
+            'cctv': 'D1', 
+            'van-pack': 'D2', 
+            'jet-vac': 'D3',
+            'cctv-van-pack': 'D4', 
+            'cctv-jet-vac': 'D5', 
+            'cctv-cleansing-root-cutting': 'D6',
+            'directional-water-cutter': 'D7',
+            'patching': 'D8',
+            'f-robot-cutting': 'D9',
+            'ambient-lining': 'D10',
+            'hot-cure-lining': 'D11',
+            'uv-lining': 'D12',
+            'excavation': 'D13',
+            'tankering': 'D14'
           },
           'construction': { 
-            'cctv': 'P412', 
-            'cctv-jet-vac': 'P406', 
-            'cctv-van-pack': 'P408', 
-            'patching': 'P415',
-            'jet-vac': 'P410',
-            'van-pack': 'P411',
-            'directional-water-cutter': 'P414',
-            'ambient-lining': 'P420',
-            'hot-cure-lining': 'P421',
-            'uv-lining': 'P422',
-            'excavation': 'P423',
-            'tankering': 'P424'
+            'cctv': 'E1', 
+            'van-pack': 'E2', 
+            'jet-vac': 'E3',
+            'cctv-van-pack': 'E4', 
+            'cctv-jet-vac': 'E5', 
+            'cctv-cleansing-root-cutting': 'E6',
+            'directional-water-cutter': 'E7',
+            'patching': 'E8',
+            'f-robot-cutting': 'E9',
+            'ambient-lining': 'E10',
+            'hot-cure-lining': 'E11',
+            'uv-lining': 'E12',
+            'excavation': 'E13',
+            'tankering': 'E14'
           },
           'domestic': { 
-            'cctv': 'P512', 
-            'cctv-jet-vac': 'P506', 
-            'cctv-van-pack': 'P508', 
-            'patching': 'P515',
-            'jet-vac': 'P510',
-            'van-pack': 'P511',
-            'directional-water-cutter': 'P514',
-            'ambient-lining': 'P520',
-            'hot-cure-lining': 'P521',
-            'uv-lining': 'P522',
-            'excavation': 'P523',
-            'tankering': 'P524'
+            'cctv': 'F1', 
+            'van-pack': 'F2', 
+            'jet-vac': 'F3',
+            'cctv-van-pack': 'F4', 
+            'cctv-jet-vac': 'F5', 
+            'cctv-cleansing-root-cutting': 'F6',
+            'directional-water-cutter': 'F7',
+            'patching': 'F8',
+            'f-robot-cutting': 'F9',
+            'ambient-lining': 'F10',
+            'hot-cure-lining': 'F11',
+            'uv-lining': 'F12',
+            'excavation': 'F13',
+            'tankering': 'F14'
           }
         };
 
-        // Get P-number for this sector and category, or fallback to original categoryId
-        const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+        // Get A1-F16 page ID for this sector and category, or fallback to original categoryId
+        const sectorMapping = PAGE_ID_MAPPING[sector as keyof typeof PAGE_ID_MAPPING];
         return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
       };
 
-      const sectorSpecificCategoryId = generatePNumber(req.body.categoryId || "clean-" + Date.now(), sector || 'utilities');
+      const sectorSpecificCategoryId = generateSectorPageId(req.body.categoryId || "clean-" + Date.now(), sector || 'utilities');
 
       const [newConfig] = await db
         .insert(pr2Configurations)
         .values({
           userId: "test-user",
-          categoryId: sectorSpecificCategoryId, // Use P-number instead of raw categoryId
+          categoryId: sectorSpecificCategoryId, // Use A1-F16 page ID instead of raw categoryId
           categoryName: categoryName || 'New Clean Configuration',
           pipeSize: req.body.pipeSize || '150', // Default to 150mm if not specified
           description: description || 'Clean PR2 configuration',

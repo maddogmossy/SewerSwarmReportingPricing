@@ -333,46 +333,46 @@ export default function PR2Pricing() {
       });
     }
 
-    // If no P006 or P006a template found, check for P-number matches (SECTOR-SPECIFIC)
+    // If no P006 or P006a template found, check for A1-F16 page ID matches (SECTOR-SPECIFIC)
     if (!existingConfig) {
-      // Generate expected P-number for this sector and category
-      const generateExpectedPNumber = (categoryId: string, sector: string): string => {
-        const P_NUMBER_MAPPING = {
+      // Generate expected A1-F16 page ID for this sector and category
+      const generateExpectedPageId = (categoryId: string, sector: string): string => {
+        const PAGE_ID_MAPPING = {
           'utilities': { 
-            'cctv': 'P012', 
-            'cctv-jet-vac': 'P006', 
-            'cctv-van-pack': 'P008', 
-            'patching': 'P015',
-            'jet-vac': 'P010',
-            'van-pack': 'P011'
+            'cctv': 'A1', 
+            'cctv-jet-vac': 'A5', 
+            'cctv-van-pack': 'A4', 
+            'patching': 'A8',
+            'jet-vac': 'A3',
+            'van-pack': 'A2'
           },
           'adoption': { 
-            'cctv': 'P112', 
-            'cctv-jet-vac': 'P106', 
-            'cctv-van-pack': 'P108', 
-            'patching': 'P115',
-            'jet-vac': 'P110',
-            'van-pack': 'P111'
+            'cctv': 'B1', 
+            'cctv-jet-vac': 'B5', 
+            'cctv-van-pack': 'B4', 
+            'patching': 'B8',
+            'jet-vac': 'B3',
+            'van-pack': 'B2'
           },
           'highways': { 
-            'cctv': 'P212', 
-            'cctv-jet-vac': 'P206', 
-            'cctv-van-pack': 'P208', 
-            'patching': 'P215',
-            'jet-vac': 'P210',
-            'van-pack': 'P211'
+            'cctv': 'C1', 
+            'cctv-jet-vac': 'C5', 
+            'cctv-van-pack': 'C4', 
+            'patching': 'C8',
+            'jet-vac': 'C3',
+            'van-pack': 'C2'
           }
         };
         
-        const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
+        const sectorMapping = PAGE_ID_MAPPING[sector as keyof typeof PAGE_ID_MAPPING];
         return sectorMapping?.[categoryId as keyof typeof sectorMapping] || categoryId;
       };
 
-      const expectedPNumber = generateExpectedPNumber(categoryId, sector);
+      const expectedPageId = generateExpectedPageId(categoryId, sector);
       
       existingConfig = pr2Configurations.find(config => {
-        // P-number match (PRIORITY)
-        if (config.categoryId === expectedPNumber) return true;
+        // A1-F16 page ID match (PRIORITY)
+        if (config.categoryId === expectedPageId) return true;
         
         // Direct category ID match (FALLBACK)
         if (config.categoryId === categoryId) return true;
@@ -745,39 +745,39 @@ export default function PR2Pricing() {
                       return true;
                     }
                     
-                    // **CRITICAL FIX**: P-number mapping for categories
-                    const P_NUMBER_MAPPING = {
+                    // **CRITICAL FIX**: A1-F16 page ID mapping for categories
+                    const PAGE_ID_MAPPING = {
                       'utilities': { 
-                        'cctv': 'P012', 
-                        'cctv-jet-vac': 'P006', 
-                        'cctv-van-pack': 'P008', 
-                        'patching': 'P015',
-                        'jet-vac': 'P010',
-                        'van-pack': 'P011'
+                        'cctv': 'A1', 
+                        'cctv-jet-vac': 'A5', 
+                        'cctv-van-pack': 'A4', 
+                        'patching': 'A8',
+                        'jet-vac': 'A3',
+                        'van-pack': 'A2'
                       },
                       'adoption': { 
-                        'cctv': 'P112', 
-                        'cctv-jet-vac': 'P106', 
-                        'cctv-van-pack': 'P108', 
-                        'patching': 'P115',
-                        'jet-vac': 'P110',
-                        'van-pack': 'P111'
+                        'cctv': 'B1', 
+                        'cctv-jet-vac': 'B5', 
+                        'cctv-van-pack': 'B4', 
+                        'patching': 'B8',
+                        'jet-vac': 'B3',
+                        'van-pack': 'B2'
                       },
                       'highways': { 
-                        'cctv': 'P212', 
-                        'cctv-jet-vac': 'P206', 
-                        'cctv-van-pack': 'P208', 
-                        'patching': 'P215',
-                        'jet-vac': 'P210',
-                        'van-pack': 'P211'
+                        'cctv': 'C1', 
+                        'cctv-jet-vac': 'C5', 
+                        'cctv-van-pack': 'C4', 
+                        'patching': 'C8',
+                        'jet-vac': 'C3',
+                        'van-pack': 'C2'
                       }
                     };
                     
-                    const sectorMapping = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
-                    const expectedPNumber = sectorMapping?.[category.id as keyof typeof sectorMapping];
+                    const sectorMapping = PAGE_ID_MAPPING[sector as keyof typeof PAGE_ID_MAPPING];
+                    const expectedPageId = sectorMapping?.[category.id as keyof typeof sectorMapping];
                     
-                    // Check for P-number match first (HIGHEST PRIORITY)
-                    if (expectedPNumber && config.categoryId === expectedPNumber) {
+                    // Check for A1-F16 page ID match first (HIGHEST PRIORITY)
+                    if (expectedPageId && config.categoryId === expectedPageId) {
                       return true;
                     }
                     
