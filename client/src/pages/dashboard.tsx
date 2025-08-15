@@ -4466,6 +4466,50 @@ export default function Dashboard() {
               });
             }
             
+            // CRITICAL FIX: Check quantity validation FIRST, before other validation criteria
+            // This ensures insufficient quantity shows red regardless of debris/length validation
+            if (hasValidRate) {
+              const dayRate = blueValue; 
+              const runsPerShift = greenValue;
+              
+              // Count unique service items for quantity validation
+              const uniqueServiceItems = new Set();
+              sectionData?.forEach(s => {
+                if (s.defectType === 'service' && s.severityGrade && parseInt(s.severityGrade) > 0) {
+                  uniqueServiceItems.add(s.itemNo);
+                }
+              });
+              const totalServiceItems = uniqueServiceItems.size;
+              const meetsMinimumRuns = totalServiceItems >= runsPerShift;
+
+              // FORCE RED STATUS: Return early for insufficient quantities
+              if (!meetsMinimumRuns) {
+                console.log(`🔴 QUANTITY INSUFFICIENT - Item ${section.itemNo}:`, {
+                  totalServiceItems: totalServiceItems,
+                  requiredRuns: runsPerShift,
+                  meetsMinimumRuns: false,
+                  status: 'RED - Insufficient quantity',
+                  overrideValidation: true
+                });
+                
+                const ratePerRun = dayRate / runsPerShift;
+                return {
+                  cost: ratePerRun,
+                  currency: '£',
+                  method: `CCTV (${runsPerShift} runs)`,
+                  status: 'quantity_insufficient',
+                  recommendation: `Insufficient quantity: Only ${totalServiceItems} service items found, minimum ${runsPerShift} runs required`,
+                  warningType: 'quantity_validation',
+                  configData: {
+                    totalServiceItems: totalServiceItems,
+                    requiredRuns: runsPerShift,
+                    dayRate: dayRate,
+                    runsPerShift: runsPerShift
+                  }
+                };
+              }
+            }
+
             if (debrisMatch && adjustedLengthMatch && hasValidRate) {
               // Section matches MM4 criteria - calculate cost
               // F690/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
@@ -4542,47 +4586,7 @@ export default function Dashboard() {
               // FIXED: Red validation - show red when total service items don't justify minimum runs
               const meetsMinimumRuns = totalServiceItems >= runsPerShift;
               
-              // CRITICAL DEBUG: Check all conditions for red status logic
-              console.log(`🔍 RED STATUS CONDITION CHECK - Item ${section.itemNo}:`, {
-                hasValidRate: hasValidRate,
-                meetsMinimumRuns: meetsMinimumRuns,
-                blueValue: blueValue,
-                greenValue: greenValue,
-                totalServiceItems: totalServiceItems,
-                runsPerShift: runsPerShift,
-                willTriggerRedPath: hasValidRate && !meetsMinimumRuns && blueValue > 0 && greenValue > 0,
-                currentLogic: `${totalServiceItems} >= ${runsPerShift} = ${meetsMinimumRuns}`
-              });
-
-              // FORCE RED STATUS: Always return red when insufficient quantities regardless of hasValidRate
-              // Fix the bug where hasValidRate=false causes green display for insufficient quantities
-              if (!meetsMinimumRuns && blueValue > 0 && greenValue > 0) {
-                console.log(`🔴 FORCING RED STATUS for Item ${section.itemNo}:`, {
-                  reason: 'Insufficient service items for minimum runs',
-                  totalServiceItems: totalServiceItems,
-                  requiredRuns: runsPerShift,
-                  shouldShowRed: true,
-                  fixedCondition: 'Removed hasValidRate dependency'
-                });
-                
-                const ratePerRun = blueValue / greenValue;
-                const calculatedCost = ratePerRun;
-                
-                return {
-                  cost: calculatedCost,
-                  currency: '£',
-                  method: `CCTV (${greenValue} runs)`,
-                  status: 'quantity_insufficient',
-                  recommendation: `Insufficient quantity: Only ${totalServiceItems} service items found, minimum ${runsPerShift} runs required`,
-                  warningType: 'quantity_validation',
-                  configData: {
-                    totalServiceItems: totalServiceItems,
-                    requiredRuns: runsPerShift,
-                    dayRate: blueValue,
-                    runsPerShift: greenValue
-                  }
-                };
-              }
+              // REMOVED: Duplicate quantity validation logic moved to before debris/length validation
               
               // Enhanced debug for quantity validation issues (Items 3,6,7,8,10,13,14,15)
               if ([3,6,7,8,10,13,14,15].includes(section.itemNo)) {
