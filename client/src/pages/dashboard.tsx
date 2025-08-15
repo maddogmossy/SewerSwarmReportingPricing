@@ -617,21 +617,21 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
   const queryClient = useQueryClient();
   
-  // Equipment priority state with localStorage sync - ID759 default for complete configuration
+  // Equipment priority state with localStorage sync - ID760 default matching UI
   const [equipmentPriority, setEquipmentPriority] = useState<'id760' | 'id759'>(() => {
-    // FIXED: ID759 as default for complete configuration validation
+    // FIXED: ID760 as default to match equipment selection UI default button
     const stored = localStorage.getItem('equipmentPriority');
     if (stored === 'f690' || stored === 'f606') {
-      // Auto-migrate old f690/f606 preference to id759 (complete config)
-      localStorage.setItem('equipmentPriority', 'id759');
-      return 'id759';
+      // Auto-migrate old f690/f606 preference to id760 (default)
+      localStorage.setItem('equipmentPriority', 'id760');
+      return 'id760';
     }
     if (stored === 'f608') {
-      // Auto-migrate old f608 preference to id759
-      localStorage.setItem('equipmentPriority', 'id759');
-      return 'id759';
+      // Auto-migrate old f608 preference to id760 (default)
+      localStorage.setItem('equipmentPriority', 'id760');
+      return 'id760';
     }
-    return stored === 'id760' ? 'id760' : 'id759';
+    return stored === 'id759' ? 'id759' : 'id760';
   });
 
   // Clear old patterns from localStorage cache on component mount
@@ -4114,7 +4114,7 @@ export default function Dashboard() {
         filteringFor: ['cctv-van-pack', 'cctv-jet-vac']
       });
       
-      // DEFAULT PRIORITY: ID760 (A5 - CCTV/Jet Vac) is default, but ID759 (A4 - CCTV/Van Pack) takes priority if configured
+      // DEFAULT PRIORITY: ID760 (A5 - CCTV/Jet Vac) is default matching equipment selection UI
       const id760Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
       const id759Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-van-pack');
       
@@ -4125,7 +4125,7 @@ export default function Dashboard() {
       );
       
       // Selection logic: Respect user's equipment priority choice first
-      // FIXED: Priority: User preference > ID759 default (complete config) > Available config as fallback
+      // FIXED: Priority: User preference > ID760 default (matching UI) > Available config as fallback
       const userPrefersId759 = equipmentPriority === 'id759';
       const id760ActualData = id760Config?.mmData || id760Config?.mm_data;
       const id760HasValidMM4 = id760ActualData?.mm4Rows?.some((row: any) => 
@@ -4152,15 +4152,15 @@ export default function Dashboard() {
         // User wants ID760 but it's not available, fallback to ID759
         cctvConfig = id759Config;
         console.log('🔄 A4 FALLBACK - User wants A5 but only A4 available');
-      } else if (id759Config) {
-        // No user preference, default to ID759
-        cctvConfig = id759Config;
-        shouldUpdatePriority = true;
-        console.log('🔄 DEFAULT A4 - No preference, using ID759');
-      } else {
-        // Final fallback to ID760
+      } else if (id760Config) {
+        // No user preference, default to ID760 (matches UI default)
         cctvConfig = id760Config;
-        console.log('🔄 DEFAULT A5 - Final fallback to ID760');
+        shouldUpdatePriority = true;
+        console.log('🔄 DEFAULT A5 - No preference, using ID760 (UI default)');
+      } else {
+        // Final fallback to ID759
+        cctvConfig = id759Config;
+        console.log('🔄 FALLBACK A4 - Final fallback to ID759');
       }
       
       // Sync equipment priority with actual selection (only when needed and not recently changed by user)
@@ -4173,7 +4173,7 @@ export default function Dashboard() {
         setEquipmentPriority(newPriority);
         localStorage.setItem('equipmentPriority', newPriority);
         console.log('🔄 Equipment Priority Auto-Sync:', {
-          reason: id759HasValidMM4 ? 'ID759 has MM4 data configured' : 'ID760 default selection',
+          reason: id760HasValidMM4 ? 'ID760 has MM4 data configured' : 'ID760 default selection (UI default)',
           previousPriority: equipmentPriority,
           newPriority: newPriority,
           configUsed: cctvConfig?.categoryId,
@@ -4206,7 +4206,7 @@ export default function Dashboard() {
           id: cctvConfig.id,
           categoryId: cctvConfig.categoryId,
           reason: (id760HasValidMM4 && id759HasValidMM4) ? `User preference: ${cctvConfig.categoryId}` : 
-                  cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 configured with MM4 data' : 'ID760 default selection',
+                  cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 configured with MM4 data' : 'ID760 default selection (UI default)',
           hasMMData: !!(cctvConfig.mmData || cctvConfig.mm_data),
           method: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
           allConfiguredPipeSizes: enhancedLogging ? Object.keys((cctvConfig.mmData || cctvConfig.mm_data)?.mm4DataByPipeSize || {}) : undefined
@@ -4422,10 +4422,7 @@ export default function Dashboard() {
                   `${actualConfigId}-${pipeSizeKey.split('-')[0]}-${pipeSizeKey.split('-')[1]}-${rowId}-${field}`, // Explicit format
                   `${actualConfigId}-${pipeSizeKey}-${field}`, // Legacy format without row ID
                   // Cross-configuration compatibility fallbacks
-                  `${actualConfigId === 760 ? 759 : 760}-${pipeSizeKey}-${rowId}-${field}`, // Cross-equipment fallback
-                  // Legacy 606/608 format fallbacks for backward compatibility
-                  `${actualConfigId === 760 ? '606' : '608'}-${pipeSizeKey}-${rowId}-${field}`,
-                  `${actualConfigId === 760 ? '608' : '606'}-${pipeSizeKey}-${rowId}-${field}`
+                  `${actualConfigId === 760 ? 759 : 760}-${pipeSizeKey}-${rowId}-${field}` // Cross-equipment fallback
                 ];
                 
                 let bufferedValue = null;
