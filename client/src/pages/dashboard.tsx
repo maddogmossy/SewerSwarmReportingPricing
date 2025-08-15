@@ -1816,7 +1816,7 @@ export default function Dashboard() {
           // ENHANCED: Expanded to include all valid service and structural cost statuses
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
             costCalculation.cost >= 0 && // Allow £0 costs for minimum not met scenarios
-            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed'].includes(costCalculation.status);
+            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured', 'configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing'].includes(costCalculation.status);
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
@@ -3380,6 +3380,40 @@ export default function Dashboard() {
         }
         
         if (cctvConfig) {
+          // PRIORITY 0: CHECK BLUE DAY RATE FIRST - Must show blue triangles for missing day rates
+          const dayRateValue = cctvConfig?.mm_data?.mm4Rows?.[0]?.blueValue;
+          const isInitialDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && parseFloat(dayRateValue) > 0;
+          
+          if (!isInitialDayRateConfigured) {
+            console.log('🔵 BLUE DAY RATE MISSING - Showing blue triangle:', {
+              itemNo: section.itemNo,
+              configId: cctvConfig.id,
+              dayRateValue: dayRateValue,
+              reason: 'Day rate not configured - should show blue triangle'
+            });
+            
+            return {
+              cost: 0,
+              currency: '£',
+              method: 'Day Rate Missing',
+              status: 'day_rate_missing',
+              recommendation: 'Configure day rate in blue field',
+              warningType: 'day_rate_missing',
+              sectionData: {
+                itemNo: section.itemNo,
+                defectType: 'service',
+                pipeSize: section.pipeSize?.toString().replace('mm', ''),
+                totalLength: parseFloat(section.totalLength || '0'),
+                debrisPercent: extractDebrisPercentage(section.defects || '')
+              },
+              configData: {
+                categoryId: cctvConfig.categoryId,
+                configId: cctvConfig.id,
+                dayRateStatus: 'missing'
+              }
+            };
+          }
+          
           // CRITICAL FIX: Disable auto-population to prevent overriding user-configured MM4 values
           // The auto-populate function was causing dashboard prices to ignore user configurations
           // by automatically overwriting purple length fields with buffered dashboard values
@@ -3469,8 +3503,9 @@ export default function Dashboard() {
               const bufferedDebris = buffer[debrisBufferKey];
               const bufferedLength = buffer[lengthBufferKey];
               
-              const rawPurpleDebris = bufferedDebris || mm4Row.purpleDebris || '';
-              const rawPurpleLength = bufferedLength || mm4Row.purpleLength || '';
+              // FIXED: Only use buffered values if they contain actual data, not empty strings
+              const rawPurpleDebris = (bufferedDebris && bufferedDebris.trim() !== '') ? bufferedDebris : (mm4Row.purpleDebris || '');
+              const rawPurpleLength = (bufferedLength && bufferedLength.trim() !== '') ? bufferedLength : (mm4Row.purpleLength || '');
               
               // CRITICAL: Check for incomplete configuration - empty strings should trigger red warnings
               const hasValidDebris = rawPurpleDebris !== '' && !isNaN(parseFloat(rawPurpleDebris));
@@ -3634,7 +3669,7 @@ export default function Dashboard() {
             effectiveDayRate = parseFloat(dbDayRate || '0');
           }
           
-          const isDayRateConfigured = effectiveDayRate > 0;
+          const hasValidDayRate = effectiveDayRate > 0;
           
           // Enhanced debugging with FIXED buffer key format
           const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
@@ -3650,8 +3685,8 @@ export default function Dashboard() {
             STEP_4_bufferedValue: bufferedValue,
             STEP_5_rawDbValue: cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue,
             STEP_6_finalEffectiveDayRate: effectiveDayRate,
-            STEP_7_isDayRateConfigured: isDayRateConfigured,
-            STEP_8_willShowPopup: !isDayRateConfigured,
+            STEP_7_hasValidDayRate: hasValidDayRate,
+            STEP_8_willShowPopup: !hasValidDayRate,
             USER_REPORTED_KEY: '760-150-1501-1-blueValue',
             USER_REPORTED_VALUE: '1850',
             EXACT_MATCH_TEST: buffer['760-150-1501-1-blueValue'],
@@ -3660,7 +3695,7 @@ export default function Dashboard() {
           });
           
           // If day rate is not configured, return specific error information
-          if (!isDayRateConfigured) {
+          if (!hasValidDayRate) {
             return {
               cost: 0,
               currency: '£',
@@ -3692,14 +3727,14 @@ export default function Dashboard() {
       if (f615Config) {
         // Check if day rate is properly configured in MM4 blue value (single source of truth)
         const dayRateValue = f615Config.mm_data?.mm4Rows?.[0]?.blueValue;
-        const isDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
+        const isStructuralDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
         
         console.log('🔍 F615 Day Rate Validation:', {
           itemNo: section.itemNo,
           configId: f615Config.id,
           dayRateValue: dayRateValue,
-          isDayRateConfigured: isDayRateConfigured,
-          willShowOrangeTriangle: !isDayRateConfigured,
+          isDayRateConfigured: isStructuralDayRateConfigured,
+          willShowOrangeTriangle: !isStructuralDayRateConfigured,
           mm4DataExists: !!f615Config.mm_data,
           mm4RowsExists: !!f615Config.mm_data?.mm4Rows,
           mm4RowsLength: f615Config.mm_data?.mm4Rows?.length || 0,
@@ -3708,7 +3743,7 @@ export default function Dashboard() {
         });
         
         // If day rate is not configured, return specific error information  
-        if (!isDayRateConfigured) {
+        if (!isStructuralDayRateConfigured) {
           return {
             cost: 0,
             currency: '£',
