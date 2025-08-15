@@ -1222,6 +1222,7 @@ export default function PR2ConfigClean() {
       clearTimeout(autoSaveTimeout);
     }
     const timeoutId = setTimeout(() => {
+      console.log(`🔄 Auto-save triggered for ${field}=${value} on row ${rowId}`);
       triggerAutoSave();
       // DISABLED: Never clear buffer to prevent overwrites
       // The buffer will persist and protect user input indefinitely
@@ -1586,10 +1587,14 @@ export default function PR2ConfigClean() {
 
         // Auto-save to backend - only update existing configurations, don't create new ones
         if (editId) {
-          await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
+          console.log(`🔄 Attempting to save configuration ${editId} to database...`);
+          const response = await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
             ...formData,
             mmData: mmData
           });
+          console.log(`✅ Configuration ${editId} saved successfully:`, response);
+        } else {
+          console.warn('⚠️ No editId found - skipping auto-save to prevent creating new configuration');
         }
         // Don't create new configurations during auto-save - only update existing ones
         
@@ -1600,7 +1605,8 @@ export default function PR2ConfigClean() {
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] }); // Configuration updates
         
       } catch (error) {
-        console.error('Auto-save failed:', error);
+        console.error('❌ Auto-save failed:', error);
+        console.error('❌ Error details:', JSON.stringify(error, null, 2));
       }
     }, 1000); // 1 second delay
     
