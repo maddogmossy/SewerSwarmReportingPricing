@@ -1174,13 +1174,62 @@ export default function Dashboard() {
             );
           }
           
+          // Enhance structural observations in multi-observation display
+          const enhanceStructuralObservation = (text: string, defectType: string) => {
+            // For structural defects, extract MSCC5 codes and meterage
+            if (defectType === 'structural') {
+              const extractedCodes = [];
+              
+              // Extract deformity with meterage: "Deformity at 5.67m" → "D 5.67m"
+              const deformityMatch = text.match(/Deformity at (\d+\.?\d*)m/i);
+              if (deformityMatch) {
+                const meterage = deformityMatch[1];
+                extractedCodes.push(`D ${meterage}m`);
+              }
+              
+              // Extract fractures with meterage
+              const fractureMatch = text.match(/(Fracture|fracture).*?at (\d+\.?\d*)m/i);
+              if (fractureMatch) {
+                const meterage = fractureMatch[2];
+                const codeType = text.toLowerCase().includes('circumferential') ? 'FC' : 'FL';
+                extractedCodes.push(`${codeType} ${meterage}m`);
+              }
+              
+              // Extract joint defects
+              const jointMatch = text.match(/Joint.*?at (\d+\.?\d*)m/i);
+              if (jointMatch) {
+                const meterage = jointMatch[1];
+                const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
+                extractedCodes.push(`${codeType} ${meterage}m`);
+              }
+              
+              // Extract open joints
+              const openJointMatch = text.match(/Open joint.*?at (\d+\.?\d*)m/i);
+              if (openJointMatch) {
+                const meterage = openJointMatch[1];
+                const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
+                extractedCodes.push(`${codeType} ${meterage}m`);
+              }
+              
+              // If we found structured codes, display them, otherwise show original
+              if (extractedCodes.length > 0) {
+                return extractedCodes.join(', ');
+              }
+            }
+            
+            // For service defects or if no codes found, return original text
+            return text;
+          };
+          
           return (
             <div className="text-sm p-2 w-full">
               <ul className="space-y-1 text-left leading-relaxed">
                 {observations.map((observation, index) => (
                   <li key={index} className="flex items-start">
                     <span className="text-blue-500 mr-2 flex-shrink-0">•</span>
-                    <span className="break-words">{observation}</span>
+                    <span className="break-words">
+                      {enhanceStructuralObservation(observation, section.defectType)}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -1204,11 +1253,59 @@ export default function Dashboard() {
           );
         }
         
-        // Single observation or clean section - display normally
+        // Single observation or clean section - enhance for structural defects
+        const enhanceStructuralObservation = (text: string, defectType: string) => {
+          // For structural defects, extract MSCC5 codes and meterage
+          if (defectType === 'structural') {
+            const extractedCodes = [];
+            
+            // Extract deformity with meterage: "Deformity at 5.67m" → "D 5.67m"
+            const deformityMatch = text.match(/Deformity at (\d+\.?\d*)m/i);
+            if (deformityMatch) {
+              const meterage = deformityMatch[1];
+              extractedCodes.push(`D ${meterage}m`);
+            }
+            
+            // Extract fractures with meterage: "Fracture at 2.5m" → "FC 2.5m" or "FL 2.5m"
+            const fractureMatch = text.match(/(Fracture|fracture).*?at (\d+\.?\d*)m/i);
+            if (fractureMatch) {
+              const meterage = fractureMatch[2];
+              const codeType = text.toLowerCase().includes('circumferential') ? 'FC' : 'FL';
+              extractedCodes.push(`${codeType} ${meterage}m`);
+            }
+            
+            // Extract joint defects: "Joint displacement at 3.2m" → "JDL 3.2m" or "JDM 3.2m"
+            const jointMatch = text.match(/Joint.*?at (\d+\.?\d*)m/i);
+            if (jointMatch) {
+              const meterage = jointMatch[1];
+              const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
+              extractedCodes.push(`${codeType} ${meterage}m`);
+            }
+            
+            // Extract open joints: "Open joint at 4.1m" → "OJL 4.1m" or "OJM 4.1m"
+            const openJointMatch = text.match(/Open joint.*?at (\d+\.?\d*)m/i);
+            if (openJointMatch) {
+              const meterage = openJointMatch[1];
+              const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
+              extractedCodes.push(`${codeType} ${meterage}m`);
+            }
+            
+            // If we found structured codes, display them, otherwise show original
+            if (extractedCodes.length > 0) {
+              return extractedCodes.join(', ');
+            }
+          }
+          
+          // For service defects or if no codes found, return original text
+          return text;
+        };
+        
+        const displayText = enhanceStructuralObservation(defectsText, section.defectType);
+        
         return (
           <div className="text-sm p-2 w-full">
             <div className="break-words text-left leading-relaxed">
-              {defectsText}
+              {displayText}
             </div>
           </div>
         );
