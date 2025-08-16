@@ -210,8 +210,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     
     updateMM4DataForPipeSize(newData);
     
-    // DATABASE-DIRECT: Immediate save without debounce delays
-    triggerAutoSave();
+    // DATABASE-DIRECT: Allow user to finish typing, save on blur/enter
+    // triggerAutoSave(); // Removed to prevent input blocking
   };
 
   // Handle range warning dialog responses
@@ -337,7 +337,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     console.log(`🔍 MMP1Template updateMM4RowWithAutoSave: rowId=${rowId}, field=${field}, value="${value}"`);
     updateMM4Row(rowId, field, value);
-    // Skip immediate triggerAutoSave to prevent purple value conflicts - updateMM4Row handles debounced saving
+    // DATABASE-DIRECT: Save on user action completion (blur/enter), not on every keystroke
+    triggerAutoSave();
   };
 
   const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {

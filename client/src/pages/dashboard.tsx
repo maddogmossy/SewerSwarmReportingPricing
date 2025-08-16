@@ -4016,8 +4016,8 @@ export default function Dashboard() {
       
       // MSCC5-Compliant structural defect counting with authentic WRc standards
       const defectsText = section.defects || '';
-      // CORRECTED: Only authentic MSCC5 structural codes (removed service codes like DER, DES)
-      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
+      // CORRECTED: Authentic MSCC5 structural codes including 'D' (Deformed) for Item 13a compatibility
+      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN|D)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
       
       let totalStructuralPatches = 0;
       let defectMeterages = [];
@@ -4050,8 +4050,8 @@ export default function Dashboard() {
       return {
         cost: totalPatchCost,
         currency: '£',
-        method: 'F615 Structural Patching',
-        status: 'f615_calculated',
+        method: 'MM4 Structural Patching',
+        status: 'mm4_calculated',
         patchingType: 'Structural Patching',
         defectCount: patchCount,
         costPerUnit: costPerPatch,
@@ -4094,7 +4094,7 @@ export default function Dashboard() {
     
     // ENHANCED: Separate handling for service vs structural sections
     // Service sections: Process MM4 for ALL service sections (cleaning, monitoring, assessments)
-    // Structural sections: Use F615 patching cost calculation
+    // Structural sections: Use MM4 patching cost calculation
     console.log(`🔍 MM4 Processing Check for Item ${section.itemNo}:`, {
       needsCleaning,
       pr2ConfigsAvailable: !!repairPricingData,
@@ -4102,7 +4102,7 @@ export default function Dashboard() {
       defectType: section.defectType,
       pipeSize: section.pipeSize,
       willProcessServiceMM4: section.defectType === 'service' && repairPricingData,
-      willProcessStructuralF615: section.defectType === 'structural'
+      willProcessStructuralMM4: section.defectType === 'structural'
     });
     
     // FIXED: Process MM4 for ALL SERVICE sections (not just cleaning) - includes Grade 0 observations
@@ -5024,34 +5024,34 @@ export default function Dashboard() {
         const f619Cost = totalCost;
         const f619Details = cutDetails.join(' + ');
         
-        // Process F615 structural patching
+        // Process MM4-based structural patching (replacing legacy F615)
         const patchingConfig = repairPricingData.find((config: any) => 
           config.categoryId === 'patching' && config.sector === currentSector.id
         );
         
         if (patchingConfig && patchingConfig.mmData) {
-          const f615Result = calculateF615StructuralPatching(section, patchingConfig);
-          if (f615Result && f615Result.cost > 0) {
-            const combinedCost = f619Cost + f615Result.cost;
+          const mm4Result = calculateF615StructuralPatching(section, patchingConfig);
+          if (mm4Result && mm4Result.cost > 0) {
+            const combinedCost = f619Cost + mm4Result.cost;
             
             console.log('✅ ITEM 19 COMBINED COST CALCULATION:', {
               itemNo: section.itemNo,
               f619Cost: f619Cost,
-              f615Cost: f615Result.cost,
+              mm4Cost: mm4Result.cost,
               combinedCost: combinedCost,
               f619Details: f619Details,
-              f615Details: f615Result.recommendation
+              mm4Details: mm4Result.recommendation
             });
             
             return {
               cost: combinedCost,
               currency: '£',
-              method: 'Combined F619+F615',
+              method: 'Combined F619+MM4',
               status: 'combined_calculated',
               patchingType: 'Robotic Cutting + Structural Patching',
-              defectCount: f615Result.defectCount + 1,
+              defectCount: mm4Result.defectCount + 1,
               costPerUnit: combinedCost,
-              recommendation: `${f619Details} + ${f615Result.recommendation}`
+              recommendation: `${f619Details} + ${mm4Result.recommendation}`
             };
           }
         }
