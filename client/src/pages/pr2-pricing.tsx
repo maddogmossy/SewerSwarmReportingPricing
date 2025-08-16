@@ -1282,7 +1282,7 @@ export default function PR2Pricing() {
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
-                      <DevLabel id={existingConfiguration ? `F${existingConfiguration.id}` : "F625+"} />
+                      <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A1+"} />
                       <CardContent className="p-4 text-center relative">
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
