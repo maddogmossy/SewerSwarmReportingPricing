@@ -6122,8 +6122,16 @@ export default function Dashboard() {
     return true;
   };
 
-  // Simplified cost calculation function - removed useMemo to prevent screen flashing
+  // Simplified cost calculation function - equipment priority responsive
   const calculateCost = (section: any): string | JSX.Element => {
+    // EQUIPMENT PRIORITY DEBUG: Force recalculation when equipment priority changes
+    console.log('💰 CALCULATE COST - Item', section.itemNo, ':', {
+      equipmentPriority: equipmentPriority,
+      costRecalcTrigger: costRecalcTrigger,
+      defectType: section.defectType,
+      timestamp: Date.now()
+    });
+    
     // FIXED: Simplified defect detection logic for both old and new severity grade systems
     const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
     
@@ -6143,7 +6151,8 @@ export default function Dashboard() {
       return "£0.00";
     }
     
-    // For defective sections, use PR2 configuration calculations
+    // CRITICAL: Force fresh cost calculation with current equipment priority
+    // Use costRecalcTrigger to ensure calculations reflect current equipment state
     const autoCost = calculateAutoCost(section);
     
     if (autoCost && 'cost' in autoCost && autoCost.cost > 0) {
