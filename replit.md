@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application processes documents, integrates payments, and ensures compliance for regulated industries (Utilities, Adoption, Highways). It uniformly processes various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, incorporating an intelligent cost decision persistence system. The project aims to provide a robust, reliable, and user-friendly platform for efficient and compliant document analysis, enhancing operational efficiency and ensuring regulatory adherence in highly regulated sectors.
+This full-stack TypeScript application provides a robust, reliable, and user-friendly platform for efficient and compliant document analysis in highly regulated sectors (Utilities, Adoption, Highways). It processes various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, integrating payments and ensuring compliance. A core feature is an intelligent cost decision persistence system, aiming to enhance operational efficiency and regulatory adherence.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
@@ -62,7 +62,7 @@ This full-stack TypeScript application processes documents, integrates payments,
 - **UI Components**: shadcn/ui, Radix UI
 - **Styling**: Tailwind CSS with CSS variables
 - **Build Tool**: Vite
-- **UI/UX Decisions**: Standardized patterns for Configuration Dropdown, Category Cards (colored borders), CTF (Configuration Template Framework), Dashboard Table, Unified Pipe Size Switching, Unified Popup Design. Visual Validation System (red triangle warnings) and Enhanced Warning System (cost decision persistence) are core to the UI.
+- **UI/UX Decisions**: Standardized patterns for Configuration Dropdown, Category Cards (colored borders), CTF (Configuration Template Framework), Dashboard Table, Unified Pipe Size Switching, Unified Popup Design. Core UI features include a Visual Validation System (red triangle warnings) and an Enhanced Warning System (cost decision persistence).
 
 ### Backend
 - **Framework**: Express.js with TypeScript
