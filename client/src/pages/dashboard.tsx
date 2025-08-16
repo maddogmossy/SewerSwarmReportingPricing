@@ -100,8 +100,8 @@ const requiresStructuralRepair = (defects: string): boolean => {
   const defectsUpper = defects.toUpperCase();
   
   // PRIORITY 1: Check for structural defects FIRST (safety critical) - MSCC5 COMPLIANT
-  // CORRECTED: Only authentic MSCC5 structural codes, removed legacy patterns
-  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDS ', 'DEF ', 'OJL ', 'OJM ', 'JDM ', 'CN ', 'crack', 'fracture'];
+  // UPDATED: Include both full 'DEF ' and shortened 'D ' codes for deformity defects
+  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDS ', 'DEF ', 'D ', 'OJL ', 'OJM ', 'JDM ', 'CN ', 'crack', 'fracture'];
   
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
@@ -4691,9 +4691,9 @@ export default function Dashboard() {
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
               
-              // MSCC5-Compliant patch counting: Only authentic structural defect codes
+              // MSCC5-Compliant patch counting: Only authentic structural defect codes (includes 'D' for deformity)
               // LEGACY REMOVED: DER, DES are service defects, not structural 
-              const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
+              const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
               
               let totalStructuralPatches = 0;
               let structuralMatch;
@@ -4714,9 +4714,9 @@ export default function Dashboard() {
                 });
               }
               
-              // MSCC5-Compliant fallback: only authentic structural codes
+              // MSCC5-Compliant fallback: only authentic structural codes (includes 'D' for deformity)
               if (totalStructuralPatches === 0) {
-                const basicStructuralMatches = defectsText.match(/\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b/g) || [];
+                const basicStructuralMatches = defectsText.match(/\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b/g) || [];
                 totalStructuralPatches = Math.max(basicStructuralMatches.length, defectMeterages.length, 1);
               }
               
@@ -5009,7 +5009,7 @@ export default function Dashboard() {
       
       // MSCC5 COMPLIANT: Check if section requires ID763 structural patching
       const hasStructuralDefects = section.defectType === 'structural' && 
-                                  (section.defects || '').match(/\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b/i);
+                                  (section.defects || '').match(/\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b/i);
       
       if (hasStructuralDefects && section.itemNo === 19) {
         console.log('🔄 ITEM 19 COMBINED ID4+ID763 PROCESSING:', {
