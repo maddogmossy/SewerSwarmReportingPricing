@@ -45,15 +45,18 @@ export const TP2_PATCHING_RULES: TP2PatchingRules = {
   unitCost: 0, // Will be fetched from pipe-specific TP2 configs
   minQuantity: 0, // Will be fetched from pipe-specific TP2 configs (153:4, 156:3, 157:3)
   
-  // Structural defect detection codes
+  // MSCC5 Compliant structural defect detection codes
   structuralDefectCodes: [
     'CR',     // Crack
     'FL',     // Fracture longitudinal
     'FC',     // Fracture circumferential
-    'JDL',    // Joint defect longitudinal
-    'JDM',    // Joint defect medium
-    'OJM',    // Open joint medium
+    'JDL',    // Joint displacement large
+    'JDS',    // Joint displacement small
+    'JDM',    // Joint displacement major
+    'DEF',    // Deformity
+    'OJM',    // Open joint major
     'OJL',    // Open joint longitudinal
+    'CN',     // Connection other than junction
     'crack',  // Text-based detection
     'fracture',
     'joint'

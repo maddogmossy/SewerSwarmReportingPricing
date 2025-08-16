@@ -63,10 +63,10 @@ function classifyDefectByMSCC5Standards(observationText: string): { structural: 
     }
   }
   
-  // Deformation (D) - Grade 2-5 based on percentage  
-  // CRITICAL FIX: Include 'DEFORMITY' and 'DEFORMED' keywords for items 19, 20
+  // Deformity (DEF) - Grade 2-5 based on percentage - MSCC5 COMPLIANT
+  // CORRECTED: Use specific MSCC5 'DEF' code instead of generic 'D' pattern
   else if (upperText.includes('DEFORMATION') || upperText.includes('DEFORMITY') || 
-           upperText.includes('DEFORMED') || upperText.includes('D ')) {
+           upperText.includes('DEFORMED') || upperText.includes('DEF ')) {
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 8;
     

@@ -5006,9 +5006,9 @@ export default function Dashboard() {
       }
       
       
-      // ENHANCED: Check if section ALSO requires F615 structural patching
+      // MSCC5 COMPLIANT: Check if section requires F615 structural patching
       const hasStructuralDefects = section.defectType === 'structural' && 
-                                  (section.defects || '').match(/\b(D|DER|DES|DEL|DEG|DF|DJ|DH|DA|DAP|DM|DSS|DC|DPP|DG|DI|DD|DK|DL|DN|DP|DR|DT|DU|DV|DW|DX|DY|DZ)\b/i);
+                                  (section.defects || '').match(/\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b/i);
       
       if (hasStructuralDefects && section.itemNo === 19) {
         console.log('🔄 ITEM 19 COMBINED F619+F615 PROCESSING:', {

@@ -923,7 +923,8 @@ export class MSCC5Classifier {
    * Get defect type (structural/service) based on defect code
    */
   static getDefectType(defectCode: string): 'structural' | 'service' {
-    const structuralDefects = ['CR', 'FC', 'FL', 'DEF', 'JDL', 'JDM', 'OJM', 'OJL', 'CO', 'BF'];
+    // MSCC5 COMPLIANT: Authentic structural codes only - CO/BF removed pending WRc verification
+    const structuralDefects = ['CR', 'FC', 'FL', 'DEF', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'CN'];
     return structuralDefects.includes(defectCode) ? 'structural' : 'service';
   }
 
