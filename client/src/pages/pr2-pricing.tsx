@@ -1036,7 +1036,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "760"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A5"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1067,7 +1067,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "Config"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A8"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1098,7 +1098,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "619"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A10"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1129,7 +1129,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "620"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A11"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1160,7 +1160,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "F621"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A12"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1191,7 +1191,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "F622"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A13"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1222,7 +1222,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "F623"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A15"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1253,7 +1253,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "F624"} />
+                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A16"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
