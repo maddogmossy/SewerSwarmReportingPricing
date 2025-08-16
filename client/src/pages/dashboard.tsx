@@ -1195,10 +1195,17 @@ export default function Dashboard() {
                 extractedCodes.push(`${codeType} ${meterage}m`);
               }
               
-              // Extract joint defects
-              const jointMatch = text.match(/Joint.*?at (\d+\.?\d*)m/i);
-              if (jointMatch) {
-                const meterage = jointMatch[1];
+              // Extract cracks with meterage
+              const crackMatch = text.match(/(Crack|crack).*?at (\d+\.?\d*)m/i);
+              if (crackMatch) {
+                const meterage = crackMatch[2];
+                extractedCodes.push(`CR ${meterage}m`);
+              }
+              
+              // Extract joint displacement
+              const jointDisplacementMatch = text.match(/Joint displacement.*?at (\d+\.?\d*)m/i);
+              if (jointDisplacementMatch) {
+                const meterage = jointDisplacementMatch[1];
                 const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
                 extractedCodes.push(`${codeType} ${meterage}m`);
               }
@@ -1209,6 +1216,41 @@ export default function Dashboard() {
                 const meterage = openJointMatch[1];
                 const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
                 extractedCodes.push(`${codeType} ${meterage}m`);
+              }
+              
+              // Extract collapsed pipes
+              const collapsedMatch = text.match(/(Collapsed|collapsed).*?at (\d+\.?\d*)m/i);
+              if (collapsedMatch) {
+                const meterage = collapsedMatch[2];
+                extractedCodes.push(`COL ${meterage}m`);
+              }
+              
+              // Extract broken pipes
+              const brokenMatch = text.match(/(Broken|broken).*?at (\d+\.?\d*)m/i);
+              if (brokenMatch) {
+                const meterage = brokenMatch[2];
+                extractedCodes.push(`BRK ${meterage}m`);
+              }
+              
+              // Extract defective connections
+              const connectionMatch = text.match(/(Connection defective|defective connection).*?at (\d+\.?\d*)m/i);
+              if (connectionMatch) {
+                const meterage = connectionMatch[2];
+                extractedCodes.push(`CN ${meterage}m`);
+              }
+              
+              // Extract displaced joints
+              const displacedJointMatch = text.match(/Displaced joint.*?at (\d+\.?\d*)m/i);
+              if (displacedJointMatch) {
+                const meterage = displacedJointMatch[1];
+                extractedCodes.push(`DJ ${meterage}m`);
+              }
+              
+              // Extract defects
+              const defectMatch = text.match(/(Defect|defective).*?at (\d+\.?\d*)m/i);
+              if (defectMatch && !text.toLowerCase().includes('connection')) {
+                const meterage = defectMatch[2];
+                extractedCodes.push(`DEF ${meterage}m`);
               }
               
               // If we found structured codes, show them WITH the original observation
@@ -1274,10 +1316,17 @@ export default function Dashboard() {
               extractedCodes.push(`${codeType} ${meterage}m`);
             }
             
-            // Extract joint defects: "Joint displacement at 3.2m" → "JDL 3.2m" or "JDM 3.2m"
-            const jointMatch = text.match(/Joint.*?at (\d+\.?\d*)m/i);
-            if (jointMatch) {
-              const meterage = jointMatch[1];
+            // Extract cracks with meterage: "Crack at 2.5m" → "CR 2.5m"
+            const crackMatch = text.match(/(Crack|crack).*?at (\d+\.?\d*)m/i);
+            if (crackMatch) {
+              const meterage = crackMatch[2];
+              extractedCodes.push(`CR ${meterage}m`);
+            }
+            
+            // Extract joint displacement: "Joint displacement at 3.2m" → "JDL 3.2m" or "JDM 3.2m"
+            const jointDisplacementMatch = text.match(/Joint displacement.*?at (\d+\.?\d*)m/i);
+            if (jointDisplacementMatch) {
+              const meterage = jointDisplacementMatch[1];
               const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
               extractedCodes.push(`${codeType} ${meterage}m`);
             }
@@ -1288,6 +1337,41 @@ export default function Dashboard() {
               const meterage = openJointMatch[1];
               const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
               extractedCodes.push(`${codeType} ${meterage}m`);
+            }
+            
+            // Extract collapsed pipes: "Collapsed at 1.2m" → "COL 1.2m"
+            const collapsedMatch = text.match(/(Collapsed|collapsed).*?at (\d+\.?\d*)m/i);
+            if (collapsedMatch) {
+              const meterage = collapsedMatch[2];
+              extractedCodes.push(`COL ${meterage}m`);
+            }
+            
+            // Extract broken pipes: "Broken at 3.4m" → "BRK 3.4m"
+            const brokenMatch = text.match(/(Broken|broken).*?at (\d+\.?\d*)m/i);
+            if (brokenMatch) {
+              const meterage = brokenMatch[2];
+              extractedCodes.push(`BRK ${meterage}m`);
+            }
+            
+            // Extract defective connections: "Connection defective at 5.1m" → "CN 5.1m"
+            const connectionMatch = text.match(/(Connection defective|defective connection).*?at (\d+\.?\d*)m/i);
+            if (connectionMatch) {
+              const meterage = connectionMatch[2];
+              extractedCodes.push(`CN ${meterage}m`);
+            }
+            
+            // Extract displaced joints: "Displaced joint at 2.8m" → "DJ 2.8m"
+            const displacedJointMatch = text.match(/Displaced joint.*?at (\d+\.?\d*)m/i);
+            if (displacedJointMatch) {
+              const meterage = displacedJointMatch[1];
+              extractedCodes.push(`DJ ${meterage}m`);
+            }
+            
+            // Extract defects: "Defect at 4.5m" → "DEF 4.5m"
+            const defectMatch = text.match(/(Defect|defective).*?at (\d+\.?\d*)m/i);
+            if (defectMatch && !text.toLowerCase().includes('connection')) { // Avoid double-matching with connections
+              const meterage = defectMatch[2];
+              extractedCodes.push(`DEF ${meterage}m`);
             }
             
             // If we found structured codes, show them WITH the original observation
