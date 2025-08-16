@@ -106,12 +106,13 @@ const requiresStructuralRepair = (defects: string): boolean => {
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   
-  // MSCC5 COMPLIANT: Check for DEF (Deformity) structural defect only
-  // LEGACY REMOVED: Generic "D" pattern replaced with specific MSCC5 "DEF" code
-  const hasSignificantDeformation = defectsUpper.includes('DEF ') && (
+  // MSCC5 COMPLIANT: Check for deformity structural defects (both 'DEF' and 'D' patterns)
+  // FIXED: Include both 'DEF ' (full code) and 'D ' (shortened code) for complete coverage
+  const hasSignificantDeformation = (defectsUpper.includes('DEF ') || defectsUpper.includes('D ')) && (
     defectsUpper.includes('5%') || defectsUpper.includes('10%') || defectsUpper.includes('15%') || 
     defectsUpper.includes('20%') || defectsUpper.includes('25%') || defectsUpper.includes('30%') || 
-    defectsUpper.includes('MAJOR') || defectsUpper.includes('SEVERE')
+    defectsUpper.includes('MAJOR') || defectsUpper.includes('SEVERE') ||
+    defectsUpper.includes('DEFORMED') || defectsUpper.includes('DRAIN')
   );
   
   // AUTHENTIC MSCC5: If ANY structural defects exist, use TP2 regardless of service defects
@@ -1347,7 +1348,7 @@ export default function Dashboard() {
           if (isWrcRecommendation && !section.recommendations.includes('No action required')) {
             console.log('🔍 ✅ DISPLAYING WRC RECOMMENDATION - Item', section.itemNo);
             
-            // Check if section needs cleaning for F690 link
+            // Check if section needs cleaning for ID760 link
             const needsCleaning = section.defects && (
               section.defects.includes('blocked') || 
               section.defects.includes('debris') || 
@@ -1711,7 +1712,7 @@ export default function Dashboard() {
               costValue: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
               status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
               method: costCalculation && 'method' in costCalculation ? costCalculation.method : 'NO_METHOD',
-              isF690Result: costCalculation && 'method' in costCalculation && costCalculation.method?.includes('F690')
+              isID760Result: costCalculation && 'method' in costCalculation && costCalculation.method?.includes('A5')
             });
           } else {
             // Fallback to auto cost calculation
@@ -3198,7 +3199,7 @@ export default function Dashboard() {
     };
   };
 
-  // AUTO-POPULATE F690 MM4-150 PURPLE LENGTH FIELDS BASED ON DASHBOARD TOTAL LENGTHS
+  // AUTO-POPULATE ID760 MM4-150 PURPLE LENGTH FIELDS BASED ON DASHBOARD TOTAL LENGTHS
   const autoPopulatePurpleLengthFields = (cctvConfig: any, currentSection: any, allSections: any[]) => {
     if (!cctvConfig?.mmData?.mm4DataByPipeSize) {
       return;
@@ -3207,7 +3208,7 @@ export default function Dashboard() {
     const mmData = cctvConfig.mmData;
     const sectionPipeSize = currentSection.pipeSize?.replace('mm', '');
     
-    // Find matching 150mm pipe size configuration (F690 MM4-150 target)
+    // Find matching 150mm pipe size configuration (ID760 MM4-150 target)
     const targetPipeSizeKey = Object.keys(mmData.mm4DataByPipeSize).find(key => 
       key.split('-')[0] === '150'
     );
@@ -3240,7 +3241,7 @@ export default function Dashboard() {
     // Get MM4 data rows first
     const mm4Rows = mmData.mm4DataByPipeSize[targetPipeSizeKey] || [];
     
-    console.log('🔧 Auto-populating F690 MM4-150 purple length fields:', {
+    console.log('🔧 Auto-populating ID760 MM4-150 purple length fields:', {
       currentSection: currentSection.itemNo,
       targetPipeSize: '150mm',
       maxTotalLengthDetected: maxTotalLength,
@@ -3287,7 +3288,7 @@ export default function Dashboard() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      console.log('✅ Successfully auto-populated F690 MM4-150 purple length fields:', {
+      console.log('✅ Successfully auto-populated ID760 MM4-150 purple length fields:', {
         configurationId: cctvConfig.id,
         updatedRows: updatedMM4Rows.length,
         newPurpleLength: bufferedMaxLength,
@@ -3892,8 +3893,8 @@ export default function Dashboard() {
           defects: section.defects,
           isExpectedStructural: section.defectType === 'structural',
           hasStructuralCodes: ['FC', 'FL', 'CR', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF'].some(code => section.defects?.includes(code)),
-          shouldRouteToF615: section.defectType === 'structural',
-          willReachF615Path: section.defectType === 'structural' && [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo)
+          shouldRouteToID763: section.defectType === 'structural',
+          willReachID763Path: section.defectType === 'structural' && [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo)
         });
       } else if (!section.letterSuffix) {
         console.log('🎯 ITEM 13 SERVICE DEBUG:', {
@@ -3904,7 +3905,7 @@ export default function Dashboard() {
           defects: section.defects,
           isExpectedService: section.defectType === 'service',
           hasServiceCodes: ['DER', 'DES', 'WL', 'RI', 'OB', 'SA'].some(code => section.defects?.includes(code)),
-          shouldRouteToF690: section.defectType === 'service'
+          shouldRouteToID760: section.defectType === 'service'
         });
       }
     }
@@ -3970,8 +3971,8 @@ export default function Dashboard() {
       return uniqueMeterages;
     };
 
-    // Helper function to calculate F615 structural patching
-    const calculateF615StructuralPatching = (section: any, patchingConfig: any) => {
+    // Helper function to calculate ID763 structural patching (A8-Utilities Patching)
+    const calculateID763StructuralPatching = (section: any, patchingConfig: any) => {
       const sectionPipeSize = section.pipeSize || '150';
       const mmData = patchingConfig.mmData;
       const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
@@ -4492,7 +4493,7 @@ export default function Dashboard() {
 
             if (hasValidRate) {
               // Section matches MM4 criteria - calculate cost
-              // F690/F608 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
+              // ID760/A5 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
               // Blue value = day rate (e.g., £1850 per day) - can be inherited from Row 1
               // Green value = runs per shift (e.g., 22 runs) - Row 2 specific
               
@@ -4615,11 +4616,11 @@ export default function Dashboard() {
       }
     }
     
-    // STRUCTURAL DEFECT ROUTING: Check for F615 patching configuration for structural defects
+    // STRUCTURAL DEFECT ROUTING: Check for ID763 patching configuration for structural defects
     if (section.defectType === 'structural' && repairPricingData && isRestrictedSection) {
       // DEBUG: Log Item 13a, Item 19, and Item 20 specifically
       if (section.itemNo === 13 || section.itemNo === 19 || section.itemNo === 20) {
-        console.log(`🎯 ITEM ${section.itemNo} F615 ROUTING DEBUG:`, {
+        console.log(`🎯 ITEM ${section.itemNo} ID763 ROUTING DEBUG:`, {
           itemNo: section.itemNo,
           letterSuffix: section.letterSuffix,
           defectType: section.defectType,
@@ -4636,7 +4637,7 @@ export default function Dashboard() {
         config.categoryId === 'patching' && config.sector === currentSector.id
       );
       
-      console.log('🔍 F615 Structural Defect Debug:', {
+      console.log('🔍 ID763 Structural Defect Debug:', {
         sectionId: section.itemNo,
         defectType: section.defectType,
         configFound: !!patchingConfig,
@@ -4670,7 +4671,7 @@ export default function Dashboard() {
         }
         
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
-          // F615 STRUCTURAL PATCHING: No purple window range restrictions
+          // ID763 STRUCTURAL PATCHING: No purple window range restrictions
           for (const mm4Row of matchingMM4Data) {
             const blueValue = parseFloat(mm4Row.blueValue || '0');
             const greenValue = parseFloat(mm4Row.greenValue || '0');
@@ -4679,14 +4680,14 @@ export default function Dashboard() {
             const hasValidRate = blueValue > 0 && greenValue > 0;
             
             if (hasValidRate) {
-              // F615 PATCHING LOGIC: Green window contains patch pricing, blue is day rate, purple is minimum quantities
+              // ID763 PATCHING LOGIC: Green window contains patch pricing, blue is day rate, purple is minimum quantities
               // Blue value = day rate (e.g., £1650 per day)
               // Green value = patch cost (e.g., £450 per patch) - DEFAULT ROW 2 DOUBLE LAYER
               const dayRate = blueValue; // Blue window is day rate
               const costPerPatch = greenValue; // Green window is cost per patch (Row 2 default)
               
               // Count structural defects that need patches (using Row 2 - Double Layer default)
-              // For F615 structural patching, count actual structural defect instances
+              // For ID763 structural patching, count actual structural defect instances
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
               
@@ -4705,7 +4706,7 @@ export default function Dashboard() {
                 const meteragesForThisDefect = meterageText.split(/\s*,\s*/).filter(m => m.trim().length > 0);
                 totalStructuralPatches += meteragesForThisDefect.length;
                 
-                console.log(`🎯 F615 Structural Defect Found:`, {
+                console.log(`🎯 ID763 Structural Defect Found:`, {
                   defectCode,
                   meterageText,
                   meteragesForThisDefect,
@@ -4723,7 +4724,7 @@ export default function Dashboard() {
               
               const totalPatchCost = costPerPatch * patchCount;
               
-              console.log('✅ F615 Structural Patching Cost Calculation:', {
+              console.log('✅ ID763 Structural Patching Cost Calculation:', {
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
@@ -4734,7 +4735,7 @@ export default function Dashboard() {
                 patchCount: patchCount, // Number of patches needed based on defect instances with meterages
                 totalPatchCost: totalPatchCost, // Total cost for all patches
                 defectsText: defectsText,
-                note: 'F615 structural patching - enhanced counting: structural defects with meterage locations'
+                note: 'ID763 structural patching - enhanced counting: structural defects with meterage locations'
               });
               
               // For minimum quantity check, we need to access purple window data (patchingGreenData)
@@ -4754,8 +4755,8 @@ export default function Dashboard() {
               return {
                 cost: totalPatchCost, // Display total patch cost
                 currency: '£',
-                method: 'F615 Structural Patching',
-                status: meetsMinimumRuns ? 'f615_calculated' : 'f615_insufficient_items',
+                method: 'ID763 Structural Patching',
+                status: meetsMinimumRuns ? 'id763_calculated' : 'id763_insufficient_items',
                 dayRate: dayRate,
                 costPerPatch: costPerPatch,
                 patchCount: patchCount,
@@ -4763,13 +4764,13 @@ export default function Dashboard() {
                 minimumQuantity: minimumQuantity,
                 totalStructuralItems: totalStructuralItems,
                 meetsMinimumRuns: meetsMinimumRuns,
-                recommendation: `F615 structural patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost} (min: ${minimumQuantity})`
+                recommendation: `ID763 structural patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost} (min: ${minimumQuantity})`
               };
             }
           }
           
-          // No valid F615 MM4 data available
-          console.log('⚠️ F615 No Valid Pricing Data:', {
+          // No valid ID763 MM4 data available
+          console.log('⚠️ ID763 No Valid Pricing Data:', {
             sectionId: section.itemNo,
             mm4Configurations: matchingMM4Data.length,
             availableRows: matchingMM4Data.map(row => ({
@@ -4782,9 +4783,9 @@ export default function Dashboard() {
           return {
             cost: 0,
             currency: '£',
-            method: 'F615 No Pricing Data',
-            status: 'f615_no_pricing_data',
-            recommendation: 'F615 configuration missing valid blue/green pricing data'
+            method: 'ID763 No Pricing Data',
+            status: 'id763_no_pricing_data',
+            recommendation: 'ID763 configuration missing valid blue/green pricing data'
           };
         }
       }
@@ -4795,7 +4796,7 @@ export default function Dashboard() {
     
     // DEBUG: Check Item 19 for robotic cutting requirements
     if (section.itemNo === 19) {
-      console.log(`🤖 ITEM 19 F619 ROBOTIC CUTTING CHECK:`, {
+      console.log(`🤖 ITEM 19 ID4 ROBOTIC CUTTING CHECK:`, {
         itemNo: section.itemNo,
         defects: section.defects,
         recommendations: recommendations,
@@ -4803,7 +4804,7 @@ export default function Dashboard() {
         hasID4InRecommendations: recommendations.toLowerCase().includes('id4'),
         hasP4InRecommendations: recommendations.toLowerCase().includes('p4'),
         hasJunctionInDefects: (section.defects || '').toLowerCase().includes('jn') || (section.defects || '').toLowerCase().includes('junction'),
-        willTriggerF619: recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4') || recommendations.toLowerCase().includes('p4')
+        willTriggerID4: recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4') || recommendations.toLowerCase().includes('p4')
       });
     }
     
@@ -4843,9 +4844,9 @@ export default function Dashboard() {
         };
       }
       
-      // DEBUG: F619 config analysis for item 19
+      // DEBUG: ID4 config analysis for item 19
       if (section.itemNo === 19) {
-        console.log('🔍 F619 CONFIG ANALYSIS:', {
+        console.log('🔍 ID4 CONFIG ANALYSIS:', {
           itemNo: section.itemNo,
           id4ConfigFound: !!id4Config,
           configDetails: id4Config ? {
@@ -4877,7 +4878,7 @@ export default function Dashboard() {
         const mm4DataByPipeSize = id4Config.mmData.mm4DataByPipeSize;
         
         if (section.itemNo === 19) {
-          console.log('🔍 F619 MM4 DATA SEARCH:', {
+          console.log('🔍 ID4 MM4 DATA SEARCH:', {
             itemNo: section.itemNo,
             sectionPipeSize: sectionPipeSize,
             availablePipeSizes: Object.keys(mm4DataByPipeSize),
@@ -4890,7 +4891,7 @@ export default function Dashboard() {
           const [keyPipeSize] = pipeSizeKey.split('-');
           
           if (section.itemNo === 19) {
-            console.log(`🔍 F619 CHECKING PIPE SIZE: ${pipeSizeKey}`, {
+            console.log(`🔍 ID4 CHECKING PIPE SIZE: ${pipeSizeKey}`, {
               keyPipeSize: keyPipeSize,
               sectionPipeSize: sectionPipeSize,
               isMatch: keyPipeSize === sectionPipeSize,
@@ -4904,7 +4905,7 @@ export default function Dashboard() {
             const purpleLengthValue = parseFloat(mm4Row.purpleLength || '0');
             
             if (section.itemNo === 19) {
-              console.log('🔍 F619 MM4 VALUES CHECK:', {
+              console.log('🔍 ID4 MM4 VALUES CHECK:', {
                 itemNo: section.itemNo,
                 pipeSizeKey: pipeSizeKey,
                 purpleDebris: mm4Row.purpleDebris,
@@ -4921,7 +4922,7 @@ export default function Dashboard() {
               pricingSource = 'mm4';
               
               if (section.itemNo === 19) {
-                console.log('✅ F619 MM4 PRICING FOUND:', {
+                console.log('✅ ID4 MM4 PRICING FOUND:', {
                   itemNo: section.itemNo,
                   pipeSizeKey: pipeSizeKey,
                   firstCutCost: firstCutCost,
@@ -4951,7 +4952,7 @@ export default function Dashboard() {
           pricingSource = 'pricingOptions';
           
           if (section.itemNo === 19) {
-            console.log('⚠️ F619 FALLBACK TO OLD PRICING:', {
+            console.log('⚠️ ID4 FALLBACK TO OLD PRICING:', {
               itemNo: section.itemNo,
               firstCutCost: firstCutCost,
               perCutCost: perCutCost,
@@ -5006,31 +5007,31 @@ export default function Dashboard() {
       }
       
       
-      // MSCC5 COMPLIANT: Check if section requires F615 structural patching
+      // MSCC5 COMPLIANT: Check if section requires ID763 structural patching
       const hasStructuralDefects = section.defectType === 'structural' && 
                                   (section.defects || '').match(/\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b/i);
       
       if (hasStructuralDefects && section.itemNo === 19) {
-        console.log('🔄 ITEM 19 COMBINED F619+F615 PROCESSING:', {
+        console.log('🔄 ITEM 19 COMBINED ID4+ID763 PROCESSING:', {
           itemNo: section.itemNo,
           f619Cost: totalCost,
           hasStructuralDefects: hasStructuralDefects,
           defectType: section.defectType,
           defects: section.defects,
-          willContinueToF615: true
+          willContinueToID763: true
         });
         
-        // Continue to F615 processing while storing F619 cost
+        // Continue to ID763 processing while storing ID4 cost
         const f619Cost = totalCost;
         const f619Details = cutDetails.join(' + ');
         
-        // Process MM4-based structural patching (replacing legacy F615)
+        // Process MM4-based structural patching (ID763 A8-Utilities)
         const patchingConfig = repairPricingData.find((config: any) => 
           config.categoryId === 'patching' && config.sector === currentSector.id
         );
         
         if (patchingConfig && patchingConfig.mmData) {
-          const mm4Result = calculateF615StructuralPatching(section, patchingConfig);
+          const mm4Result = calculateID763StructuralPatching(section, patchingConfig);
           if (mm4Result && mm4Result.cost > 0) {
             const combinedCost = f619Cost + mm4Result.cost;
             
@@ -5046,7 +5047,7 @@ export default function Dashboard() {
             return {
               cost: combinedCost,
               currency: '£',
-              method: 'Combined F619+MM4',
+              method: 'Combined ID4+ID763',
               status: 'combined_calculated',
               patchingType: 'Robotic Cutting + Structural Patching',
               defectCount: mm4Result.defectCount + 1,
@@ -5806,7 +5807,7 @@ export default function Dashboard() {
     return meterageA - meterageB;
   });
 
-  // AUTO-POPULATE F690 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
+  // AUTO-POPULATE ID760 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
   useEffect(() => {
     if (sectionData?.length > 0 && repairPricingData?.length > 0) {
       // Trigger auto-population for A5 configurations (cctv-jet-vac)
