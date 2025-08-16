@@ -4646,6 +4646,26 @@ export default function Dashboard() {
           availableConfigs: repairPricingData?.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })) || []
         });
       }
+    }
+    
+    // ITEM 13A CRITICAL DEBUG: Check if Item 13a even reaches this function
+    if (section.itemNo === 13) {
+      console.log('🚨 ITEM 13A EARLY DEBUG - FUNCTION ENTRY:', {
+        itemNo: section.itemNo,
+        defectType: section.defectType,
+        isStructural: section.defectType === 'structural',
+        hasRepairPricingData: !!repairPricingData,
+        isRestrictedSection: isRestrictedSection,
+        restrictedCleaningSections: restrictedCleaningSections,
+        willEnterStructuralBlock: section.defectType === 'structural' && repairPricingData && isRestrictedSection,
+        earlyExitReason: section.defectType !== 'structural' ? 'NOT_STRUCTURAL' : 
+                        !repairPricingData ? 'NO_REPAIR_DATA' : 
+                        !isRestrictedSection ? 'NOT_RESTRICTED' : 'SHOULD_CONTINUE'
+      });
+    }
+    
+    // Continue with structural routing
+    if (section.defectType === 'structural' && repairPricingData && isRestrictedSection) {
       
       // Find patching configuration for current sector
       const patchingConfig = repairPricingData.find((config: any) => 
