@@ -704,26 +704,27 @@ export default function PR2ConfigClean() {
     if (!isEditing && !editId && categoryId && sector && allCategoryConfigs) {
       console.log('🔍 ROUTING DEBUG - Auto-creation disabled, only finding existing configs');
       
-      // For patching category, ALWAYS route to F615 (id=615) - PRESERVE autoSelectUtilities parameter
+      // For patching category, route to sector-specific configuration - PRESERVE autoSelectUtilities parameter
       if (categoryId === 'patching' && !editId) {
-        console.log('🎯 PATCHING CATEGORY - Checking if we need to redirect to F615');
+        console.log('🎯 PATCHING CATEGORY - Finding sector-specific configuration');
         const currentParams = new URLSearchParams(window.location.search);
-        const hasId = currentParams.get('id') === '615';
         
-        if (!hasId) {
-          console.log('🔄 PATCHING REDIRECT - No ID parameter, redirecting to ID615');
-          const patchingConfig = allCategoryConfigs.find(config => config.id === 615);
-          if (patchingConfig) {
-            const hasAutoSelect = currentParams.get('autoSelectUtilities') === 'true' || autoSelectUtilities;
-            const autoSelectParam = hasAutoSelect ? '&autoSelectUtilities=true' : '';
-            const pipeSizeParam = pipeSize ? `&pipeSize=${pipeSize}` : '';
-            const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=615${autoSelectParam}${pipeSizeParam}`;
-            console.log('🔄 ID615 REDIRECT - New URL:', newUrl);
-            setLocation(newUrl);
-            return;
-          }
+        // Find sector-specific patching configuration instead of hardcoded ID
+        const patchingConfig = allCategoryConfigs.find(config => 
+          config.categoryId === 'patching' && 
+          (config.sector === sector || config.sector === `id${getSectorId(sector)}`)
+        );
+        
+        if (patchingConfig) {
+          const hasAutoSelect = currentParams.get('autoSelectUtilities') === 'true' || autoSelectUtilities;
+          const autoSelectParam = hasAutoSelect ? '&autoSelectUtilities=true' : '';
+          const pipeSizeParam = pipeSize ? `&pipeSize=${pipeSize}` : '';
+          const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${patchingConfig.id}${autoSelectParam}${pipeSizeParam}`;
+          console.log('🔄 SECTOR PATCHING REDIRECT - New URL:', newUrl);
+          setLocation(newUrl);
+          return;
         } else {
-          console.log('✅ PATCHING - Already has ID=615, no redirect needed');
+          console.log('⚠️ NO PATCHING CONFIG FOUND - Creating mode');
         }
       }
       
@@ -3194,6 +3195,19 @@ export default function PR2ConfigClean() {
   };
 
   // Get all pipe size configurations for this category, sorted by pipe size
+  // Helper function to get sector ID for database lookup based on authentic database structure
+  const getSectorId = (sectorName: string): string => {
+    const sectorMap: Record<string, string> = {
+      'utilities': '1',  // Database shows id1 for utilities
+      'adoption': '2',   // Database shows id2 for adoption
+      'highways': '3',   // Database shows id3 for highways
+      'insurance': '4',  // Database shows id4 for insurance
+      'construction': '5', // Database shows id5 for construction
+      'domestic': '6'    // Database shows id6 for domestic
+    };
+    return sectorMap[sectorName] || '1';
+  };
+
   const getPipeSizeConfigurations = () => {
     if (!allCategoryConfigs) return [];
     
@@ -3204,26 +3218,47 @@ export default function PR2ConfigClean() {
       pipeSizeNum: number;
     }> = [];
     
-    // FIXED: For patching, we have specific IDs that are pipe-size-specific
+    // AUTHENTIC DATABASE LOOKUP: Find patching configurations by sector instead of hardcoded IDs
     if (categoryId === 'patching') {
-      // Add all three patching configurations directly
-      const patchingConfigs = [
-        { id: 153, pipeSize: '150mm', pipeSizeNum: 150 },
-        { id: 156, pipeSize: '225mm', pipeSizeNum: 225 },
-        { id: 157, pipeSize: '300mm', pipeSizeNum: 300 }
+      // Find all patching configurations for current sector dynamically
+      const sectorPatchingConfigs = allCategoryConfigs.filter(config => 
+        config.categoryId === 'patching' && 
+        (config.sector === sector || config.sector === `id${getSectorId(sector)}`)
+      );
+      
+      // Extract pipe sizes from category names or use default sizes
+      const defaultPipeSizes = [
+        { pipeSize: '150mm', pipeSizeNum: 150 },
+        { pipeSize: '225mm', pipeSizeNum: 225 },
+        { pipeSize: '300mm', pipeSizeNum: 300 }
       ];
       
-      patchingConfigs.forEach(({ id, pipeSize, pipeSizeNum }) => {
-        const config = allCategoryConfigs.find(c => c.id === id);
-        if (config) {
+      if (sectorPatchingConfigs.length > 0) {
+        // Use found configurations
+        sectorPatchingConfigs.forEach((config) => {
+          // Try to extract pipe size from category name, fallback to 150mm
+          const pipeMatch = config.categoryName?.match(/(\d+)mm/);
+          const pipeSizeNum = pipeMatch ? parseInt(pipeMatch[1]) : 150;
+          const pipeSize = `${pipeSizeNum}mm`;
+          
           pipeSizeConfigs.push({
             pipeSize,
             config,
-            id,
+            id: config.id,
             pipeSizeNum
           });
-        }
-      });
+        });
+      } else {
+        // No configurations found, use empty structure for each default pipe size
+        defaultPipeSizes.forEach(({ pipeSize, pipeSizeNum }) => {
+          pipeSizeConfigs.push({
+            pipeSize,
+            config: null, // Will trigger creation when needed
+            id: 0, // Placeholder
+            pipeSizeNum
+          });
+        });
+      }
     } else if (categoryId === 'cctv-jet-vac') {
       // CCTV Jet Vac - exclude from pipe size configurations dropdown
       // ID 161 should not appear in any dropdown interface

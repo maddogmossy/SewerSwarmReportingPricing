@@ -192,13 +192,13 @@ export const FALLBACK_CONFIGURATIONS = [
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  // ID615 Patching
+  // Utilities Patching Configuration (A8)
   {
-    id: 615,
+    id: 763,
     userId: 'test-user', 
     sector: 'utilities',
     categoryId: 'patching',
-    categoryName: 'ID615 Patching',
+    categoryName: 'A8 - Patching',
     pipeSize: '150',
     pipeSizeId: 1501,
     templateType: 'TP2',

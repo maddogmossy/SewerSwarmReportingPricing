@@ -2580,14 +2580,14 @@ export default function Dashboard() {
         const finalPipeSize = (pipeSize === '100' || !pipeSize) ? '150' : pipeSize;
         window.location.href = `/pr2-config-clean?categoryId=cctv&sector=${currentSector.id}&pipeSize=${finalPipeSize}`;
       } else if (needsStructural) {
-        // Navigate to F615 patching configuration with auto-select utilities
+        // Navigate to sector-specific patching configuration with auto-select utilities
         const pipeSize = firstSection.pipeSize?.match(/\d+/)?.[0] || '150';
-        console.log('🚀 DASHBOARD NAVIGATION - Redirecting to F615 with autoSelectUtilities=true');
+        console.log('🚀 DASHBOARD NAVIGATION - Redirecting to sector patching with autoSelectUtilities=true');
         console.log('🚀 DASHBOARD NAVIGATION - pipeSize extracted:', pipeSize);
         console.log('🚀 DASHBOARD NAVIGATION - currentSector:', currentSector.id);
         // Apply 150mm priority for patching configurations when coming from CCTV data
         const finalPipeSize = (pipeSize === '100' || !pipeSize) ? '150' : pipeSize;
-        const finalUrl = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&pipeSize=${finalPipeSize}&autoSelectUtilities=true`;
+        const finalUrl = `/pr2-config-clean?categoryId=patching&sector=${currentSector.id}&pipeSize=${finalPipeSize}&autoSelectUtilities=true`;
         console.log('🚀 DASHBOARD NAVIGATION - Final URL:', finalUrl);
         window.location.href = finalUrl;
       }
@@ -7239,10 +7239,10 @@ export default function Dashboard() {
             </Button>
             <Button
               onClick={() => {
-                // Navigate to F615 TP2 configuration page with auto-select utilities
-                console.log('🚀 DASHBOARD TP2 DIALOG - Navigating to F615 with autoSelectUtilities=true');
+                // Navigate to sector-specific TP2 configuration page with auto-select utilities
+                console.log('🚀 DASHBOARD TP2 DIALOG - Navigating to sector patching with autoSelectUtilities=true');
                 console.log('🚀 DASHBOARD TP2 DIALOG - currentSector:', currentSector.id);
-                const finalUrl = `/pr2-config-clean?id=615&categoryId=patching&sector=${currentSector.id}&pipeSize=150&autoSelectUtilities=true`;
+                const finalUrl = `/pr2-config-clean?categoryId=patching&sector=${currentSector.id}&pipeSize=150&autoSelectUtilities=true`;
                 console.log('🚀 DASHBOARD TP2 DIALOG - Final URL:', finalUrl);
                 window.location.href = finalUrl;
               }}
@@ -7302,7 +7302,7 @@ export default function Dashboard() {
                 // Navigate to configuration page based on type
                 const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv-jet-vac' : 'patching';
                 const routeUrl = categoryId === 'patching' 
-                  ? `/pr2-config-clean?id=615&categoryId=${categoryId}&sector=${currentSector.id}&pipeSize=150&autoSelectUtilities=true`
+                  ? `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&pipeSize=150&autoSelectUtilities=true`
                   : `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}&autoSelectUtilities=true`;
                 window.location.href = routeUrl;
               }}

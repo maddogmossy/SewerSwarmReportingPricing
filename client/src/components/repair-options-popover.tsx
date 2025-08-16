@@ -16,15 +16,16 @@ interface RepairOptionsPopoverProps {
 }
 
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded, reportId }: RepairOptionsPopoverProps) {
-  // DIRECT ROUTING TO PATCHING: Route directly to patching configuration with authentic database ID
+  // AUTHENTIC DATABASE ROUTING: Use proper A1-F16 database ID system instead of legacy hardcoded IDs
   const handleDirectClick = async () => {
     // Extract pipe size from section data
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    // Route directly to patching configuration with auto-select utilities and preserve reportId
+    // CRITICAL FIX: Route to patching configuration using categoryId=patching instead of hardcoded legacy ID
+    // This allows the system to find the correct A8-F8 database configuration automatically
     const reportParam = reportId ? `&reportId=${reportId}` : '';
-    window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+    window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
   };
 
   // Return simple clickable element that triggers auto-detection

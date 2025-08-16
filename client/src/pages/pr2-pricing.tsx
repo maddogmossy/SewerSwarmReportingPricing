@@ -323,12 +323,12 @@ export default function PR2Pricing() {
     // If no MM4-150 template found, check for MM4-225 templates (SECOND PRIORITY) 
     if (!existingConfig) {
       existingConfig = pr2Configurations.find(config => {
-        if (categoryId === 'cctv' && config.categoryId === 'cctv-mm4-225') return true;
-        if (categoryId === 'van-pack' && config.categoryId === 'van-pack-mm4-225') return true;
-        if (categoryId === 'jet-vac' && config.categoryId === 'jet-vac-mm4-225') return true;
-        if (categoryId === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-mm4-225') return true;
-        if (categoryId === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-mm4-225') return true;
-        if (categoryId === 'patching-mm4-225' && config.categoryId === 'patching-mm4-225') return true;
+        if (categoryId === 'cctv' && config.categoryId === 'cctv') return true;
+        if (categoryId === 'van-pack' && config.categoryId === 'van-pack') return true;
+        if (categoryId === 'jet-vac' && config.categoryId === 'jet-vac') return true;
+        if (categoryId === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack') return true;
+        if (categoryId === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-cleansing-root-cutting') return true;
+        if (categoryId === 'patching' && config.categoryId === 'patching') return true;
         return false;
       });
     }
@@ -1067,7 +1067,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.id?.toString() || "615"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "Config"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">

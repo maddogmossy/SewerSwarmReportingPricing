@@ -491,11 +491,11 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
     '1050', '1200', '1500'
   ];
 
-  // DISABLED: Auto-generation removed - use database ID 615 for all patching
+  // DISABLED: Auto-generation removed - use sector-specific database IDs for patching
   app.post('/api/pr2-clean/auto-detect-pipe-size', async (req, res) => {
     try {
-      // Return ID615 for all patching requests - no auto-generation
-      res.json({ id: 615, message: 'Using ID615 for all patching configurations' });
+      // Auto-generation disabled - configurations should be found via categoryId lookup
+      res.json({ message: 'Auto-generation disabled - use categoryId lookup for configurations' });
       return;
       
 
