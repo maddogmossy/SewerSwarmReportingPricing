@@ -710,9 +710,10 @@ export default function PR2ConfigClean() {
         const currentParams = new URLSearchParams(window.location.search);
         
         // Find sector-specific patching configuration instead of hardcoded ID
+        // CRITICAL FIX: Database uses id1, id2, id3 format for sectors
         const patchingConfig = allCategoryConfigs.find(config => 
           config.categoryId === 'patching' && 
-          (config.sector === sector || config.sector === `id${getSectorId(sector)}`)
+          config.sector === `id${getSectorId(sector)}`
         );
         
         if (patchingConfig) {
