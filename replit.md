@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application offers a robust platform for efficient and compliant document analysis in highly regulated sectors (Utilities, Adoption, Highways). It processes various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, integrates payments, and ensures compliance. A key feature is an intelligent cost decision persistence system, aiming to enhance operational efficiency and regulatory adherence.
+This full-stack TypeScript application provides a robust platform for compliant document analysis in highly regulated sectors (Utilities, Adoption, Highways). It processes various report formats (GR7188, GR7188a, GR7216) based on WRc MSCC5 + OS20X standards, integrates payments, and ensures compliance. A key feature is an intelligent cost decision persistence system, designed to enhance operational efficiency and regulatory adherence.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
