@@ -63,8 +63,10 @@ function classifyDefectByMSCC5Standards(observationText: string): { structural: 
     }
   }
   
-  // Deformation (D) - Grade 2-5 based on percentage
-  else if (upperText.includes('DEFORMATION') || upperText.includes('D ')) {
+  // Deformation (D) - Grade 2-5 based on percentage  
+  // CRITICAL FIX: Include 'DEFORMITY' and 'DEFORMED' keywords for items 19, 20
+  else if (upperText.includes('DEFORMATION') || upperText.includes('DEFORMITY') || 
+           upperText.includes('DEFORMED') || upperText.includes('D ')) {
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 8;
     
@@ -77,6 +79,8 @@ function classifyDefectByMSCC5Standards(observationText: string): { structural: 
     } else {
       structuralGrade = 2; // Minor deformation
     }
+    
+    console.log(`🔧 DEFORMITY GRADE FIX: Detected "${upperText.includes('DEFORMITY') ? 'DEFORMITY' : upperText.includes('DEFORMED') ? 'DEFORMED' : 'DEFORMATION'}" with ${percentage}% → structural grade ${structuralGrade}`);
   }
   
   // Joint Defects (JDL, JDM) - Grade 2-4

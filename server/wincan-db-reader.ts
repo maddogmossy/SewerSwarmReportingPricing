@@ -1214,10 +1214,11 @@ async function processSectionTable(
         console.log(`🔧 DEFAULT SERVICE: Item ${authenticItemNo} defaulted to service (Grade ${severityGrade})`);
       }
       
-      // ENHANCED FIX: Force structural classification for deformity defects (Item 19 fix)
+      // ENHANCED FIX: Force structural classification for deformity defects (Items 19, 20 fix)
       if (defectText.toLowerCase().includes('deformity') || defectText.toLowerCase().includes('deformed')) {
         defectType = 'structural';
         console.log(`🚨 DEFORMITY DETECTED: Item ${authenticItemNo} FORCED to structural due to deformity defects`);
+        console.log(`✅ DEFORMITY PROTECTION: Item ${authenticItemNo} locked as structural, preventing service override`);
       }
     }
     

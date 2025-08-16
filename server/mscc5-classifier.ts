@@ -983,6 +983,7 @@ export class MSCC5Classifier {
   static parseAllDefectsFromText(defectText: string): Array<{code: string, description: string, meterage?: string}> {
     const defects = [];
     const upperText = defectText.toUpperCase();
+    const lowerText = defectText.toLowerCase();
     
     // Common defect codes to search for
     const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL'];
@@ -1000,6 +1001,28 @@ export class MSCC5Classifier {
           description,
           meterage: meterageMatch ? meterageMatch[1] : undefined
         });
+      }
+    }
+    
+    // CRITICAL FIX: Detect deformity defects even without explicit DEF codes
+    // This fixes items 19, 20 that contain "Deformity" text but no "DEF" code
+    if ((lowerText.includes('deformity') || lowerText.includes('deformed')) && 
+        !defects.some(d => d.code === 'DEF')) {
+      console.log(`🔧 DEFORMITY DETECTION FIX: Found descriptive deformity without DEF code in: "${defectText}"`);
+      
+      // Extract deformity-specific text with meterage
+      const deformityMatch = defectText.match(/Deformity[^.]*?(?:\.|$)/i);
+      if (deformityMatch) {
+        const deformityDescription = deformityMatch[0].trim();
+        const meterageMatch = deformityDescription.match(/(\d+\.?\d*m)/);
+        
+        defects.push({
+          code: 'DEF',
+          description: deformityDescription,
+          meterage: meterageMatch ? meterageMatch[1] : undefined
+        });
+        
+        console.log(`✅ DEFORMITY FIX: Added synthetic DEF code for: "${deformityDescription}"`);
       }
     }
     
