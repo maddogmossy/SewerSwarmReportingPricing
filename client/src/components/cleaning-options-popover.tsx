@@ -165,6 +165,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       detail: { newPriority: 'id760', requiresConfigReload: true } 
                     });
                     window.dispatchEvent(event);
+                    
+                    // FIXED: Close dialog to return to dashboard
+                    setIsOpen(false);
                   }}
                 >
                   A5 - CCTV/Jet Vac
@@ -190,6 +193,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       detail: { newPriority: 'id759', requiresConfigReload: true } 
                     });
                     window.dispatchEvent(event);
+                    
+                    // FIXED: Close dialog to return to dashboard
+                    setIsOpen(false);
                   }}
                 >
                   A4 - CCTV/Van Pack
