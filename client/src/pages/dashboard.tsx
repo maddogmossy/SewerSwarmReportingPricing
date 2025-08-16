@@ -1206,6 +1206,20 @@ export default function Dashboard() {
               const description = junctionMatch[1];
               return `<b>"JN"</b> - Junction ${description}`;
             }
+            
+            // Extract size changes (SC)
+            const scMatch = text.match(/SC (.+)/i);
+            if (scMatch) {
+              const description = scMatch[1];
+              return `<b>"SC"</b> - ${description}`;
+            }
+            
+            // Extract pipe size changes
+            const pipeSizeMatch = text.match(/Pipe size changes (.+)/i);
+            if (pipeSizeMatch) {
+              const description = pipeSizeMatch[1];
+              return `<b>"SC"</b> - Pipe size changes ${description}`;
+            }
           }
           
           // Return original text if no patterns match
