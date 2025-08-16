@@ -31,6 +31,7 @@ This full-stack TypeScript application provides a compliant document analysis pl
 - Unified Database ID System: DevLabels display actual database IDs (756, 757, 790, etc.) instead of hardcoded F-numbers. All 96 category cards (6 sectors × 16 categories) have complete database records with proper A1-F16 naming and unified ID display.
 - Multi-Sector Configuration Copying: Implemented MMP1 ID7-12 sector copying system. Users configure rates in one sector (e.g., id7/Utilities), then select additional sector IDs (id8-12) to automatically copy pricing and calculations.
 - MM4 Recommendation Linking Fix: Eliminated all hardcoded legacy routing (id=615) from MM4 structural recommendations. System now uses authentic A1-F16 database ID routing (763=A8-Utilities, 772=B8-Adoption, 806=C8-Highways, etc.) for proper sector-specific patching configuration linking. Removed all legacy patching-mm4-225 patterns and replaced with dynamic categoryId=patching routing for complete database-first consistency.
+- DevLabel Database-First Restoration: Fixed critical DevLabel display system to show authentic database IDs (759, 760, 763, etc.) instead of category names or A-series labels. Restored database-first architecture where A1-F16 system applies to sectors only, while category cards maintain authentic database ID references essential for existing code dependencies. Updated ID 760 category_name from "CCTV/Jet Vac" to "A5 - CCTV/Jet Vac" for naming consistency.
 
 ## System Architecture
 

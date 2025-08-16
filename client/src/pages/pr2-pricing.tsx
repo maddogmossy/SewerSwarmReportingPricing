@@ -65,7 +65,7 @@ const STANDARD_CATEGORIES = [
   { id: 'tankering', name: 'Tankering', cardNum: 14, description: 'Vacuum tanker operations and waste removal', icon: Truck }
 ];
 
-// Helper function to generate DevLabel (A1, B2, C3, etc.)
+// DevLabel system: Category cards display authentic database IDs (759, 760, 763, etc.) - Database-First Architecture
 const getDevLabel = (sector: string, categoryId: string) => {
   const sectorInfo = SECTORS.find(s => s.id === sector);
   const categoryInfo = STANDARD_CATEGORIES.find(c => c.id === categoryId);
@@ -991,7 +991,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for cctv-van-pack category with A4 DevLabel
+                  // Special handling for cctv-van-pack category with database ID DevLabel
                   if (category.id === 'cctv-van-pack') {
                     return (
                       <Card
@@ -1022,7 +1022,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for cctv-jet-vac category with A5 DevLabel (matches database ID)
+                  // Special handling for cctv-jet-vac category with database ID DevLabel
                   if (category.id === 'cctv-jet-vac') {
                     return (
                       <Card
@@ -1036,7 +1036,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A5"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "760"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1053,7 +1053,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for patching category with dynamic DevLabel
+                  // Special handling for patching category with database ID DevLabel
                   if (category.id === 'patching') {
                     return (
                       <Card
@@ -1067,7 +1067,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A8"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "763"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1084,7 +1084,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for f-robot-cutting category with dynamic DevLabel
+                  // Special handling for f-robot-cutting category with database ID DevLabel
                   if (category.id === 'f-robot-cutting') {
                     return (
                       <Card
@@ -1098,7 +1098,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A10"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "764"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1115,7 +1115,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for ambient-lining category with dynamic DevLabel
+                  // Special handling for ambient-lining category with database ID DevLabel
                   if (category.id === 'ambient-lining') {
                     return (
                       <Card
@@ -1129,7 +1129,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A11"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "790"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1146,7 +1146,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for hot-cure-lining category with F621 DevLabel
+                  // Special handling for hot-cure-lining category with database ID DevLabel
                   if (category.id === 'hot-cure-lining') {
                     return (
                       <Card
@@ -1160,7 +1160,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A12"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "791"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1177,7 +1177,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for uv-lining category with F622 DevLabel
+                  // Special handling for uv-lining category with database ID DevLabel
                   if (category.id === 'uv-lining') {
                     return (
                       <Card
@@ -1191,7 +1191,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A13"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "792"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1208,7 +1208,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for excavation category with F623 DevLabel
+                  // Special handling for excavation category with database ID DevLabel
                   if (category.id === 'excavation') {
                     return (
                       <Card
@@ -1222,7 +1222,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A15"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "793"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1239,7 +1239,7 @@ export default function PR2Pricing() {
                     );
                   }
 
-                  // Special handling for tankering category with F624 DevLabel
+                  // Special handling for tankering category with database ID DevLabel
                   if (category.id === 'tankering') {
                     return (
                       <Card
@@ -1253,7 +1253,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A16"} />
+                        <DevLabel id={existingConfiguration?.id?.toString() || "794"} />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
@@ -1282,7 +1282,7 @@ export default function PR2Pricing() {
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
-                      <DevLabel id={existingConfiguration?.categoryName || existingConfiguration?.id?.toString() || "A1+"} />
+                      <DevLabel id={existingConfiguration?.id?.toString() || "800"} />
                       <CardContent className="p-4 text-center relative">
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
