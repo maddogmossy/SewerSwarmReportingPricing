@@ -747,10 +747,55 @@ export default function Dashboard() {
   // Force component re-render when equipment priority changes
   const [costRecalcTrigger, setCostRecalcTrigger] = useState(0);
   
-  // Update cost calculations when equipment priority changes
+  // Restore cost decisions when equipment priority changes
   useEffect(() => {
+    const restoreCostDecisions = () => {
+      try {
+        const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
+        const currentReportId = reportId || 'current';
+        
+        // Service cost decisions
+        const serviceDecision = existingDecisions.find((decision: any) => 
+          decision.reportId === currentReportId && 
+          decision.equipmentType === equipmentPriority && 
+          decision.decisionType === 'service'
+        );
+        
+        if (serviceDecision && serviceDecision.itemDetails) {
+          const costMap = new Map();
+          serviceDecision.itemDetails.forEach((item: any) => {
+            costMap.set(item.itemNo, item.appliedCost);
+          });
+          setAdjustedServiceCosts(costMap);
+        }
+        
+        // Structural cost decisions
+        const structuralDecision = existingDecisions.find((decision: any) => 
+          decision.reportId === currentReportId && 
+          decision.equipmentType === equipmentPriority && 
+          decision.decisionType === 'structural'
+        );
+        
+        if (structuralDecision && structuralDecision.itemDetails) {
+          const costMap = new Map();
+          const appliedItems = new Set<number>();
+          structuralDecision.itemDetails.forEach((item: any) => {
+            costMap.set(item.itemNo, item.appliedCost);
+            appliedItems.add(item.itemNo);
+          });
+          setAdjustedStructuralCosts(costMap);
+          setAppliedStructuralPricing(appliedItems);
+        }
+        
+        console.log('🔄 Cost decisions restored for equipment:', equipmentPriority, 'report:', currentReportId);
+      } catch (error) {
+        console.error('Error restoring cost decisions:', error);
+      }
+    };
+    
+    restoreCostDecisions();
     setCostRecalcTrigger(prev => prev + 1);
-  }, [equipmentPriority]);
+  }, [equipmentPriority, reportId]);
 
   // Column visibility state with localStorage persistence
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(() => {
@@ -884,84 +929,13 @@ export default function Dashboard() {
   };
 
   // Store adjusted service costs in local state
-  const [adjustedServiceCosts, setAdjustedServiceCosts] = useState<Map<number, number>>(() => {
-    // Restore adjusted service costs from cost decisions
-    try {
-      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
-      
-      const serviceDecision = existingDecisions.find((decision: any) => 
-        decision.reportId === currentReportId && 
-        decision.equipmentType === currentEquipmentType && 
-        decision.decisionType === 'service'
-      );
-      
-      if (serviceDecision && serviceDecision.itemDetails) {
-        const costMap = new Map();
-        serviceDecision.itemDetails.forEach((item: any) => {
-          costMap.set(item.itemNo, item.appliedCost);
-        });
-        return costMap;
-      }
-    } catch (error) {
-      console.error('Error restoring adjusted service costs:', error);
-    }
-    return new Map();
-  });
+  const [adjustedServiceCosts, setAdjustedServiceCosts] = useState<Map<number, number>>(new Map());
   
   // Store adjusted structural costs in local state
-  const [adjustedStructuralCosts, setAdjustedStructuralCosts] = useState<Map<number, number>>(() => {
-    // Restore adjusted structural costs from cost decisions
-    try {
-      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
-      
-      const structuralDecision = existingDecisions.find((decision: any) => 
-        decision.reportId === currentReportId && 
-        decision.equipmentType === currentEquipmentType && 
-        decision.decisionType === 'structural'
-      );
-      
-      if (structuralDecision && structuralDecision.itemDetails) {
-        const costMap = new Map();
-        structuralDecision.itemDetails.forEach((item: any) => {
-          costMap.set(item.itemNo, item.appliedCost);
-        });
-        console.log('🔄 Restoring adjusted structural costs:', Array.from(costMap.entries()), 'from decision:', structuralDecision);
-        return costMap;
-      }
-    } catch (error) {
-      console.error('Error restoring adjusted structural costs:', error);
-    }
-    return new Map();
-  });
+  const [adjustedStructuralCosts, setAdjustedStructuralCosts] = useState<Map<number, number>>(new Map());
   
   // Track which items have structural pricing applied (for green highlighting)
-  const [appliedStructuralPricing, setAppliedStructuralPricing] = useState<Set<number>>(() => {
-    // Restore applied structural pricing from cost decisions
-    try {
-      const existingDecisions = JSON.parse(localStorage.getItem('appliedCostDecisions') || '[]');
-      const currentReportId = new URLSearchParams(window.location.search).get('reportId');
-      const currentEquipmentType = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
-      
-      const structuralDecision = existingDecisions.find((decision: any) => 
-        decision.reportId === currentReportId && 
-        decision.equipmentType === currentEquipmentType && 
-        decision.decisionType === 'structural'
-      );
-      
-      if (structuralDecision && structuralDecision.itemDetails) {
-        const appliedItems = structuralDecision.itemDetails.map((item: any) => item.itemNo);
-        console.log('🔄 Restoring applied structural pricing for items:', appliedItems, 'from decision:', structuralDecision);
-        return new Set(appliedItems);
-      }
-    } catch (error) {
-      console.error('Error restoring applied structural pricing:', error);
-    }
-    return new Set();
-  });
+  const [appliedStructuralPricing, setAppliedStructuralPricing] = useState<Set<number>>(new Set());
 
 
 
@@ -3356,9 +3330,9 @@ export default function Dashboard() {
         const id759Config = repairPricingData.find(config => config.categoryId === 'cctv-van-pack');
         
         // Check current equipment priority
-        console.log('🔍 EQUIPMENT PRIORITY DEBUG:', {
-          equipmentPriority,
-          localStorage_equipmentPriority: localStorage.getItem('equipmentPriority'),
+        console.log('🔍 EQUIPMENT PRIORITY DEBUG - UNIFIED STATE:', {
+          componentState_equipmentPriority: equipmentPriority,
+          itemNo: section.itemNo,
           id760Available: !!id760Config,
           id759Available: !!id759Config,
           id760Id: id760Config?.id,
@@ -3366,7 +3340,8 @@ export default function Dashboard() {
           id760HasMM4Data: !!(id760Config?.mm_data?.mm4Rows?.[0]?.blueValue),
           id759HasMM4Data: !!(id759Config?.mm_data?.mm4Rows?.[0]?.blueValue),
           id760BlueValue: id760Config?.mm_data?.mm4Rows?.[0]?.blueValue,
-          id759BlueValue: id759Config?.mm_data?.mm4Rows?.[0]?.blueValue
+          id759BlueValue: id759Config?.mm_data?.mm4Rows?.[0]?.blueValue,
+          stateSource: 'component_state_unified'
         });
         
         // INTELLIGENT FALLBACK: Use configuration with valid MM4 data
@@ -3379,14 +3354,15 @@ export default function Dashboard() {
         // Don't override user's explicit A5/A4 selection based on data availability
         cctvConfig = preferredConfig;
         
-        console.log('✅ RESPECTING USER CHOICE - Configuration selected:', {
+        console.log('✅ UNIFIED STATE - Configuration selected for item', section.itemNo, ':', {
           configId: cctvConfig?.id,
           categoryId: cctvConfig?.categoryId,
           equipmentPriority: equipmentPriority,
           userChoice: equipmentPriority === 'id759' ? 'A4 - CCTV/Van Pack' : 'A5 - CCTV/Jet Vac',
           hasValidData: cctvConfig?.mm_data?.mm4Rows?.[0]?.blueValue && 
                        cctvConfig.mm_data.mm4Rows[0].blueValue.trim() !== '' &&
-                       parseFloat(cctvConfig.mm_data.mm4Rows[0].blueValue) > 0
+                       parseFloat(cctvConfig.mm_data.mm4Rows[0].blueValue) > 0,
+          dataSource: 'component_state_consistent'
         });
         
         console.log('🔍 SELECTED EQUIPMENT CONFIG:', {
