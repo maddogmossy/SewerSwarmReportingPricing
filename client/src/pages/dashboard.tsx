@@ -3043,19 +3043,26 @@ export default function Dashboard() {
     let costPerUnit = 0;
     let mm4MinQuantity = 0;
     
-    // Get MM4 data from patching configuration for this pipe size
+    // CRITICAL FIX: Get MM4 data using correct pipe size key format
     if (tp2Config.mm_data?.mm4DataByPipeSize) {
-      const pipeSizeKey = `${pipeSize}-${pipeSize}${pipeSize === '150' ? '1' : pipeSize === '225' ? '51' : '01'}`;
+      // Use correct pipe size key format as shown in console logs
+      const pipeSizeKey = `${pipeSize}-${pipeSize === '150' ? '1501' : pipeSize === '225' ? '2251' : pipeSize === '300' ? '3001' : '1001'}`;
       const mm4Data = tp2Config.mm_data.mm4DataByPipeSize[pipeSizeKey];
+      
+      console.log(`🔍 MM4 Dashboard Access: Looking for key "${pipeSizeKey}" in:`, Object.keys(tp2Config.mm_data.mm4DataByPipeSize));
       
       if (mm4Data && mm4Data[0]) {
         // Use green value as cost per 1mts patch
         costPerUnit = parseFloat(mm4Data[0].greenValue) || 0;
         
-        // Use purple fields for minimum quantities
-        const purpleMinQty1 = parseFloat(mm4Data[0].purpleDebris) || 0;
-        const purpleMinQty2 = parseFloat(mm4Data[0].purpleLength) || 0;
+        // REPURPOSED: Use purple fields as minimum quantities (field names remain same for compatibility)
+        const purpleMinQty1 = parseFloat(mm4Data[0].purpleDebris) || 0;  // Now stores min quantity
+        const purpleMinQty2 = parseFloat(mm4Data[0].purpleLength) || 0;  // Now stores min patches  
         mm4MinQuantity = Math.max(purpleMinQty1, purpleMinQty2); // Use higher minimum
+        
+        console.log(`✅ MM4 Values Found: Green=${costPerUnit}, MinQty1=${purpleMinQty1}, MinQty2=${purpleMinQty2}, Final=${mm4MinQuantity}`);
+      } else {
+        console.log(`❌ MM4 Data Not Found for key "${pipeSizeKey}"`);
       }
     }
     
