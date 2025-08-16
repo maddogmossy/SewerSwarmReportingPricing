@@ -921,37 +921,72 @@ export default function PR2ConfigClean() {
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
   
-  // Input buffer to prevent backend overwrites during typing - persisted to localStorage
+  // UNIFIED DATA FLOW: Input buffer with user input priority and conflict detection
   const [inputBuffer, setInputBuffer] = useState<{[key: string]: string}>(() => {
     try {
       const stored = localStorage.getItem('inputBuffer');
-      return stored ? JSON.parse(stored) : {};
+      const buffer = stored ? JSON.parse(stored) : {};
+      console.log(`🔍 BUFFER INIT: Loaded ${Object.keys(buffer).length} buffered entries`);
+      return buffer;
     } catch {
+      console.log(`⚠️ BUFFER INIT: Failed to load, starting fresh`);
       return {};
     }
   });
   
-  // Helper function to get buffered value or fallback - WITH CONFIGURATION ID ISOLATION
+  // UNIFIED DATA FLOW: Helper function with user input priority - WITH CONFIGURATION ID ISOLATION
   const getBufferedValue = (rowId: number, field: string, fallbackValue: string) => {
     const configId = editId || 'temp';
     const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
     const bufferedValue = inputBuffer[bufferKey];
-    if (bufferedValue !== undefined) {
-      console.log(`🔒 Using buffered value for ${bufferKey}: "${bufferedValue}" (persisted)`);
+    
+    // CRITICAL: Always prioritize user-typed values (buffer) over backend data
+    if (bufferedValue !== undefined && bufferedValue !== '') {
+      console.log(`🔒 PRIORITY: Using user input from buffer for ${bufferKey}: "${bufferedValue}"`);
       return bufferedValue;
     }
-    console.log(`📄 Using fallback value for ${bufferKey}: "${fallbackValue}"`);
+    
+    // Only use fallback if no user input exists
+    console.log(`📄 Using backend fallback for ${bufferKey}: "${fallbackValue}"`);
     return fallbackValue;
   };
 
-  // Function to clear specific buffer entries (when user saves successfully) - WITH CONFIGURATION ID ISOLATION
+  // UNIFIED DATA FLOW: Buffer management with data integrity validation
   const clearBufferForRow = (rowId: number, field: string) => {
     const configId = editId || 'temp';
     const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
+    
+    console.log(`🧹 BUFFER CLEANUP: Clearing ${bufferKey} after successful save`);
+    
     setInputBuffer(prev => {
       const updated = { ...prev };
+      const clearedValue = updated[bufferKey];
       delete updated[bufferKey];
       localStorage.setItem('inputBuffer', JSON.stringify(updated));
+      
+      console.log(`✅ BUFFER CLEANUP: Cleared value "${clearedValue}" from ${bufferKey}`);
+      return updated;
+    });
+  };
+
+  // UNIFIED DATA FLOW: Clear stale buffer entries for configuration switching
+  const clearStaleBufferEntries = (configId: string) => {
+    setInputBuffer(prev => {
+      const updated = { ...prev };
+      let clearedCount = 0;
+      
+      Object.keys(updated).forEach(key => {
+        if (key.startsWith(`${configId}-`)) {
+          delete updated[key];
+          clearedCount++;
+        }
+      });
+      
+      if (clearedCount > 0) {
+        localStorage.setItem('inputBuffer', JSON.stringify(updated));
+        console.log(`🧹 UNIFIED FLOW: Cleared ${clearedCount} stale buffer entries for config ${configId}`);
+      }
+      
       return updated;
     });
   };
@@ -1080,14 +1115,20 @@ export default function PR2ConfigClean() {
   const mm4Rows = getCurrentMM4Data();
   const mm5Rows = getCurrentMM5Data();
 
-  // Auto-select pipe size from URL parameter on component load
+  // Auto-select pipe size from URL parameter on component load + buffer cleanup
   useEffect(() => {
     if (pipeSize && getTemplateType(categoryId || '') === 'MMP1') {
       const pipeSizeNumber = pipeSize.replace('mm', '');
-      console.log(`🎯 Auto-selecting pipe size ${pipeSizeNumber}mm from URL parameter`);
+      console.log(`🎯 UNIFIED FLOW: Auto-selecting pipe size ${pipeSizeNumber}mm from URL parameter`);
+      
+      // Clear any stale buffer entries when switching pipe sizes
+      if (editId) {
+        clearStaleBufferEntries(editId);
+      }
+      
       handlePipeSizeSelect(pipeSizeNumber);
     }
-  }, [pipeSize, categoryId]);
+  }, [pipeSize, categoryId, editId]);
 
   // DISABLED: No localStorage caching to prevent synthetic data persistence
   // Data will be loaded fresh from database only
@@ -1200,15 +1241,27 @@ export default function PR2ConfigClean() {
     };
     localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
     
-    // DELAYED: Trigger auto-save after user stops typing (keep buffer longer)
+    // UNIFIED DATA FLOW: Immediate user input protection + delayed database sync
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
     }
-    const timeoutId = setTimeout(() => {
-      console.log(`🔄 Auto-save triggered for ${field}=${value} on row ${rowId}`);
-      triggerAutoSave();
-      // DISABLED: Never clear buffer to prevent overwrites
-      // The buffer will persist and protect user input indefinitely
+    const timeoutId = setTimeout(async () => {
+      console.log(`🔄 UNIFIED FLOW: Auto-save triggered for ${field}=${value} on row ${rowId}`);
+      
+      // Ensure user input is preserved during database save
+      console.log(`🔒 USER INPUT PRESERVATION: Buffer value for ${bufferKey}: "${inputBuffer[bufferKey]}"`);
+      
+      await triggerAutoSave();
+      
+      // CRITICAL: Verify user input wasn't overwritten after save
+      setTimeout(() => {
+        const postSaveValue = inputBuffer[bufferKey];
+        if (postSaveValue !== value) {
+          console.warn(`⚠️ DATA INTEGRITY WARNING: User input changed after save! Expected: "${value}", Found: "${postSaveValue}"`);
+        } else {
+          console.log(`✅ USER INPUT CONFIRMED: Value preserved after database save`);
+        }
+      }, 100);
     }, 1500); // Wait 1.5 seconds before saving to backend
     setAutoSaveTimeout(timeoutId);
   };
@@ -2313,19 +2366,29 @@ export default function PR2ConfigClean() {
           console.log('  - currentPipeSizeKey:', currentPipeSizeKey);
           console.log('  - buffer contents:', inputBuffer);
           
-          // FIXED: Always load backend data - individual fields will use buffered values via getBufferedValue()
+          // UNIFIED DATA FLOW: Load backend data but preserve user inputs via buffer system
           if (!hasLocalMM4ForCurrentPipeSize) {
-            // Load MM4/MM5 data from pipe-size-specific storage or legacy format
+            // Load MM4 data from backend as baseline, user buffer takes priority
             if (config.mmData.mm4DataByPipeSize) {
-              console.log('📥 Backend MM4 data received:', config.mmData.mm4DataByPipeSize);
-              // **CRITICAL FIX**: Only set if backend has actual data, don't overwrite localStorage with empty objects
+              console.log('📥 UNIFIED FLOW: Backend MM4 data received:', config.mmData.mm4DataByPipeSize);
+              
+              // CRITICAL: Check for user input conflicts before loading backend data
+              const hasUserInputsInBuffer = Object.keys(inputBuffer).some(key => 
+                key.includes(`${editId || 'temp'}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}`)
+              );
+              
+              if (hasUserInputsInBuffer) {
+                console.log('🔒 USER INPUT PRIORITY: Detected user inputs in buffer, backend data loaded as fallback only');
+              } else {
+                console.log('📥 CLEAN LOAD: No user inputs detected, loading backend data normally');
+              }
+              
               const hasBackendData = Object.keys(config.mmData.mm4DataByPipeSize).length > 0;
               if (hasBackendData) {
-                console.log('📥 Setting MM4 pipe-size data from backend');
                 setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
-                console.log('✅ MM4 data loaded from backend');
+                console.log('✅ UNIFIED FLOW: MM4 backend data loaded (user inputs via buffer take priority)');
               } else {
-                console.log('🔒 Backend has empty MM4 data, preserving localStorage values');
+                console.log('🔒 UNIFIED FLOW: Backend has empty MM4 data, preserving all user values');
               }
             } else if (config.mmData.mm4Rows) {
               // Legacy format - store under current pipe size key
