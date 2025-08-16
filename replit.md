@@ -41,6 +41,7 @@ This full-stack TypeScript application provides a compliant document analysis pl
 - MM4 Input Blocking Elimination: Removed triggerAutoSave conflicts from updateMM4Row function that caused input freezing during data entry. Implemented conflict-free database-direct updates allowing users to complete typing without interference.
 - F615 Legacy System Complete Removal: Eliminated all remaining F615 structural patching references, replacing with modern MM4-based patching calculations. Updated method names and status codes from 'F615 Structural Patching'/'f615_calculated' to 'MM4 Structural Patching'/'mm4_calculated' for consistency.
 - Complete localStorage Contamination Purge: Verified and confirmed elimination of all localStorage.setItem/getItem calls from MMP1Template. System now operates on pure database-first architecture without buffer layer contamination.
+- Standardized Observation Display Format: Implemented unified format for all SER and STR observations with bold quoted MSCC5 codes, consistent bullet points, and proper meterage placement. Format: `• **"CODE"** - Description` for service defects with meterage in description, and `• **"CODE"** - Description at XXXm` for structural defects with meterage at end.
 
 ## System Architecture
 
