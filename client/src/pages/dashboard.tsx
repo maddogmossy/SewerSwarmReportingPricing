@@ -1176,7 +1176,7 @@ export default function Dashboard() {
           
           // Enhance structural observations in multi-observation display
           const enhanceStructuralObservation = (text: string, defectType: string) => {
-            // For structural defects, extract MSCC5 codes and meterage
+            // For structural defects, extract MSCC5 codes and show with original observation
             if (defectType === 'structural') {
               const extractedCodes = [];
               
@@ -1211,9 +1211,9 @@ export default function Dashboard() {
                 extractedCodes.push(`${codeType} ${meterage}m`);
               }
               
-              // If we found structured codes, display them, otherwise show original
+              // If we found structured codes, show them WITH the original observation
               if (extractedCodes.length > 0) {
-                return extractedCodes.join(', ');
+                return `${extractedCodes.join(', ')} - ${text}`;
               }
             }
             
@@ -1255,7 +1255,7 @@ export default function Dashboard() {
         
         // Single observation or clean section - enhance for structural defects
         const enhanceStructuralObservation = (text: string, defectType: string) => {
-          // For structural defects, extract MSCC5 codes and meterage
+          // For structural defects, extract MSCC5 codes and show with original observation
           if (defectType === 'structural') {
             const extractedCodes = [];
             
@@ -1290,9 +1290,9 @@ export default function Dashboard() {
               extractedCodes.push(`${codeType} ${meterage}m`);
             }
             
-            // If we found structured codes, display them, otherwise show original
+            // If we found structured codes, show them WITH the original observation
             if (extractedCodes.length > 0) {
-              return extractedCodes.join(', ');
+              return `${extractedCodes.join(', ')} - ${text}`;
             }
           }
           
