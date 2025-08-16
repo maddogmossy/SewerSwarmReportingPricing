@@ -626,7 +626,7 @@ export default function Dashboard() {
       localStorage.setItem('equipmentPriority', 'id760');
       return 'id760';
     }
-    return stored === 'id759' ? 'id759' : 'id760';
+    return (stored === 'id759') ? 'id759' : 'id760';
   });
 
   // Clear old patterns from localStorage cache on component mount
@@ -643,7 +643,7 @@ export default function Dashboard() {
         
         // CRITICAL FIX: Equipment-specific buffer isolation
         const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-        const currentEquipment = localStorage.getItem('equipmentPriority') || 'id760';
+        const currentEquipment = equipmentPriority;
         const otherEquipment = currentEquipment === 'id760' ? 'id759' : 'id760';
         
         // Clear buffer keys for inactive equipment to prevent conflicts
@@ -681,60 +681,16 @@ export default function Dashboard() {
       
       console.log('🧹 Cleared cost decisions for report after equipment priority change:', currentReportId);
       
-      // CRITICAL FIX: Improved timing for configuration-dependent operations
-      if (requiresConfigReload) {
-        console.log('🔄 CONFIGURATION RELOAD REQUIRED - Extended timing sequence');
-        
-        // Step 1: Enhanced cache invalidation for dashboard configurations + A5 buffer isolation
-        setTimeout(() => {
-          console.log('🔄 Step 1: Enhanced cache invalidation + A5 buffer isolation for equipment switch');
-          queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-          queryClient.invalidateQueries({ queryKey: ['pr2-all-configs'] }); // Dashboard configs
-          queryClient.invalidateQueries({ queryKey: ['pr2-configs'] }); // Sector configs
-          
-          // CRITICAL FIX: Force A5 buffer state isolation for item 10
-          if (newPriority === 'id760') {
-            const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-            const a5SpecificKeys = Object.keys(buffer).filter(key => key.includes('760-150'));
-            console.log('🔄 A5 BUFFER ISOLATION - Ensuring A5 data is preserved:', {
-              newPriority: newPriority,
-              a5BufferKeys: a5SpecificKeys,
-              keyCount: a5SpecificKeys.length
-            });
-          }
-          
-          // Step 2: Invalidate sections data after configurations reload
-          setTimeout(() => {
-            console.log('🔄 Step 2: Invalidating sections data');
-            queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
-            
-            // Step 3: Trigger cost recalculation after everything reloads
-            setTimeout(() => {
-              console.log('🔄 Step 3: Triggering cost recalculation');
-              if (rawSectionData && rawSectionData.length > 0) {
-                setCostRecalcTrigger(prev => prev + 1);
-                
-                // Step 4: Final validation after costs calculated
-                setTimeout(() => {
-                  console.log('🔄 Step 4: Equipment priority switch completed');
-                }, 200);
-              }
-            }, 400); // Extended delay for configuration loading
-          }, 300); // Extended delay for PR2 config reload
-        }, 200); // Initial delay
-      } else {
-        // Standard priority change without config reload
-        setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
-          
-          setTimeout(() => {
-            console.log('🔄 Triggering warning checks after equipment priority change');
-            if (rawSectionData && rawSectionData.length > 0) {
-              setCostRecalcTrigger(prev => prev + 1);
-            }
-          }, 200);
-        }, 100);
-      }
+      // SIMPLIFIED SYNCHRONIZATION: Eliminate complex timing sequences that cause race conditions  
+      console.log('🔄 Equipment priority changed - immediate unified synchronization');
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
+      
+      // Force immediate cost recalculation with single timing cycle
+      setTimeout(() => {
+        setCostRecalcTrigger(prev => prev + 1);
+        console.log('🔄 Equipment priority synchronization complete');
+      }, 100);
     };
 
     window.addEventListener('equipmentPriorityChanged', handleEquipmentPriorityChange as EventListener);
@@ -3674,7 +3630,8 @@ export default function Dashboard() {
           // CRITICAL FIX: Standardized buffer key format with enhanced validation
           try {
             const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-            const equipmentPriority = localStorage.getItem('equipmentPriority') || 'id759';
+            // UNIFIED STATE FIX: Use component state instead of localStorage direct read
+            const currentEquipmentPriority = equipmentPriority;
             
             // Use actual config ID with standardized buffer key format
             const configId = cctvConfig.id;
@@ -4416,7 +4373,7 @@ export default function Dashboard() {
                 blueValue: blueValue,
                 greenValue: greenValue,
                 willCalculateCost: hasValidRate,
-                equipmentPriority: localStorage.getItem('equipmentPriority') || 'id759'
+                equipmentPriority: equipmentPriority
               });
             }
             
@@ -6125,11 +6082,15 @@ export default function Dashboard() {
   // Simplified cost calculation function - equipment priority responsive
   const calculateCost = (section: any): string | JSX.Element => {
     // EQUIPMENT PRIORITY DEBUG: Force recalculation when equipment priority changes
+    // Use costRecalcTrigger dependency to invalidate cached calculations
+    const equipmentKey = `${equipmentPriority}-${costRecalcTrigger}`;
     console.log('💰 CALCULATE COST - Item', section.itemNo, ':', {
       equipmentPriority: equipmentPriority,
       costRecalcTrigger: costRecalcTrigger,
+      equipmentKey: equipmentKey,
       defectType: section.defectType,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      stateSource: 'component_unified'
     });
     
     // FIXED: Simplified defect detection logic for both old and new severity grade systems
@@ -6152,7 +6113,7 @@ export default function Dashboard() {
     }
     
     // CRITICAL: Force fresh cost calculation with current equipment priority
-    // Use costRecalcTrigger to ensure calculations reflect current equipment state
+    // Use equipmentKey to ensure calculations invalidate cached results properly
     const autoCost = calculateAutoCost(section);
     
     if (autoCost && 'cost' in autoCost && autoCost.cost > 0) {

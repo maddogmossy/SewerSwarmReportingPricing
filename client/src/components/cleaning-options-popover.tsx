@@ -26,31 +26,12 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   
-  // Equipment priority state with localStorage sync
-  const [equipmentPriority, setEquipmentPriority] = useState<'id760' | 'id759'>(() => {
+  // UNIFIED STATE FIX: Use direct localStorage read without separate state management
+  // This eliminates dual state management that caused synchronization issues
+  const getEquipmentPriority = () => {
     return localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
-  });
-  
-  // Sync with localStorage changes (when dashboard auto-updates priority)
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const newPriority = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
-      setEquipmentPriority(newPriority);
-    };
-    
-    // Listen for localStorage changes
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also check on component mount in case priority was updated
-    const currentPriority = localStorage.getItem('equipmentPriority') === 'id759' ? 'id759' : 'id760';
-    if (currentPriority !== equipmentPriority) {
-      setEquipmentPriority(currentPriority);
-    }
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [equipmentPriority]);
+  };
+  const equipmentPriority = getEquipmentPriority();
   
   // FIXED: Static equipment options with consistent configId display
   const equipmentOptions = [
@@ -151,12 +132,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50'
                   }`}
                   onClick={() => {
-                    console.log('🔄 A5 Button Clicked - Simplified priority update');
-                    setEquipmentPriority('id760');
+                    console.log('🔄 A5 Button Clicked - Unified state update');
                     localStorage.setItem('equipmentPriority', 'id760');
                     
                     toast({
-                      title: "Equipment Priority Updated",
+                      title: "Equipment Priority Updated", 
                       description: "A5 - CCTV/Jet Vac is now primary equipment",
                     });
                     
@@ -179,8 +159,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50'
                   }`}
                   onClick={() => {
-                    console.log('🔄 A4 Button Clicked - Simplified priority update');
-                    setEquipmentPriority('id759');
+                    console.log('🔄 A4 Button Clicked - Unified state update');
                     localStorage.setItem('equipmentPriority', 'id759');
                     
                     toast({
