@@ -51,24 +51,10 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const [customPipeSizes, setCustomPipeSizes] = useState<number[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>('#D4D4D4');
   const [customColor, setCustomColor] = useState<string>('#D4D4D4');
-  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>(() => {
-    try {
-      const saved = localStorage.getItem('mm4DataByPipeSize');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>({});
   const [mm5Data, setMm5Data] = useState<any[]>([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
   const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
-  const [inputBuffer, setInputBuffer] = useState<Record<string, string>>(() => {
-    try {
-      const saved = localStorage.getItem('inputBuffer');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  const [inputBuffer, setInputBuffer] = useState<Record<string, string>>({});
   const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(1001);
   const [hasUserChanges, setHasUserChanges] = useState<boolean>(false);
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -82,9 +68,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     // Always start fresh to prevent cross-contamination between sectors
     setSelectedIds([]);
     setIdsWithConfig([]);
-    // **CRITICAL FIX**: DO NOT clear MM4 data - preserve localStorage values
-    // setMm4DataByPipeSize({}); // REMOVED - was destroying saved MM4 data
-    console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector} (MM4 data preserved)`);
+    // DATABASE-FIRST: MM4 data comes from database, not localStorage
+    console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector} (database-first loading)`);
   }, [sector, categoryId]);
 
   // **SEPARATE EFFECT FOR MM1 SECTOR AUTO-HIGHLIGHTING** - Runs after page initialization
@@ -124,84 +109,78 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   }, [sector, categoryId]);
 
   // Auto-save functionality
-  const triggerAutoSave = useCallback(() => {
+  const triggerAutoSave = useCallback(async () => {
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
     }
     
-    const timeoutId = setTimeout(async () => {
-      const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-      const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
-      
-      console.log('💾 MM Data being saved to backend:', [{
+    // DATABASE-DIRECT: Immediate persistence without debounce delays
+    const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+    
+    console.log('💾 DATABASE-DIRECT: Saving MM data immediately to backend:', {
+      selectedPipeSize: selectedPipeSizeForMM4,
+      selectedPipeSizeId: selectedPipeSizeId,
+      mm1Colors: selectedColor,
+      mm2IdData: selectedIds,
+      mm3CustomPipeSizes: customPipeSizes,
+      mm4DataByPipeSize: mm4DataByPipeSize,
+      mm5Data: mm5Data,
+      categoryId: categoryId,
+      sector: sector,
+      pipeSizeKey: pipeSizeKey
+    });
+
+    try {
+      // Prepare MM4/MM5 data in the new mmData format
+      const mmData = {
         selectedPipeSize: selectedPipeSizeForMM4,
         selectedPipeSizeId: selectedPipeSizeId,
         mm1Colors: selectedColor,
         mm2IdData: selectedIds,
         mm3CustomPipeSizes: customPipeSizes,
         mm4DataByPipeSize: mm4DataByPipeSize,
-        mm5Data: mm5Data,
-        mm4Rows: currentMM4Data,
-        mm5Rows: mm5Data,
-        categoryId: categoryId,
-        sector: sector,
-        timestamp: Date.now(),
-        pipeSizeKey: pipeSizeKey
-      }]);
+        mm5Data: mm5Data
+      };
 
-      try {
-        // Prepare MM4/MM5 data in the new mmData format
-        const mmData = {
-          selectedPipeSize: selectedPipeSizeForMM4,
-          selectedPipeSizeId: selectedPipeSizeId,
-          mm1Colors: selectedColor,
-          mm2IdData: selectedIds,
-          mm3CustomPipeSizes: customPipeSizes,
-          mm4DataByPipeSize: mm4DataByPipeSize,
-          mm5Data: mm5Data
-        };
-
-
-
-        if (editId) {
-          const response = await fetch(`/api/pr2-clean/${editId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              categoryName: getCategoryDisplayName(),
-              description: getCategoryDescription(),
-              categoryColor: selectedColor,
-              pipeSize: selectedPipeSizeForMM4,
-              mmData: mmData,
-              sector: sector
-            })
-          });
-          if (!response.ok) throw new Error('Save failed');
-        } else {
-          const response = await fetch('/api/pr2-clean', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              categoryName: getCategoryDisplayName(),
-              description: getCategoryDescription(),
-              categoryColor: selectedColor,
-              pipeSize: selectedPipeSizeForMM4,
-              mmData: mmData,
-              categoryId: categoryId,
-              sector: sector
-            })
-          });
-          if (!response.ok) throw new Error('Save failed');
-        }
-        
-        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-        if (onSave) onSave();
-      } catch (error) {
-        console.error('Error saving MMP1 data:', error);
+      if (editId) {
+        const response = await fetch(`/api/pr2-clean/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryName: getCategoryDisplayName(),
+            description: getCategoryDescription(),
+            categoryColor: selectedColor,
+            pipeSize: selectedPipeSizeForMM4,
+            mmData: mmData,
+            sector: sector
+          })
+        });
+        if (!response.ok) throw new Error('Database save failed');
+        console.log('✅ DATABASE-DIRECT: Successfully updated configuration', editId);
+      } else {
+        const response = await fetch('/api/pr2-clean', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryName: getCategoryDisplayName(),
+            description: getCategoryDescription(),
+            categoryColor: selectedColor,
+            pipeSize: selectedPipeSizeForMM4,
+            mmData: mmData,
+            categoryId: categoryId,
+            sector: sector
+          })
+        });
+        if (!response.ok) throw new Error('Database save failed');
+        console.log('✅ DATABASE-DIRECT: Successfully created new configuration');
       }
-    }, 500);
-    
-    setAutoSaveTimeout(timeoutId);
+      
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      if (onSave) onSave();
+    } catch (error) {
+      console.error('❌ DATABASE-DIRECT: Error saving MMP1 data:', error);
+    }
   }, [selectedPipeSizeForMM4, selectedPipeSizeId, selectedColor, selectedIds, customPipeSizes, mm4DataByPipeSize, mm5Data, editId, categoryId, sector, autoSaveTimeout, onSave]);
 
   // MM4 data management
@@ -231,22 +210,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     
     updateMM4DataForPipeSize(newData);
     
-    // IMMEDIATE: Save to localStorage for persistence without triggering backend
-    const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    const updatedMM4DataByPipeSize = {
-      ...mm4DataByPipeSize,
-      [pipeSizeKey]: newData
-    };
-    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
-    
-    // DELAYED: Trigger auto-save to backend after user stops typing
-    if (autoSaveTimeout) {
-      clearTimeout(autoSaveTimeout);
-    }
-    const timeoutId = setTimeout(() => {
-      triggerAutoSave();
-    }, 1000); // Wait 1 second before saving to backend
-    setAutoSaveTimeout(timeoutId);
+    // DATABASE-DIRECT: Immediate save without debounce delays
+    triggerAutoSave();
   };
 
   // Handle range warning dialog responses
@@ -262,20 +227,18 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
     
-    // CRITICAL: Update buffer to reflect new value so input field shows it immediately
+    // DATABASE-DIRECT: Update input buffer for immediate UI reflection (no localStorage)
     const bufferKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${pendingRowId}-purpleLength`;
     setInputBuffer(prev => {
       const updated = {
         ...prev,
         [bufferKey]: finalValue
       };
-      // Persist buffer to localStorage immediately
-      localStorage.setItem('inputBuffer', JSON.stringify(updated));
       console.log(`🔧 MMP1Template: Updated buffer for ${bufferKey}: "${finalValue}"`);
       return updated;
     });
     
-    // CRITICAL: Update React state FIRST for immediate UI reflection
+    // DATABASE-DIRECT: Update React state for immediate UI reflection
     const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     const updatedMM4DataByPipeSize = {
       ...mm4DataByPipeSize,
@@ -286,14 +249,11 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     // Update MM4 data storage (this calls the same setState but ensures consistency)
     updateMM4DataForPipeSize(newData);
     
-    // Also save to localStorage for persistence
-    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
+    // DATABASE-DIRECT: Removed localStorage contamination - database is single source of truth
     
-    // Force a component re-render to update input field values
-    setTimeout(() => {
-      triggerAutoSave();
-      console.log(`✅ MMP1Template: Final state update completed for row ${pendingRowId}`);
-    }, 50);
+    // DATABASE-DIRECT: Immediate save and state update
+    triggerAutoSave();
+    console.log(`✅ MMP1Template: Final state update completed for row ${pendingRowId}`);
     
     console.log(`✅ MMP1Template: Updated MM4 data:`, newData);
     console.log(`✅ MMP1Template: Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
@@ -319,7 +279,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       }
     ];
     updateMM4DataForPipeSize(newData);
-    setTimeout(() => triggerAutoSave(), 100);
+    triggerAutoSave();
   };
 
   const deleteMM4Row = (rowId: number) => {
@@ -327,7 +287,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     if (currentData.length > 1) {
       const newData = currentData.filter(row => row.id !== rowId);
       updateMM4DataForPipeSize(newData);
-      setTimeout(() => triggerAutoSave(), 100);
+      triggerAutoSave();
     }
   };
 
@@ -361,7 +321,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       }
     ];
     updateMM5Data(newData);
-    setTimeout(() => triggerAutoSave(), 100);
+    triggerAutoSave();
   };
 
   const deleteMM5Row = (rowId: number) => {
@@ -369,7 +329,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     if (currentData.length > 1) {
       const newData = currentData.filter(row => row.id !== rowId);
       updateMM5Data(newData);
-      setTimeout(() => triggerAutoSave(), 100);
+      triggerAutoSave();
     }
   };
 

@@ -36,6 +36,7 @@ This full-stack TypeScript application provides a compliant document analysis pl
 - Dashboard Cost Calculation Fix: Implemented correct MM4-based cost logic using green values (cost per 1mts patch) × defect count with minimum quantity validation. Day rate (£1650) now only applies when defect count falls below purple minimum quantities. Red cost display properly triggers when day rate applied due to minimum thresholds not being met.
 - Critical Pipe Size Key Fix: Corrected dashboard MM4 data access using proper pipe size key format (225-2251) instead of malformed keys (225-22551). System now properly accesses MM4 green values and purple minimum quantities for accurate cost calculations.
 - Purple Field Repurposing Complete: Successfully repurposed existing purple database fields (purpleDebris/purpleLength) to store minimum patch quantities while maintaining field name compatibility. UI displays correct "Min Quantity"/"Min Patches" labels with test values (3, 4) working properly.
+- Database-Direct Persistence Implementation: Eliminated buffer contamination system across all MMP1Template configurations (ID763, etc.). Removed localStorage interference and debounce delays, implementing immediate database persistence following proven ID759/760 pattern. Fixed critical data reappearance issue and ensures single source of truth from database.
 
 ## System Architecture
 
