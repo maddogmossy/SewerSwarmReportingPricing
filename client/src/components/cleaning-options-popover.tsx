@@ -52,32 +52,16 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     };
   }, [equipmentPriority]);
   
-  // Equipment options with dynamic priority ordering
-  const equipmentOptions = equipmentPriority === 'id759' ? [
-    {
-      id: 'cctv-van-pack',
-      name: 'CCTV/Van Pack', 
-      description: 'Combined CCTV inspection and cleansing operations',
-      icon: Monitor,
-      configId: 'A4',
-      isDefault: true
-    },
+  // FIXED: Static equipment options with consistent configId display
+  const equipmentOptions = [
     {
       id: 'cctv-jet-vac',
       name: 'CCTV/Jet Vac',
       description: 'Combined CCTV inspection with jet vac services',
       icon: Video,
       configId: 'A5',
-      isDefault: false
-    }
-  ] : [
-    {
-      id: 'cctv-jet-vac',
-      name: 'CCTV/Jet Vac',
-      description: 'Combined CCTV inspection with jet vac services',
-      icon: Video,
-      configId: 'A5',
-      isDefault: true
+      equipmentId: 'id760',
+      isPriority: equipmentPriority === 'id760'
     },
     {
       id: 'cctv-van-pack',
@@ -85,7 +69,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       description: 'Combined CCTV inspection and cleansing operations',
       icon: Monitor,
       configId: 'A4',
-      isDefault: false
+      equipmentId: 'id759',
+      isPriority: equipmentPriority === 'id759'
     }
   ];
 
@@ -166,54 +151,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50'
                   }`}
                   onClick={() => {
-                    try {
-                      console.log('🔄 A5 Button Clicked - Updating priority with buffer isolation');
-                      
-                      // CRITICAL FIX: Clear conflicting A4 buffer keys before switching to A5
-                      const keys = Object.keys(localStorage);
-                      const a4BufferKeys = keys.filter(key => 
-                        key.includes('759-150-1501') || 
-                        key.includes('inputBuffer') && localStorage.getItem(key)?.includes('759')
-                      );
-                      
-                      console.log('🧹 CLEARING A4 BUFFER KEYS:', a4BufferKeys);
-                      a4BufferKeys.forEach(key => localStorage.removeItem(key));
-                      
-                      // Clear equipment-specific buffer namespace
-                      const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-                      const cleanedBuffer = Object.fromEntries(
-                        Object.entries(inputBuffer).filter(([key]) => !key.includes('759'))
-                      );
-                      localStorage.setItem('inputBuffer', JSON.stringify(cleanedBuffer));
-                      
-                      setEquipmentPriority('id760');
-                      localStorage.setItem('equipmentPriority', 'id760');
-                      localStorage.setItem('lastUserPriorityChange', Date.now().toString());
-                      
-                      toast({
-                        title: "Equipment Priority Updated",
-                        description: "A5 - CCTV/Jet Vac now has priority for cost calculations",
-                      });
-                      setIsOpen(false);
-                      
-                      // CRITICAL FIX: Add loading delay to ensure A5 configuration loads properly
-                      if (onPricingNeeded) {
-                        console.log('🔄 Triggering A5 configuration reload with delay');
-                        
-                        // Force immediate priority change event
-                        const event = new CustomEvent('equipmentPriorityChanged', { 
-                          detail: { newPriority: 'id760', requiresConfigReload: true } 
-                        });
-                        window.dispatchEvent(event);
-                      }
-                    } catch (error) {
-                      console.error('🚨 A5 Equipment Priority Error:', error);
-                      toast({
-                        title: "Configuration Error",
-                        description: "A5 priority update failed. Please try again.",
-                        variant: "destructive"
-                      });
-                    }
+                    console.log('🔄 A5 Button Clicked - Simplified priority update');
+                    setEquipmentPriority('id760');
+                    localStorage.setItem('equipmentPriority', 'id760');
+                    
+                    toast({
+                      title: "Equipment Priority Updated",
+                      description: "A5 - CCTV/Jet Vac is now primary equipment",
+                    });
+                    
+                    // Trigger priority change event for dashboard updates
+                    const event = new CustomEvent('equipmentPriorityChanged', { 
+                      detail: { newPriority: 'id760', requiresConfigReload: true } 
+                    });
+                    window.dispatchEvent(event);
                   }}
                 >
                   A5 - CCTV/Jet Vac
@@ -225,54 +176,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50'
                   }`}
                   onClick={() => {
-                    try {
-                      console.log('🔄 A4 Button Clicked - Updating priority with buffer isolation');
-                      
-                      // CRITICAL FIX: Clear conflicting A5 buffer keys before switching to A4
-                      const keys = Object.keys(localStorage);
-                      const a5BufferKeys = keys.filter(key => 
-                        key.includes('760-150-1501') || 
-                        key.includes('inputBuffer') && localStorage.getItem(key)?.includes('760')
-                      );
-                      
-                      console.log('🧹 CLEARING A5 BUFFER KEYS:', a5BufferKeys);
-                      a5BufferKeys.forEach(key => localStorage.removeItem(key));
-                      
-                      // Clear equipment-specific buffer namespace
-                      const inputBuffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-                      const cleanedBuffer = Object.fromEntries(
-                        Object.entries(inputBuffer).filter(([key]) => !key.includes('760'))
-                      );
-                      localStorage.setItem('inputBuffer', JSON.stringify(cleanedBuffer));
-                      
-                      setEquipmentPriority('id759');
-                      localStorage.setItem('equipmentPriority', 'id759');
-                      localStorage.setItem('lastUserPriorityChange', Date.now().toString());
-                      
-                      toast({
-                        title: "Equipment Priority Updated", 
-                        description: "A4 - CCTV/Van Pack now has priority for cost calculations",
-                      });
-                      setIsOpen(false);
-                      
-                      // CRITICAL FIX: Add loading delay to ensure A4 configuration loads properly
-                      if (onPricingNeeded) {
-                        console.log('🔄 Triggering A4 configuration reload with delay');
-                        
-                        // Force immediate priority change event
-                        const event = new CustomEvent('equipmentPriorityChanged', { 
-                          detail: { newPriority: 'id759', requiresConfigReload: true } 
-                        });
-                        window.dispatchEvent(event);
-                      }
-                    } catch (error) {
-                      console.error('🚨 A4 Equipment Priority Error:', error);
-                      toast({
-                        title: "Configuration Error",
-                        description: "A4 priority update failed. Please try again.",
-                        variant: "destructive"
-                      });
-                    }
+                    console.log('🔄 A4 Button Clicked - Simplified priority update');
+                    setEquipmentPriority('id759');
+                    localStorage.setItem('equipmentPriority', 'id759');
+                    
+                    toast({
+                      title: "Equipment Priority Updated",
+                      description: "A4 - CCTV/Van Pack is now primary equipment",
+                    });
+                    
+                    // Trigger priority change event for dashboard updates
+                    const event = new CustomEvent('equipmentPriorityChanged', { 
+                      detail: { newPriority: 'id759', requiresConfigReload: true } 
+                    });
+                    window.dispatchEvent(event);
                   }}
                 >
                   A4 - CCTV/Van Pack
@@ -287,7 +204,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                   key={equipment.id}
                   variant="outline"
                   className={`w-full h-auto p-4 text-left justify-start ${
-                    equipment.isDefault 
+                    equipment.isPriority 
                       ? 'bg-green-50 border-green-300 text-green-800 ring-2 ring-green-200' 
                       : 'hover:bg-gray-50'
                   }`}
@@ -301,9 +218,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                         <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-600">
                           {equipment.configId}
                         </span>
-                        {equipment.isDefault && (
+                        {equipment.isPriority && (
                           <span className="text-xs bg-green-100 px-2 py-0.5 rounded text-green-700 font-medium">
-                            Default
+                            Primary
                           </span>
                         )}
                       </div>
