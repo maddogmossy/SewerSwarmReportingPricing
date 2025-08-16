@@ -99,16 +99,16 @@ const requiresStructuralRepair = (defects: string): boolean => {
   
   const defectsUpper = defects.toUpperCase();
   
-  // PRIORITY 1: Check for structural defects FIRST (safety critical)
-  // CRITICAL FIX: Only check for actual defect CODES, not descriptive text
-  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', 'crack', 'fracture'];
+  // PRIORITY 1: Check for structural defects FIRST (safety critical) - MSCC5 COMPLIANT
+  // CORRECTED: Only authentic MSCC5 structural codes, removed legacy patterns
+  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDS ', 'DEF ', 'OJL ', 'OJM ', 'JDM ', 'CN ', 'crack', 'fracture'];
   
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   
-  // Special handling for significant deformation (safety critical)
-  // FIXED: Match "D Deformation" pattern more accurately 
-  const hasSignificantDeformation = (defectsUpper.includes('D DEFORMATION') || defectsUpper.includes(' D ')) && (
+  // MSCC5 COMPLIANT: Check for DEF (Deformity) structural defect only
+  // LEGACY REMOVED: Generic "D" pattern replaced with specific MSCC5 "DEF" code
+  const hasSignificantDeformation = defectsUpper.includes('DEF ') && (
     defectsUpper.includes('5%') || defectsUpper.includes('10%') || defectsUpper.includes('15%') || 
     defectsUpper.includes('20%') || defectsUpper.includes('25%') || defectsUpper.includes('30%') || 
     defectsUpper.includes('MAJOR') || defectsUpper.includes('SEVERE')
@@ -4014,9 +4014,10 @@ export default function Dashboard() {
         };
       }
       
-      // Enhanced structural defect counting with multiple meterage locations
+      // MSCC5-Compliant structural defect counting with authentic WRc standards
       const defectsText = section.defects || '';
-      const structuralDefectPattern = /\b(D|DER|DES|DEL|DEG|DF|DJ|DH|DA|DAP|DM|DSS|DC|DPP|DG|DI|DD|DK|DL|DN|DP|DR|DT|DU|DV|DW|DX|DY|DZ)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
+      // CORRECTED: Only authentic MSCC5 structural codes (removed service codes like DER, DES)
+      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
       
       let totalStructuralPatches = 0;
       let defectMeterages = [];
@@ -4689,9 +4690,9 @@ export default function Dashboard() {
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
               
-              // Enhanced patch counting: Count structural defect instances with meterages
-              // Look for patterns like "D Deformation...at 26.47m, 58.97m" - this means 2 patches
-              const structuralDefectPattern = /\b(D|DER|DES|DF|DL|DS|DB|DG|DM|DN|DR|DT|DU|DV|DW|DY|DZ)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
+              // MSCC5-Compliant patch counting: Only authentic structural defect codes
+              // LEGACY REMOVED: DER, DES are service defects, not structural 
+              const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
               
               let totalStructuralPatches = 0;
               let structuralMatch;
@@ -4712,9 +4713,9 @@ export default function Dashboard() {
                 });
               }
               
-              // Fallback: if no specific pattern found, use basic counting
+              // MSCC5-Compliant fallback: only authentic structural codes
               if (totalStructuralPatches === 0) {
-                const basicStructuralMatches = defectsText.match(/\b(D|DER|DES|DF|DL|DS|DB|DG|DM|DN|DR|DT|DU|DV|DW|DY|DZ)\b/g) || [];
+                const basicStructuralMatches = defectsText.match(/\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b/g) || [];
                 totalStructuralPatches = Math.max(basicStructuralMatches.length, defectMeterages.length, 1);
               }
               
