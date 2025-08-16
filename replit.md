@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application provides a platform for compliant document analysis in highly regulated sectors (Utilities, Adoption, Highways). It processes various report formats based on WRc MSCC5 + OS20X standards, integrates payments, and ensures regulatory adherence. The system includes an intelligent cost decision persistence feature designed to improve operational efficiency and compliance. The project aims for broad market potential across regulated industries.
+This full-stack TypeScript application provides a compliant document analysis platform for highly regulated sectors (Utilities, Adoption, Highways). It processes various report formats based on WRc MSCC5 + OS20X standards, integrates payments, and ensures regulatory adherence. The system includes an intelligent cost decision persistence feature designed to improve operational efficiency and compliance, with broad market potential across regulated industries.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
@@ -57,6 +57,7 @@ This full-stack TypeScript application provides a platform for compliant documen
 - Unified MM4 Data Flow Architecture: Implemented comprehensive data synchronization system to resolve persistent value conflicts between database, buffer, localStorage, and UI inputs. Established user input priority hierarchy where buffer values always take precedence over backend data to prevent user input overwrites. Added missing ID760 225mm configuration and standardized all blue/green values (ID759: £950/20-30 runs, ID760: £1850/20 runs). Enhanced buffer management with conflict detection, stale entry cleanup, and data integrity validation. Fixed asynchronous race conditions in auto-save system with user input preservation guarantees. System now maintains consistent MM4 values across all pipe sizes with authenticated user data priority.
 - Critical Deformity Classification Fix: Resolved major bug where single deformity defects (items 19, 20) were misclassified as service instead of structural. Root cause: multi-defect sections correctly used splitting logic with proper DEF code recognition, but single deformity sections bypassed this logic and used flawed classification path. Implemented fixes in parseAllDefectsFromText() to detect descriptive deformity text without explicit DEF codes, enhanced extractSeverityGrades.ts to recognize DEFORMITY/DEFORMED keywords, and strengthened wincan-db-reader.ts structural enforcement. Database corrected: items 19, 20 now properly classified as structural with appropriate WRc recommendations per MSCC5 standards.
 - Complete Database-First Architecture Implementation: Eliminated all buffer system dependencies and converted to pure database-first approach. Removed inputBuffer localStorage system that was causing data corruption and cross-equipment contamination. Replaced all getBufferedValue() calls with getDatabaseValue() for direct database access. Removed 1.5 second auto-save delays in favor of immediate database persistence (10-50ms). Fixed ID759 greenValue corruption by eliminating fallback systems that masked database issues. System now operates with transparent data flow: Database → UI → Immediate Save, ensuring data integrity and preventing synthetic data contamination. All MM4 configuration values now reflect authentic database state without buffer interference.
+- Complete Legacy Code Elimination: Executed comprehensive cleanup removing all F-series references (F606, F608, F610-F624) from fallback data, routing logic, pricing displays, and configuration components. Replaced hardcoded F-series DevLabels with dynamic database ID references. Eliminated P-series mapping patterns (P011-P524) while preserving intentional id7-12 dual architecture for MMP1 cross-sector functionality. Removed legacy id1-6 sector mappings. Replaced all P-series and F-series patterns with clean A1-F16 system across client components and server routes. System now operates entirely on authentic database IDs with future-proof dynamic configuration management and standardized A1-F16 page identification. PIN code "Quality" authorized full legacy elimination including P006/P006a template logic, sector ID mappings (id7-id9→utilities/adoption/highways), and fallback data contamination cleanup.
 
 ## System Architecture
 
@@ -67,7 +68,7 @@ This full-stack TypeScript application provides a platform for compliant documen
 - **UI Components**: shadcn/ui, Radix UI
 - **Styling**: Tailwind CSS with CSS variables
 - **Build Tool**: Vite
-- **UI/UX Decisions**: Standardized patterns for Configuration Dropdown, Category Cards (colored borders), CTF (Configuration Template Framework), Dashboard Table, Unified Pipe Size Switching, Unified Popup Design. Core UI features include a Visual Validation System (red triangle warnings) and an Enhanced Warning System (cost decision persistence).
+- **UI/UX Decisions**: Standardized patterns for Configuration Dropdown, Category Cards (colored borders), CTF (Configuration Template Framework), Dashboard Table, Unified Pipe Size Switching, Unified Popup Design. Visual Validation System (red triangle warnings) and Enhanced Warning System (cost decision persistence).
 
 ### Backend
 - **Framework**: Express.js with TypeScript
@@ -75,7 +76,7 @@ This full-stack TypeScript application provides a platform for compliant documen
 - **Database ORM**: Drizzle ORM
 - **Session Management**: Express session
 - **File Handling**: Multer
-- **Technical Implementations**: Unified File Processing System handles PDF and .db file uploads with standardized processing, item number assignment, SECSTAT extraction, and uniform WRc MSCC5 classification. Advanced Cost Calculation System integrates database ID processing, patch counting, and MM4 integration.
+- **Technical Implementations**: Unified File Processing System for PDF and .db file uploads with standardized processing, item number assignment, SECSTAT extraction, and WRc MSCC5 classification. Advanced Cost Calculation System integrates database ID processing, patch counting, and MM4 integration.
 
 ### Database
 - **Database**: PostgreSQL (configured for Neon serverless)

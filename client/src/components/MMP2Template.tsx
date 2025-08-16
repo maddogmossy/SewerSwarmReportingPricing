@@ -22,11 +22,11 @@ interface MMP2TemplateProps {
   onSave?: () => void;
 }
 
-// MMP1 ID definitions (ID1-ID6 following P002 pattern - matching six sectors)
+// MMP2 SECTOR DEFINITIONS - DATABASE-FIRST APPROACH
 const MMP1_IDS = [
-  { id: 'id7', name: 'Utilities', label: 'Utilities', devId: 'id7', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'id8', name: 'Adoption', label: 'Adoption', devId: 'id8', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'id9', name: 'Highways', label: 'Highways', devId: 'id9', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'utilities', name: 'Utilities', label: 'Utilities', devId: 'A1-A16', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', label: 'Adoption', devId: 'B1-B16', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', label: 'Highways', devId: 'C1-C16', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
   { id: 'insurance', name: 'Insurance', label: 'Insurance', devId: 'D1-D16', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
   { id: 'construction', name: 'Construction', label: 'Construction', devId: 'E1-E16', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
   { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'F1-F16', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
@@ -369,7 +369,7 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
 
   return (
     <div className="space-y-6">
-      {/* MM1 - ID Selection Cards (P002 Pattern) */}
+      {/* MM1 - ID Selection Cards (Database-First Pattern) */}
       <Card className="w-full bg-white">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold text-black">MM1 - Configuration Templates</CardTitle>

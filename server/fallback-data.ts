@@ -33,7 +33,7 @@ export const FALLBACK_ID760_CONFIG = {
     selectedPipeSize: '150',
     selectedPipeSizeId: 1501,
     mm1Colors: '#F5A3A3',
-    mm2IdData: ['id7'],
+    mm2IdData: ['utilities'],
     mm3CustomPipeSizes: []
   },
   pricingOptions: [],
@@ -148,7 +148,7 @@ export const FALLBACK_CONFIGURATIONS = [
       selectedPipeSize: '150',
       selectedPipeSizeId: 1501,
       mm1Colors: '#F5A3A3',
-      mm2IdData: ['id7'],
+      mm2IdData: ['utilities'],
       mm3CustomPipeSizes: []
     },
     pricingOptions: [],
@@ -182,7 +182,7 @@ export const FALLBACK_CONFIGURATIONS = [
       selectedPipeSize: '150',
       selectedPipeSizeId: 1501,
       mm1Colors: '#A3F5A3',
-      mm2IdData: ['id7'],
+      mm2IdData: ['utilities'],
       mm3CustomPipeSizes: []
     },
     pricingOptions: [],
@@ -216,7 +216,7 @@ export const FALLBACK_CONFIGURATIONS = [
       selectedPipeSize: '150',
       selectedPipeSizeId: 1501,
       mm1Colors: '#F5C6A3',
-      mm2IdData: ['id7'],
+      mm2IdData: ['utilities'],
       mm3CustomPipeSizes: []
     },
     pricingOptions: [],

@@ -22,11 +22,11 @@ interface MMP1TemplateProps {
   onSave?: () => void;
 }
 
-// MMP1 ID definitions (ID7-ID12 for MM1 cards - separate from main sector selection IDs 1-6)
+// MMP1 SECTOR DEFINITIONS - DATABASE-FIRST APPROACH
 const MMP1_IDS = [
-  { id: 'id7', name: 'Utilities', label: 'Utilities', devId: 'id7', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'id8', name: 'Adoption', label: 'Adoption', devId: 'id8', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'id9', name: 'Highways', label: 'Highways', devId: 'id9', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'utilities', name: 'Utilities', label: 'Utilities', devId: 'A1-A16', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', label: 'Adoption', devId: 'B1-B16', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', label: 'Highways', devId: 'C1-C16', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
   { id: 'insurance', name: 'Insurance', label: 'Insurance', devId: 'D1-D16', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
   { id: 'construction', name: 'Construction', label: 'Construction', devId: 'E1-E16', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
   { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'F1-F16', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
@@ -551,7 +551,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     setSelectedColor(color);
     setCustomColor(color);
     
-    // Save immediately and THEN invalidate queries for instant P003 card color update
+    // Save immediately and THEN invalidate queries for instant card color update
     const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
     
@@ -578,24 +578,13 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
         });
         if (!response.ok) throw new Error('Color save failed');
       } else {
-        // If no editId, find and update the correct P-number configuration for this sector
-        const P_NUMBER_MAPPING = {
-          'utilities': 'P012',
-          'adoption': 'P112', 
-          'highways': 'P212',
-          'insurance': 'P312',
-          'construction': 'P412'
-        };
-        
-        const expectedPNumber = P_NUMBER_MAPPING[sector as keyof typeof P_NUMBER_MAPPING];
-        if (expectedPNumber) {
-          // Find the existing P-number config for this sector
-          const existingPConfig = await fetch(`/api/pr2-clean?sector=${sector}`).then(r => r.json());
-          const pNumberConfig = existingPConfig.find((config: any) => config.categoryId === expectedPNumber);
-          
-          if (pNumberConfig) {
-            // Update the existing P-number configuration
-            const response = await fetch(`/api/pr2-clean/${pNumberConfig.id}`, {
+        // DATABASE-FIRST: Update configurations directly by sector name
+        try {
+          const existingConfigs = await fetch(`/api/pr2-clean?sector=${sector}`).then(r => r.json());
+          if (existingConfigs.length > 0) {
+            // Update the first configuration found for this sector
+            const primaryConfig = existingConfigs[0];
+            const response = await fetch(`/api/pr2-clean/${primaryConfig.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -604,9 +593,11 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                 sector: sector
               })
             });
-            if (!response.ok) throw new Error('P-number color save failed');
-            console.log(`🎨 Updated ${expectedPNumber} (ID: ${pNumberConfig.id}) color to: ${color}`);
+            if (!response.ok) throw new Error('Color save failed');
+            console.log(`🎨 Updated sector ${sector} (ID: ${primaryConfig.id}) color to: ${color}`);
           }
+        } catch (error) {
+          console.warn('Could not find existing configuration for color update');
         }
       }
       
@@ -659,7 +650,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
 
   return (
     <div className="space-y-6">
-      {/* MM1 - ID Selection Cards (P002 Pattern) */}
+      {/* MM1 - ID Selection Cards (Database-First Pattern) */}
       <Card className="w-full bg-white">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold text-black flex items-center justify-between">
