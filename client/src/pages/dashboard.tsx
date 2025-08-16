@@ -2356,7 +2356,18 @@ export default function Dashboard() {
             categoryId: config.categoryId,
             configCount: data.length,
             hasValidConfigs: data.length > 0,
-            blueValues: data.map(c => c.mm_data?.mm4Rows?.[0]?.blueValue || 'missing')
+            blueValues: data.map(c => {
+              // Extract from correct nested structure
+              if (c.mm_data?.mm4DataByPipeSize) {
+                const pipeSizes = ['150-1501', '225-2251', '300-3001'];
+                for (const pipeSize of pipeSizes) {
+                  if (c.mm_data.mm4DataByPipeSize[pipeSize]?.[0]?.blueValue) {
+                    return c.mm_data.mm4DataByPipeSize[pipeSize][0].blueValue;
+                  }
+                }
+              }
+              return c.mm_data?.mm4Rows?.[0]?.blueValue || 'missing';
+            })
           });
         } catch (error) {
           console.error(`❌ Failed to load ${config.label} configuration:`, error);
@@ -2368,14 +2379,32 @@ export default function Dashboard() {
         id760Count: allConfigs.filter(c => c.equipmentId === 'id760').length,
         id759Count: allConfigs.filter(c => c.equipmentId === 'id759').length,
         equipmentPriority: equipmentPriority,
-        configDetails: allConfigs.map(c => ({
-          id: c.id,
-          equipmentId: c.equipmentId,
-          categoryId: c.categoryId,
-          sector: c.sector,
-          hasMmData: !!c.mm_data,
-          blueValue: c.mm_data?.mm4Rows?.[0]?.blueValue || 'missing'
-        }))
+        configDetails: allConfigs.map(c => {
+          // Extract MM4 pricing data from correct nested structure
+          let dayRate = 'missing';
+          if (c.mm_data?.mm4DataByPipeSize) {
+            // Try common pipe sizes in priority order: 150mm, 225mm, 300mm
+            const pipeSizes = ['150-1501', '225-2251', '300-3001'];
+            for (const pipeSize of pipeSizes) {
+              if (c.mm_data.mm4DataByPipeSize[pipeSize]?.[0]?.blueValue) {
+                dayRate = c.mm_data.mm4DataByPipeSize[pipeSize][0].blueValue;
+                break;
+              }
+            }
+          } else if (c.mm_data?.mm4Rows?.[0]?.blueValue) {
+            // Fallback to legacy structure if exists
+            dayRate = c.mm_data.mm4Rows[0].blueValue;
+          }
+          
+          return {
+            id: c.id,
+            equipmentId: c.equipmentId,
+            categoryId: c.categoryId,
+            sector: c.sector,
+            hasMmData: !!c.mm_data,
+            blueValue: dayRate
+          };
+        })
       });
       
       return allConfigs;
@@ -2932,7 +2961,22 @@ export default function Dashboard() {
     if (repairPricingData && repairPricingData.length > 0) {
       const cctvConfig = repairPricingData.find(config => config.categoryId === 'cctv-jet-vac');
       if (cctvConfig && cctvConfig.pricingOptions) {
-        const dayRateValue = cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue;
+        // Extract day rate from correct nested structure
+        let dayRateValue = null;
+        if (cctvConfig.mm_data?.mm4DataByPipeSize) {
+          // Try common pipe sizes in priority order
+          const pipeSizes = ['150-1501', '225-2251', '300-3001'];
+          for (const pipeSize of pipeSizes) {
+            if (cctvConfig.mm_data.mm4DataByPipeSize[pipeSize]?.[0]?.blueValue) {
+              dayRateValue = cctvConfig.mm_data.mm4DataByPipeSize[pipeSize][0].blueValue;
+              break;
+            }
+          }
+        } else if (cctvConfig.mm_data?.mm4Rows?.[0]?.blueValue) {
+          // Fallback to legacy structure
+          dayRateValue = cctvConfig.mm_data.mm4Rows[0].blueValue;
+        }
+        
         if (dayRateValue) {
           dayRate = parseFloat(dayRateValue) || 0;
         }
