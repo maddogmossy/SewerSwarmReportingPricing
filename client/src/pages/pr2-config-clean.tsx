@@ -4338,11 +4338,11 @@ export default function PR2ConfigClean() {
                                     <div key={row.id} className="grid grid-cols-2 gap-2">
                                       <div>
                                         <label className="text-xs text-purple-700">
-                                          {categoryId === 'f-robot-cutting' ? 'Cost - 1st Cut' : 'Debris %'}
+                                          {categoryId === 'f-robot-cutting' ? 'Cost - 1st Cut' : 'Min Quantity'}
                                         </label>
                                         <Input
                                           type="text"
-                                          placeholder={categoryId === 'f-robot-cutting' ? '0' : '0-15'}
+                                          placeholder={categoryId === 'f-robot-cutting' ? '0' : '3'}
                                           className="border-purple-300"
                                           value={getDatabaseValue(row.id, 'purpleDebris')}
                                           onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
@@ -4350,12 +4350,12 @@ export default function PR2ConfigClean() {
                                       </div>
                                       <div>
                                         <label className="text-xs text-purple-700">
-                                          {categoryId === 'f-robot-cutting' ? 'Extra Per Cut' : 'Length'}
+                                          {categoryId === 'f-robot-cutting' ? 'Extra Per Cut' : 'Min Patches'}
                                         </label>
                                         <div className="flex items-center gap-2">
                                           <Input
                                             type="text"
-                                            placeholder={categoryId === 'f-robot-cutting' ? '0' : '0-35'}
+                                            placeholder={categoryId === 'f-robot-cutting' ? '0' : '4'}
                                             className="border-purple-300 flex-1"
                                             value={getDatabaseValue(row.id, 'purpleLength')}
                                             onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}

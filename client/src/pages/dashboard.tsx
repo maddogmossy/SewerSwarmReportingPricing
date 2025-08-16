@@ -3038,8 +3038,31 @@ export default function Dashboard() {
       };
     }
     
-    // Get the cost per unit and minimum quantity
-    const costPerUnit = parseFloat(selectedPatchingOption.value) || 0;
+    // CRITICAL FIX: Use MM4 green values instead of TP2 configuration values
+    // Extract green value (cost per 1mts patch) from MM4 data based on pipe size
+    let costPerUnit = 0;
+    let mm4MinQuantity = 0;
+    
+    // Get MM4 data from patching configuration for this pipe size
+    if (tp2Config.mm_data?.mm4DataByPipeSize) {
+      const pipeSizeKey = `${pipeSize}-${pipeSize}${pipeSize === '150' ? '1' : pipeSize === '225' ? '51' : '01'}`;
+      const mm4Data = tp2Config.mm_data.mm4DataByPipeSize[pipeSizeKey];
+      
+      if (mm4Data && mm4Data[0]) {
+        // Use green value as cost per 1mts patch
+        costPerUnit = parseFloat(mm4Data[0].greenValue) || 0;
+        
+        // Use purple fields for minimum quantities
+        const purpleMinQty1 = parseFloat(mm4Data[0].purpleDebris) || 0;
+        const purpleMinQty2 = parseFloat(mm4Data[0].purpleLength) || 0;
+        mm4MinQuantity = Math.max(purpleMinQty1, purpleMinQty2); // Use higher minimum
+      }
+    }
+    
+    // Fallback to TP2 configuration values if MM4 not available
+    if (costPerUnit === 0) {
+      costPerUnit = parseFloat(selectedPatchingOption.value) || 0;
+    }
     
     // FIXED: Match the specific patching option to its corresponding minimum quantity field
     let minQuantityOption = null;
@@ -3065,37 +3088,42 @@ export default function Dashboard() {
       );
     }
     
-    minQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
+    // Use MM4 minimum quantity if available, otherwise use TP2 config
+    const configMinQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
+    const finalMinQuantity = mm4MinQuantity > 0 ? mm4MinQuantity : configMinQuantity;
     
-    // TP2 Minimum Quantity Mapping completed
-    
-    // Calculate base cost: cost per unit × defect count
+    // Calculate base cost using MM4 green value (per 1mts) × defect count
     const baseCost = costPerUnit * defectCount;
     
-    // USE DIRECT CONFIGURATION VALUES - NO DAY RATE DISTRIBUTION
-    // The configuration values already include final cost (£475, £600, £570)
-    const totalCost = costPerUnit * defectCount;
-    
     // CHECK MINIMUM QUANTITY REQUIREMENT
-    const meetsMinimumQuantity = defectCount >= minQuantity;
+    const meetsMinimumQuantity = defectCount >= finalMinQuantity;
+    
+    // If below minimum, apply day rate instead of per-unit cost
+    let finalCost = baseCost;
+    let dayRateApplied = false;
+    
+    if (!meetsMinimumQuantity && finalMinQuantity > 0) {
+      finalCost = dayRate; // Apply full day rate when below minimum
+      dayRateApplied = true;
+    }
     
     // TP2 cost calculation completed
     
-    // If doesn't meet minimum quantity, return red triangle indicator
-    if (!meetsMinimumQuantity) {
-      // TP2 section below minimum quantity
-      
+    // Return cost with red indicator if day rate was applied due to minimum not met
+    if (dayRateApplied) {
       return {
-        cost: null, // No cost calculated
-        showRedTriangle: true,
-        triangleMessage: `Below minimum quantities: ${defectCount}/${minQuantity} patches required`,
+        cost: finalCost,
+        showRedTriangle: true, // Show red cost when day rate applied
+        triangleMessage: `Below minimum quantities: ${defectCount}/${finalMinQuantity} patches - day rate applied`,
         defectCount: defectCount,
-        minRequired: minQuantity,
+        minRequired: finalMinQuantity,
         costPerUnit: costPerUnit,
         baseCost: baseCost,
-        dayRateAdjustment: 0,
-        totalCost: totalCost, // Include total cost with day rate adjustment for red display
-        status: 'below_minimum'
+        dayRateAdjustment: finalCost - baseCost,
+        totalCost: finalCost,
+        status: 'day_rate_applied',
+        patchingType: selectedPatchingOption.label,
+        recommendation: `Day rate applied: Below minimum ${finalMinQuantity} patches required`
       };
     }
     
@@ -3103,15 +3131,16 @@ export default function Dashboard() {
     const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
     
     return {
-      cost: totalCost,
+      cost: finalCost,
       costPerUnit: costPerUnit,
       baseCost: baseCost,
       dayRateAdjustment: 0,
-      dayRate: dayRate, // Now from CCTV/Jet Vac Central Configuration
+      dayRate: dayRate,
       defectCount: defectCount,
-      minQuantity: minQuantity,
+      minQuantity: finalMinQuantity,
       patchingType: selectedPatchingOption.label,
-      recommendation: recommendationText
+      recommendation: recommendationText,
+      status: 'calculated'
     };
   };
 
