@@ -1108,12 +1108,12 @@ export default function Dashboard() {
         const formatStandardizedObservation = (text: string, defectType: string) => {
           // For structural defects - extract codes and format with meterage at end
           if (defectType === 'structural') {
-            // Extract deformity: "Deformity at 5.67m (Deformed sewer or drain, 5%)" → **"D"** - Deformity (Deformed sewer or drain, 5%) at 5.67m
+            // Extract deformity: "Deformity at 5.67m (Deformed sewer or drain, 5%)" → <b>"D"</b> - Deformity (Deformed sewer or drain, 5%) at 5.67m
             const deformityMatch = text.match(/Deformity at (\d+\.?\d*)m(.*)$/i);
             if (deformityMatch) {
               const meterage = deformityMatch[1];
               const description = deformityMatch[2].trim();
-              return `**"D"** - Deformity${description} at ${meterage}m`;
+              return `<b>"D"</b> - Deformity${description} at ${meterage}m`;
             }
             
             // Extract fractures
@@ -1123,7 +1123,7 @@ export default function Dashboard() {
               const codeType = text.toLowerCase().includes('circumferential') ? 'FC' : 'FL';
               const description = fractureMatch[3].trim();
               const fractureName = fractureMatch[1].toLowerCase();
-              return `**"${codeType}"** - ${fractureName.charAt(0).toUpperCase() + fractureName.slice(1)}${description} at ${meterage}m`;
+              return `<b>"${codeType}"</b> - ${fractureName.charAt(0).toUpperCase() + fractureName.slice(1)}${description} at ${meterage}m`;
             }
             
             // Extract cracks
@@ -1131,7 +1131,7 @@ export default function Dashboard() {
             if (crackMatch) {
               const meterage = crackMatch[2];
               const description = crackMatch[3].trim();
-              return `**"CR"** - Crack${description} at ${meterage}m`;
+              return `<b>"CR"</b> - Crack${description} at ${meterage}m`;
             }
             
             // Extract joint displacement
@@ -1140,7 +1140,7 @@ export default function Dashboard() {
               const meterage = jointDisplacementMatch[1];
               const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
               const description = jointDisplacementMatch[2].trim();
-              return `**"${codeType}"** - Joint displacement${description} at ${meterage}m`;
+              return `<b>"${codeType}"</b> - Joint displacement${description} at ${meterage}m`;
             }
             
             // Extract open joints
@@ -1149,7 +1149,7 @@ export default function Dashboard() {
               const meterage = openJointMatch[1];
               const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
               const description = openJointMatch[2].trim();
-              return `**"${codeType}"** - Open joint${description} at ${meterage}m`;
+              return `<b>"${codeType}"</b> - Open joint${description} at ${meterage}m`;
             }
             
             // Extract collapsed pipes
@@ -1157,7 +1157,7 @@ export default function Dashboard() {
             if (collapsedMatch) {
               const meterage = collapsedMatch[2];
               const description = collapsedMatch[3].trim();
-              return `**"COL"** - Collapsed${description} at ${meterage}m`;
+              return `<b>"COL"</b> - Collapsed${description} at ${meterage}m`;
             }
             
             // Extract broken pipes
@@ -1165,7 +1165,7 @@ export default function Dashboard() {
             if (brokenMatch) {
               const meterage = brokenMatch[2];
               const description = brokenMatch[3].trim();
-              return `**"BRK"** - Broken${description} at ${meterage}m`;
+              return `<b>"BRK"</b> - Broken${description} at ${meterage}m`;
             }
             
             // Extract defective connections
@@ -1173,7 +1173,7 @@ export default function Dashboard() {
             if (connectionMatch) {
               const meterage = connectionMatch[2];
               const description = connectionMatch[3].trim();
-              return `**"CN"** - Connection defective${description} at ${meterage}m`;
+              return `<b>"CN"</b> - Connection defective${description} at ${meterage}m`;
             }
           }
           
@@ -1183,28 +1183,28 @@ export default function Dashboard() {
             const derMatch = text.match(/DER (.+)/i);
             if (derMatch) {
               const description = derMatch[1];
-              return `**"DER"** - ${description}`;
+              return `<b>"DER"</b> - ${description}`;
             }
             
             // Extract DES deposits  
             const desMatch = text.match(/DES (.+)/i);
             if (desMatch) {
               const description = desMatch[1];
-              return `**"DES"** - ${description}`;
+              return `<b>"DES"</b> - ${description}`;
             }
             
             // Extract water level
             const wlMatch = text.match(/Water level (.+)/i);
             if (wlMatch) {
               const description = wlMatch[1];
-              return `**"WL"** - Water level ${description}`;
+              return `<b>"WL"</b> - Water level ${description}`;
             }
             
             // Extract junctions
             const junctionMatch = text.match(/Junction (.+)/i);
             if (junctionMatch) {
               const description = junctionMatch[1];
-              return `**"JN"** - Junction ${description}`;
+              return `<b>"JN"</b> - Junction ${description}`;
             }
           }
           
@@ -1301,9 +1301,9 @@ export default function Dashboard() {
                 {observations.map((observation, index) => (
                   <li key={index} className="flex items-start">
                     <span className="text-blue-500 mr-2 flex-shrink-0">•</span>
-                    <span className="break-words">
-                      {formatStandardizedObservation(observation, section.defectType)}
-                    </span>
+                    <span className="break-words" dangerouslySetInnerHTML={{
+                      __html: formatStandardizedObservation(observation, section.defectType)
+                    }}></span>
                   </li>
                 ))}
               </ul>
@@ -1335,7 +1335,9 @@ export default function Dashboard() {
           <div className="text-sm p-2 w-full">
             <div className="flex items-start text-left leading-relaxed">
               <span className="text-blue-500 mr-2 flex-shrink-0">•</span>
-              <div className="break-words">{displayText}</div>
+              <div className="break-words" dangerouslySetInnerHTML={{
+                __html: displayText
+              }}></div>
             </div>
           </div>
         );
