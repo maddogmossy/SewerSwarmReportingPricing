@@ -147,7 +147,8 @@ export class WRcStandardsEngine {
       'DER': ['deposit', 'coarse', 'debris', 'settled'],
       'DES': ['deposit', 'fine', 'silt', 'mud'],
       'WL': ['water level', 'standing water', 'high water'],
-      'JDL': ['joint', 'displacement', 'large', 'major']
+      'JDL': ['joint', 'displacement', 'large', 'major'],
+      'DEF': ['deformity', 'deformed', 'deform']
     };
     
     const codePatterns = patterns[code];

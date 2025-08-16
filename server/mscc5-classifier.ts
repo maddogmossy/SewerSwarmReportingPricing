@@ -1215,7 +1215,7 @@ export class MSCC5Classifier {
       });
       
       // Sector-specific adjustments
-      if (sector === 'adoption' && mainDefectType === 'structural') {
+      if (sector === 'adoption' && (mainDefectType as string) === 'structural') {
         highestGrade = Math.max(highestGrade, 3);
       }
       
@@ -1225,7 +1225,7 @@ export class MSCC5Classifier {
         adoptable = 'No';
       } else if (highestGrade === 3) {
         adoptable = 'Conditional';
-      } else if (highestGrade === 2 && mainDefectType === 'structural') {
+      } else if (highestGrade === 2 && (mainDefectType as string) === 'structural') {
         adoptable = 'Conditional';
       } else if (highestGrade >= 2) {
         // Service defects Grade 2+ require conditional adoption
@@ -1262,10 +1262,10 @@ export class MSCC5Classifier {
         if (OS19X_ADOPTION_STANDARDS.banned_defects.codes.includes(primaryDefectCode)) {
           adoptable = 'No';
           adoptionNotes = 'Contains banned defect code - automatic rejection for adoption';
-        } else if (mainDefectType === 'structural' && highestGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.structural.max_grade) {
+        } else if ((mainDefectType as string) === 'structural' && highestGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.structural.max_grade) {
           adoptable = 'No';
           adoptionNotes = OS19X_ADOPTION_STANDARDS.grading_thresholds.structural.description;
-        } else if (mainDefectType === 'service' && highestGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.service.max_grade) {
+        } else if ((mainDefectType as string) === 'service' && highestGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.service.max_grade) {
           adoptable = 'Conditional';
           adoptionNotes = OS19X_ADOPTION_STANDARDS.grading_thresholds.service.description;
         }
