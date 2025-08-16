@@ -4401,67 +4401,28 @@ export default function Dashboard() {
           
           // Check each MM4 row to see if section matches criteria
           for (const mm4Row of matchingMM4Data) {
-            // Get buffered values if available (to handle input protection)
-            const getBufferedValue = (rowId: number, field: string, fallback: string) => {
-              try {
-                const buffer = JSON.parse(localStorage.getItem('inputBuffer') || '{}');
-                const pipeSizeKey = matchingPipeSizeKey;
-                
-                // CRITICAL FIX: Use actual config ID from cctvConfig (760 for A5, 759 for A4)
-                const actualConfigId = cctvConfig.id; // Use the real config ID (760 or 759)
-                const standardBufferKey = `${actualConfigId}-${pipeSizeKey}-${rowId}-${field}`;
-                
-                // ENHANCED BUFFER KEY VALIDATION: Try multiple formats for maximum compatibility
-                const possibleBufferKeys = [
-                  standardBufferKey, // Standard format: "760-150-1501-1-greenValue"
-                  `${actualConfigId}-${pipeSizeKey.split('-')[0]}-${pipeSizeKey.split('-')[1]}-${rowId}-${field}`, // Explicit format
-                  `${actualConfigId}-${pipeSizeKey}-${field}`, // Legacy format without row ID
-                  // Cross-configuration compatibility fallbacks
-                  `${actualConfigId === 760 ? 759 : 760}-${pipeSizeKey}-${rowId}-${field}` // Cross-equipment fallback
-                ];
-                
-                let bufferedValue = null;
-                let usedBufferKey = null;
-                
-                // Try all possible key formats for maximum compatibility
-                for (const key of possibleBufferKeys) {
-                  if (buffer[key]) {
-                    bufferedValue = buffer[key];
-                    usedBufferKey = key;
-                    break;
-                  }
-                }
-                
-                const finalValue = bufferedValue || fallback;
-                
-                // CRITICAL DEBUG: Enhanced logging for A5 cost calculation issues (especially item 10)
-                if (section.itemNo === 10 && (field === 'blueValue' || field === 'greenValue')) {
-                  console.log(`🎯 ITEM 10 A5 ${field.toUpperCase()} ENHANCED BUFFER RESOLUTION:`, {
-                    configId: actualConfigId,
-                    pipeSizeKey: pipeSizeKey,
-                    rowId: rowId,
-                    field: field,
-                    possibleBufferKeys: possibleBufferKeys,
-                    usedBufferKey: usedBufferKey,
-                    bufferedValue: bufferedValue,
-                    fallback: fallback,
-                    finalValue: finalValue,
-                    allMatchingKeys: Object.keys(buffer).filter(k => k.includes(field)),
-                    A5_DEBUGGING: 'This should help identify why A5 cost calculation fails'
-                  });
-                }
-                
-                return finalValue;
-              } catch (error) {
-                console.error(`🚨 Buffer value retrieval error for ${field}:`, error);
-                return fallback;
+            // DATABASE-FIRST: Get values directly from database state
+            const getDatabaseValue = (rowId: number, field: string, fallback: string) => {
+              const finalValue = fallback;
+              
+              // CRITICAL DEBUG: Enhanced logging for A5 cost calculation issues (especially item 10)
+              if (section.itemNo === 10 && (field === 'blueValue' || field === 'greenValue')) {
+                console.log(`🎯 DATABASE-FIRST ITEM 10 A5 ${field.toUpperCase()}:`, {
+                  configId: cctvConfig.id,
+                  rowId: rowId,
+                  field: field,
+                  finalValue: finalValue,
+                  A5_DEBUGGING: 'Direct database value without buffer system'
+                });
               }
+              
+              return finalValue;
             };
             
-            const blueValue = parseFloat(getBufferedValue(mm4Row.id, 'blueValue', mm4Row.blueValue || '0'));
-            const greenValue = parseFloat(getBufferedValue(mm4Row.id, 'greenValue', mm4Row.greenValue || '0'));
-            const purpleDebris = parseFloat(getBufferedValue(mm4Row.id, 'purpleDebris', mm4Row.purpleDebris || '0'));
-            const purpleLength = parseFloat(getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'));
+            const blueValue = parseFloat(getDatabaseValue(mm4Row.id, 'blueValue', mm4Row.blueValue || '0'));
+            const greenValue = parseFloat(getDatabaseValue(mm4Row.id, 'greenValue', mm4Row.greenValue || '0'));
+            const purpleDebris = parseFloat(getDatabaseValue(mm4Row.id, 'purpleDebris', mm4Row.purpleDebris || '0'));
+            const purpleLength = parseFloat(getDatabaseValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0'));
             
             // MODERNIZED: Cost calculation separate from purple UI validation
             // For cost calculation, only require blue (day rate) and green (runs) values
@@ -4504,7 +4465,7 @@ export default function Dashboard() {
                   id: mm4Row.id,
                   originalPurpleLength: mm4Row.purpleLength,
                   parsedPurpleLength: purpleLength,
-                  bufferedPurpleLength: getBufferedValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0')
+                  databasePurpleLength: getDatabaseValue(mm4Row.id, 'purpleLength', mm4Row.purpleLength || '0')
                 },
                 specialF608_225Check: matchingPipeSizeKey === '225-2251' ? {
                   expectedCalculation: `£${blueValue} ÷ ${greenValue} runs = £${blueValue > 0 && greenValue > 0 ? (blueValue / greenValue).toFixed(2) : 'N/A'} per run`,
@@ -4527,7 +4488,7 @@ export default function Dashboard() {
                 // Try to get day rate from Row 1
                 const row1 = matchingMM4Data.find(r => r.id === 1);
                 if (row1) {
-                  const row1BlueValue = parseFloat(getBufferedValue(1, 'blueValue', row1.blueValue || '0'));
+                  const row1BlueValue = parseFloat(getDatabaseValue(1, 'blueValue', row1.blueValue || '0'));
                   if (row1BlueValue > 0) {
                     effectiveDayRate = row1BlueValue;
                     console.log(`🔄 F608 Row ${mm4Row.id}: Using Row 1 day rate £${effectiveDayRate} for calculation`);

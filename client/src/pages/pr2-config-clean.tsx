@@ -921,74 +921,13 @@ export default function PR2ConfigClean() {
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
   
-  // UNIFIED DATA FLOW: Input buffer with user input priority and conflict detection
-  const [inputBuffer, setInputBuffer] = useState<{[key: string]: string}>(() => {
-    try {
-      const stored = localStorage.getItem('inputBuffer');
-      const buffer = stored ? JSON.parse(stored) : {};
-      console.log(`🔍 BUFFER INIT: Loaded ${Object.keys(buffer).length} buffered entries`);
-      return buffer;
-    } catch {
-      console.log(`⚠️ BUFFER INIT: Failed to load, starting fresh`);
-      return {};
-    }
-  });
-  
-  // UNIFIED DATA FLOW: Helper function with user input priority - WITH CONFIGURATION ID ISOLATION
-  const getBufferedValue = (rowId: number, field: string, fallbackValue: string) => {
-    const configId = editId || 'temp';
-    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
-    const bufferedValue = inputBuffer[bufferKey];
-    
-    // CRITICAL: Always prioritize user-typed values (buffer) over backend data
-    if (bufferedValue !== undefined && bufferedValue !== '') {
-      console.log(`🔒 PRIORITY: Using user input from buffer for ${bufferKey}: "${bufferedValue}"`);
-      return bufferedValue;
-    }
-    
-    // Only use fallback if no user input exists
-    console.log(`📄 Using backend fallback for ${bufferKey}: "${fallbackValue}"`);
-    return fallbackValue;
-  };
-
-  // UNIFIED DATA FLOW: Buffer management with data integrity validation
-  const clearBufferForRow = (rowId: number, field: string) => {
-    const configId = editId || 'temp';
-    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
-    
-    console.log(`🧹 BUFFER CLEANUP: Clearing ${bufferKey} after successful save`);
-    
-    setInputBuffer(prev => {
-      const updated = { ...prev };
-      const clearedValue = updated[bufferKey];
-      delete updated[bufferKey];
-      localStorage.setItem('inputBuffer', JSON.stringify(updated));
-      
-      console.log(`✅ BUFFER CLEANUP: Cleared value "${clearedValue}" from ${bufferKey}`);
-      return updated;
-    });
-  };
-
-  // UNIFIED DATA FLOW: Clear stale buffer entries for configuration switching
-  const clearStaleBufferEntries = (configId: string) => {
-    setInputBuffer(prev => {
-      const updated = { ...prev };
-      let clearedCount = 0;
-      
-      Object.keys(updated).forEach(key => {
-        if (key.startsWith(`${configId}-`)) {
-          delete updated[key];
-          clearedCount++;
-        }
-      });
-      
-      if (clearedCount > 0) {
-        localStorage.setItem('inputBuffer', JSON.stringify(updated));
-        console.log(`🧹 UNIFIED FLOW: Cleared ${clearedCount} stale buffer entries for config ${configId}`);
-      }
-      
-      return updated;
-    });
+  // DATABASE-FIRST: Direct value access from database state only
+  const getDatabaseValue = (rowId: number, field: string): string => {
+    const currentData = getCurrentMM4Data();
+    const row = currentData.find(r => r.id === rowId);
+    const value = row?.[field] || '';
+    console.log(`🎯 DATABASE-FIRST: Getting ${field} for row ${rowId}: "${value}"`);
+    return value;
   };
 
 
@@ -1121,10 +1060,7 @@ export default function PR2ConfigClean() {
       const pipeSizeNumber = pipeSize.replace('mm', '');
       console.log(`🎯 UNIFIED FLOW: Auto-selecting pipe size ${pipeSizeNumber}mm from URL parameter`);
       
-      // Clear any stale buffer entries when switching pipe sizes
-      if (editId) {
-        clearStaleBufferEntries(editId);
-      }
+      // DATABASE-FIRST: No buffer cleanup needed
       
       handlePipeSizeSelect(pipeSizeNumber);
     }
@@ -1199,71 +1135,33 @@ export default function PR2ConfigClean() {
     }
   };
 
-  const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
-    console.log(`🔍 updateMM4Row called: rowId=${rowId}, field=${field}, value="${value}"`);
+  // DATABASE-FIRST: Immediate save with optimistic UI updates
+  const updateMM4Row = async (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+    console.log(`🎯 DATABASE-FIRST: updateMM4Row called: rowId=${rowId}, field=${field}, value="${value}"`);
     
-    // No validation during typing - validation happens on save/navigation only
-    
-    // IMMEDIATE: Store in input buffer to prevent backend overwrites - WITH CONFIGURATION ID ISOLATION
-    const configId = editId || 'temp';
-    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${rowId}-${field}`;
-    setInputBuffer(prev => {
-      const updated = {
-        ...prev,
-        [bufferKey]: value
-      };
-      // Persist buffer to localStorage immediately
-      localStorage.setItem('inputBuffer', JSON.stringify(updated));
-      return updated;
-    });
-    
-    // Allow input for all pipe sizes - user is responsible for authentic data
-    console.log(`✅ Allowing input for pipe size: ${selectedPipeSizeForMM4}mm`);
-    
+    // 1. Update UI state immediately (optimistic update)
     const currentData = getCurrentMM4Data();
-    console.log(`🔍 Current data before update:`, currentData);
-    
-    // Save exactly what user types - no validation during typing
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
     
-    console.log(`🔍 New data after update:`, newData);
-    console.log(`🔍 Specific row ${rowId} ${field}:`, newData.find(r => r.id === rowId)?.[field]);
-    
     updateMM4DataForPipeSize(newData);
+    console.log(`✅ UI updated optimistically for ${field}=${value}`);
     
-    // IMMEDIATE: Save to localStorage for persistence
-    const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    const updatedMM4DataByPipeSize = {
-      ...mm4DataByPipeSize,
-      [pipeSizeKey]: newData
-    };
-    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
-    
-    // UNIFIED DATA FLOW: Immediate user input protection + delayed database sync
-    if (autoSaveTimeout) {
-      clearTimeout(autoSaveTimeout);
-    }
-    const timeoutId = setTimeout(async () => {
-      console.log(`🔄 UNIFIED FLOW: Auto-save triggered for ${field}=${value} on row ${rowId}`);
-      
-      // Ensure user input is preserved during database save
-      console.log(`🔒 USER INPUT PRESERVATION: Buffer value for ${bufferKey}: "${inputBuffer[bufferKey]}"`);
-      
+    // 2. Save to database immediately (no delays or buffers)
+    try {
       await triggerAutoSave();
+      console.log(`✅ DATABASE-FIRST: Successfully saved ${field}=${value} to database`);
+    } catch (error) {
+      console.error(`🚨 DATABASE-FIRST: Save failed for ${field}=${value}:`, error);
       
-      // CRITICAL: Verify user input wasn't overwritten after save
-      setTimeout(() => {
-        const postSaveValue = inputBuffer[bufferKey];
-        if (postSaveValue !== value) {
-          console.warn(`⚠️ DATA INTEGRITY WARNING: User input changed after save! Expected: "${value}", Found: "${postSaveValue}"`);
-        } else {
-          console.log(`✅ USER INPUT CONFIRMED: Value preserved after database save`);
-        }
-      }, 100);
-    }, 1500); // Wait 1.5 seconds before saving to backend
-    setAutoSaveTimeout(timeoutId);
+      // 3. Revert UI state on save failure
+      const revertedData = currentData; // Original data before optimistic update
+      updateMM4DataForPipeSize(revertedData);
+      console.log(`🔄 DATABASE-FIRST: Reverted UI state due to save failure`);
+      
+      // TODO: Show user error notification
+    }
   };
 
   // Handle range warning dialog responses
@@ -1279,34 +1177,11 @@ export default function PR2ConfigClean() {
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
     
-    // CRITICAL: Update buffer to reflect new value so input field shows it immediately - WITH CONFIGURATION ID ISOLATION
-    const configId = editId || 'temp';
-    const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${pendingRowId}-purpleLength`;
-    setInputBuffer(prev => {
-      const updated = {
-        ...prev,
-        [bufferKey]: finalValue
-      };
-      // Persist buffer to localStorage immediately
-      localStorage.setItem('inputBuffer', JSON.stringify(updated));
-      console.log(`🔧 Updated buffer for ${bufferKey}: "${finalValue}"`);
-      console.log(`🔧 Full buffer after update:`, updated);
-      return updated;
-    });
-
-    // CRITICAL: Update React state FIRST for immediate UI reflection
-    const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    const updatedMM4DataByPipeSize = {
-      ...mm4DataByPipeSize,
-      [currentPipeSizeKey]: newData
-    };
-    setMm4DataByPipeSize(updatedMM4DataByPipeSize);
-    
-    // Update MM4 data storage (this calls the same setState but ensures consistency)
+    // DATABASE-FIRST: Update React state immediately
     updateMM4DataForPipeSize(newData);
-    console.log(`🔧 Updated MM4 storage to sync with buffer for row ${pendingRowId}`);
+    console.log(`✅ DATABASE-FIRST: Updated MM4 data for row ${pendingRowId}`);
     
-    // DISABLED: No localStorage persistence to prevent synthetic data contamination
+    // DATABASE-FIRST: No localStorage persistence needed
     
     // Force a component re-render to update input field values and IMMEDIATELY save to backend
     setTimeout(async () => {
@@ -1316,7 +1191,6 @@ export default function PR2ConfigClean() {
     }, 50);
     
     console.log(`✅ Updated MM4 data:`, newData);
-    console.log(`✅ Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
     
     // Reset dialog state AFTER state update
     setTimeout(() => {
@@ -1715,9 +1589,9 @@ export default function PR2ConfigClean() {
 
   // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒
   // MM4/MM5 Auto-save wrappers
+  // DATABASE-FIRST: Immediate save wrapper
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
-    updateMM4Row(rowId, field, value);
-    // Skip immediate triggerAutoSave since updateMM4Row handles debounced saving
+    updateMM4Row(rowId, field, value); // Now handles immediate database save
   };
 
   const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
@@ -1825,23 +1699,15 @@ export default function PR2ConfigClean() {
       const currentData = getCurrentMM4Data();
       
       for (const row of currentData) {
-        // Get the actual value from buffer (if exists) or fallback to stored value - WITH CONFIGURATION ID ISOLATION
-        const configId = editId || 'temp';
-        const bufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${row.id}-purpleLength`;
-        const actualValue = inputBuffer[bufferKey] || row.purpleLength;
+        // DATABASE-FIRST: Get actual values directly from database state
+        const actualValue = row.purpleLength;
+        const actualDebrisValue = row.purpleDebris;
         
-        console.log(`🔍 .99 Validation Check - Row ${row.id}:`, {
-          bufferKey,
-          bufferedValue: inputBuffer[bufferKey],
+        console.log(`🎯 DATABASE-FIRST .99 Validation Check - Row ${row.id}:`, {
           storedValue: row.purpleLength,
           actualValue,
           needsValidation: !!(actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99'))
         });
-        
-        // CRITICAL FIX: Only validate if BOTH purpleLength has value AND purpleDebris is empty
-        // This prevents false warnings when data is corrupted by deletion
-        const debrisBufferKey = `${configId}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}-${row.id}-purpleDebris`;
-        const actualDebrisValue = inputBuffer[debrisBufferKey] || row.purpleDebris;
         
         if (actualValue && actualValue.trim() !== '' && !actualValue.endsWith('.99') && 
             actualDebrisValue && actualDebrisValue.trim() !== '') {
@@ -2354,55 +2220,39 @@ export default function PR2ConfigClean() {
           // CRITICAL FIX: Stop forcing backend load that brings corrupted data
           // const isF606Configuration = editId === "606" || editId === 606;
           
-          // Always load MM4 data from backend, individual fields will use buffer values when available
+          // DATABASE-FIRST: Load MM4 data from backend directly (no buffer checks)
           const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-          const hasBufferForCurrentPipeSize = Object.keys(inputBuffer).some(key => key.startsWith(currentPipeSizeKey));
           const hasLocalMM4ForCurrentPipeSize = !!mm4DataByPipeSize[currentPipeSizeKey];
           
-          console.log('🔍 Buffer check:');
-          console.log('  - hasActiveBufferValues:', Object.keys(inputBuffer).length > 0);
-          console.log('  - hasBufferForCurrentPipeSize:', hasBufferForCurrentPipeSize);
+          console.log('🎯 DATABASE-FIRST: Loading backend data directly');
           console.log('  - hasLocalMM4ForCurrentPipeSize:', hasLocalMM4ForCurrentPipeSize);
           console.log('  - currentPipeSizeKey:', currentPipeSizeKey);
-          console.log('  - buffer contents:', inputBuffer);
           
-          // UNIFIED DATA FLOW: Load backend data but preserve user inputs via buffer system
+          // DATABASE-FIRST: Always load from backend when available
           if (!hasLocalMM4ForCurrentPipeSize) {
-            // Load MM4 data from backend as baseline, user buffer takes priority
             if (config.mmData.mm4DataByPipeSize) {
-              console.log('📥 UNIFIED FLOW: Backend MM4 data received:', config.mmData.mm4DataByPipeSize);
-              
-              // CRITICAL: Check for user input conflicts before loading backend data
-              const hasUserInputsInBuffer = Object.keys(inputBuffer).some(key => 
-                key.includes(`${editId || 'temp'}-${selectedPipeSizeForMM4}-${selectedPipeSizeId}`)
-              );
-              
-              if (hasUserInputsInBuffer) {
-                console.log('🔒 USER INPUT PRIORITY: Detected user inputs in buffer, backend data loaded as fallback only');
-              } else {
-                console.log('📥 CLEAN LOAD: No user inputs detected, loading backend data normally');
-              }
+              console.log('📥 DATABASE-FIRST: Loading MM4 data from backend:', config.mmData.mm4DataByPipeSize);
               
               const hasBackendData = Object.keys(config.mmData.mm4DataByPipeSize).length > 0;
               if (hasBackendData) {
                 setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
-                console.log('✅ UNIFIED FLOW: MM4 backend data loaded (user inputs via buffer take priority)');
+                console.log('✅ DATABASE-FIRST: MM4 backend data loaded successfully');
               } else {
-                console.log('🔒 UNIFIED FLOW: Backend has empty MM4 data, preserving all user values');
+                console.log('🔍 DATABASE-FIRST: Backend has empty MM4 data');
               }
             } else if (config.mmData.mm4Rows) {
               // Legacy format - store under current pipe size key
               const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-              console.log('📥 Converting MM4 legacy data to pipe-size format');
+              console.log('📥 DATABASE-FIRST: Converting MM4 legacy data to pipe-size format');
               console.log('  - Legacy data:', config.mmData.mm4Rows);
               console.log('  - Will store under key:', currentKey);
               setMm4DataByPipeSize({ [currentKey]: config.mmData.mm4Rows });
-              console.log('✅ MM4 legacy data converted and stored');
+              console.log('✅ DATABASE-FIRST: MM4 legacy data converted and stored');
             } else {
-              console.log('❌ No MM4 data found in backend config');
+              console.log('❌ DATABASE-FIRST: No MM4 data found in backend config');
             }
           } else {
-            console.log('🔒 Preserving local MM4 data for this pipe size, skipping backend load');
+            console.log('🔒 DATABASE-FIRST: Preserving local MM4 data for this pipe size, skipping backend load');
             console.log('  - Reason: hasLocalMM4ForCurrentPipeSize =', hasLocalMM4ForCurrentPipeSize);
           
           // DISABLED: Corrupted data detection was clearing user input values for patching
@@ -4286,7 +4136,7 @@ export default function PR2ConfigClean() {
                                 type="text"
                                 placeholder="0"
                                 className="border-blue-300 mt-1"
-                                value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'blueValue', getCurrentMM4Data()[0]?.blueValue || '')}
+                                value={getDatabaseValue(getCurrentMM4Data()[0]?.id || 1, 'blueValue')}
                                 onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'blueValue', e.target.value)}
                               />
                             </div>
@@ -4307,7 +4157,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'purpleDebris', getCurrentMM4Data()[0]?.purpleDebris || '')}
+                                  value={getDatabaseValue(getCurrentMM4Data()[0]?.id || 1, 'purpleDebris')}
                                   onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'purpleDebris', e.target.value)}
                                 />
                               </div>
@@ -4317,7 +4167,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'greenValue', getCurrentMM4Data()[0]?.greenValue || '')}
+                                  value={getDatabaseValue(getCurrentMM4Data()[0]?.id || 1, 'greenValue')}
                                   onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'greenValue', e.target.value)}
                                 />
                               </div>
@@ -4327,7 +4177,7 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'purpleLength', getCurrentMM4Data()[0]?.purpleLength || '')}
+                                  value={getDatabaseValue(getCurrentMM4Data()[0]?.id || 1, 'purpleLength')}
                                   onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'purpleLength', e.target.value)}
                                 />
                               </div>
@@ -4412,7 +4262,7 @@ export default function PR2ConfigClean() {
                                 type="text"
                                 placeholder="Enter day rate"
                                 className="border-blue-300"
-                                value={getBufferedValue(getCurrentMM4Data()[0]?.id || 1, 'blueValue', getCurrentMM4Data()[0]?.blueValue || '')}
+                                value={getDatabaseValue(getCurrentMM4Data()[0]?.id || 1, 'blueValue')}
                                 onChange={(e) => updateMM4RowWithAutoSave(getCurrentMM4Data()[0]?.id || 1, 'blueValue', e.target.value)}
                               />
                             </div>
@@ -4436,7 +4286,7 @@ export default function PR2ConfigClean() {
                                       type="text"
                                       placeholder="Enter quantity"
                                       className="border-green-300"
-                                      value={getBufferedValue(row.id, 'greenValue', row.greenValue || '')}
+                                      value={getDatabaseValue(row.id, 'greenValue')}
                                       onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
                                     />
                                   </div>
@@ -4468,7 +4318,7 @@ export default function PR2ConfigClean() {
                                           type="text"
                                           placeholder={categoryId === 'f-robot-cutting' ? '0' : '0-15'}
                                           className="border-purple-300"
-                                          value={getBufferedValue(row.id, 'purpleDebris', row.purpleDebris || '')}
+                                          value={getDatabaseValue(row.id, 'purpleDebris')}
                                           onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
                                         />
                                       </div>
@@ -4481,7 +4331,7 @@ export default function PR2ConfigClean() {
                                             type="text"
                                             placeholder={categoryId === 'f-robot-cutting' ? '0' : '0-35'}
                                             className="border-purple-300 flex-1"
-                                            value={getBufferedValue(row.id, 'purpleLength', row.purpleLength || '')}
+                                            value={getDatabaseValue(row.id, 'purpleLength')}
                                             onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
                                           />
                                           {/* Hide + button for F619 F-Robot Cutting */}
