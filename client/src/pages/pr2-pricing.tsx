@@ -128,7 +128,7 @@ export default function PR2Pricing() {
     }
   });
 
-  // Fetch utilities sector configurations to access ID760 when in other sectors
+  // Fetch utilities sector configurations to access A5 when in other sectors
   const { data: utilitiesConfigurationsRaw = [] } = useQuery({
     queryKey: ['/api/pr2-clean', 'utilities'],
     enabled: sector !== 'utilities', // Load when not in utilities sector
@@ -602,7 +602,7 @@ export default function PR2Pricing() {
                     );
                     const configToUse = existingConfig || generalConfig;
                     
-                    // CROSS-SECTOR LOOKUP: Check utilities sector for ID760 if not found in current sector
+                    // CROSS-SECTOR LOOKUP: Check utilities sector for A5 if not found in current sector
                     const utilitiesConfig = sector !== 'utilities' ? 
                       utilitiesConfigurations.find(c => c.categoryId === 'cctv-jet-vac') : null;
                     const finalConfig = configToUse || utilitiesConfig;
@@ -806,7 +806,7 @@ export default function PR2Pricing() {
                     existingConfiguration.quantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
                     existingConfiguration.minQuantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
                     existingConfiguration.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')) ||
-                    // NEW: MM4 data format check (for MMP1 configurations like ID760)
+                    // NEW: MM4 data format check (for MMP1 configurations like A5)
                     (existingConfiguration.mmData?.mm4Rows?.some(row => 
                       (row.blueValue && row.blueValue.trim() !== '') || 
                       (row.greenValue && row.greenValue.trim() !== '')

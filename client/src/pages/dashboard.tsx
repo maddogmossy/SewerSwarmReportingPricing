@@ -184,7 +184,7 @@ const isConfigurationProperlyConfigured = (config: any): boolean => {
   const hasValidPricingValues = config.pricingOptions?.some((option: any) => 
     option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
   ) || 
-  // NEW: Also check MM4 data format (for MMP1 configurations like ID760)
+  // NEW: Also check MM4 data format (for MMP1 configurations like A5)
   config.mm_data?.mm4Rows?.some((row: any) => 
     (row.blueValue && row.blueValue.trim() !== '' && row.blueValue !== '0') || 
     (row.greenValue && row.greenValue.trim() !== '' && row.greenValue !== '0')
@@ -617,9 +617,9 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
   const queryClient = useQueryClient();
   
-  // Equipment priority state with localStorage sync - ID760 default matching UI
+  // Equipment priority state with localStorage sync - A5 default matching UI
   const [equipmentPriority, setEquipmentPriority] = useState<'id760' | 'id759'>(() => {
-    // FIXED: ID760 as default to match equipment selection UI default button
+    // FIXED: A5 (id760) as default to match equipment selection UI default button
     const stored = localStorage.getItem('equipmentPriority');
     if (stored === 'f690' || stored === 'f606' || stored === 'f608') {
       // Auto-migrate old f-series preferences to id760 (default)
@@ -3281,7 +3281,7 @@ export default function Dashboard() {
       // Old logic: if (needsCleaning && isRestrictedSection)
       // New logic: Process all service sections, but use different validation paths
       if (true) { // Always process service sections
-        // Find ID760 and ID759 configurations (ID760=cctv-jet-vac, ID759=cctv-van-pack)
+        // Find A5 and A4 configurations (A5=cctv-jet-vac, A4=cctv-van-pack)
         const id760Config = repairPricingData.find(config => config.categoryId === 'cctv-jet-vac');
         const id759Config = repairPricingData.find(config => config.categoryId === 'cctv-van-pack');
         
@@ -3324,7 +3324,7 @@ export default function Dashboard() {
         console.log('🔍 SELECTED EQUIPMENT CONFIG:', {
           selectedConfig: cctvConfig?.id,
           selectedCategoryId: cctvConfig?.categoryId,
-          wouldUseID760: equipmentPriority !== 'id759',
+          wouldUseA5: equipmentPriority !== 'id759',
           id760PurpleLengths: id760Config?.mmData?.mm4DataByPipeSize?.['150-1501']?.map(row => row.purpleLength)
         });
         
@@ -3335,7 +3335,7 @@ export default function Dashboard() {
             id760Available: !!id760Config,
             id759Available: !!id759Config,
             equipmentPriority: equipmentPriority,
-            reason: 'Neither ID760 nor ID759 configuration available'
+            reason: 'Neither A5 nor A4 configuration available'
           });
           
           return {
@@ -3709,7 +3709,7 @@ export default function Dashboard() {
               currency: '£',
               method: 'Day Rate Not Configured',
               status: 'day_rate_missing',
-              configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
+              configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'A4 CCTV/Van Pack' : 'A5 CCTV/Jet Vac',
               warningType: 'day_rate_missing',
               sectionData: {
                 itemNo: section.itemNo,
@@ -3727,9 +3727,9 @@ export default function Dashboard() {
       }
     }
 
-    // CRITICAL FIX: Also validate F615 structural configurations for day rate
+    // CRITICAL FIX: Also validate A8 structural patching configurations for day rate
     if (section.defectType === 'structural' && repairPricingData && repairPricingData.length > 0) {
-      // Find ID615 patching configuration
+      // Find A8 patching configuration
       const patchingConfig = repairPricingData.find(config => config.categoryId === 'patching' && config.sector === 'utilities');
       
       if (patchingConfig) {
@@ -3737,7 +3737,7 @@ export default function Dashboard() {
         const dayRateValue = patchingConfig.mm_data?.mm4Rows?.[0]?.blueValue;
         const isStructuralDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
         
-        console.log('🔍 ID615 Day Rate Validation:', {
+        console.log('🔍 A8 Patching Day Rate Validation:', {
           itemNo: section.itemNo,
           configId: patchingConfig.id,
           dayRateValue: dayRateValue,
@@ -3757,7 +3757,7 @@ export default function Dashboard() {
             currency: '£',
             method: 'Day Rate Not Configured',
             status: 'day_rate_missing',
-            configType: 'ID615 Patching',
+            configType: 'A8 Patching',
             warningType: 'day_rate_missing',
             sectionData: {
               itemNo: section.itemNo,
@@ -4027,7 +4027,7 @@ export default function Dashboard() {
     // FIXED: Process MM4 for ALL SERVICE sections (not just cleaning) - includes Grade 0 observations
     // Service sections include: cleaning defects, water levels, line deviations, service connections, etc.
     if (section.defectType === 'service' && repairPricingData) {
-      // SERVICE SECTION MM4 PROCESSING: ID760 (cctv-jet-vac) and ID759 (cctv-van-pack) for all service sections
+      // SERVICE SECTION MM4 PROCESSING: A5 (cctv-jet-vac) and A4 (cctv-van-pack) for all service sections
       // Includes: cleaning defects, monitoring, assessments, line deviations, service connections
       const cctvConfigs = repairPricingData.filter((config: any) => 
         ['cctv-van-pack', 'cctv-jet-vac'].includes(config.categoryId) && 
@@ -4042,18 +4042,18 @@ export default function Dashboard() {
         filteringFor: ['cctv-van-pack', 'cctv-jet-vac']
       });
       
-      // DEFAULT PRIORITY: ID760 (A5 - CCTV/Jet Vac) is default matching equipment selection UI
+      // DEFAULT PRIORITY: A5 (CCTV/Jet Vac) is default matching equipment selection UI
       const id760Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
       const id759Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-van-pack');
       
-      // Check if ID759 has valid MM4 data (user configured it) - Support both data structures
+      // Check if A4 has valid MM4 data (user configured it) - Support both data structures
       const id759ActualData = id759Config?.mmData || id759Config?.mm_data;
       const id759HasValidMM4 = id759ActualData?.mm4Rows?.some((row: any) => 
         row.blueValue && row.greenValue && parseFloat(row.blueValue) > 0 && parseFloat(row.greenValue) > 0
       );
       
       // Selection logic: Respect user's equipment priority choice first
-      // FIXED: Priority: User preference > ID760 default (matching UI) > Available config as fallback
+      // FIXED: Priority: User preference > A5 default (matching UI) > Available config as fallback
       const userPrefersId759 = equipmentPriority === 'id759';
       const id760ActualData = id760Config?.mmData || id760Config?.mm_data;
       const id760HasValidMM4 = id760ActualData?.mm4Rows?.some((row: any) => 
@@ -4065,30 +4065,30 @@ export default function Dashboard() {
       
       // CRITICAL FIX: Respect user's exact equipment priority choice
       if (userPrefersId759 && id759Config) {
-        // User chose ID759 and it's available
+        // User chose A4 and it's available
         cctvConfig = id759Config;
-        console.log('✅ A4 SELECTED - User prefers ID759 and config available');
+        console.log('✅ A4 SELECTED - User prefers A4 and config available');
       } else if (!userPrefersId759 && id760Config) {
-        // CRITICAL: User chose ID760 explicitly and it's available
+        // CRITICAL: User chose A5 explicitly and it's available
         cctvConfig = id760Config;
-        console.log('✅ A5 SELECTED - User prefers ID760 and config available');
+        console.log('✅ A5 SELECTED - User prefers A5 and config available');
       } else if (userPrefersId759 && !id759Config && id760Config) {
-        // User wants ID759 but it's not available, fallback to ID760
+        // User wants A4 but it's not available, fallback to A5
         cctvConfig = id760Config;
         console.log('🔄 A5 FALLBACK - User wants A4 but only A5 available');
       } else if (!userPrefersId759 && !id760Config && id759Config) {
-        // User wants ID760 but it's not available, fallback to ID759
+        // User wants A5 but it's not available, fallback to A4
         cctvConfig = id759Config;
         console.log('🔄 A4 FALLBACK - User wants A5 but only A4 available');
       } else if (id760Config) {
-        // No user preference, default to ID760 (matches UI default)
+        // No user preference, default to A5 (matches UI default)
         cctvConfig = id760Config;
         shouldUpdatePriority = true;
-        console.log('🔄 DEFAULT A5 - No preference, using ID760 (UI default)');
+        console.log('🔄 DEFAULT A5 - No preference, using A5 (UI default)');
       } else {
-        // Final fallback to ID759
+        // Final fallback to A4
         cctvConfig = id759Config;
-        console.log('🔄 FALLBACK A4 - Final fallback to ID759');
+        console.log('🔄 FALLBACK A4 - Final fallback to A4');
       }
       
       // Sync equipment priority with actual selection (only when needed and not recently changed by user)
@@ -4101,7 +4101,7 @@ export default function Dashboard() {
         setEquipmentPriority(newPriority);
         localStorage.setItem('equipmentPriority', newPriority);
         console.log('🔄 Equipment Priority Auto-Sync:', {
-          reason: id760HasValidMM4 ? 'ID760 has MM4 data configured' : 'ID760 default selection (UI default)',
+          reason: id760HasValidMM4 ? 'A5 has MM4 data configured' : 'A5 default selection (UI default)',
           previousPriority: equipmentPriority,
           newPriority: newPriority,
           configUsed: cctvConfig?.categoryId,
@@ -4120,7 +4120,7 @@ export default function Dashboard() {
       const enhancedLogging = section.itemNo === 22 || section.itemNo === 13 || section.itemNo === 3;
       
       console.log(enhancedLogging ? '🔍 ENHANCED MM4 Dynamic Config Selection:' : '🔍 MM4 Dynamic Config Selection:', {
-        CRITICAL_ID760_VS_ID759_ROUTING: section.itemNo === 3 ? 'Item 3 should use ID759 for MM4 validation, not ID760' : 'Normal routing',
+        CRITICAL_A5_VS_A4_ROUTING: section.itemNo === 3 ? 'Item 3 should use A4 for MM4 validation, not A5' : 'Normal routing',
         sectionId: section.itemNo,
         needsCleaning,
         id760Config: id760Config ? { id: id760Config.id, categoryId: id760Config.categoryId, hasMMData: !!id760Config.mmData } : null,
@@ -4134,9 +4134,9 @@ export default function Dashboard() {
           id: cctvConfig.id,
           categoryId: cctvConfig.categoryId,
           reason: (id760HasValidMM4 && id759HasValidMM4) ? `User preference: ${cctvConfig.categoryId}` : 
-                  cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 configured with MM4 data' : 'ID760 default selection (UI default)',
+                  cctvConfig.categoryId === 'cctv-van-pack' ? 'A4 configured with MM4 data' : 'A5 default selection (UI default)',
           hasMMData: !!(cctvConfig.mmData || cctvConfig.mm_data),
-          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
+          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'A4 CCTV/Van Pack' : 'A5 CCTV/Jet Vac',
           allConfiguredPipeSizes: enhancedLogging ? Object.keys((cctvConfig.mmData || cctvConfig.mm_data)?.mm4DataByPipeSize || {}) : undefined
         } : null,
         currentSector: currentSector.id
@@ -4466,7 +4466,7 @@ export default function Dashboard() {
                 minimumQuantity: greenValue, // Required minimum from green window
                 purpleDebrisForUI: `${purpleDebris}%`,
                 purpleLengthForUI: `${purpleLength}m`,
-                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'A4 CCTV/Van Pack' : 'A5 CCTV/Jet Vac',
                 inheritedDayRate: blueValue <= 0 && effectiveDayRate > 0,
                 expectedCalculation: `£${effectiveDayRate} ÷ ${greenValue} runs = £${ratePerRun.toFixed(2)} per run`,
                 allPipeSizeConfigs: isSpecialTracking ? Object.keys(actualMmData?.mm4DataByPipeSize || {}) : undefined
@@ -4502,7 +4502,7 @@ export default function Dashboard() {
               return {
                 cost: totalCost, // Display calculated service cost
                 currency: '£',
-                method: cctvConfig.categoryId === 'cctv-van-pack' ? `ID759 Row ${mm4Row.id} Service Cost` : `ID760 Row ${mm4Row.id} Service Cost`,
+                method: cctvConfig.categoryId === 'cctv-van-pack' ? `A4 Row ${mm4Row.id} Service Cost` : `A5 Row ${mm4Row.id} Service Cost`,
                 status: meetsMinimumRuns 
                   ? (equipmentPriority === 'id759' ? 'id759_calculated' : 'id760_calculated')
                   : (equipmentPriority === 'id759' ? 'id759_insufficient_items' : 'id760_insufficient_items'),
@@ -4514,8 +4514,8 @@ export default function Dashboard() {
                 totalServiceItems: totalServiceItems,
                 meetsMinimumRuns: meetsMinimumRuns,
                 mm4RowUsed: mm4Row.id,
-                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759 Van Pack' : 'ID760 Jet Vac',
-                recommendation: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'ID759' : 'ID760'} Row ${mm4Row.id}: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
+                configType: cctvConfig.categoryId === 'cctv-van-pack' ? 'A4 CCTV/Van Pack' : 'A5 CCTV/Jet Vac',
+                recommendation: `${cctvConfig.categoryId === 'cctv-van-pack' ? 'A4' : 'A5'} Row ${mm4Row.id}: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
               };
             }
           }
@@ -5728,13 +5728,13 @@ export default function Dashboard() {
   // AUTO-POPULATE F690 MM4-150 PURPLE LENGTH FIELDS WHEN SECTION DATA LOADS
   useEffect(() => {
     if (sectionData?.length > 0 && repairPricingData?.length > 0) {
-      // Trigger auto-population for ID760 configurations (cctv-jet-vac)
+      // Trigger auto-population for A5 configurations (cctv-jet-vac)
       const id760Config = repairPricingData.find(config => 
         config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
       );
       
       if (id760Config && id760Config.mmData) {
-        console.log('🔧 Triggering ID760 MM4-150 purple length auto-population for', sectionData.length, 'sections');
+        console.log('🔧 Triggering A5 MM4-150 purple length auto-population for', sectionData.length, 'sections');
         console.log('🔍 Auto-population disabled to preserve user-configured MM4 values:', sectionData.slice(0, 5).map(s => ({
           itemNo: s.itemNo,
           pipeSize: s.pipeSize,
