@@ -1101,7 +1101,126 @@ export default function Dashboard() {
       case 'lengthSurveyed':
         return section.lengthSurveyed;
       case 'defects':
-        const defectsText = section.defects || 'No defects recorded';
+        // Direct defects text handling without any HTML tag stripping
+        const defectsText = section.defects || '';
+        
+        // Standardized observation formatting for all defect types - MOVED TO TOP SCOPE
+        const formatStandardizedObservation = (text: string, defectType: string) => {
+          // For structural defects - extract codes and format with meterage at end
+          if (defectType === 'structural') {
+            // Extract deformity: "Deformity at 5.67m (Deformed sewer or drain, 5%)" → **"D"** - Deformity (Deformed sewer or drain, 5%) at 5.67m
+            const deformityMatch = text.match(/Deformity at (\d+\.?\d*)m(.*)$/i);
+            if (deformityMatch) {
+              const meterage = deformityMatch[1];
+              const description = deformityMatch[2].trim();
+              return `**"D"** - Deformity${description} at ${meterage}m`;
+            }
+            
+            // Extract fractures
+            const fractureMatch = text.match(/(Fracture|fracture).*?at (\d+\.?\d*)m(.*)$/i);
+            if (fractureMatch) {
+              const meterage = fractureMatch[2];
+              const codeType = text.toLowerCase().includes('circumferential') ? 'FC' : 'FL';
+              const description = fractureMatch[3].trim();
+              const fractureName = fractureMatch[1].toLowerCase();
+              return `**"${codeType}"** - ${fractureName.charAt(0).toUpperCase() + fractureName.slice(1)}${description} at ${meterage}m`;
+            }
+            
+            // Extract cracks
+            const crackMatch = text.match(/(Crack|crack).*?at (\d+\.?\d*)m(.*)$/i);
+            if (crackMatch) {
+              const meterage = crackMatch[2];
+              const description = crackMatch[3].trim();
+              return `**"CR"** - Crack${description} at ${meterage}m`;
+            }
+            
+            // Extract joint displacement
+            const jointDisplacementMatch = text.match(/Joint displacement.*?at (\d+\.?\d*)m(.*)$/i);
+            if (jointDisplacementMatch) {
+              const meterage = jointDisplacementMatch[1];
+              const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
+              const description = jointDisplacementMatch[2].trim();
+              return `**"${codeType}"** - Joint displacement${description} at ${meterage}m`;
+            }
+            
+            // Extract open joints
+            const openJointMatch = text.match(/Open joint.*?at (\d+\.?\d*)m(.*)$/i);
+            if (openJointMatch) {
+              const meterage = openJointMatch[1];
+              const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
+              const description = openJointMatch[2].trim();
+              return `**"${codeType}"** - Open joint${description} at ${meterage}m`;
+            }
+            
+            // Extract collapsed pipes
+            const collapsedMatch = text.match(/(Collapsed|collapsed).*?at (\d+\.?\d*)m(.*)$/i);
+            if (collapsedMatch) {
+              const meterage = collapsedMatch[2];
+              const description = collapsedMatch[3].trim();
+              return `**"COL"** - Collapsed${description} at ${meterage}m`;
+            }
+            
+            // Extract broken pipes
+            const brokenMatch = text.match(/(Broken|broken).*?at (\d+\.?\d*)m(.*)$/i);
+            if (brokenMatch) {
+              const meterage = brokenMatch[2];
+              const description = brokenMatch[3].trim();
+              return `**"BRK"** - Broken${description} at ${meterage}m`;
+            }
+            
+            // Extract defective connections
+            const connectionMatch = text.match(/(Connection defective|defective connection).*?at (\d+\.?\d*)m(.*)$/i);
+            if (connectionMatch) {
+              const meterage = connectionMatch[2];
+              const description = connectionMatch[3].trim();
+              return `**"CN"** - Connection defective${description} at ${meterage}m`;
+            }
+          }
+          
+          // For service defects - extract codes and keep meterage in description
+          if (defectType === 'service') {
+            // Extract DER deposits
+            const derMatch = text.match(/DER (.+)/i);
+            if (derMatch) {
+              const description = derMatch[1];
+              return `**"DER"** - ${description}`;
+            }
+            
+            // Extract DES deposits  
+            const desMatch = text.match(/DES (.+)/i);
+            if (desMatch) {
+              const description = desMatch[1];
+              return `**"DES"** - ${description}`;
+            }
+            
+            // Extract water level
+            const wlMatch = text.match(/Water level (.+)/i);
+            if (wlMatch) {
+              const description = wlMatch[1];
+              return `**"WL"** - Water level ${description}`;
+            }
+            
+            // Extract junctions
+            const junctionMatch = text.match(/Junction (.+)/i);
+            if (junctionMatch) {
+              const description = junctionMatch[1];
+              return `**"JN"** - Junction ${description}`;
+            }
+          }
+          
+          // Return original text if no patterns match
+          return text;
+        };
+        
+        if (!defectsText || defectsText.trim() === '') {
+          return (
+            <div className="text-sm p-2 w-full">
+              <div className="text-gray-500 text-left leading-relaxed">
+                No defects found
+              </div>
+            </div>
+          );
+        }
         
         // Debug Item 3 requirements check
         if (section.itemNo === 3) {
@@ -1174,113 +1293,7 @@ export default function Dashboard() {
             );
           }
           
-          // Standardized observation formatting for all defect types
-          const formatStandardizedObservation = (text: string, defectType: string) => {
-            // For structural defects - extract codes and format with meterage at end
-            if (defectType === 'structural') {
-              // Extract deformity: "Deformity at 5.67m (Deformed sewer or drain, 5%)" → **"D"** - Deformity (Deformed sewer or drain, 5%) at 5.67m
-              const deformityMatch = text.match(/Deformity at (\d+\.?\d*)m(.*)$/i);
-              if (deformityMatch) {
-                const meterage = deformityMatch[1];
-                const description = deformityMatch[2].trim();
-                return `**"D"** - Deformity${description} at ${meterage}m`;
-              }
-              
-              // Extract fractures
-              const fractureMatch = text.match(/(Fracture|fracture).*?at (\d+\.?\d*)m(.*)$/i);
-              if (fractureMatch) {
-                const meterage = fractureMatch[2];
-                const codeType = text.toLowerCase().includes('circumferential') ? 'FC' : 'FL';
-                const description = fractureMatch[3].trim();
-                const fractureName = fractureMatch[1].toLowerCase();
-                return `**"${codeType}"** - ${fractureName.charAt(0).toUpperCase() + fractureName.slice(1)}${description} at ${meterage}m`;
-              }
-              
-              // Extract cracks
-              const crackMatch = text.match(/(Crack|crack).*?at (\d+\.?\d*)m(.*)$/i);
-              if (crackMatch) {
-                const meterage = crackMatch[2];
-                const description = crackMatch[3].trim();
-                return `**"CR"** - Crack${description} at ${meterage}m`;
-              }
-              
-              // Extract joint displacement
-              const jointDisplacementMatch = text.match(/Joint displacement.*?at (\d+\.?\d*)m(.*)$/i);
-              if (jointDisplacementMatch) {
-                const meterage = jointDisplacementMatch[1];
-                const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
-                const description = jointDisplacementMatch[2].trim();
-                return `**"${codeType}"** - Joint displacement${description} at ${meterage}m`;
-              }
-              
-              // Extract open joints
-              const openJointMatch = text.match(/Open joint.*?at (\d+\.?\d*)m(.*)$/i);
-              if (openJointMatch) {
-                const meterage = openJointMatch[1];
-                const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
-                const description = openJointMatch[2].trim();
-                return `**"${codeType}"** - Open joint${description} at ${meterage}m`;
-              }
-              
-              // Extract collapsed pipes
-              const collapsedMatch = text.match(/(Collapsed|collapsed).*?at (\d+\.?\d*)m(.*)$/i);
-              if (collapsedMatch) {
-                const meterage = collapsedMatch[2];
-                const description = collapsedMatch[3].trim();
-                return `**"COL"** - Collapsed${description} at ${meterage}m`;
-              }
-              
-              // Extract broken pipes
-              const brokenMatch = text.match(/(Broken|broken).*?at (\d+\.?\d*)m(.*)$/i);
-              if (brokenMatch) {
-                const meterage = brokenMatch[2];
-                const description = brokenMatch[3].trim();
-                return `**"BRK"** - Broken${description} at ${meterage}m`;
-              }
-              
-              // Extract defective connections
-              const connectionMatch = text.match(/(Connection defective|defective connection).*?at (\d+\.?\d*)m(.*)$/i);
-              if (connectionMatch) {
-                const meterage = connectionMatch[2];
-                const description = connectionMatch[3].trim();
-                return `**"CN"** - Connection defective${description} at ${meterage}m`;
-              }
-            }
-            
-            // For service defects - extract codes and keep meterage in description
-            if (defectType === 'service') {
-              // Extract DER deposits
-              const derMatch = text.match(/DER (.+)/i);
-              if (derMatch) {
-                const description = derMatch[1];
-                return `**"DER"** - ${description}`;
-              }
-              
-              // Extract DES deposits  
-              const desMatch = text.match(/DES (.+)/i);
-              if (desMatch) {
-                const description = desMatch[1];
-                return `**"DES"** - ${description}`;
-              }
-              
-              // Extract water level
-              const wlMatch = text.match(/Water level (.+)/i);
-              if (wlMatch) {
-                const description = wlMatch[1];
-                return `**"WL"** - Water level ${description}`;
-              }
-              
-              // Extract junctions
-              const junctionMatch = text.match(/Junction (.+)/i);
-              if (junctionMatch) {
-                const description = junctionMatch[1];
-                return `**"JN"** - Junction ${description}`;
-              }
-            }
-            
-            // Return original text if no patterns match
-            return text;
-          };
+
           
           return (
             <div className="text-sm p-2 w-full">
