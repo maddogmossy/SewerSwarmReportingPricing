@@ -3973,6 +3973,21 @@ export default function Dashboard() {
 
     // Helper function to calculate ID763 structural patching (A8-Utilities Patching)
     const calculateID763StructuralPatching = (section: any, patchingConfig: any) => {
+      // ITEM 13A CRITICAL DEBUG: Add extensive logging for Item 13a
+      if (section.itemNo === 13) {
+        console.log('🚨 ITEM 13A CRITICAL DEBUG - FULL CALCULATION TRACE:', {
+          itemNo: section.itemNo,
+          letterSuffix: section.letterSuffix,
+          defectType: section.defectType,
+          defects: section.defects,
+          pipeSize: section.pipeSize,
+          totalLength: section.totalLength,
+          severityGrade: section.severityGrade,
+          hasDefectsText: !!(section.defects && section.defects.trim()),
+          defectsLength: section.defects ? section.defects.length : 0,
+          willAnalyzeForStructuralDefects: true
+        });
+      }
       const sectionPipeSize = section.pipeSize || '150';
       const mmData = patchingConfig.mmData;
       const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
@@ -4691,6 +4706,18 @@ export default function Dashboard() {
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
               
+              // ITEM 13A CRITICAL DEBUG: Detailed defect analysis
+              if (section.itemNo === 13) {
+                console.log('🚨 ITEM 13A DEFECTS ANALYSIS:', {
+                  itemNo: section.itemNo,
+                  defectsText: defectsText,
+                  defectsTextLength: defectsText.length,
+                  extractedMeterages: defectMeterages,
+                  willSearchForStructuralPattern: true,
+                  structuralPatternToUse: '/\\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\\b[^.]*?(?:at\\s+)?(\\d+(?:\\.\\d+)?m(?:\\s*,\\s*\\d+(?:\\.\\d+)?m)*)/g'
+                });
+              }
+              
               // MSCC5-Compliant patch counting: Only authentic structural defect codes (includes 'D' for deformity)
               // LEGACY REMOVED: DER, DES are service defects, not structural 
               const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
@@ -4703,26 +4730,69 @@ export default function Dashboard() {
                 const meterageText = structuralMatch[2];
                 
                 // Count comma-separated meterages for this defect
-                const meteragesForThisDefect = meterageText.split(/\s*,\s*/).filter(m => m.trim().length > 0);
-                totalStructuralPatches += meteragesForThisDefect.length;
+                const meteragesForThisDefected = meterageText.split(/\s*,\s*/).filter(m => m.trim().length > 0);
+                totalStructuralPatches += meteragesForThisDefected.length;
                 
-                console.log(`🎯 ID763 Structural Defect Found:`, {
-                  defectCode,
-                  meterageText,
-                  meteragesForThisDefect,
-                  patchesForThisDefect: meteragesForThisDefect.length
-                });
+                // ITEM 13A CRITICAL DEBUG: Show every match found
+                if (section.itemNo === 13) {
+                  console.log(`🚨 ITEM 13A STRUCTURAL DEFECT MATCH:`, {
+                    itemNo: section.itemNo,
+                    defectCode: defectCode,
+                    meterageText: meterageText,
+                    meteragesForThisDefect: meteragesForThisDefected,
+                    patchesForThisDefect: meteragesForThisDefected.length,
+                    runningTotal: totalStructuralPatches
+                  });
+                } else {
+                  console.log(`🎯 ID763 Structural Defect Found:`, {
+                    defectCode,
+                    meterageText,
+                    meteragesForThisDefect: meteragesForThisDefected,
+                    patchesForThisDefect: meteragesForThisDefected.length
+                  });
+                }
               }
               
               // MSCC5-Compliant fallback: only authentic structural codes (includes 'D' for deformity)
               if (totalStructuralPatches === 0) {
                 const basicStructuralMatches = defectsText.match(/\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b/g) || [];
                 totalStructuralPatches = Math.max(basicStructuralMatches.length, defectMeterages.length, 1);
+                
+                // ITEM 13A CRITICAL DEBUG: Show fallback logic
+                if (section.itemNo === 13) {
+                  console.log('🚨 ITEM 13A FALLBACK LOGIC TRIGGERED:', {
+                    itemNo: section.itemNo,
+                    basicStructuralMatches: basicStructuralMatches,
+                    basicStructuralMatchesCount: basicStructuralMatches.length,
+                    defectMeterages: defectMeterages,
+                    defectMeteragesLength: defectMeterages.length,
+                    finalTotalStructuralPatches: totalStructuralPatches,
+                    calculationUsed: `Math.max(${basicStructuralMatches.length}, ${defectMeterages.length}, 1) = ${totalStructuralPatches}`
+                  });
+                }
               }
               
               const patchCount = totalStructuralPatches;
               
               const totalPatchCost = costPerPatch * patchCount;
+              
+              // ITEM 13A CRITICAL DEBUG: Mathematical calculation trace
+              if (section.itemNo === 13) {
+                console.log('🚨 ITEM 13A MATHEMATICAL CALCULATION:', {
+                  itemNo: section.itemNo,
+                  step1_DefectCount: totalStructuralPatches,
+                  step2_CostPerPatch: costPerPatch,
+                  step3_Multiplication: `${totalStructuralPatches} × £${costPerPatch}`,
+                  step4_TotalPatchCost: totalPatchCost,
+                  dayRate: dayRate,
+                  mm4RowData: {
+                    blueValue: mm4Row.blueValue,
+                    greenValue: mm4Row.greenValue,
+                    purpleDebris: mm4Row.purpleDebris,
+                    purpleLength: mm4Row.purpleLength
+                  }
+                });
+              }
               
               console.log('✅ ID763 Structural Patching Cost Calculation:', {
                 sectionId: section.itemNo,
@@ -4752,7 +4822,8 @@ export default function Dashboard() {
               
               const meetsMinimumRuns = totalStructuralItems >= minimumQuantity;
               
-              return {
+              // ITEM 13A CRITICAL DEBUG: Show final return object
+              const returnObject = {
                 cost: totalPatchCost, // Display total patch cost
                 currency: '£',
                 method: 'ID763 Structural Patching',
@@ -4766,6 +4837,18 @@ export default function Dashboard() {
                 meetsMinimumRuns: meetsMinimumRuns,
                 recommendation: `ID763 structural patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost} (min: ${minimumQuantity})`
               };
+              
+              if (section.itemNo === 13) {
+                console.log('🚨 ITEM 13A FINAL RETURN OBJECT:', {
+                  itemNo: section.itemNo,
+                  returnObject: returnObject,
+                  finalCostToDisplay: returnObject.cost,
+                  isRedCost: !meetsMinimumRuns,
+                  minimumLogic: `${totalStructuralItems} structural items >= ${minimumQuantity} minimum = ${meetsMinimumRuns}`
+                });
+              }
+              
+              return returnObject;
             }
           }
           
