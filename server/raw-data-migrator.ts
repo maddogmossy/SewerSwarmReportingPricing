@@ -63,16 +63,8 @@ export class RawDataMigrator {
       return [];
     }
     
-    // Split by common separators and clean up
-    const observations = defectText
-      .split(/[.;,]/)
-      .map(obs => obs.trim())
-      .filter(obs => obs.length > 0)
-      .filter(obs => !obs.startsWith('•'))  // Remove bullet points
-      .filter(obs => !obs.startsWith('-'))  // Remove dashes
-      .map(obs => obs.replace(/^["']|["']$/g, '')); // Remove quotes
-    
-    return observations;
+    // For existing processed data, use the full defect text as single observation
+    return [defectText];
   }
   
   /**
@@ -81,22 +73,23 @@ export class RawDataMigrator {
   private static extractSecstatGrades(section: any): any {
     const grades: any = {};
     
-    // Use existing severityGrades if available
-    if (section.severityGrades) {
-      if (typeof section.severityGrades === 'object') {
-        return section.severityGrades;
-      }
+    if (section.defectType === 'observation') {
+      grades.observation = 0;
+    } else if (section.defectType === 'service') {
+      grades.service = parseInt(section.severityGrade) || 0;
+    } else if (section.defectType === 'structural') {
+      grades.structural = parseInt(section.severityGrade) || 0;
     }
     
-    // Otherwise, extract from current data
-    if (section.defectType === 'structural' && section.severityGrade) {
-      grades.structural = parseInt(section.severityGrade);
-      grades.service = null;
-    } else if (section.defectType === 'service' && section.severityGrade) {
-      grades.structural = null;
-      grades.service = parseInt(section.severityGrade);
-    }
-    
-    return Object.keys(grades).length > 0 ? grades : null;
+    return grades;
+  }
+  
+  /**
+   * Force migrate upload 102 specifically
+   */
+  static async forceMigrateUpload102(): Promise<void> {
+    console.log('🔄 FORCE MIGRATING UPLOAD 102 WITH RAW DATA');
+    await this.migrateUpload(102, 'utilities');
+    console.log('✅ FORCE MIGRATION COMPLETE FOR UPLOAD 102');
   }
 }

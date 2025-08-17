@@ -869,6 +869,43 @@ export async function registerRoutes(app: Express) {
 
       console.log(`🔍 SECTIONS API - Found ${sections.length} sections total`);
       
+      // CHECK AND TRIGGER RAW DATA MIGRATION IF NEEDED
+      const sectionsWithRawData = sections.filter(s => s.rawObservations && s.rawObservations.length > 0);
+      if (sectionsWithRawData.length === 0) {
+        console.log(`🔄 SECTIONS API - No raw data found, triggering migration for upload ${uploadId}`);
+        const { RawDataMigrator } = await import('./raw-data-migrator');
+        await RawDataMigrator.forceMigrateUpload102();
+        
+        // Refetch sections after migration
+        const migratedSections = await db.select()
+          .from(sectionInspections)
+          .where(eq(sectionInspections.fileUploadId, uploadId))
+          .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
+        
+        console.log(`✅ SECTIONS API - Raw data migration complete, refetched ${migratedSections.length} sections`);
+        
+        // Transform migrated sections with RAW DATA ARCHITECTURE integration
+        const transformedSections = migratedSections.map(section => ({
+          ...section,
+          rawObservations: section.rawObservations,
+          secstatGrades: section.secstatGrades,
+          inspectionDirection: section.inspectionDirection,
+          severityGrades: {
+            structural: section.defectType === 'structural' ? parseInt(section.severityGrade) || 0 : 0,
+            service: section.defectType === 'service' || section.defectType === 'observation' ? parseInt(section.severityGrade) || 0 : 0
+          }
+        }));
+
+        // Clear caching headers to force fresh data
+        res.set({
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        });
+
+        return res.json(transformedSections);
+      }
+      
       // Log items 4, 6, 8, 9 specifically to debug the WRc validation fix
       const targetItems = sections.filter(s => [4, 6, 8, 9].includes(s.itemNo));
       console.log('🔍 SECTIONS API - Target items with line deviations:', targetItems.map(s => ({
