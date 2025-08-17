@@ -127,10 +127,23 @@ export class SectionProcessor {
       }
     }
     
-    // Special handling for observation-only sections
+    // Special handling for observation-only sections - BUT NOT if structural priority override applied
     if (this.isObservationOnly(defectText)) {
-      finalGrade = 0;
-      finalType = 'observation';
+      // Only apply observation classification if structural priority override hasn't been applied
+      const hasStructuralOverride = normalizedDefectText.includes('deformity') || 
+                                   normalizedDefectText.includes('deformed') || 
+                                   normalizedDefectText.includes('fracture') || 
+                                   normalizedDefectText.includes('crack') ||
+                                   normalizedDefectText.includes('joint displacement') || 
+                                   normalizedDefectText.includes('collapse');
+      
+      if (!hasStructuralOverride) {
+        finalGrade = 0;
+        finalType = 'observation';
+        console.log(`🔍 OBSERVATION CLASSIFICATION: Item ${itemNo} - no structural defects detected`);
+      } else {
+        console.log(`🚫 OBSERVATION OVERRIDE BLOCKED: Item ${itemNo} has structural defects, maintaining ${finalType} Grade ${finalGrade}`);
+      }
     }
     
     // Generate recommendations based on final classification
@@ -225,7 +238,8 @@ export class SectionProcessor {
     
     // Check for real defects that would require grading
     const hasStructuralDefects = lowerText.includes('crack') || lowerText.includes('fracture') || 
-                                lowerText.includes('deformation') || lowerText.includes('joint') ||
+                                lowerText.includes('deformation') || lowerText.includes('deformity') ||
+                                lowerText.includes('deformed') || lowerText.includes('joint') ||
                                 lowerText.includes('displacement') || lowerText.includes('missing');
                                 
     const hasServiceDefects = lowerText.includes('deposit') || lowerText.includes('root') ||

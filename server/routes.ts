@@ -926,7 +926,19 @@ export async function registerRoutes(app: Express) {
               section.itemNo
             );
             console.log(`✅ Processed item ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
-            return { ...section, ...processed };
+            
+            // CRITICAL FIX: Ensure processed data overwrites ALL stored fields
+            return { 
+              ...section, 
+              ...processed,
+              // Force overwrite these critical fields for pricing
+              defectType: processed.defectType,
+              severityGrade: processed.severityGrade,
+              severityGrades: processed.severityGrades,
+              defects: processed.defects,
+              recommendations: processed.recommendations,
+              adoptable: processed.adoptable
+            };
           } else {
             console.log(`⚠️ Section ${section.itemNo}: No raw data available, returning stored data`);
             return section;
@@ -935,6 +947,16 @@ export async function registerRoutes(app: Express) {
       );
       
       console.log(`🔍 SECTIONS API - Returning ${processedSections.length} processed sections`);
+      
+      // DEBUG: Log a few processed sections to verify data
+      const debugSections = processedSections.filter(s => [13, 19, 20, 21, 22].includes(s.itemNo));
+      console.log('🔧 API RESPONSE DEBUG:', debugSections.map(s => ({
+        itemNo: s.itemNo,
+        defectType: s.defectType,
+        severityGrade: s.severityGrade,
+        adoptable: s.adoptable
+      })));
+      
       res.json(processedSections);
       
     } catch (error) {
