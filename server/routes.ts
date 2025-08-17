@@ -878,12 +878,16 @@ export async function registerRoutes(app: Express) {
         defectType: s.defectType
       })));
 
-      // Transform sections to include severityGrades structure expected by dashboard
+      // Transform sections with RAW DATA ARCHITECTURE integration
       const transformedSections = sections.map(section => ({
         ...section,
+        // RAW DATA ARCHITECTURE FIELDS - Item 4 Integration
+        rawObservations: section.rawObservations,
+        secstatGrades: section.secstatGrades,
+        inspectionDirection: section.inspectionDirection,
         severityGrades: {
           structural: section.defectType === 'structural' ? parseInt(section.severityGrade) || 0 : 0,
-          service: section.defectType === 'service' ? parseInt(section.severityGrade) || 0 : 0
+          service: section.defectType === 'service' || section.defectType === 'observation' ? parseInt(section.severityGrade) || 0 : 0
         }
       }));
 
@@ -1302,6 +1306,10 @@ export async function registerRoutes(app: Express) {
         pipeMaterial: row.section_inspections.pipeMaterial,
         totalLength: row.section_inspections.totalLength,
         defects: row.section_inspections.defects,
+        // RAW DATA ARCHITECTURE FIELDS - Item 4 Integration
+        rawObservations: row.section_inspections.rawObservations,
+        secstatGrades: row.section_inspections.secstatGrades,
+        inspectionDirection: row.section_inspections.inspectionDirection,
         defectType: row.section_inspections.defectType,
         severityGrade: row.section_inspections.severityGrade,
         severityGrades: row.section_inspections.severityGrades,
