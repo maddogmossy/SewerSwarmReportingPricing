@@ -115,11 +115,11 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
   OBI: {
     code: 'OBI',
     description: 'Other obstacles',
-    type: 'service',
+    type: 'structural',
     default_grade: 5,
-    risk: 'Service & operational observation requiring assessment',
+    risk: 'Structural obstacle requiring immediate removal and repair',
     recommended_action: 'IMS cutting to cut the rebar top and bottom and install a patch repair',
-    action_type: 2
+    action_type: 1
   },
   DEF: {
     code: 'DEF',
@@ -400,23 +400,27 @@ export class MSCC5Classifier {
   }
 
   /**
-   * Check for connections (JN/CN) within 0.7m of OJM defects
+   * Check for connections (JN/CN) within 0.7m of ANY structural defects
    */
-  static analyzeNearbyConnections(defectText: string): {
+  static analyzeJunctionProximityToStructuralDefects(defectText: string): {
     hasNearbyConnections: boolean;
     connectionDetails: string[];
     recommendReopening: boolean;
   } {
-    const ojmPattern = /OJM\s+([\d.]+)m/gi;
+    // EXPANDED: Check proximity to ALL structural defects, not just OJM
+    const structuralDefectPattern = /(CR|FL|FC|JDL|JDS|JDM|DEF|OJM|OJL|CN)\s+([\d.]+)m/gi;
     const connectionPattern = /(JN|CN)\s+([\d.]+)m/gi;
     
-    const ojmLocations: number[] = [];
+    const structuralDefectLocations: { type: string; location: number }[] = [];
     const connections: { type: string; location: number; text: string }[] = [];
     
-    // Find all OJM locations
-    let ojmMatch;
-    while ((ojmMatch = ojmPattern.exec(defectText)) !== null) {
-      ojmLocations.push(parseFloat(ojmMatch[1]));
+    // Find all structural defect locations
+    let structuralMatch;
+    while ((structuralMatch = structuralDefectPattern.exec(defectText)) !== null) {
+      structuralDefectLocations.push({
+        type: structuralMatch[1],
+        location: parseFloat(structuralMatch[2])
+      });
     }
     
     // Find all connection locations
@@ -429,15 +433,15 @@ export class MSCC5Classifier {
       });
     }
     
-    // Check for connections within 0.7m of any OJM
+    // Check for connections within 0.7m of ANY structural defect
     const nearbyConnections: string[] = [];
     let recommendReopening = false;
     
-    for (const ojmLocation of ojmLocations) {
+    for (const structuralDefect of structuralDefectLocations) {
       for (const connection of connections) {
-        const distance = Math.abs(ojmLocation - connection.location);
+        const distance = Math.abs(structuralDefect.location - connection.location);
         if (distance <= 0.7) {
-          nearbyConnections.push(`${connection.type} at ${connection.location}m (${distance.toFixed(2)}m from OJM)`);
+          nearbyConnections.push(`${connection.type} at ${connection.location}m (${distance.toFixed(2)}m from ${structuralDefect.type})`);
           recommendReopening = true;
         }
       }
@@ -890,16 +894,12 @@ export class MSCC5Classifier {
       
       // Delete existing defects for this section
       await db.delete(sectionDefects)
-        .where(and(
-          eq(sectionDefects.fileUploadId, fileUploadId),
-          eq(sectionDefects.itemNo, itemNo)
-        ));
+        .where(eq(sectionDefects.itemNo, itemNo));
       
       // Insert new individual defects
       for (let i = 0; i < defects.length; i++) {
         const defect = defects[i];
         await db.insert(sectionDefects).values({
-          fileUploadId: fileUploadId,
           itemNo: itemNo,
           defectSequence: i + 1,
           defectCode: defect.defectCode,
@@ -1491,7 +1491,7 @@ export class MSCC5Classifier {
     
     if (sector === 'construction' && (defectCode === 'OJM' || defectCode === 'JDM')) {
       // Check for nearby connections for OJM/JDM defects
-      const connectionAnalysis = this.analyzeNearbyConnections(defectText);
+      const connectionAnalysis = this.analyzeJunctionProximityToStructuralDefects(defectText);
       
       if (defectCode === 'JDM') {
         sectorSpecificRecommendation = 'First consideration should be given to a patch repair for joint displacement. Joint realignment or replacement alternative if patch ineffective';

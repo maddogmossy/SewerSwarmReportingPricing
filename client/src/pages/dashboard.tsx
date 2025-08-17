@@ -1269,7 +1269,7 @@ export default function Dashboard() {
         if (hasMultipleObservations) {
           // Split observations by line breaks first, then by periods
           let observations = defectsText
-            .split(/\n|(?:\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL))/) // Split on line breaks OR period + space + capital/defect codes
+            .split(/\n|(?:\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|LR|LL))/) // Split on line breaks OR period + space + capital/defect codes (SC removed per WRc MSCC5)
             .map(obs => obs.trim())
             .filter(obs => obs.length > 0)
             .map(obs => {
