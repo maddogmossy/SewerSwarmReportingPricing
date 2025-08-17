@@ -1104,6 +1104,17 @@ export default function Dashboard() {
         // Direct defects text handling without any HTML tag stripping
         const defectsText = section.defects || '';
         
+        // Debug observation items to understand bullet point issue
+        if (section.defectType === 'observation') {
+          console.log(`🔍 OBSERVATION ITEM ${section.itemNo} DEFECTS:`, {
+            itemNo: section.itemNo,
+            defectType: section.defectType,
+            defectsText: defectsText,
+            hasDefects: !!defectsText,
+            defectsLength: defectsText.length
+          });
+        }
+        
         // Standardized observation formatting for all defect types - MOVED TO TOP SCOPE
         const formatStandardizedObservation = (text: string, defectType: string) => {
           // For structural defects - extract codes and format with meterage at end
@@ -1276,12 +1287,11 @@ export default function Dashboard() {
             const hasLineDeviation = obsLower.includes('line deviates') || obsLower.includes('line deviation') || 
                                      obsLower.includes('lr (') || obsLower.includes('ll (');
             
-            // Check for meaningful defects in the observation
+            // Check for meaningful defects in the observation (SC codes removed per WRc MSCC5 standards)
             const hasMeaningfulDefects = obsLower.includes('deposits') || obsLower.includes('crack') || 
                                         obsLower.includes('water level') || obsLower.includes('deformation') || 
                                         obsLower.includes('fracture') || obsLower.includes('joint') ||
                                         obsLower.includes('camera under water') || obsLower.includes('cuw') ||
-                                        obsLower.includes('pipe size changes') || obsLower.includes('sc ') ||
                                         obsLower.includes('catchpit') || obsLower.includes('cpf') ||
                                         obsLower.includes('sa ') || obsLower.includes('sensor alert');
             
