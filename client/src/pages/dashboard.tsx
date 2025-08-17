@@ -1207,18 +1207,31 @@ export default function Dashboard() {
               return `<b>"JN"</b> - Junction ${description}`;
             }
             
-            // Extract size changes (SC)
+            // Extract size changes (SC) - only format as bold if structural defects are present
+            const hasStructuralDefects = section.defectType === 'structural' || 
+                                        (section.severityGrades?.structural && section.severityGrades.structural > 0);
+            
             const scMatch = text.match(/SC (.+)/i);
             if (scMatch) {
               const description = scMatch[1];
-              return `<b>"SC"</b> - ${description}`;
+              if (hasStructuralDefects) {
+                return `<b>"SC"</b> - ${description}`;
+              } else {
+                // Return as regular text when no structural defects present
+                return `SC - ${description}`;
+              }
             }
             
             // Extract pipe size changes
             const pipeSizeMatch = text.match(/Pipe size changes (.+)/i);
             if (pipeSizeMatch) {
               const description = pipeSizeMatch[1];
-              return `<b>"SC"</b> - Pipe size changes ${description}`;
+              if (hasStructuralDefects) {
+                return `<b>"SC"</b> - Pipe size changes ${description}`;
+              } else {
+                // Return as regular text when no structural defects present
+                return `Pipe size changes ${description}`;
+              }
             }
           }
           
