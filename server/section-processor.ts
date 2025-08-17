@@ -91,20 +91,19 @@ export class SectionProcessor {
     let finalGrade = classification.severityGrade;
     let finalType = classification.defectType;
     
-    if (secstatGrades && (secstatGrades.structural !== null || secstatGrades.service !== null)) {
+    if (secstatGrades && (secstatGrades.structural !== null || secstatGrades.service !== null || secstatGrades.observation !== null)) {
       console.log(`🔍 SECSTAT override for item ${itemNo}:`, secstatGrades);
       
-      // Determine final grade and type from SECSTAT
-      if (secstatGrades.structural !== null && secstatGrades.service !== null) {
-        // Both exist - prioritize structural
+      // Determine final grade and type from SECSTAT - prioritize structural over service
+      if (secstatGrades.structural !== null && secstatGrades.structural !== undefined) {
         finalGrade = secstatGrades.structural;
         finalType = 'structural';
-      } else if (secstatGrades.structural !== null) {
-        finalGrade = secstatGrades.structural;
-        finalType = 'structural';
-      } else if (secstatGrades.service !== null) {
+      } else if (secstatGrades.service !== null && secstatGrades.service !== undefined) {
         finalGrade = secstatGrades.service;
         finalType = 'service';
+      } else if (secstatGrades.observation !== null && secstatGrades.observation !== undefined) {
+        finalGrade = secstatGrades.observation;
+        finalType = 'observation';
       }
     }
     
@@ -118,7 +117,12 @@ export class SectionProcessor {
       
       // Ensure minimum structural grade of 2 for deformity defects
       if (normalizedDefectText.includes('deformity') || normalizedDefectText.includes('deformed')) {
-        finalGrade = Math.max(finalGrade, 2);
+        // Use SECSTAT structural grade if available, otherwise minimum Grade 2
+        if (secstatGrades && secstatGrades.structural !== null && secstatGrades.structural !== undefined) {
+          finalGrade = Math.max(secstatGrades.structural, 2);
+        } else {
+          finalGrade = Math.max(finalGrade || 0, 2);
+        }
         console.log(`✅ DEFORMITY FIX: Item ${itemNo} corrected to structural Grade ${finalGrade}`);
       }
     }

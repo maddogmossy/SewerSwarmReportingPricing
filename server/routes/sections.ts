@@ -66,6 +66,10 @@ export function registerSectionRoutes(app: Express) {
       
       console.log(`🔍 SECTIONS API - Found ${sections.length} sections total`);
       
+      // DEBUG: Check raw data availability
+      const sectionsWithRawData = sections.filter(s => s.rawObservations && s.rawObservations.length > 0);
+      console.log(`🔍 SECTIONS DEBUG - Raw data available for ${sectionsWithRawData.length}/${sections.length} sections`);
+      
       // Check if we need to migrate to raw data format
       const needsMigration = sections.some(section => !section.rawObservations || section.rawObservations.length === 0);
       
@@ -98,10 +102,12 @@ export function registerSectionRoutes(app: Express) {
       }
       
       // UNIFORM ARCHITECTURE: Process raw data on-demand for dashboard
-      console.log(`🔄 SECTIONS API - Processing raw data on-demand`);
+      console.log(`🔄 SECTIONS API - Processing raw data on-demand for ${sections.length} sections`);
       
       const processedSections = await Promise.all(
         sections.map(async (section) => {
+          console.log(`🔍 Processing section ${section.itemNo}: hasRawData=${!!(section.rawObservations && section.rawObservations.length > 0)}`);
+          
           if (section.rawObservations && section.rawObservations.length > 0) {
             const processed = await SectionProcessor.processSection(
               section.rawObservations,
@@ -111,11 +117,14 @@ export function registerSectionRoutes(app: Express) {
             );
             console.log(`✅ Processed item ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
             return { ...section, ...processed };
+          } else {
+            console.log(`⚠️ Section ${section.itemNo}: No raw data available, returning stored data`);
+            return section;
           }
-          return section;
         })
       );
       
+      console.log(`🔍 SECTIONS API - Returning ${processedSections.length} processed sections`);
       res.json(processedSections);
       
     } catch (error) {
