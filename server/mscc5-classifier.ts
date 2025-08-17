@@ -1187,6 +1187,30 @@ export class MSCC5Classifier {
       };
     }
     
+    // CRITICAL FIX: Prioritize structural defects in classification
+    // If any structural defects detected, classify entire section as structural
+    if (normalizedText.includes('deformity') || normalizedText.includes('deformed') || 
+        normalizedText.includes('fracture') || normalizedText.includes('crack') ||
+        normalizedText.includes('joint displacement') || normalizedText.includes('collapse')) {
+      console.log(`🔧 STRUCTURAL PRIORITY FIX: Detected structural defects in "${defectText.substring(0, 100)}..."`);
+      
+      // Force structural classification regardless of other content
+      const structuralGrade = this.calculateStructuralGrade(defectText);
+      const srmGrading = SRM_SCORING.structural[structuralGrade.toString()] || SRM_SCORING.structural["3"];
+      
+      return {
+        defectCode: 'DEF', // Use DEF as representative structural code
+        defectDescription: defectText,
+        severityGrade: structuralGrade,
+        defectType: 'structural',
+        recommendations: this.generateStructuralRecommendations(defectText, structuralGrade),
+        riskAssessment: srmGrading.risk || 'Progressive structural deterioration',
+        adoptable: structuralGrade <= 3 ? 'Yes' : 'Conditional',
+        estimatedCost: this.calculateEstimatedCost(structuralGrade, 'structural'),
+        srmGrading
+      };
+    }
+
     // Parse multiple defects with meterage
     const parsedDefects = this.parseMultipleDefects(defectText);
     
@@ -1629,6 +1653,65 @@ export class MSCC5Classifier {
     }
     
     return analysis;
+  }
+
+  /**
+   * Calculate structural grade based on defect severity and percentage
+   */
+  static calculateStructuralGrade(defectText: string): number {
+    const normalizedText = defectText.toLowerCase();
+    
+    // Extract percentage if available
+    const percentageMatch = defectText.match(/(\d+)%/);
+    const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5; // Default 5%
+    
+    // Grade based on percentage and defect type
+    if (normalizedText.includes('collapse') || percentage >= 50) return 5;
+    if (normalizedText.includes('fracture') || percentage >= 25) return 4;
+    if (normalizedText.includes('deformity') || normalizedText.includes('joint displacement')) {
+      if (percentage >= 15) return 4;
+      if (percentage >= 10) return 3;
+      return 2;
+    }
+    
+    return 3; // Default moderate structural grade
+  }
+
+  /**
+   * Generate structural recommendations based on defect type and grade
+   */
+  static generateStructuralRecommendations(defectText: string, grade: number): string {
+    const normalizedText = defectText.toLowerCase();
+    
+    if (grade >= 4) {
+      return 'Immediate structural repair required - consider full replacement or major reconstruction';
+    }
+    
+    if (normalizedText.includes('deformity')) {
+      return 'Structural assessment required - consider patch repair or localized lining depending on extent';
+    }
+    
+    if (grade === 3) {
+      return 'Medium-term structural repair recommended - patch repair should be first consideration';
+    }
+    
+    return 'Monitor structural condition and consider repair as required';
+  }
+
+  /**
+   * Calculate estimated cost based on grade and type
+   */
+  static calculateEstimatedCost(grade: number, type: 'structural' | 'service'): string {
+    const costBands = {
+      0: '£0',
+      1: '£0-500',
+      2: '£500-2,000',
+      3: '£2,000-10,000',
+      4: '£10,000-50,000',
+      5: '£50,000+'
+    };
+    
+    return costBands[Math.min(grade, 5)] || '£0';
   }
 }
 

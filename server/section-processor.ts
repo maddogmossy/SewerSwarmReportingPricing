@@ -107,6 +107,21 @@ export class SectionProcessor {
       }
     }
     
+    // CRITICAL FIX: Force structural classification for deformity defects regardless of SECSTAT
+    const normalizedDefectText = defectText.toLowerCase();
+    if (normalizedDefectText.includes('deformity') || normalizedDefectText.includes('deformed') || 
+        normalizedDefectText.includes('fracture') || normalizedDefectText.includes('crack') ||
+        normalizedDefectText.includes('joint displacement') || normalizedDefectText.includes('collapse')) {
+      console.log(`🔧 STRUCTURAL PRIORITY FIX: Forcing structural classification for item ${itemNo} due to structural defects in "${defectText.substring(0, 100)}..."`);
+      finalType = 'structural';
+      
+      // Ensure minimum structural grade of 2 for deformity defects
+      if (normalizedDefectText.includes('deformity') || normalizedDefectText.includes('deformed')) {
+        finalGrade = Math.max(finalGrade, 2);
+        console.log(`✅ DEFORMITY FIX: Item ${itemNo} corrected to structural Grade ${finalGrade}`);
+      }
+    }
+    
     // Special handling for observation-only sections
     if (this.isObservationOnly(defectText)) {
       finalGrade = 0;
@@ -152,12 +167,12 @@ export class SectionProcessor {
           section.itemNo
         );
         
-        // Update processed fields
+        // Update processed fields with null safety
         await db.update(sectionInspections)
           .set({
             defects: processed.defects,
             defectType: processed.defectType,
-            severityGrade: processed.severityGrade.toString(),
+            severityGrade: (processed.severityGrade ?? 0).toString(),
             severityGrades: processed.severityGrades,
             recommendations: processed.recommendations,
             adoptable: processed.adoptable

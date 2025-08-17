@@ -6877,56 +6877,7 @@ export default function Dashboard() {
                     <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
                   </div>
                   <div className="flex items-center gap-2">
-                    {/* Reprocess Button - reads fresh from .db3 files */}
-                    {currentUpload && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={async () => {
-                          try {
-                            console.log(`🔄 Starting reprocess for upload ${currentUpload.id}`);
-                            
-                            const response = await fetch(`/api/reprocess/${currentUpload.id}`, {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                            });
-                            
-                            const result = await response.json();
-                            
-                            if (response.ok) {
-                              toast({
-                                title: "Reprocessing Complete",
-                                description: `Successfully reprocessed ${result.sectionsCount} sections from .db3 files`,
-                              });
-                              
-                              // Refresh dashboard data to show updated results
-                              queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-                              refetchSections();
-                              
-                            } else {
-                              toast({
-                                title: "Reprocessing Failed",
-                                description: result.error || "Failed to reprocess report",
-                                variant: "destructive",
-                              });
-                            }
-                          } catch (error) {
-                            console.error('Reprocess error:', error);
-                            toast({
-                              title: "Error",
-                              description: "Failed to reprocess report: " + error.message,
-                              variant: "destructive",
-                            });
-                          }
-                        }}
-                        className="text-xs"
-                      >
-                        <RefreshCw className="h-4 w-4 mr-1" />
-                        Reprocess from DB3
-                      </Button>
-                    )}
+                    {/* REMOVED: Duplicate reprocessing button - main button is at top of page */}
 
                     <Button
                       variant="outline"

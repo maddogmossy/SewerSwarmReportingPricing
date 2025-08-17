@@ -1061,7 +1061,8 @@ async function processSectionTable(
         obs.includes('D ') || obs.includes('FC ') || obs.includes('FL ') || 
         obs.includes('JDL ') || obs.includes('JDS ') || obs.includes('JDM ') || // Joint defective medium
         obs.includes('OJM ') || obs.includes('OJL ') || obs.includes('DEF ') || 
-        obs.includes('CR ') || obs.includes('fracture') || obs.includes('crack')
+        obs.includes('CR ') || obs.includes('fracture') || obs.includes('crack') ||
+        obs.toLowerCase().includes('deformity') || obs.toLowerCase().includes('deformed') // CRITICAL FIX: Detect deformity defects
       );
       
       const hasServiceDefects = observations.some(obs =>
@@ -1111,6 +1112,19 @@ async function processSectionTable(
         sampleObservations: observations.slice(0, 3)
       });
       
+      // DEBUG: Log Item 19 classification to investigate deformity issue
+      if (authenticItemNo === 19) {
+        console.log(`🚨 ITEM 19 DEFORMITY CLASSIFICATION DEBUG:`, {
+          itemNo: authenticItemNo,
+          observations: observations,
+          hasStructuralDefects,
+          hasServiceDefects,
+          hasOnlyObservations,
+          secstatGrades: grades,
+          detectedDeformity: observations.some(obs => obs.toLowerCase().includes('deformity') || obs.toLowerCase().includes('deformed'))
+        });
+      }
+
       // CRITICAL: Check for observation-only sections first before applying SECSTAT grades
       if (hasOnlyObservations) {
         console.log(`🚨 ITEM ${authenticItemNo} CONTAINS ONLY OBSERVATIONS - FORCING GRADE 0 PER WRc MSCC5 STANDARDS`);
@@ -1118,6 +1132,28 @@ async function processSectionTable(
         defectType = 'observation';
         classification.recommendations = 'No action required - pipe observed in acceptable structural and service condition';
         classification.adoptable = 'Yes';
+      } else if (hasStructuralDefects) {
+        // CRITICAL FIX: Prioritize structural defects even if SECSTAT grades are wrong
+        console.log(`🔧 STRUCTURAL DEFECTS DETECTED - Applying structural classification for Item ${authenticItemNo}`);
+        defectType = 'structural';
+        
+        // Use SECSTAT structural grade if available, otherwise use MSCC5 classification
+        if (grades.structural !== null && grades.structural !== undefined) {
+          severityGrade = grades.structural;
+          console.log(`✅ Using SECSTAT structural grade ${severityGrade} for Item ${authenticItemNo}`);
+        } else {
+          // FALLBACK: Use MSCC5 classification for structural grade
+          severityGrade = classification.severityGrade;
+          console.log(`⚡ SECSTAT structural grade missing for Item ${authenticItemNo}, using MSCC5 grade ${severityGrade}`);
+        }
+        
+        classification.recommendations = getAuthenticWRcRecommendations(severityGrade, 'structural', defectText);
+        classification.adoptable = severityGrade <= 3 ? 'Yes' : 'Conditional';
+      } else if (hasServiceDefects) {
+        defectType = 'service';
+        severityGrade = grades.service || classification.severityGrade;
+        classification.recommendations = getAuthenticWRcRecommendations(severityGrade, 'service', defectText);
+        classification.adoptable = severityGrade === 0 ? 'Yes' : 'Conditional';
       } else if (hasStructuralDefects && hasServiceDefects && grades.structural !== null && grades.service !== null) {
         console.log(`✅ TRIGGERING MULTI-DEFECT SPLITTING for Item ${authenticItemNo}`);
         console.log(`🔍 Will create: Service (Grade ${grades.service}) + Structural${grades.structural ? ' (Grade ' + grades.structural + ')' : ''}`);
@@ -1214,12 +1250,6 @@ async function processSectionTable(
         console.log(`🔧 DEFAULT SERVICE: Item ${authenticItemNo} defaulted to service (Grade ${severityGrade})`);
       }
       
-      // ENHANCED FIX: Force structural classification for deformity defects (Items 19, 20 fix)
-      if (defectText.toLowerCase().includes('deformity') || defectText.toLowerCase().includes('deformed')) {
-        defectType = 'structural';
-        console.log(`🚨 DEFORMITY DETECTED: Item ${authenticItemNo} FORCED to structural due to deformity defects`);
-        console.log(`✅ DEFORMITY PROTECTION: Item ${authenticItemNo} locked as structural, preventing service override`);
-      }
     }
     
     // Special handling for sections with no defects
@@ -1252,6 +1282,16 @@ async function processSectionTable(
         defectType = classification.defectType;
       }
       console.log(`🔍 Using MSCC5 classification for item ${authenticItemNo} with defects: ${defectType} grade ${severityGrade}`);
+    }
+
+    // CRITICAL FIX: Force structural classification for deformity defects AFTER classification override
+    // This must be the FINAL step to prevent any subsequent overrides
+    if (defectText && (defectText.toLowerCase().includes('deformity') || defectText.toLowerCase().includes('deformed'))) {
+      const originalType = defectType;
+      defectType = 'structural';
+      severityGrade = Math.max(severityGrade, 2); // Minimum Grade 2 for structural deformity
+      console.log(`🚨 DEFORMITY OVERRIDE: Item ${authenticItemNo} FINAL correction from ${originalType} to structural Grade ${severityGrade}`);
+      console.log(`✅ DEFORMITY PROTECTION APPLIED: "${defectText.substring(0, 100)}..."`);
     }
     
     // Build recommendations using authentic WRc standards instead of generic SRM grading
