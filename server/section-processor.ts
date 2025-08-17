@@ -91,13 +91,38 @@ export class SectionProcessor {
     let finalGrade = classification.severityGrade;
     let finalType = classification.defectType;
     
+    // Define normalized text for consistent use throughout function
+    const normalizedDefectText = defectText.toLowerCase();
+    
     if (secstatGrades && (secstatGrades.structural !== null || secstatGrades.service !== null || secstatGrades.observation !== null)) {
       console.log(`🔍 SECSTAT override for item ${itemNo}:`, secstatGrades);
       
-      // Determine final grade and type from SECSTAT - prioritize structural over service
+      // CRITICAL FIX: Use MSCC5 classification defect type unless SECSTAT indicates actual structural defects
+      // Only override to structural if SECSTAT structural grade > 0 AND contains actual structural defects
+      const hasActualStructuralDefects = normalizedDefectText.includes('deformity') || 
+                                       normalizedDefectText.includes('deformed') || 
+                                       normalizedDefectText.includes('fracture') || 
+                                       normalizedDefectText.includes('crack') ||
+                                       normalizedDefectText.includes('joint displacement') || 
+                                       normalizedDefectText.includes('collapse');
+      
+      // Determine final grade and type from SECSTAT with defect content validation
       if (secstatGrades.structural !== null && secstatGrades.structural !== undefined) {
         finalGrade = secstatGrades.structural;
-        finalType = 'structural';
+        // Only set to structural if there are actual structural defects OR SECSTAT structural grade > 0
+        if (hasActualStructuralDefects || secstatGrades.structural > 0) {
+          finalType = 'structural';
+          
+          // Ensure minimum structural grade of 2 for deformity defects
+          if (hasActualStructuralDefects && (normalizedDefectText.includes('deformity') || normalizedDefectText.includes('deformed'))) {
+            finalGrade = Math.max(finalGrade, 2);
+            console.log(`✅ DEFORMITY FIX: Item ${itemNo} corrected to structural Grade ${finalGrade}`);
+          }
+        } else {
+          // SECSTAT structural Grade 0 with no actual structural defects -> use MSCC5 classification
+          finalType = classification.defectType;
+          console.log(`🔧 DES/DER FIX: Item ${itemNo} - SECSTAT structural Grade 0 with service defects, using MSCC5 type: ${classification.defectType}`);
+        }
       } else if (secstatGrades.service !== null && secstatGrades.service !== undefined) {
         finalGrade = secstatGrades.service;
         finalType = 'service';
@@ -107,29 +132,9 @@ export class SectionProcessor {
       }
     }
     
-    // CRITICAL FIX: Force structural classification for deformity defects regardless of SECSTAT
-    const normalizedDefectText = defectText.toLowerCase();
-    if (normalizedDefectText.includes('deformity') || normalizedDefectText.includes('deformed') || 
-        normalizedDefectText.includes('fracture') || normalizedDefectText.includes('crack') ||
-        normalizedDefectText.includes('joint displacement') || normalizedDefectText.includes('collapse')) {
-      console.log(`🔧 STRUCTURAL PRIORITY FIX: Forcing structural classification for item ${itemNo} due to structural defects in "${defectText.substring(0, 100)}..."`);
-      finalType = 'structural';
-      
-      // Ensure minimum structural grade of 2 for deformity defects
-      if (normalizedDefectText.includes('deformity') || normalizedDefectText.includes('deformed')) {
-        // Use SECSTAT structural grade if available, otherwise minimum Grade 2
-        if (secstatGrades && secstatGrades.structural !== null && secstatGrades.structural !== undefined) {
-          finalGrade = Math.max(secstatGrades.structural, 2);
-        } else {
-          finalGrade = Math.max(finalGrade || 0, 2);
-        }
-        console.log(`✅ DEFORMITY FIX: Item ${itemNo} corrected to structural Grade ${finalGrade}`);
-      }
-    }
-    
     // Special handling for observation-only sections - BUT NOT if structural priority override applied
     if (this.isObservationOnly(defectText)) {
-      // Only apply observation classification if structural priority override hasn't been applied
+      // Only apply observation classification if structural priority override hasn't been applied  
       const hasStructuralOverride = normalizedDefectText.includes('deformity') || 
                                    normalizedDefectText.includes('deformed') || 
                                    normalizedDefectText.includes('fracture') || 
