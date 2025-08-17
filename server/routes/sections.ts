@@ -51,11 +51,11 @@ export function registerSectionRoutes(app: Express) {
     }
   });
   
-  // Get sections with on-demand processing
+  // Get sections with uniform on-demand processing
   app.get('/api/uploads/:uploadId/sections', async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
-      const forceReprocess = req.query.reprocess === 'true';
+      const sector = req.query.sector as string || 'utilities';
       
       console.log(`🔍 SECTIONS API - Fetching sections for upload ${uploadId}`);
       
@@ -78,23 +78,45 @@ export function registerSectionRoutes(app: Express) {
           .from(sectionInspections)
           .where(eq(sectionInspections.fileUploadId, uploadId));
         
-        return res.json(migratedSections);
+        // Process on-demand and return processed results
+        const processedSections = await Promise.all(
+          migratedSections.map(async (section) => {
+            if (section.rawObservations && section.rawObservations.length > 0) {
+              const processed = await SectionProcessor.processSection(
+                section.rawObservations,
+                section.secstatGrades,
+                sector,
+                section.itemNo
+              );
+              return { ...section, ...processed };
+            }
+            return section;
+          })
+        );
+        
+        return res.json(processedSections);
       }
       
-      // Force reprocessing if requested
-      if (forceReprocess) {
-        console.log(`🔄 SECTIONS API - Force reprocessing requested`);
-        await SectionProcessor.processUploadSections(uploadId);
-        
-        // Refetch processed data
-        const reprocessedSections = await db.select()
-          .from(sectionInspections)
-          .where(eq(sectionInspections.fileUploadId, uploadId));
-        
-        return res.json(reprocessedSections);
-      }
+      // UNIFORM ARCHITECTURE: Process raw data on-demand for dashboard
+      console.log(`🔄 SECTIONS API - Processing raw data on-demand`);
       
-      res.json(sections);
+      const processedSections = await Promise.all(
+        sections.map(async (section) => {
+          if (section.rawObservations && section.rawObservations.length > 0) {
+            const processed = await SectionProcessor.processSection(
+              section.rawObservations,
+              section.secstatGrades,
+              sector,
+              section.itemNo
+            );
+            console.log(`✅ Processed item ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
+            return { ...section, ...processed };
+          }
+          return section;
+        })
+      );
+      
+      res.json(processedSections);
       
     } catch (error) {
       console.error('❌ SECTIONS API - Error:', error);
@@ -130,7 +152,7 @@ export function registerSectionRoutes(app: Express) {
         sectionData.itemNo
       );
       
-      // Update processed fields
+      // Update processed fields (optional caching)
       await db.update(sectionInspections)
         .set({
           defects: processed.defects,

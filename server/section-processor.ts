@@ -35,21 +35,22 @@ export class SectionProcessor {
     
     for (const section of sections) {
       if (section.rawObservations && section.rawObservations.length > 0) {
-        const processed = this.processSection({
-          rawObservations: section.rawObservations,
-          itemNo: section.itemNo,
-          totalLength: section.totalLength || '',
-          pipeSize: section.pipeSize || '',
-          sector
-        });
+        const processed = await this.processSection(
+          section.rawObservations,
+          section.secstatGrades,
+          sector,
+          section.itemNo
+        );
         
+        // Update processed fields for caching (optional - can be removed for pure on-demand)
         await db.update(sectionInspections)
           .set({
             defects: processed.defects,
             defectType: processed.defectType,
-            severityGrade: processed.severityGrade,
+            severityGrade: processed.severityGrade.toString(),
             recommendations: processed.recommendations,
-            severityGrades: processed.severityGrades
+            severityGrades: processed.severityGrades,
+            adoptable: processed.adoptable
           })
           .where(eq(sectionInspections.id, section.id));
       }
