@@ -2247,7 +2247,9 @@ export default function Dashboard() {
 
   const reprocessMutation = useMutation({
     mutationFn: (uploadId: number) => apiRequest("POST", `/api/reprocess/${uploadId}`),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      console.log('🔄 REPROCESSING SUCCESS: Starting aggressive cache invalidation');
+      
       // COMPREHENSIVE CACHE CLEARING: Clear all cached configuration data
       const clearAllConfigurationCache = () => {
         // Clear cost decisions when report is reprocessed to trigger fresh warnings
@@ -2293,6 +2295,30 @@ export default function Dashboard() {
       
       clearAllConfigurationCache();
       
+      // AGGRESSIVE CACHE INVALIDATION: Clear all possible section-related queries
+      console.log('🔄 AGGRESSIVE CACHE INVALIDATION: Clearing all React Query caches');
+      
+      // Clear all React Query cache first
+      queryClient.clear();
+      
+      // Remove all possible section query variations
+      if (currentUpload?.id) {
+        const uploadId = currentUpload.id;
+        const sectionsQueryKey = `/api/uploads/${uploadId}/sections`;
+        
+        // Remove queries with all possible variations
+        queryClient.removeQueries({ queryKey: [sectionsQueryKey] });
+        queryClient.removeQueries({ queryKey: [`/api/uploads`, uploadId, 'sections'] });
+        queryClient.removeQueries({ queryKey: ['/api/sections'] });
+        
+        // Invalidate with exact patterns
+        queryClient.invalidateQueries({ queryKey: [sectionsQueryKey] });
+        queryClient.invalidateQueries({ queryKey: [`/api/uploads`, uploadId, 'sections'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/sections'] });
+        
+        console.log(`🔄 CACHE CLEAR: Targeting upload ${uploadId} section queries`);
+      }
+      
       // COMPREHENSIVE QUERY CACHE INVALIDATION: Ensure all configuration data is refetched
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
@@ -2303,21 +2329,32 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       
-      // Force clear React Query cache entirely to prevent any stale configuration data
-      queryClient.clear();
-      // Force refresh all section data
-      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
-      // Force immediate refetch of section data
+      // IMMEDIATE REFETCH: Force immediate data refetch without page reload dependency
       if (currentUpload?.id) {
-        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+        try {
+          console.log(`🔄 FORCE REFETCH: Immediately fetching fresh section data for upload ${currentUpload.id}`);
+          
+          // Force refetch with aggressive options
+          await queryClient.refetchQueries({ 
+            queryKey: [`/api/uploads/${currentUpload.id}/sections`],
+            type: 'active'
+          });
+          
+          console.log('✅ FORCE REFETCH: Fresh section data loaded');
+        } catch (error) {
+          console.error('❌ FORCE REFETCH: Failed to refetch sections:', error);
+          // Fallback to page reload if refetch fails
+          setTimeout(() => window.location.reload(), 500);
+          return;
+        }
       }
+      
       toast({
         title: "Report Reprocessed",
-        description: `Report reprocessed - SC codes have been filtered out.`,
+        description: `Fresh data loaded from DB3 files with current MSCC5 classification rules.`,
       });
-      // Force page reload to ensure fresh data
-      setTimeout(() => window.location.reload(), 1000);
+      
+      console.log('✅ REPROCESSING COMPLETE: Dashboard should now display fresh data');
     },
     onError: (error) => {
       toast({
