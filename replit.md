@@ -42,7 +42,7 @@ This full-stack TypeScript application provides a compliant document analysis pl
 - F615 Legacy System Complete Removal: Eliminated all remaining F615 structural patching references, replacing with modern MM4-based patching calculations. Updated method names and status codes from 'F615 Structural Patching'/'f615_calculated' to 'MM4 Structural Patching'/'mm4_calculated' for consistency.
 - Complete localStorage Contamination Purge: Verified and confirmed elimination of all localStorage.setItem/getItem calls from MMP1Template. System now operates on pure database-first architecture without buffer layer contamination.
 - Standardized Observation Display Format: Implemented unified format for all SER and STR observations with bold quoted MSCC5 codes, consistent bullet points, and proper meterage placement. Format: `• <b>"CODE"</b> - Description` for service defects with meterage in description, and `• <b>"CODE"</b> - Description at XXXm` for structural defects with meterage at end. Uses HTML bold tags for proper rendering.
-- Conditional SC Code Formatting: SC (pipe size changes) codes only display in bold when structural defects are present in the same section, following WRc MSCC5 standards where SC codes are only operationally significant when combined with structural issues requiring repair.
+- Conditional SC Code Extraction: SC (pipe size changes) codes are only extracted and displayed when structural defects are present in the same section, following WRc MSCC5 standards where SC codes are only operationally significant when combined with structural issues requiring repair. Service-only and no-defect sections completely ignore SC codes.
 
 ## System Architecture
 

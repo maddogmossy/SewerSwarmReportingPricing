@@ -1207,49 +1207,26 @@ export default function Dashboard() {
               return `<b>"JN"</b> - Junction ${description}`;
             }
             
-            // Extract size changes (SC) - only format as bold if structural defects are present
+            // Only extract SC codes when structural defects are present (WRc MSCC5 compliance)
             const hasStructuralDefects = section.defectType === 'structural' || 
-                                        (section.severityGrades?.structural && section.severityGrades.structural > 0);
+                                        (section.severityGrades?.structural && Number(section.severityGrades.structural) > 0);
             
-            // Extract size changes (SC) and debug
-            const scMatch = text.match(/SC (.+)/i);
-            const pipeSizeMatch = text.match(/Pipe size changes (.+)/i);
-            
-            // Debug ALL SC extractions to find which items have SC codes
-            if (scMatch || pipeSizeMatch) {
-              console.log(`🔍 SC CODE FOUND IN ITEM ${section.itemNo}:`, {
-                itemNo: section.itemNo,
-                defectType: section.defectType,
-                severityGrades: section.severityGrades,
-                hasStructuralDefects: hasStructuralDefects,
-                defectsText: defectsText,
-                textBeingChecked: text,
-                scMatchFound: scMatch ? scMatch[0] : false,
-                pipeSizeMatchFound: pipeSizeMatch ? pipeSizeMatch[0] : false,
-                willBeFormatted: hasStructuralDefects ? 'BOLD' : 'REGULAR'
-              });
-            }
-            
-            if (scMatch) {
-              const description = scMatch[1];
-              if (hasStructuralDefects) {
+            if (hasStructuralDefects) {
+              // Extract size changes (SC) - only for structural items
+              const scMatch = text.match(/SC (.+)/i);
+              if (scMatch) {
+                const description = scMatch[1];
                 return `<b>"SC"</b> - ${description}`;
-              } else {
-                // Return as regular text when no structural defects present
-                return `SC - ${description}`;
               }
-            }
-            
-            // Extract pipe size changes
-            if (pipeSizeMatch) {
-              const description = pipeSizeMatch[1];
-              if (hasStructuralDefects) {
+              
+              // Extract pipe size changes - only for structural items
+              const pipeSizeMatch = text.match(/Pipe size changes (.+)/i);
+              if (pipeSizeMatch) {
+                const description = pipeSizeMatch[1];
                 return `<b>"SC"</b> - Pipe size changes ${description}`;
-              } else {
-                // Return as regular text when no structural defects present
-                return `Pipe size changes ${description}`;
               }
             }
+            // SC codes completely ignored for service-only or no-defect items
           }
           
           // Return original text if no patterns match
