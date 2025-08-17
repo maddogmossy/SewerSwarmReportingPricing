@@ -111,6 +111,12 @@ export const sectionInspections = pgTable("section_inspections", {
   recommendations: text("recommendations"),
   adoptable: varchar("adoptable"),
   cost: varchar("cost"),
+  
+  // RAW DATA FIELDS - Store authentic extracted data only
+  rawObservations: text("raw_observations").array().default(sql`ARRAY[]::text[]`), // Authentic WinCan observations
+  secstatGrades: jsonb("secstat_grades"), // Original SECSTAT data: {structural: number, service: number}
+  inspectionDirection: varchar("inspection_direction"), // upstream/downstream
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 
