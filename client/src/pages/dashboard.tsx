@@ -1211,6 +1211,18 @@ export default function Dashboard() {
             const hasStructuralDefects = section.defectType === 'structural' || 
                                         (section.severityGrades?.structural && section.severityGrades.structural > 0);
             
+            // Debug Item 14 SC extraction
+            if (section.itemNo === 14) {
+              console.log('🔍 ITEM 14 SC DEBUG:', {
+                itemNo: section.itemNo,
+                defectType: section.defectType,
+                severityGrades: section.severityGrades,
+                hasStructuralDefects: hasStructuralDefects,
+                defectsText: defectsText,
+                textBeingChecked: text
+              });
+            }
+            
             const scMatch = text.match(/SC (.+)/i);
             if (scMatch) {
               const description = scMatch[1];
