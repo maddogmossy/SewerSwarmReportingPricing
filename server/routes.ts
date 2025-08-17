@@ -913,6 +913,8 @@ export async function registerRoutes(app: Express) {
       // PERFORMANCE OPTIMIZATION: Check if sections need reprocessing
       const sectionsNeedingProcessing = sections.filter(s => 
         !s.processedAt || // Never processed
+        !s.processedDefectType || // No cached defect type
+        !s.processedSrmGrading || // No cached SRM grading
         (s.rawObservations && s.rawObservations.length > 0 && !s.processedDefectType) // Has raw data but no processed results
       );
       
@@ -940,6 +942,7 @@ export async function registerRoutes(app: Express) {
                   processedSeverityGrades: processed.severityGrades,
                   processedRecommendations: processed.recommendations,
                   processedAdoptable: processed.adoptable,
+                  processedSrmGrading: processed.srmGrading, // Store SRM4 grading
                   processedAt: new Date(),
                   // Update legacy fields for compatibility
                   defectType: processed.defectType,

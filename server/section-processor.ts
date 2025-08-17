@@ -19,15 +19,16 @@ export interface ProcessedSectionData {
   severityGrades: { structural: number | null; service: number | null };
   recommendations: string;
   adoptable: 'Yes' | 'No' | 'Conditional';
+  srmGrading?: any; // Complete SRM4 grading data
   cost?: string;
 }
 
 export class SectionProcessor {
   
   /**
-   * Process all sections for an upload with current MSCC5 rules
+   * Process all sections for an upload with current MSCC5 rules (legacy method - kept for compatibility)
    */
-  static async processUploadSections(uploadId: number, sector: string = 'utilities'): Promise<void> {
+  static async processUploadSectionsLegacy(uploadId: number, sector: string = 'utilities'): Promise<void> {
     console.log(`🔄 Processing all sections for upload ${uploadId} with current MSCC5 rules`);
     
     const sections = await db.select().from(sectionInspections)
@@ -42,9 +43,17 @@ export class SectionProcessor {
           section.itemNo
         );
         
-        // Update processed fields for caching (optional - can be removed for pure on-demand)
+        // Update processed fields for caching with SRM grading
         await db.update(sectionInspections)
           .set({
+            processedDefectType: processed.defectType,
+            processedSeverityGrade: processed.severityGrade,
+            processedSeverityGrades: processed.severityGrades,
+            processedRecommendations: processed.recommendations,
+            processedAdoptable: processed.adoptable,
+            processedSrmGrading: processed.srmGrading,
+            processedAt: new Date(),
+            // Legacy fields for backward compatibility
             defects: processed.defects,
             defectType: processed.defectType,
             severityGrade: processed.severityGrade.toString(),
@@ -163,7 +172,8 @@ export class SectionProcessor {
         service: finalType === 'service' ? finalGrade : null
       },
       recommendations,
-      adoptable
+      adoptable,
+      srmGrading: classification.srmGrading // Include SRM4 grading data
     };
   }
   
@@ -197,6 +207,7 @@ export class SectionProcessor {
             processedSeverityGrades: processed.severityGrades,
             processedRecommendations: processed.recommendations,
             processedAdoptable: processed.adoptable,
+            processedSrmGrading: processed.srmGrading, // Store SRM4 grading data
             processedAt: new Date(),
             // Also update legacy fields for backward compatibility
             defectType: processed.defectType,
@@ -209,20 +220,6 @@ export class SectionProcessor {
           .where(eq(sectionInspections.id, section.id));
         
         console.log(`✅ Processed and stored section ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
-        
-        // Update processed fields with null safety (kept for compatibility)
-        await db.update(sectionInspections)
-          .set({
-            defects: processed.defects,
-            defectType: processed.defectType,
-            severityGrade: (processed.severityGrade ?? 0).toString(),
-            severityGrades: processed.severityGrades,
-            recommendations: processed.recommendations,
-            adoptable: processed.adoptable
-          })
-          .where(eq(sectionInspections.id, section.id));
-        
-        console.log(`✅ Processed section ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
         
       } catch (error) {
         console.error(`❌ Error processing section ${section.itemNo}:`, error);

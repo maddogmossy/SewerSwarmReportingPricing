@@ -123,6 +123,7 @@ export const sectionInspections = pgTable("section_inspections", {
   processedSeverityGrades: jsonb("processed_severity_grades"), // {structural: number | null, service: number | null}
   processedRecommendations: text("processed_recommendations"),
   processedAdoptable: varchar("processed_adoptable", { length: 20 }),
+  processedSrmGrading: jsonb("processed_srm_grading"), // Store complete SRM4 grading data
   processedAt: timestamp("processed_at"),
   
   createdAt: timestamp("created_at").defaultNow(),

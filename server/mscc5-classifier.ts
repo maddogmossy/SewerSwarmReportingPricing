@@ -894,12 +894,13 @@ export class MSCC5Classifier {
       
       // Delete existing defects for this section
       await db.delete(sectionDefects)
-        .where(eq(sectionDefects.itemNo, itemNo));
+        .where(and(eq(sectionDefects.fileUploadId, fileUploadId), eq(sectionDefects.itemNo, itemNo)));
       
       // Insert new individual defects
       for (let i = 0; i < defects.length; i++) {
         const defect = defects[i];
         await db.insert(sectionDefects).values({
+          fileUploadId: fileUploadId,
           itemNo: itemNo,
           defectSequence: i + 1,
           defectCode: defect.defectCode,
@@ -1204,7 +1205,7 @@ export class MSCC5Classifier {
         severityGrade: structuralGrade,
         defectType: 'structural',
         recommendations: this.generateStructuralRecommendations(defectText, structuralGrade),
-        riskAssessment: srmGrading.risk || 'Progressive structural deterioration',
+        riskAssessment: 'Progressive structural deterioration',
         adoptable: structuralGrade <= 3 ? 'Yes' : 'Conditional',
         estimatedCost: this.calculateEstimatedCost(structuralGrade, 'structural'),
         srmGrading
