@@ -117,6 +117,14 @@ export const sectionInspections = pgTable("section_inspections", {
   secstatGrades: jsonb("secstat_grades"), // Original SECSTAT data: {structural: number, service: number}
   inspectionDirection: varchar("inspection_direction"), // upstream/downstream
   
+  // PROCESSED DATA CACHE - Store processed results for performance
+  processedDefectType: varchar("processed_defect_type", { length: 50 }),
+  processedSeverityGrade: integer("processed_severity_grade"),
+  processedSeverityGrades: jsonb("processed_severity_grades"), // {structural: number | null, service: number | null}
+  processedRecommendations: text("processed_recommendations"),
+  processedAdoptable: varchar("processed_adoptable", { length: 20 }),
+  processedAt: timestamp("processed_at"),
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -164,7 +164,7 @@ export class SectionProcessor {
   }
   
   /**
-   * Process all sections for a specific upload
+   * Process all sections for a specific upload and store results
    */
   static async processUploadSections(uploadId: number, sector: string = 'utilities'): Promise<void> {
     console.log(`🔄 Processing all sections for upload ${uploadId} with current MSCC5 rules`);
@@ -185,7 +185,28 @@ export class SectionProcessor {
           section.itemNo
         );
         
-        // Update processed fields with null safety
+        // Store processed results in database for performance caching
+        await db.update(sectionInspections)
+          .set({
+            processedDefectType: processed.defectType,
+            processedSeverityGrade: processed.severityGrade,
+            processedSeverityGrades: processed.severityGrades,
+            processedRecommendations: processed.recommendations,
+            processedAdoptable: processed.adoptable,
+            processedAt: new Date(),
+            // Also update legacy fields for backward compatibility
+            defectType: processed.defectType,
+            severityGrade: processed.severityGrade.toString(),
+            severityGrades: processed.severityGrades,
+            recommendations: processed.recommendations,
+            adoptable: processed.adoptable,
+            defects: processed.defects
+          })
+          .where(eq(sectionInspections.id, section.id));
+        
+        console.log(`✅ Processed and stored section ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
+        
+        // Update processed fields with null safety (kept for compatibility)
         await db.update(sectionInspections)
           .set({
             defects: processed.defects,

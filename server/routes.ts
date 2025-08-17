@@ -910,41 +910,65 @@ export async function registerRoutes(app: Express) {
         return res.json(processedSections);
       }
       
-      // UNIFORM ARCHITECTURE: Process raw data on-demand for dashboard
-      console.log(`🔄 SECTIONS API - Processing raw data on-demand for ${sections.length} sections`);
-      
-      const { SectionProcessor } = await import('./section-processor');
-      const processedSections = await Promise.all(
-        sections.map(async (section) => {
-          console.log(`🔍 Processing section ${section.itemNo}: hasRawData=${!!(section.rawObservations && section.rawObservations.length > 0)}`);
-          
-          if (section.rawObservations && section.rawObservations.length > 0) {
-            const processed = await SectionProcessor.processSection(
-              section.rawObservations,
-              section.secstatGrades,
-              sector,
-              section.itemNo
-            );
-            console.log(`✅ Processed item ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
-            
-            // CRITICAL FIX: Ensure processed data overwrites ALL stored fields
-            return { 
-              ...section, 
-              ...processed,
-              // Force overwrite these critical fields for pricing
-              defectType: processed.defectType,
-              severityGrade: processed.severityGrade,
-              severityGrades: processed.severityGrades,
-              defects: processed.defects,
-              recommendations: processed.recommendations,
-              adoptable: processed.adoptable
-            };
-          } else {
-            console.log(`⚠️ Section ${section.itemNo}: No raw data available, returning stored data`);
-            return section;
-          }
-        })
+      // PERFORMANCE OPTIMIZATION: Check if sections need reprocessing
+      const sectionsNeedingProcessing = sections.filter(s => 
+        !s.processedAt || // Never processed
+        (s.rawObservations && s.rawObservations.length > 0 && !s.processedDefectType) // Has raw data but no processed results
       );
+      
+      if (sectionsNeedingProcessing.length > 0) {
+        console.log(`🔄 SECTIONS API - Processing ${sectionsNeedingProcessing.length}/${sections.length} sections that need updates`);
+        
+        const { SectionProcessor } = await import('./section-processor');
+        
+        // Process only sections that need updating
+        await Promise.all(
+          sectionsNeedingProcessing.map(async (section) => {
+            if (section.rawObservations && section.rawObservations.length > 0) {
+              const processed = await SectionProcessor.processSection(
+                section.rawObservations,
+                section.secstatGrades,
+                sector,
+                section.itemNo
+              );
+              
+              // Store processed results in database
+              await db.update(sectionInspections)
+                .set({
+                  processedDefectType: processed.defectType,
+                  processedSeverityGrade: processed.severityGrade,
+                  processedSeverityGrades: processed.severityGrades,
+                  processedRecommendations: processed.recommendations,
+                  processedAdoptable: processed.adoptable,
+                  processedAt: new Date(),
+                  // Update legacy fields for compatibility
+                  defectType: processed.defectType,
+                  severityGrade: processed.severityGrade.toString(),
+                  severityGrades: processed.severityGrades,
+                  recommendations: processed.recommendations,
+                  adoptable: processed.adoptable,
+                  defects: processed.defects
+                })
+                .where(eq(sectionInspections.id, section.id));
+              
+              console.log(`✅ Processed and cached section ${section.itemNo}: ${processed.defectType} Grade ${processed.severityGrade}`);
+            }
+          })
+        );
+        
+        // Refetch updated sections
+        const updatedSections = await db.select()
+          .from(sectionInspections)
+          .where(eq(sectionInspections.fileUploadId, uploadId))
+          .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
+        
+        console.log(`🚀 SECTIONS API - Returning ${updatedSections.length} cached sections (fast path)`);
+        return res.json(updatedSections);
+      }
+      
+      // Fast path: All sections have cached processed results
+      console.log(`🚀 SECTIONS API - Returning ${sections.length} cached sections (instant load)`);
+      const processedSections = sections;
       
       console.log(`🔍 SECTIONS API - Returning ${processedSections.length} processed sections`);
       
