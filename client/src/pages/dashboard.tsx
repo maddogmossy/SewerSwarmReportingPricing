@@ -1211,19 +1211,25 @@ export default function Dashboard() {
             const hasStructuralDefects = section.defectType === 'structural' || 
                                         (section.severityGrades?.structural && section.severityGrades.structural > 0);
             
-            // Debug Item 14 SC extraction
-            if (section.itemNo === 14) {
-              console.log('🔍 ITEM 14 SC DEBUG:', {
+            // Extract size changes (SC) and debug
+            const scMatch = text.match(/SC (.+)/i);
+            const pipeSizeMatch = text.match(/Pipe size changes (.+)/i);
+            
+            // Debug ALL SC extractions to find which items have SC codes
+            if (scMatch || pipeSizeMatch) {
+              console.log(`🔍 SC CODE FOUND IN ITEM ${section.itemNo}:`, {
                 itemNo: section.itemNo,
                 defectType: section.defectType,
                 severityGrades: section.severityGrades,
                 hasStructuralDefects: hasStructuralDefects,
                 defectsText: defectsText,
-                textBeingChecked: text
+                textBeingChecked: text,
+                scMatchFound: scMatch ? scMatch[0] : false,
+                pipeSizeMatchFound: pipeSizeMatch ? pipeSizeMatch[0] : false,
+                willBeFormatted: hasStructuralDefects ? 'BOLD' : 'REGULAR'
               });
             }
             
-            const scMatch = text.match(/SC (.+)/i);
             if (scMatch) {
               const description = scMatch[1];
               if (hasStructuralDefects) {
@@ -1235,7 +1241,6 @@ export default function Dashboard() {
             }
             
             // Extract pipe size changes
-            const pipeSizeMatch = text.match(/Pipe size changes (.+)/i);
             if (pipeSizeMatch) {
               const description = pipeSizeMatch[1];
               if (hasStructuralDefects) {
