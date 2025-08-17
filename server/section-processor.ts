@@ -128,23 +128,22 @@ export class SectionProcessor {
         finalType = 'service';
       } else if (secstatGrades.observation !== null && secstatGrades.observation !== undefined) {
         finalGrade = secstatGrades.observation;
-        finalType = 'observation';
+        finalType = 'observation' as 'structural' | 'service';
       }
     }
     
-    // Special handling for observation-only sections - BUT NOT if structural priority override applied
+    // Special handling for observation-only sections - reuse existing structural defect detection
     if (this.isObservationOnly(defectText)) {
-      // Only apply observation classification if structural priority override hasn't been applied  
-      const hasStructuralOverride = normalizedDefectText.includes('deformity') || 
-                                   normalizedDefectText.includes('deformed') || 
-                                   normalizedDefectText.includes('fracture') || 
-                                   normalizedDefectText.includes('crack') ||
-                                   normalizedDefectText.includes('joint displacement') || 
-                                   normalizedDefectText.includes('collapse');
+      const hasActualStructuralDefects = normalizedDefectText.includes('deformity') || 
+                                       normalizedDefectText.includes('deformed') || 
+                                       normalizedDefectText.includes('fracture') || 
+                                       normalizedDefectText.includes('crack') ||
+                                       normalizedDefectText.includes('joint displacement') || 
+                                       normalizedDefectText.includes('collapse');
       
-      if (!hasStructuralOverride) {
+      if (!hasActualStructuralDefects) {
         finalGrade = 0;
-        finalType = 'observation';
+        finalType = 'observation' as 'structural' | 'service';
         console.log(`🔍 OBSERVATION CLASSIFICATION: Item ${itemNo} - no structural defects detected`);
       } else {
         console.log(`🚫 OBSERVATION OVERRIDE BLOCKED: Item ${itemNo} has structural defects, maintaining ${finalType} Grade ${finalGrade}`);
