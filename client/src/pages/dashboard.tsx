@@ -2430,12 +2430,7 @@ export default function Dashboard() {
   // FIXED: Removed cache invalidation useEffect that was causing infinite loops
   // Cache invalidation will be handled by React Query automatically
 
-  // SECTIONS DATA QUERY: Enhanced with better debugging
-  console.log('🔍 QUERY SETUP DEBUG:', {
-    effectiveReportId,
-    queryWillExecute: !!effectiveReportId,
-    currentUploadExists: !!currentUpload
-  });
+  // SECTIONS DATA QUERY: Performance optimized
   
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
     queryKey: [`/api/uploads/${effectiveReportId}/sections`, 'performance-optimized'], 
@@ -2447,40 +2442,12 @@ export default function Dashboard() {
     retry: 1 // Retry once on failure
   });
   
-  // CRITICAL DEBUG: Check if sections data is loading properly - FORCE IMMEDIATE LOG
-  if (rawSectionData.length > 0) {
-    const serviceItems = rawSectionData.filter(s => s.defectType === 'service'); // Include ALL service items, not just [3,6,8]
-    console.log('📋 DASHBOARD SECTIONS DATA - FOUND SECTIONS:', {
-      currentUploadId: currentUpload?.id,
-      rawSectionDataLength: rawSectionData.length,
-      serviceItemsCount: serviceItems.length,
-      serviceItemsDetails: serviceItems.map(s => ({
-        itemNo: s.itemNo, 
-        severityGrade: s.severityGrade, 
-        defectType: s.defectType,
-        defects: s.defects?.substring(0, 50)
-      })),
-      item3Exists: !!rawSectionData.find(s => s.itemNo === 3),
-      item3Data: rawSectionData.find(s => s.itemNo === 3) ? {
-        itemNo: 3,
-        severityGrade: rawSectionData.find(s => s.itemNo === 3).severityGrade,
-        defectType: rawSectionData.find(s => s.itemNo === 3).defectType
-      } : 'NOT_FOUND'
-    });
-  } else {
-    console.log('📋 DASHBOARD SECTIONS DATA - NO SECTIONS LOADED:', {
-      currentUploadId: currentUpload?.id,
-      sectionsLoading,
-      sectionsError,
-      rawSectionDataLength: rawSectionData.length
-    });
-  }
+  // Performance optimized: removed debug logs
 
   // SAVE LAST USED REPORT: Save current report to localStorage when it changes
   useEffect(() => {
     if (currentUpload?.id) {
       localStorage.setItem('lastUsedReportId', currentUpload.id.toString());
-      console.log('💾 Saved last used report ID:', currentUpload.id);
     }
   }, [currentUpload?.id]);
 
@@ -2489,29 +2456,9 @@ export default function Dashboard() {
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
   
-  // CRITICAL DEBUG: Log dashboard state to diagnose loading issues
-  console.warn('🚨 DASHBOARD COMPONENT RENDER - FORCED LOG:', {
-    timestamp: Date.now(),
-    reportIdFromURL: reportId,
-    currentUploadId: currentUpload?.id,
-    effectiveReportId,
-    sectionsLoading,
-    rawSectionDataExists: !!rawSectionData,
-    rawSectionDataLength: rawSectionData?.length || 0,
-    hasAuthenticData,
-    sectionsError: sectionsError?.message || 'no error',
-    queryEnabled: !!effectiveReportId,
-    currentUploadStatus: currentUpload?.status || 'no upload',
-    completedUploadsCount: completedUploads.length
-  });
+  // Performance optimized: removed render cycle logging
   
-  // IMMEDIATE SECTION DATA CHECK
-  if (rawSectionData && rawSectionData.length > 0) {
-    console.warn('🔍 SECTIONS DATA FOUND:', {
-      sectionsCount: rawSectionData.length,
-      serviceItems: rawSectionData.filter(s => s.defectType === 'service') // Include ALL service items for warning
-    });
-  }
+  // Performance optimized: removed section data logging
   
   // DEBUG: Log section data status for troubleshooting (moved after variable definitions)
   
@@ -2580,60 +2527,13 @@ export default function Dashboard() {
           
           allConfigs.push(...taggedData);
           
-          console.log(`🔍 Loaded ${config.label} (${config.equipmentId}):`, {
-            categoryId: config.categoryId,
-            configCount: data.length,
-            hasValidConfigs: data.length > 0,
-            blueValues: data.map(c => {
-              // Extract from correct nested structure
-              if (c.mm_data?.mm4DataByPipeSize) {
-                const pipeSizes = ['150-1501', '225-2251', '300-3001'];
-                for (const pipeSize of pipeSizes) {
-                  if (c.mm_data.mm4DataByPipeSize[pipeSize]?.[0]?.blueValue) {
-                    return c.mm_data.mm4DataByPipeSize[pipeSize][0].blueValue;
-                  }
-                }
-              }
-              return c.mm_data?.mm4Rows?.[0]?.blueValue || 'missing';
-            })
-          });
+          // Configuration loaded successfully
         } catch (error) {
           console.error(`❌ Failed to load ${config.label} configuration:`, error);
         }
       }
       
-      console.log('🔍 All PR2 Configurations Loaded:', { 
-        totalConfigs: allConfigs.length,
-        id760Count: allConfigs.filter(c => c.equipmentId === 'id760').length,
-        id759Count: allConfigs.filter(c => c.equipmentId === 'id759').length,
-        equipmentPriority: equipmentPriority,
-        configDetails: allConfigs.map(c => {
-          // Extract MM4 pricing data from correct nested structure
-          let dayRate = 'missing';
-          if (c.mm_data?.mm4DataByPipeSize) {
-            // Try common pipe sizes in priority order: 150mm, 225mm, 300mm
-            const pipeSizes = ['150-1501', '225-2251', '300-3001'];
-            for (const pipeSize of pipeSizes) {
-              if (c.mm_data.mm4DataByPipeSize[pipeSize]?.[0]?.blueValue) {
-                dayRate = c.mm_data.mm4DataByPipeSize[pipeSize][0].blueValue;
-                break;
-              }
-            }
-          } else if (c.mm_data?.mm4Rows?.[0]?.blueValue) {
-            // Fallback to legacy structure if exists
-            dayRate = c.mm_data.mm4Rows[0].blueValue;
-          }
-          
-          return {
-            id: c.id,
-            equipmentId: c.equipmentId,
-            categoryId: c.categoryId,
-            sector: c.sector,
-            hasMmData: !!c.mm_data,
-            blueValue: dayRate
-          };
-        })
-      });
+      // All PR2 configurations loaded and processed
       
       return allConfigs;
     },
@@ -2650,16 +2550,7 @@ export default function Dashboard() {
     config.equipmentId === equipmentPriority
   );
   
-  // CRITICAL DEBUG: Equipment priority and configuration filtering
-  console.log('🔍 EQUIPMENT PRIORITY FILTERING DEBUG:', {
-    currentEquipmentPriority: equipmentPriority,
-    allConfigsLoaded: allPR2Configurations.length,
-    id760Configs: allPR2Configurations.filter(c => c.equipmentId === 'id760').length,
-    id759Configs: allPR2Configurations.filter(c => c.equipmentId === 'id759').length,
-    filteredConfigs: repairPricingData.length,
-    selectedConfigIds: repairPricingData.map(c => c.id),
-    selectedCategoryIds: repairPricingData.map(c => c.categoryId)
-  });
+  // Configuration filtering optimized
 
   // Check if a section has approved repair pricing configuration 
   const hasApprovedRepairPricing = (section: any): { hasApproved: boolean, pricingConfig?: any, actualCost?: string } => {
@@ -2731,13 +2622,7 @@ export default function Dashboard() {
 
   // Validation effect - runs after sections are loaded
   useEffect(() => {
-    console.log('Dashboard validation data:', {
-      hasAuthenticData,
-      rawSectionDataLength: rawSectionData?.length || 0,
-      repairPricingDataLength: repairPricingData?.length || 0,
-      workCategoriesLength: workCategories?.length || 0,
-      vehicleTravelRatesLength: vehicleTravelRates?.length || 0
-    });
+    // Dashboard validation data check
 
     if (rawSectionData?.length > 0 && repairPricingData) {
       try {
@@ -2764,13 +2649,6 @@ export default function Dashboard() {
         );
         
         setValidationResult(result);
-        
-        console.log('Validation completed:', {
-          sectionsLength: rawSectionData.length,
-          configsLength: repairPricingData.length,
-          sampleSection: rawSectionData[0]?.itemNo,
-          sampleConfig: repairPricingData[0]?.categoryId
-        });
         
         // Warning system calls removed
       } catch (error) {
@@ -4045,18 +3923,7 @@ export default function Dashboard() {
         const dayRateValue = patchingConfig.mm_data?.mm4Rows?.[0]?.blueValue;
         const isStructuralDayRateConfigured = dayRateValue && dayRateValue.trim() !== '' && dayRateValue !== '0';
         
-        console.log('🔍 A8 Patching Day Rate Validation:', {
-          itemNo: section.itemNo,
-          configId: patchingConfig.id,
-          dayRateValue: dayRateValue,
-          isDayRateConfigured: isStructuralDayRateConfigured,
-          willShowOrangeTriangle: !isStructuralDayRateConfigured,
-          mm4DataExists: !!patchingConfig.mm_data,
-          mm4RowsExists: !!patchingConfig.mm_data?.mm4Rows,
-          mm4RowsLength: patchingConfig.mm_data?.mm4Rows?.length || 0,
-          firstRowBlueValue: patchingConfig.mm_data?.mm4Rows?.[0]?.blueValue,
-          fullMM4Data: patchingConfig.mm_data?.mm4Rows?.[0]
-        });
+        // A8 patching day rate validation
         
         // If day rate is not configured, return specific error information  
         if (!isStructuralDayRateConfigured) {
@@ -4109,67 +3976,11 @@ export default function Dashboard() {
       };
     }
     
-    // DEBUG: Track Item 13 (service) vs Item 13a (structural) separately
-    if (section.itemNo === 13) {
-      if (section.letterSuffix === 'a') {
-        console.log('🎯 ITEM 13a STRUCTURAL DEBUG:', {
-          itemNo: section.itemNo,
-          letterSuffix: section.letterSuffix,
-          fullId: `${section.itemNo}${section.letterSuffix}`,
-          defectType: section.defectType,
-          defects: section.defects,
-          isExpectedStructural: section.defectType === 'structural',
-          hasStructuralCodes: ['FC', 'FL', 'CR', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF'].some(code => section.defects?.includes(code)),
-          shouldRouteToID763: section.defectType === 'structural',
-          willReachID763Path: section.defectType === 'structural' && [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo)
-        });
-      } else if (!section.letterSuffix) {
-        console.log('🎯 ITEM 13 SERVICE DEBUG:', {
-          itemNo: section.itemNo,
-          letterSuffix: section.letterSuffix,
-          fullId: section.itemNo,
-          defectType: section.defectType,
-          defects: section.defects,
-          isExpectedService: section.defectType === 'service',
-          hasServiceCodes: ['DER', 'DES', 'WL', 'RI', 'OB', 'SA'].some(code => section.defects?.includes(code)),
-          shouldRouteToID760: section.defectType === 'service'
-        });
-      }
-    }
+    // Item 13 handling optimized
     
-    // ENHANCED DEBUG FOR ITEM 10 - trace complete A5 workflow
-    if (section.itemNo === 10) {
-      console.log('🎯 ITEM 10 ENHANCED A5 WORKFLOW DEBUG:', {
-        itemNo: section.itemNo,
-        totalLength: section.totalLength,
-        defects: section.defects,
-        defectType: section.defectType,
-        pipeSize: section.pipeSize,
-        needsCleaning: requiresCleaning(section.defects || ''),
-        isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 20, 21, 22, 23].includes(section.itemNo),
-        pr2ConfigsAvailable: !!repairPricingData,
-        pr2ConfigsLength: repairPricingData?.length || 0,
-        currentEquipmentPriority: equipmentPriority,
-        A5_SPECIFIC_DEBUG: {
-          isA5Selected: equipmentPriority === 'id760',
-          expectedConfigId: equipmentPriority === 'id760' ? 760 : 759,
-          bufferKeysToCheck: [`${equipmentPriority === 'id760' ? '760' : '759'}-150-1501-1-blueValue`, `${equipmentPriority === 'id760' ? '760' : '759'}-150-1501-1-greenValue`]
-        }
-      });
-    }
+    // Item 10 workflow optimized
     
-    // Special debugging for Item 3
-    if (section.itemNo === 3) {
-      console.log('🎯 ITEM 3 DETAILED DEBUG:', {
-        itemNo: section.itemNo,
-        defects: section.defects,
-        defectType: section.defectType,
-        totalLength: section.totalLength,
-        pipeSize: section.pipeSize,
-        needsCleaning: requiresCleaning(section.defects || ''),
-        pr2ConfigsLength: repairPricingData?.length || 0
-      });
-    }
+    // Item 3 processing optimized
     
     // Function to extract defect meterages for patch counting
     const extractDefectMeterages = (defectsText: string): string[] => {
@@ -4200,21 +4011,7 @@ export default function Dashboard() {
 
     // Helper function to calculate ID763 structural patching (A8-Utilities Patching)
     const calculateID763StructuralPatching = (section: any, patchingConfig: any) => {
-      // ITEM 13A CRITICAL DEBUG: Add extensive logging for Item 13a
-      if (section.itemNo === 13) {
-        console.log('🚨 ITEM 13A CRITICAL DEBUG - FULL CALCULATION TRACE:', {
-          itemNo: section.itemNo,
-          letterSuffix: section.letterSuffix,
-          defectType: section.defectType,
-          defects: section.defects,
-          pipeSize: section.pipeSize,
-          totalLength: section.totalLength,
-          severityGrade: section.severityGrade,
-          hasDefectsText: !!(section.defects && section.defects.trim()),
-          defectsLength: section.defects ? section.defects.length : 0,
-          willAnalyzeForStructuralDefects: true
-        });
-      }
+      // Item 13a calculation optimized
       const sectionPipeSize = section.pipeSize || '150';
       const mmData = patchingConfig.mmData;
       const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
@@ -4317,36 +4114,9 @@ export default function Dashboard() {
     const isRestrictedSection = restrictedCleaningSections.includes(section.itemNo) || 
                                (is525mmSection && (section.itemNo === 1 || section.itemNo === 2));
     
-    // Debug cleaning detection - ENHANCED DEBUG for restricted sections only
-    if (isRestrictedSection && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 3 || section.itemNo === 10)) {
-      console.log(`🔍 Cleaning Check for Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-        needsCleaning,
-        defects: section.defects,
-        defectType: section.defectType,
-        letterSuffix: section.letterSuffix,
-        requiresCleaningResult: requiresCleaning(section.defects || ''),
-        pr2ConfigsAvailable: !!repairPricingData && repairPricingData.length > 0,
-        shouldProcessMM4: needsCleaning && repairPricingData,
-        isRestrictedSection: isRestrictedSection,
-        sectionLength: parseFloat(section.totalLength) || 0,
-        sectionDebrisPercent: extractDebrisPercentage(section.defects || '')
-      });
-      
-      // Manual tests removed - cleaning detection working correctly
-    }
+    // Cleaning detection optimized for restricted sections
     
-    // ENHANCED: Separate handling for service vs structural sections
-    // Service sections: Process MM4 for ALL service sections (cleaning, monitoring, assessments)
-    // Structural sections: Use MM4 patching cost calculation
-    console.log(`🔍 MM4 Processing Check for Item ${section.itemNo}:`, {
-      needsCleaning,
-      pr2ConfigsAvailable: !!repairPricingData,
-      isRestrictedSection,
-      defectType: section.defectType,
-      pipeSize: section.pipeSize,
-      willProcessServiceMM4: section.defectType === 'service' && repairPricingData,
-      willProcessStructuralMM4: section.defectType === 'structural'
-    });
+    // MM4 processing optimized for service vs structural sections
     
     // FIXED: Process MM4 for ALL SERVICE sections (not just cleaning) - includes Grade 0 observations
     // Service sections include: cleaning defects, water levels, line deviations, service connections, etc.
@@ -4358,13 +4128,7 @@ export default function Dashboard() {
         config.sector === currentSector.id
       );
       
-      console.log(`🔍 CRITICAL CONFIG DETECTION - Item ${section.itemNo}:`, {
-        allPR2Configs: repairPricingData.length,
-        cctvConfigsFound: cctvConfigs.length,
-        cctvConfigDetails: cctvConfigs.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })),
-        currentSector: currentSector.id,
-        filteringFor: ['cctv-van-pack', 'cctv-jet-vac']
-      });
+      // Critical config detection optimized
       
       // DEFAULT PRIORITY: A5 (CCTV/Jet Vac) is default matching equipment selection UI
       const id760Config = cctvConfigs.find((config: any) => config.categoryId === 'cctv-jet-vac');
@@ -4391,28 +4155,23 @@ export default function Dashboard() {
       if (userPrefersId759 && id759Config) {
         // User chose A4 and it's available
         cctvConfig = id759Config;
-        console.log('✅ A4 SELECTED - User prefers A4 and config available');
+        // A4 selected - user preference and config available
       } else if (!userPrefersId759 && id760Config) {
-        // CRITICAL: User chose A5 explicitly and it's available
+        // A5 selected - user preference and config available  
         cctvConfig = id760Config;
-        console.log('✅ A5 SELECTED - User prefers A5 and config available');
       } else if (userPrefersId759 && !id759Config && id760Config) {
-        // User wants A4 but it's not available, fallback to A5
+        // A5 fallback - user wants A4 but only A5 available
         cctvConfig = id760Config;
-        console.log('🔄 A5 FALLBACK - User wants A4 but only A5 available');
       } else if (!userPrefersId759 && !id760Config && id759Config) {
-        // User wants A5 but it's not available, fallback to A4
+        // A4 fallback - user wants A5 but only A4 available
         cctvConfig = id759Config;
-        console.log('🔄 A4 FALLBACK - User wants A5 but only A4 available');
       } else if (id760Config) {
-        // No user preference, default to A5 (matches UI default)
+        // Default A5 - no preference, using UI default
         cctvConfig = id760Config;
         shouldUpdatePriority = true;
-        console.log('🔄 DEFAULT A5 - No preference, using A5 (UI default)');
       } else {
         // Final fallback to A4
         cctvConfig = id759Config;
-        console.log('🔄 FALLBACK A4 - Final fallback to A4');
       }
       
       // Sync equipment priority with actual selection (only when needed and not recently changed by user)
@@ -4424,64 +4183,18 @@ export default function Dashboard() {
         const newPriority = cctvConfig?.categoryId === 'cctv-van-pack' ? 'id759' : 'id760';
         setEquipmentPriority(newPriority);
         localStorage.setItem('equipmentPriority', newPriority);
-        console.log('🔄 Equipment Priority Auto-Sync:', {
-          reason: id760HasValidMM4 ? 'A5 has MM4 data configured' : 'A5 default selection (UI default)',
-          previousPriority: equipmentPriority,
-          newPriority: newPriority,
-          configUsed: cctvConfig?.categoryId,
-          userRecentChange: recentUserChange,
-          timeSinceLastChange: timeSinceLastChange
-        });
+        // Equipment priority auto-sync completed
       } else if (shouldUpdatePriority && recentUserChange) {
-        console.log('🚫 Equipment Priority Auto-Sync SKIPPED - Recent user change detected:', {
-          timeSinceLastChange: timeSinceLastChange,
-          userPriority: equipmentPriority,
-          autoSelectWould: cctvConfig?.categoryId === 'cctv-van-pack' ? 'id759' : 'id760'
-        });
+        // Equipment priority auto-sync skipped - recent user change detected
       }
       
-      // Enhanced logging for Item 22 F608 first-time configuration analysis
-      const enhancedLogging = section.itemNo === 22 || section.itemNo === 13 || section.itemNo === 3;
-      
-      console.log(enhancedLogging ? '🔍 ENHANCED MM4 Dynamic Config Selection:' : '🔍 MM4 Dynamic Config Selection:', {
-        CRITICAL_A5_VS_A4_ROUTING: section.itemNo === 3 ? 'Item 3 should use A4 for MM4 validation, not A5' : 'Normal routing',
-        sectionId: section.itemNo,
-        needsCleaning,
-        id760Config: id760Config ? { id: id760Config.id, categoryId: id760Config.categoryId, hasMMData: !!id760Config.mmData } : null,
-        id759Config: id759Config ? { id: id759Config.id, categoryId: id759Config.categoryId, hasMMData: !!id759Config.mmData } : null,
-        id760Available: !!id760Config,
-        id759Available: !!id759Config,
-        id759HasValidMM4: id759HasValidMM4,
-        userPrefersId759: userPrefersId759,
-        id760HasValidMM4: id760HasValidMM4,
-        selectedConfig: cctvConfig ? {
-          id: cctvConfig.id,
-          categoryId: cctvConfig.categoryId,
-          reason: (id760HasValidMM4 && id759HasValidMM4) ? `User preference: ${cctvConfig.categoryId}` : 
-                  cctvConfig.categoryId === 'cctv-van-pack' ? 'A4 configured with MM4 data' : 'A5 default selection (UI default)',
-          hasMMData: !!(cctvConfig.mmData || cctvConfig.mm_data),
-          method: cctvConfig.categoryId === 'cctv-van-pack' ? 'A4 CCTV/Van Pack' : 'A5 CCTV/Jet Vac',
-          allConfiguredPipeSizes: enhancedLogging ? Object.keys((cctvConfig.mmData || cctvConfig.mm_data)?.mm4DataByPipeSize || {}) : undefined
-        } : null,
-        currentSector: currentSector.id
-      });
+      // MM4 dynamic config selection optimized
       
       if (cctvConfig && (cctvConfig.mmData || cctvConfig.mm_data)) {
         // CRITICAL FIX: Support both mmData (frontend) and mm_data (backend) structures
         const actualMmData = cctvConfig.mmData || cctvConfig.mm_data;
         
-        console.log(enhancedLogging ? '🔍 ENHANCED MM4/MM5 Dashboard Cost Integration:' : '🔍 MM4/MM5 Dashboard Cost Integration:', {
-          sectionId: section.itemNo,
-          sectionLength,
-          sectionDebrisPercent,
-          sectionPipeSize,
-          hasMMData: !!actualMmData,
-          dataStructureUsed: cctvConfig.mmData ? 'mmData (frontend)' : 'mm_data (backend)',
-          allPipeSizesConfigured: Object.keys(actualMmData?.mm4DataByPipeSize || {}),
-          lookingForPipeSize: sectionPipeSize?.replace('mm', ''),
-          CRITICAL_DEBUG_actualMmData: actualMmData,
-          CRITICAL_DEBUG_mm4DataByPipeSize: actualMmData?.mm4DataByPipeSize
-        });
+        // MM4/MM5 dashboard cost integration optimized
         
         // Get MM4 data for the matching pipe size
         const mm4DataByPipeSize = actualMmData?.mm4DataByPipeSize || {};
@@ -4493,12 +4206,7 @@ export default function Dashboard() {
         // Using authentic 1501 ID patterns
         const targetPipeSize = sectionPipeSize?.replace('mm', '');
         
-        console.log('🔍 PIPE SIZE MATCHING DEBUG:', {
-          sectionId: section.itemNo,
-          targetPipeSize,
-          allAvailableKeys: Object.keys(mm4DataByPipeSize),
-          searchingFor: `${targetPipeSize}-*`
-        });
+        // Pipe size matching optimized
         
         // Try to find exact pipe size match (prioritize new pattern, fallback to old)
         for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
@@ -4507,96 +4215,15 @@ export default function Dashboard() {
           if (keyPipeSize === targetPipeSize) {
             matchingMM4Data = mm4Data;
             matchingPipeSizeKey = pipeSizeKey;
-            console.log('✅ PIPE SIZE MATCH FOUND:', {
-              sectionId: section.itemNo,
-              matchedKey: pipeSizeKey,
-              dataExists: !!mm4Data,
-              dataLength: Array.isArray(mm4Data) ? mm4Data.length : 0
-            });
             break;
           }
         }
         
-        // Enhanced debugging for 525mm pipe size sections (Items 1 and 2 from GR7188)
-        if (sectionPipeSize === '525' || section.itemNo === 1 || section.itemNo === 2) {
-          console.log('🔍 525MM PIPE SIZE DEBUG - Configuration Matching:', {
-            sectionId: section.itemNo,
-            sectionPipeSize: sectionPipeSize,
-            sectionLength: sectionLength,
-            sectionDebrisPercent: sectionDebrisPercent,
-            allConfiguredPipeSizes: Object.keys(mm4DataByPipeSize),
-            matchingPipeSizeKey: matchingPipeSizeKey,
-            matchFound: !!matchingMM4Data,
-            configSource: cctvConfig.categoryId,
-            allPipeSizeDetails: Object.entries(mm4DataByPipeSize).map(([key, data]) => ({
-              pipeSizeKey: key,
-              pipeSize: key.split('-')[0],
-              isMatch: key.split('-')[0] === sectionPipeSize?.replace('mm', ''),
-              rowCount: Array.isArray(data) ? data.length : 0,
-              rows: Array.isArray(data) ? data.map(r => ({
-                id: r.id,
-                blueValue: r.blueValue,
-                greenValue: r.greenValue,
-                purpleDebris: r.purpleDebris,
-                purpleLength: r.purpleLength
-              })) : []
-            }))
-          });
-        }
+        // 525mm pipe size handling optimized for Items 1 and 2
         
-        // Enhanced debugging for Item 22 - show all pipe size configurations vs section requirements
-        if (section.itemNo === 22) {
-          console.log('🔍 F608 ALL PIPE SIZE CONFIGURATIONS vs ITEM 22:', {
-            sectionPipeSize: sectionPipeSize,
-            sectionLength: sectionLength,
-            sectionDebrisPercent: sectionDebrisPercent,
-            allConfiguredPipeSizes: Object.keys(mm4DataByPipeSize),
-            matchingPipeSizeKey: matchingPipeSizeKey,
-            matchFound: !!matchingMM4Data,
-            allPipeSizeDetails: Object.entries(mm4DataByPipeSize).map(([key, data]) => ({
-              pipeSizeKey: key,
-              pipeSize: key.split('-')[0],
-              rowCount: Array.isArray(data) ? data.length : 0,
-              rows: Array.isArray(data) ? data.map(r => ({
-                id: r.id,
-                blueValue: r.blueValue,
-                greenValue: r.greenValue,
-                purpleDebris: r.purpleDebris,
-                purpleLength: r.purpleLength
-              })) : []
-            }))
-          });
-        }
+        // Item 22 pipe size configurations optimized
         
-        // SPECIFIC F608 MM4-225 MATH VERIFICATION - Enhanced debugging for 225mm configuration
-        if (matchingPipeSizeKey === '225-2251' && (section.itemNo === 22 || section.itemNo === 13)) {
-          console.log('🧮 F608 MM4-225 MATH VERIFICATION:', {
-            sectionId: section.itemNo,
-            pipeSizeKey: matchingPipeSizeKey,
-            sectionRequirements: {
-              pipeSize: sectionPipeSize,
-              length: sectionLength,
-              debrisPercent: sectionDebrisPercent
-            },
-            mm4_225_Configuration: {
-              totalRows: matchingMM4Data ? matchingMM4Data.length : 0,
-              row1Config: matchingMM4Data && matchingMM4Data[0] ? {
-                blueValue: matchingMM4Data[0].blueValue,
-                greenValue: matchingMM4Data[0].greenValue,
-                purpleDebris: matchingMM4Data[0].purpleDebris,
-                purpleLength: matchingMM4Data[0].purpleLength,
-                expectedMath: `£${matchingMM4Data[0].blueValue || '950'} ÷ ${matchingMM4Data[0].greenValue || '8'} runs = £${(parseFloat(matchingMM4Data[0].blueValue || '950') / parseFloat(matchingMM4Data[0].greenValue || '8')).toFixed(2)} per run`
-              } : null,
-              fromConsoleBuffer: {
-                blueValue: '950',
-                greenValue: '8', 
-                purpleDebris: '20',
-                purpleLength: '99.99',
-                expectedMath: '£950 ÷ 8 runs = £118.75 per run'
-              }
-            }
-          });
-        }
+        // F608 MM4-225 math verification optimized
         
         // MODERNIZED VALIDATION: No red triangles - only blue (missing config) and orange (other issues)
         // Missing pipe size configuration should show blue triangles
@@ -4980,24 +4607,7 @@ export default function Dashboard() {
                 const meteragesForThisDefected = meterageText.split(/\s*,\s*/).filter(m => m.trim().length > 0);
                 totalStructuralPatches += meteragesForThisDefected.length;
                 
-                // ITEM 13A CRITICAL DEBUG: Show every match found
-                if (section.itemNo === 13) {
-                  console.log(`🚨 ITEM 13A STRUCTURAL DEFECT MATCH:`, {
-                    itemNo: section.itemNo,
-                    defectCode: defectCode,
-                    meterageText: meterageText,
-                    meteragesForThisDefect: meteragesForThisDefected,
-                    patchesForThisDefect: meteragesForThisDefected.length,
-                    runningTotal: totalStructuralPatches
-                  });
-                } else {
-                  console.log(`🎯 ID763 Structural Defect Found:`, {
-                    defectCode,
-                    meterageText,
-                    meteragesForThisDefect: meteragesForThisDefected,
-                    patchesForThisDefect: meteragesForThisDefected.length
-                  });
-                }
+                // Item 13a structural defect processing optimized
               }
               
               // MSCC5-Compliant fallback: only authentic structural codes (includes 'D' for deformity)
@@ -5005,55 +4615,16 @@ export default function Dashboard() {
                 const basicStructuralMatches = defectsText.match(/\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b/g) || [];
                 totalStructuralPatches = Math.max(basicStructuralMatches.length, defectMeterages.length, 1);
                 
-                // ITEM 13A CRITICAL DEBUG: Show fallback logic
-                if (section.itemNo === 13) {
-                  console.log('🚨 ITEM 13A FALLBACK LOGIC TRIGGERED:', {
-                    itemNo: section.itemNo,
-                    basicStructuralMatches: basicStructuralMatches,
-                    basicStructuralMatchesCount: basicStructuralMatches.length,
-                    defectMeterages: defectMeterages,
-                    defectMeteragesLength: defectMeterages.length,
-                    finalTotalStructuralPatches: totalStructuralPatches,
-                    calculationUsed: `Math.max(${basicStructuralMatches.length}, ${defectMeterages.length}, 1) = ${totalStructuralPatches}`
-                  });
-                }
+                // Item 13a fallback logic optimized
               }
               
               const patchCount = totalStructuralPatches;
               
               const totalPatchCost = costPerPatch * patchCount;
               
-              // ITEM 13A CRITICAL DEBUG: Mathematical calculation trace
-              if (section.itemNo === 13) {
-                console.log('🚨 ITEM 13A MATHEMATICAL CALCULATION:', {
-                  itemNo: section.itemNo,
-                  step1_DefectCount: totalStructuralPatches,
-                  step2_CostPerPatch: costPerPatch,
-                  step3_Multiplication: `${totalStructuralPatches} × £${costPerPatch}`,
-                  step4_TotalPatchCost: totalPatchCost,
-                  dayRate: dayRate,
-                  mm4RowData: {
-                    blueValue: mm4Row.blueValue,
-                    greenValue: mm4Row.greenValue,
-                    purpleDebris: mm4Row.purpleDebris,
-                    purpleLength: mm4Row.purpleLength
-                  }
-                });
-              }
+              // Item 13a mathematical calculation optimized
               
-              console.log('✅ ID763 Structural Patching Cost Calculation:', {
-                sectionId: section.itemNo,
-                pipeSizeKey: matchingPipeSizeKey,
-                mm4Row: mm4Row.id,
-                dayRate: blueValue, // Day rate from blue window
-                costPerPatch: greenValue, // Cost per patch from green window (Row 2 default)
-                defectMeterages: defectMeterages,
-                totalStructuralPatches: totalStructuralPatches,
-                patchCount: patchCount, // Number of patches needed based on defect instances with meterages
-                totalPatchCost: totalPatchCost, // Total cost for all patches
-                defectsText: defectsText,
-                note: 'ID763 structural patching - enhanced counting: structural defects with meterage locations'
-              });
+              // ID763 structural patching cost calculation optimized
               
               // For minimum quantity check, we need to access purple window data (patchingGreenData)
               // This would require accessing the mmData.patchingGreenData array for Row 2 quantities
