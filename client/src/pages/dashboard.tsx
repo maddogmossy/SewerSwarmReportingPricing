@@ -2375,31 +2375,53 @@ export default function Dashboard() {
       ? completedUploads.filter(upload => upload.folderId === selectedFolderForView)
       : completedUploads;
   
-  // Get current upload based on reportId parameter OR selectedReportIds
-  // CRITICAL: Only consider uploads that have authentic section data to prevent loops
-  // For URL parameter navigation (auto-navigation), search in ALL completed uploads, not just filtered
-  let potentialCurrentUpload = reportId 
-    ? completedUploads.find(upload => upload.id === parseInt(reportId))
-    : selectedReportIds.length === 1 
-      ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
-      : completedUploads.length === 1 ? completedUploads[0] 
-      : completedUploads.length > 0 ? (() => {
-          // Check for last used report first
-          const lastUsedReportId = localStorage.getItem('lastUsedReportId');
-          if (lastUsedReportId) {
-            const lastUsedUpload = completedUploads.find(upload => upload.id === parseInt(lastUsedReportId));
-            if (lastUsedUpload) {
-              console.log('🔄 Dashboard restored last used report:', lastUsedReportId);
-              return lastUsedUpload;
-            }
-          }
-          // Fallback to most recent upload by creation date
-          return completedUploads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-        })() : null;
+  // ENHANCED UPLOAD SELECTION LOGIC: Fix dashboard loading issues
+  let potentialCurrentUpload = null;
   
-  // CRITICAL FIX: If the potential upload exists but has no sections data, ignore it to prevent loops
-  // We'll check this after we fetch the section data below
+  console.log('🔍 UPLOAD SELECTION DEBUG:', {
+    reportIdFromURL: reportId,
+    selectedReportIds,
+    completedUploadsCount: completedUploads.length
+  });
+  
+  // Priority 1: URL reportId parameter (direct navigation)
+  if (reportId) {
+    potentialCurrentUpload = completedUploads.find(upload => upload.id === parseInt(reportId));
+    console.log('🔍 URL reportId search result:', potentialCurrentUpload ? `Found upload ${potentialCurrentUpload.id}` : 'Not found');
+  }
+  
+  // Priority 2: Single selected report
+  else if (selectedReportIds.length === 1) {
+    potentialCurrentUpload = filteredUploads.find(upload => upload.id === selectedReportIds[0]);
+    console.log('🔍 Selected reportId result:', potentialCurrentUpload ? `Found upload ${potentialCurrentUpload.id}` : 'Not found');
+  }
+  
+  // Priority 3: Single completed upload (only one available)
+  else if (completedUploads.length === 1) {
+    potentialCurrentUpload = completedUploads[0];
+    console.log('🔍 Single upload fallback:', `Using upload ${potentialCurrentUpload.id}`);
+  }
+  
+  // Priority 4: Last used report from localStorage
+  else if (completedUploads.length > 0) {
+    const lastUsedReportId = localStorage.getItem('lastUsedReportId');
+    if (lastUsedReportId) {
+      const lastUsedUpload = completedUploads.find(upload => upload.id === parseInt(lastUsedReportId));
+      if (lastUsedUpload) {
+        potentialCurrentUpload = lastUsedUpload;
+        console.log('🔄 Dashboard restored last used report:', lastUsedReportId);
+      }
+    }
+    
+    // Priority 5: Most recent upload by creation date
+    if (!potentialCurrentUpload) {
+      potentialCurrentUpload = completedUploads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+      console.log('🔍 Most recent upload fallback:', `Using upload ${potentialCurrentUpload?.id}`);
+    }
+  }
+  
   const currentUpload = potentialCurrentUpload;
+  console.log('🎯 FINAL CURRENT UPLOAD:', currentUpload ? `Upload ${currentUpload.id}` : 'None selected');
 
   // FIXED: Use conditional rendering instead of history manipulation to prevent visual interruption
   // Calculate effective reportId without manipulating browser history mid-render
@@ -2408,15 +2430,21 @@ export default function Dashboard() {
   // FIXED: Removed cache invalidation useEffect that was causing infinite loops
   // Cache invalidation will be handled by React Query automatically
 
-  // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
+  // SECTIONS DATA QUERY: Enhanced with better debugging
+  console.log('🔍 QUERY SETUP DEBUG:', {
+    effectiveReportId,
+    queryWillExecute: !!effectiveReportId,
+    currentUploadExists: !!currentUpload
+  });
+  
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${effectiveReportId}/sections`, 'wrc-line-deviation-fix'], // Stable cache key for WRc fix
-    enabled: !!effectiveReportId, // FIXED: Simplified enable logic - only need valid reportId to prevent loops
-    staleTime: 0,
-    gcTime: 0,
+    queryKey: [`/api/uploads/${effectiveReportId}/sections`, 'performance-optimized'], 
+    enabled: !!effectiveReportId, // Enable query when we have a valid reportId
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes since we have processed data caching
+    gcTime: 10 * 60 * 1000,   // Keep in memory for 10 minutes
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    retry: false
+    refetchOnWindowFocus: false, // Reduce unnecessary refetches since data is cached
+    retry: 1 // Retry once on failure
   });
   
   // CRITICAL DEBUG: Check if sections data is loading properly - FORCE IMMEDIATE LOG
@@ -2461,18 +2489,20 @@ export default function Dashboard() {
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
   
-  // FORCE DEBUG: Log every single time this component renders
+  // CRITICAL DEBUG: Log dashboard state to diagnose loading issues
   console.warn('🚨 DASHBOARD COMPONENT RENDER - FORCED LOG:', {
     timestamp: Date.now(),
-    effectiveReportId,
+    reportIdFromURL: reportId,
     currentUploadId: currentUpload?.id,
+    effectiveReportId,
     sectionsLoading,
     rawSectionDataExists: !!rawSectionData,
     rawSectionDataLength: rawSectionData?.length || 0,
     hasAuthenticData,
     sectionsError: sectionsError?.message || 'no error',
-    queryEnabled: !!effectiveReportId, // FIXED: Updated to match simplified enable logic
-    currentUploadStatus: currentUpload?.status || 'no upload'
+    queryEnabled: !!effectiveReportId,
+    currentUploadStatus: currentUpload?.status || 'no upload',
+    completedUploadsCount: completedUploads.length
   });
   
   // IMMEDIATE SECTION DATA CHECK
