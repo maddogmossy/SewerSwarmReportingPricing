@@ -25,6 +25,40 @@ export interface ProcessedSectionData {
 export class SectionProcessor {
   
   /**
+   * Process all sections for an upload with current MSCC5 rules
+   */
+  static async processUploadSections(uploadId: number, sector: string = 'utilities'): Promise<void> {
+    console.log(`🔄 Processing all sections for upload ${uploadId} with current MSCC5 rules`);
+    
+    const sections = await db.select().from(sectionInspections)
+      .where(eq(sectionInspections.fileUploadId, uploadId));
+    
+    for (const section of sections) {
+      if (section.rawObservations && section.rawObservations.length > 0) {
+        const processed = this.processSection({
+          rawObservations: section.rawObservations,
+          itemNo: section.itemNo,
+          totalLength: section.totalLength || '',
+          pipeSize: section.pipeSize || '',
+          sector
+        });
+        
+        await db.update(sectionInspections)
+          .set({
+            defects: processed.defects,
+            defectType: processed.defectType,
+            severityGrade: processed.severityGrade,
+            recommendations: processed.recommendations,
+            severityGrades: processed.severityGrades
+          })
+          .where(eq(sectionInspections.id, section.id));
+      }
+    }
+    
+    console.log(`✅ Completed processing ${sections.length} sections`);
+  }
+  
+  /**
    * Process raw section data using current MSCC5 rules
    */
   static async processSection(

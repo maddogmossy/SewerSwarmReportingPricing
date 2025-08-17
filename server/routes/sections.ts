@@ -6,10 +6,50 @@ import { Request, Response, Express } from 'express';
 import { db } from '../db';
 import { sectionInspections } from '@shared/schema';
 import { eq } from 'drizzle-orm';
-// import { SectionProcessor } from '../section-processor';
-// import { RawDataMigrator } from '../raw-data-migrator';
+import { SectionProcessor } from '../section-processor';
+import { RawDataMigrator } from '../raw-data-migrator';
 
 export function registerSectionRoutes(app: Express) {
+  
+  // Complete migration endpoint - Item 1
+  app.post("/api/uploads/:uploadId/migrate", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      const { sector = 'utilities' } = req.body;
+      
+      console.log(`🔄 Starting complete migration for upload ${uploadId}`);
+      
+      await RawDataMigrator.migrateUpload(uploadId, sector);
+      
+      res.json({ 
+        success: true, 
+        message: `Complete migration finished for upload ${uploadId}` 
+      });
+    } catch (error) {
+      console.error("Error in complete migration:", error);
+      res.status(500).json({ error: "Migration failed" });
+    }
+  });
+  
+  // Reprocess endpoint - Item 2
+  app.post("/api/uploads/:uploadId/reprocess", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      const { sector = 'utilities' } = req.body;
+      
+      console.log(`🔄 Reprocessing upload ${uploadId} with current MSCC5 rules`);
+      
+      await SectionProcessor.processUploadSections(uploadId, sector);
+      
+      res.json({ 
+        success: true, 
+        message: `Reprocessing completed for upload ${uploadId}` 
+      });
+    } catch (error) {
+      console.error("Error in reprocessing:", error);
+      res.status(500).json({ error: "Reprocessing failed" });
+    }
+  });
   
   // Get sections with on-demand processing
   app.get('/api/uploads/:uploadId/sections', async (req: Request, res: Response) => {
