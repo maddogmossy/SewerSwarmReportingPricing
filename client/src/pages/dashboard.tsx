@@ -686,7 +686,7 @@ export default function Dashboard() {
       // SIMPLIFIED SYNCHRONIZATION: Eliminate complex timing sequences that cause race conditions  
       console.log('🔄 Equipment priority changed - immediate unified synchronization');
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-configurations'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/sections', reportId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/versioned-sections', reportId] });
       
       // Force immediate cost recalculation with single timing cycle
       setTimeout(() => {
@@ -2427,7 +2427,20 @@ export default function Dashboard() {
   // SECTIONS DATA QUERY: Performance optimized
   
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${effectiveReportId}/sections`, 'performance-optimized'], 
+    queryKey: [`/api/versioned-sections`, effectiveReportId], 
+    queryFn: async () => {
+      const response = await fetch(`/api/versioned-sections?uploadId=${effectiveReportId}`);
+      if (!response.ok) {
+        // Fallback to legacy endpoint if versioned endpoint fails
+        console.log('🔄 Falling back to legacy sections endpoint');
+        const fallbackResponse = await fetch(`/api/uploads/${effectiveReportId}/sections`);
+        if (!fallbackResponse.ok) {
+          throw new Error('Both versioned and legacy sections endpoints failed');
+        }
+        return fallbackResponse.json();
+      }
+      return response.json();
+    },
     enabled: !!effectiveReportId, // Enable query when we have a valid reportId
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes since we have processed data caching
     gcTime: 10 * 60 * 1000,   // Keep in memory for 10 minutes
