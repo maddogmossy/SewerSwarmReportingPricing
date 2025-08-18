@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application processes compliant document formats based on WRc MSCC5 + OS20X standards, integrating payment functionalities to enable intelligent cost decision persistence. It aims to enhance operational efficiency and regulatory compliance in utilities, adoption, and highways sectors through accurate report processing and cost calculation. The project's ambition is to provide precise report processing and cost calculation for these sectors.
+This full-stack TypeScript application processes compliant document formats (WRc MSCC5 + OS20X standards), integrating payment functionalities for intelligent cost decision persistence. It aims to enhance operational efficiency and regulatory compliance in utilities, adoption, and highways sectors through accurate report processing and cost calculation. The project's ambition is to provide precise report processing and cost calculation for these sectors.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
@@ -71,7 +71,7 @@ This full-stack TypeScript application processes compliant document formats base
 - **Database ORM**: Drizzle ORM
 - **Session Management**: Express session
 - **File Handling**: Multer
-- **Technical Implementations**: Unified File Processing System for PDF and .db file uploads with standardized processing, item number assignment, SECSTAT extraction, and WRc MSCC5 classification. Advanced Cost Calculation System integrates database ID processing, patch counting, and MM4 integration.
+- **Technical Implementations**: Unified File Processing System for PDF and .db files with standardized processing, item number assignment, SECSTAT extraction, and WRc MSCC5 classification. Advanced Cost Calculation System integrates database ID processing, patch counting, and MM4 integration.
 
 ### Database
 - **Database**: PostgreSQL (configured for Neon serverless)
