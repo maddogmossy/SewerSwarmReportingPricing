@@ -92,4 +92,3 @@ This full-stack TypeScript application processes compliant document formats (WRc
 - **Payments**: Stripe API
 - **UI Components Libraries**: Radix UI, shadcn/ui
 - **File Upload**: Multer
-```
