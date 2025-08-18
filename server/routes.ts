@@ -877,9 +877,30 @@ export async function registerRoutes(app: Express) {
           // Get composed data with derivations
           const composedSections = await SimpleRulesRunner.getComposedData(uploadId);
           
-          console.log(`🚀 SECTIONS API (NEW): Returning ${composedSections.length} sections with versioned derivations`);
+          // Apply proper numeric sorting for 1→24 systematic ordering
+          const sortedSections = composedSections.sort((a, b) => {
+            // Extract numeric part from itemNo (handle both "13" and "13a" formats)
+            const aNum = parseInt(String(a.itemNo).replace(/[^0-9]/g, '')) || 999;
+            const bNum = parseInt(String(b.itemNo).replace(/[^0-9]/g, '')) || 999;
+            
+            // Primary sort: numeric order
+            if (aNum !== bNum) {
+              return aNum - bNum;
+            }
+            
+            // Secondary sort: letter suffix (service before structural)
+            const aHasSuffix = String(a.itemNo).includes('a');
+            const bHasSuffix = String(b.itemNo).includes('a');
+            
+            if (!aHasSuffix && bHasSuffix) return -1; // Service (13) before structural (13a)
+            if (aHasSuffix && !bHasSuffix) return 1;
+            
+            return 0;
+          });
           
-          return res.json(composedSections);
+          console.log(`🚀 SECTIONS API (NEW): Returning ${sortedSections.length} sections with versioned derivations (sorted 1→24)`);
+          
+          return res.json(sortedSections);
           
         } catch (error) {
           console.error(`❌ SECTIONS API (NEW): Versioned derivations failed:`, error);

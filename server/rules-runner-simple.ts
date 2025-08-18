@@ -128,8 +128,8 @@ export class SimpleRulesRunner {
           hasStructural = true;
           processedSections.push({
             ...splitSection,
-            letterSuffix: 'a',
-            itemNo: `${section.itemNo}a`
+            letterSuffix: splitSection.letterSuffix || 'a',
+            itemNo: splitSection.itemNo  // Use pre-processed itemNo to prevent double-suffix
           });
         }
       }
