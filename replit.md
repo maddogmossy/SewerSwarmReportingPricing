@@ -53,6 +53,7 @@ This full-stack TypeScript application processes compliant document formats (WRc
 - Double-Suffix Application Fix: Eliminated "aa" suffix generation bug by preventing double-processing. Fixed applySplittingLogic() to use pre-processed itemNo from MSCC5Classifier instead of re-applying suffix transformations. Implemented proper numeric sorting in API response to ensure systematic 1→24 section ordering. Service sections maintain original numbers (13) while structural sections get single "a" suffix (13a) as per WRc MSCC5 standards.
 - Critical DER Defect Classification Fix: Fixed misclassification of DER (Settled deposits) from structural to service defect type in MSCC5Classifier.getDefectType(). Added explicit serviceDefects array including DER, DES, OB, OBI, RI, WL, SA, CUW codes. Enhanced error handling and comprehensive logging throughout versioned derivations pipeline for better debugging and monitoring. Fixed observation_rules population with complete metadata including itemNo, originalItemNo, and splitCount.
 - PIN 7461 Observation Formatting Standardization: Fixed critical double-formatting conflict between HTML-based formatStandardizedObservation() and React-based ObservationRenderer. Replaced HTML tag generation with clean text preprocessing that removes HTML artifacts and formats observations consistently. All dashboard observations now display with proper bullet points (•), bold defect codes using React ** elements, and standardized "CODE" - Description format. Eliminated raw HTML display issues (**"DES"**) and missing defect codes. Enhanced ObservationRenderer pattern matching for MSCC5 codes including D, COL, BRK variants.
+- Item 13a Double Suffix Display Fix: Fixed frontend display bug in getItemNumberWithSuffix() function causing "aa" suffix generation (13aa instead of 13a). Added duplicate suffix detection preventing double concatenation when MSCC5Classifier already includes suffix in itemNo field. Implemented safe concatenation logic with explicit suffix duplication check. Frontend now correctly displays single "a" suffixes (13a, 21a) per WRc MSCC5 standards without display-layer corruption.
 
 ## System Architecture
 
@@ -91,3 +92,4 @@ This full-stack TypeScript application processes compliant document formats (WRc
 - **Payments**: Stripe API
 - **UI Components Libraries**: Radix UI, shadcn/ui
 - **File Upload**: Multer
+```

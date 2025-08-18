@@ -1036,11 +1036,12 @@ export default function Dashboard() {
     const currentItemNo = section.itemNo;
     
     // If section has a database letter suffix (from multi-defect splitting), use it
-    if (section.letterSuffix) {
+    // FIXED: Prevent double suffix concatenation (e.g., "13a" + "a" = "13aa")
+    if (section.letterSuffix && !currentItemNo.toString().includes(section.letterSuffix)) {
       return `${currentItemNo}${section.letterSuffix}`;
     }
     
-    // Otherwise, just return the item number
+    // Otherwise, just return the item number (may already include suffix from MSCC5Classifier)
     return currentItemNo.toString();
   };
 
