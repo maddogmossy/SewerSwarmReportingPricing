@@ -856,13 +856,47 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Get sections for an upload - UNIFORM ARCHITECTURE
+  // Get sections for an upload - VERSIONED DERIVATIONS PIPELINE
   app.get("/api/uploads/:id/sections", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.id);
       const sector = req.query.sector as string || 'utilities';
       
-      console.log(`🔍 UNIFORM ARCHITECTURE - Fetching sections for upload ${uploadId} with sector ${sector}`);
+      console.log(`🔍 VERSIONED DERIVATIONS - Fetching sections for upload ${uploadId} with sector ${sector}`);
+      
+      // Import feature flag
+      const { USE_LATEST_RULES_RUN } = await import('./config/flags');
+      
+      // NEW: Use latest rules run pipeline if enabled
+      if (USE_LATEST_RULES_RUN) {
+        const { RulesRunner } = await import('./rules-runner');
+        
+        // Check if we have a latest successful run
+        const latestRun = await RulesRunner.getLatestRulesRun(uploadId);
+        
+        if (!latestRun) {
+          // No rules run exists - create one
+          console.log(`🔄 SECTIONS API (NEW): No rules run found for upload ${uploadId}, creating one...`);
+          const runResult = await RulesRunner.runClassificationForUpload(uploadId);
+          
+          if (runResult.status === 'failed') {
+            console.error(`❌ SECTIONS API (NEW): Rules run failed:`, runResult.errorText);
+            return res.status(500).json({ error: 'Failed to process sections with current rules' });
+          }
+          
+          console.log(`✅ SECTIONS API (NEW): Created rules run ${runResult.runId} with ${runResult.observationsCreated} observations`);
+        }
+        
+        // Get composed data from latest successful run
+        const composedData = await RulesRunner.getComposedSectionData(uploadId);
+        
+        console.log(`🚀 SECTIONS API (NEW): Returning ${composedData.sections.length} sections from rules run ${composedData.rulesRun?.id}`);
+        
+        return res.json(composedData.sections);
+      }
+      
+      // FALLBACK: Legacy path for backwards compatibility
+      console.log(`🔍 SECTIONS API (LEGACY): Using legacy processed fields path`);
       
       // Get raw sections from database
       const sections = await db.select()
@@ -934,16 +968,17 @@ export async function registerRoutes(app: Express) {
                 section.itemNo
               );
               
-              // Store processed results in database
+              // DEPRECATED: No longer store in processed* fields - superseded by observation_rules + rules_runs
+              // Update only legacy fields for backward compatibility during transition
               await db.update(sectionInspections)
                 .set({
-                  processedDefectType: processed.defectType,
-                  processedSeverityGrade: processed.severityGrade,
-                  processedSeverityGrades: processed.severityGrades,
-                  processedRecommendations: processed.recommendations,
-                  processedAdoptable: processed.adoptable,
-                  processedSrmGrading: processed.srmGrading, // Store SRM4 grading
-                  processedAt: new Date(),
+                  // DEPRECATED: processedDefectType: processed.defectType,
+                  // DEPRECATED: processedSeverityGrade: processed.severityGrade,
+                  // DEPRECATED: processedSeverityGrades: processed.severityGrades,
+                  // DEPRECATED: processedRecommendations: processed.recommendations,
+                  // DEPRECATED: processedAdoptable: processed.adoptable,
+                  // DEPRECATED: processedSrmGrading: processed.srmGrading,
+                  // DEPRECATED: processedAt: new Date(),
                   // Update legacy fields for compatibility
                   defectType: processed.defectType,
                   severityGrade: processed.severityGrade.toString(),

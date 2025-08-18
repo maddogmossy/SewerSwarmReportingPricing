@@ -369,6 +369,37 @@ export const teamInvitations = pgTable("team_invitations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// --- NEW: Versioned derivations pipeline ---
+// Rules runs table - append-only runs per upload
+export const rulesRuns = pgTable("rules_runs", {
+  id: serial("id").primaryKey(),
+  uploadId: integer("upload_id").notNull().references(() => fileUploads.id, { onDelete: "cascade" }),
+  parserVersion: varchar("parser_version").notNull(),
+  rulesetVersion: varchar("ruleset_version").notNull(),
+  startedAt: timestamp("started_at").notNull(),
+  finishedAt: timestamp("finished_at"),
+  status: varchar("status").notNull(), // 'success' | 'failed'
+  errorText: text("error_text"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Observation rules table - append-only per observation per run
+export const observationRules = pgTable("observation_rules", {
+  id: serial("id").primaryKey(),
+  rulesRunId: integer("rules_run_id").notNull().references(() => rulesRuns.id, { onDelete: "cascade" }),
+  sectionId: integer("section_id").notNull().references(() => sectionInspections.id, { onDelete: "cascade" }),
+  observationIdx: integer("observation_idx").notNull(), // index of observation in that section
+  mscc5Json: text("mscc5_json").notNull(), // JSON.stringify of MSCC5 classification
+  osClass: varchar("os_class", { length: 50 }),
+  adoptability: varchar("adoptability", { length: 50 }),
+  recommendationText: text("recommendation_text"),
+  opActionTypeInt: integer("op_action_type_int"),
+  pricingJson: text("pricing_json"),
+  defectType: varchar("defect_type", { length: 50 }), // 'structural' | 'service'
+  severityGrade: integer("severity_grade"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Billing records for team member additions
 export const teamBillingRecords = pgTable("team_billing_records", {
   id: serial("id").primaryKey(),

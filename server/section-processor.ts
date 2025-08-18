@@ -43,16 +43,17 @@ export class SectionProcessor {
           section.itemNo
         );
         
-        // Update processed fields for caching with SRM grading
+        // DEPRECATED: No longer write to processed* fields - superseded by observation_rules + rules_runs
+        // Update only legacy fields for backward compatibility during transition
         await db.update(sectionInspections)
           .set({
-            processedDefectType: processed.defectType,
-            processedSeverityGrade: processed.severityGrade,
-            processedSeverityGrades: processed.severityGrades,
-            processedRecommendations: processed.recommendations,
-            processedAdoptable: processed.adoptable,
-            processedSrmGrading: processed.srmGrading,
-            processedAt: new Date(),
+            // DEPRECATED: processedDefectType: processed.defectType,
+            // DEPRECATED: processedSeverityGrade: processed.severityGrade,
+            // DEPRECATED: processedSeverityGrades: processed.severityGrades,
+            // DEPRECATED: processedRecommendations: processed.recommendations,
+            // DEPRECATED: processedAdoptable: processed.adoptable,
+            // DEPRECATED: processedSrmGrading: processed.srmGrading,
+            // DEPRECATED: processedAt: new Date(),
             // Legacy fields for backward compatibility
             defects: processed.defects,
             defectType: processed.defectType,
@@ -199,16 +200,17 @@ export class SectionProcessor {
           section.itemNo
         );
         
-        // Store processed results in database for performance caching
+        // DEPRECATED: No longer store processed results in processed* fields - superseded by observation_rules + rules_runs
+        // Update only legacy fields for backward compatibility during transition
         await db.update(sectionInspections)
           .set({
-            processedDefectType: processed.defectType,
-            processedSeverityGrade: processed.severityGrade,
-            processedSeverityGrades: processed.severityGrades,
-            processedRecommendations: processed.recommendations,
-            processedAdoptable: processed.adoptable,
-            processedSrmGrading: processed.srmGrading, // Store SRM4 grading data
-            processedAt: new Date(),
+            // DEPRECATED: processedDefectType: processed.defectType,
+            // DEPRECATED: processedSeverityGrade: processed.severityGrade,
+            // DEPRECATED: processedSeverityGrades: processed.severityGrades,
+            // DEPRECATED: processedRecommendations: processed.recommendations,
+            // DEPRECATED: processedAdoptable: processed.adoptable,
+            // DEPRECATED: processedSrmGrading: processed.srmGrading,
+            // DEPRECATED: processedAt: new Date(),
             // Also update legacy fields for backward compatibility
             defectType: processed.defectType,
             severityGrade: processed.severityGrade.toString(),
