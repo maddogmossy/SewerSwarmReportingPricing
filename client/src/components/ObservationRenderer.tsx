@@ -15,28 +15,51 @@ interface ObservationRendererProps {
 
 /**
  * Parse and format a single observation with defect code bolding
+ * Now handles the cleaned format: "CODE Description" instead of HTML
  */
 const formatObservationItem = (observation: string): { code: string | null; text: string } => {
   const trimmed = observation.trim();
   
-  // Extract defect codes at start of observation (common MSCC5 patterns)
-  const defectCodePattern = /^("?([A-Z]{2,4})"?\s*[-–—]\s*)/;
-  const codeMatch = trimmed.match(defectCodePattern);
+  // Handle cleaned format from cleanObservationForRenderer: "DER Settled deposits..."
+  const cleanCodePattern = /^([A-Z]{1,4})\s+(.+)$/;
+  const cleanMatch = trimmed.match(cleanCodePattern);
   
-  if (codeMatch) {
-    const code = codeMatch[2]; // Extract just the code letters
-    const text = trimmed.replace(defectCodePattern, '').trim();
-    return { code, text };
+  if (cleanMatch) {
+    const potentialCode = cleanMatch[1];
+    const description = cleanMatch[2];
+    
+    // Verify it's a valid MSCC5 defect code
+    const validCodes = [
+      // Service codes
+      'DER', 'DES', 'WL', 'SA', 'CUW', 'OBI', 'OB', 'RI',
+      // Structural codes  
+      'FC', 'FL', 'CR', 'D', 'DEF', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'CN', 'COL', 'BRK',
+      // Conditional codes
+      'SC'
+    ];
+    
+    if (validCodes.includes(potentialCode)) {
+      return { code: potentialCode, text: description };
+    }
   }
   
-  // Check for embedded codes like "DER Settled deposits..." 
-  const embeddedCodePattern = /^([A-Z]{2,4})\s+(.+)$/;
-  const embeddedMatch = trimmed.match(embeddedCodePattern);
+  // Handle legacy format with HTML tags (in case any slip through)
+  const htmlCodePattern = /<b>"?([A-Z]{1,4})"?<\/b>\s*[-–—]\s*(.+)/;
+  const htmlMatch = trimmed.match(htmlCodePattern);
   
-  if (embeddedMatch && ['DER', 'DES', 'WL', 'FC', 'FL', 'CR', 'DEF', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'CN', 'SC'].includes(embeddedMatch[1])) {
-    return { code: embeddedMatch[1], text: embeddedMatch[2].trim() };
+  if (htmlMatch) {
+    return { code: htmlMatch[1], text: htmlMatch[2].trim() };
   }
   
+  // Handle quoted format: "DER" - Description
+  const quotedCodePattern = /^"([A-Z]{1,4})"\s*[-–—]\s*(.+)$/;
+  const quotedMatch = trimmed.match(quotedCodePattern);
+  
+  if (quotedMatch) {
+    return { code: quotedMatch[1], text: quotedMatch[2].trim() };
+  }
+  
+  // If no code pattern matches, return as plain text
   return { code: null, text: trimmed };
 };
 

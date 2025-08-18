@@ -1116,133 +1116,130 @@ export default function Dashboard() {
           });
         }
         
-        // Standardized observation formatting for all defect types - MOVED TO TOP SCOPE
-        const formatStandardizedObservation = (text: string, defectType: string) => {
-          // For structural defects - extract codes and format with meterage at end
+        // Clean observation preprocessing - removes HTML and prepares for ObservationRenderer
+        const cleanObservationForRenderer = (text: string, defectType: string) => {
+          // Remove any existing HTML tags from previous processing
+          const cleanText = text.replace(/<[^>]*>/g, '');
+          
+          // For structural defects - format with meterage at end
           if (defectType === 'structural') {
-            // Extract deformity: "Deformity at 5.67m (Deformed sewer or drain, 5%)" → <b>"D"</b> - Deformity (Deformed sewer or drain, 5%) at 5.67m
-            const deformityMatch = text.match(/Deformity at (\d+\.?\d*)m(.*)$/i);
+            // Handle deformity patterns
+            const deformityMatch = cleanText.match(/Deformity at (\d+\.?\d*)m(.*)$/i);
             if (deformityMatch) {
               const meterage = deformityMatch[1];
               const description = deformityMatch[2].trim();
-              return `<b>"D"</b> - Deformity${description} at ${meterage}m`;
+              return `D Deformity${description} at ${meterage}m`;
             }
             
-            // Extract fractures
-            const fractureMatch = text.match(/(Fracture|fracture).*?at (\d+\.?\d*)m(.*)$/i);
+            // Handle fractures
+            const fractureMatch = cleanText.match(/(Fracture|fracture).*?at (\d+\.?\d*)m(.*)$/i);
             if (fractureMatch) {
               const meterage = fractureMatch[2];
-              const codeType = text.toLowerCase().includes('circumferential') ? 'FC' : 'FL';
+              const codeType = cleanText.toLowerCase().includes('circumferential') ? 'FC' : 'FL';
               const description = fractureMatch[3].trim();
               const fractureName = fractureMatch[1].toLowerCase();
-              return `<b>"${codeType}"</b> - ${fractureName.charAt(0).toUpperCase() + fractureName.slice(1)}${description} at ${meterage}m`;
+              return `${codeType} ${fractureName.charAt(0).toUpperCase() + fractureName.slice(1)}${description} at ${meterage}m`;
             }
             
-            // Extract cracks
-            const crackMatch = text.match(/(Crack|crack).*?at (\d+\.?\d*)m(.*)$/i);
+            // Handle cracks
+            const crackMatch = cleanText.match(/(Crack|crack).*?at (\d+\.?\d*)m(.*)$/i);
             if (crackMatch) {
               const meterage = crackMatch[2];
               const description = crackMatch[3].trim();
-              return `<b>"CR"</b> - Crack${description} at ${meterage}m`;
+              return `CR Crack${description} at ${meterage}m`;
             }
             
-            // Extract joint displacement
-            const jointDisplacementMatch = text.match(/Joint displacement.*?at (\d+\.?\d*)m(.*)$/i);
+            // Handle joint displacement
+            const jointDisplacementMatch = cleanText.match(/Joint displacement.*?at (\d+\.?\d*)m(.*)$/i);
             if (jointDisplacementMatch) {
               const meterage = jointDisplacementMatch[1];
-              const codeType = text.toLowerCase().includes('major') ? 'JDM' : 'JDL';
+              const codeType = cleanText.toLowerCase().includes('major') ? 'JDM' : 'JDL';
               const description = jointDisplacementMatch[2].trim();
-              return `<b>"${codeType}"</b> - Joint displacement${description} at ${meterage}m`;
+              return `${codeType} Joint displacement${description} at ${meterage}m`;
             }
             
-            // Extract open joints
-            const openJointMatch = text.match(/Open joint.*?at (\d+\.?\d*)m(.*)$/i);
+            // Handle open joints
+            const openJointMatch = cleanText.match(/Open joint.*?at (\d+\.?\d*)m(.*)$/i);
             if (openJointMatch) {
               const meterage = openJointMatch[1];
-              const codeType = text.toLowerCase().includes('major') ? 'OJM' : 'OJL';
+              const codeType = cleanText.toLowerCase().includes('major') ? 'OJM' : 'OJL';
               const description = openJointMatch[2].trim();
-              return `<b>"${codeType}"</b> - Open joint${description} at ${meterage}m`;
+              return `${codeType} Open joint${description} at ${meterage}m`;
             }
             
-            // Extract collapsed pipes
-            const collapsedMatch = text.match(/(Collapsed|collapsed).*?at (\d+\.?\d*)m(.*)$/i);
+            // Handle collapsed pipes
+            const collapsedMatch = cleanText.match(/(Collapsed|collapsed).*?at (\d+\.?\d*)m(.*)$/i);
             if (collapsedMatch) {
               const meterage = collapsedMatch[2];
               const description = collapsedMatch[3].trim();
-              return `<b>"COL"</b> - Collapsed${description} at ${meterage}m`;
+              return `COL Collapsed${description} at ${meterage}m`;
             }
             
-            // Extract broken pipes
-            const brokenMatch = text.match(/(Broken|broken).*?at (\d+\.?\d*)m(.*)$/i);
+            // Handle broken pipes
+            const brokenMatch = cleanText.match(/(Broken|broken).*?at (\d+\.?\d*)m(.*)$/i);
             if (brokenMatch) {
               const meterage = brokenMatch[2];
               const description = brokenMatch[3].trim();
-              return `<b>"BRK"</b> - Broken${description} at ${meterage}m`;
+              return `BRK Broken${description} at ${meterage}m`;
             }
             
-            // Extract defective connections
-            const connectionMatch = text.match(/(Connection defective|defective connection).*?at (\d+\.?\d*)m(.*)$/i);
+            // Handle defective connections
+            const connectionMatch = cleanText.match(/(Connection defective|defective connection).*?at (\d+\.?\d*)m(.*)$/i);
             if (connectionMatch) {
               const meterage = connectionMatch[2];
               const description = connectionMatch[3].trim();
-              return `<b>"CN"</b> - Connection defective${description} at ${meterage}m`;
+              return `CN Connection defective${description} at ${meterage}m`;
             }
           }
           
-          // For service defects - extract codes and keep meterage in description
+          // For service defects - keep meterage in description, prefix with codes
           if (defectType === 'service') {
-            // Extract DER deposits
-            const derMatch = text.match(/DER (.+)/i);
-            if (derMatch) {
-              const description = derMatch[1];
-              return `<b>"DER"</b> - ${description}`;
+            // Handle DER deposits
+            if (cleanText.match(/DER (.+)/i)) {
+              return cleanText; // Already has DER prefix
             }
             
-            // Extract DES deposits  
-            const desMatch = text.match(/DES (.+)/i);
-            if (desMatch) {
-              const description = desMatch[1];
-              return `<b>"DES"</b> - ${description}`;
+            // Handle DES deposits  
+            if (cleanText.match(/DES (.+)/i)) {
+              return cleanText; // Already has DES prefix
             }
             
-            // Extract water level
-            const wlMatch = text.match(/Water level (.+)/i);
+            // Handle water level
+            const wlMatch = cleanText.match(/Water level (.+)/i);
             if (wlMatch) {
               const description = wlMatch[1];
-              return `<b>"WL"</b> - Water level ${description}`;
+              return `WL Water level ${description}`;
             }
             
-            // Extract junctions
-            const junctionMatch = text.match(/Junction (.+)/i);
+            // Handle junctions
+            const junctionMatch = cleanText.match(/Junction (.+)/i);
             if (junctionMatch) {
               const description = junctionMatch[1];
-              return `<b>"JN"</b> - Junction ${description}`;
+              return `JN Junction ${description}`;
             }
             
-            // Only extract SC codes when structural defects are present (WRc MSCC5 compliance)
+            // Only process SC codes when structural defects are present (WRc MSCC5 compliance)
             const hasStructuralDefects = section.defectType === 'structural' || 
                                         (section.severityGrades?.structural && Number(section.severityGrades.structural) > 0);
             
             if (hasStructuralDefects) {
-              // Extract size changes (SC) - only for structural items
-              const scMatch = text.match(/SC (.+)/i);
+              // Handle size changes (SC) - only for structural items
+              const scMatch = cleanText.match(/SC (.+)/i);
               if (scMatch) {
-                const description = scMatch[1];
-                return `<b>"SC"</b> - ${description}`;
+                return cleanText; // Already has SC prefix
               }
               
-              // Extract pipe size changes - only for structural items
-              const pipeSizeMatch = text.match(/Pipe size changes (.+)/i);
+              // Handle pipe size changes - only for structural items
+              const pipeSizeMatch = cleanText.match(/Pipe size changes (.+)/i);
               if (pipeSizeMatch) {
                 const description = pipeSizeMatch[1];
-                return `<b>"SC"</b> - Pipe size changes ${description}`;
+                return `SC Pipe size changes ${description}`;
               }
             }
-            // SC codes completely ignored for service-only or no-defect items
           }
           
-          // Return original text if no patterns match
-          return text;
+          // Return cleaned text if no patterns match
+          return cleanText;
         };
         
         if (!defectsText || defectsText.trim() === '') {
@@ -1332,7 +1329,7 @@ export default function Dashboard() {
           return (
             <div className="text-sm p-2 w-full">
               <ObservationRenderer 
-                observations={observations.map(obs => formatStandardizedObservation(obs, section.defectType))}
+                observations={observations.map(obs => cleanObservationForRenderer(obs, section.defectType))}
                 className="text-left leading-relaxed"
               />
             </div>
@@ -1356,14 +1353,14 @@ export default function Dashboard() {
           );
         }
         
-        // Apply standardized formatting to single observations
-        const displayText = formatStandardizedObservation(defectsText, section.defectType);
+        // Apply clean preprocessing to single observations
+        const cleanedText = cleanObservationForRenderer(defectsText, section.defectType);
         
         // For single observations, also use bullet point format for consistency
         return (
           <div className="text-sm p-2 w-full">
             <ObservationRenderer 
-              observations={[displayText]}
+              observations={[cleanedText]}
               className="text-left leading-relaxed"
             />
           </div>
