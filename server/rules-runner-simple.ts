@@ -202,8 +202,15 @@ export class SimpleRulesRunner {
       console.log(`  ↳ Split into ${splitSections.length} subsections`);
       
       for (const splitSection of splitSections) {
+        console.log(`💰 Calculating costs for section ${splitSection.itemNo} (${splitSection.defectType})`);
+        
+        // Calculate costs for this section using the same logic as dashboard
+        const sectionWithCosts = await this.calculateSectionCosts(splitSection, uploadId);
+        
+        console.log(`💰 Cost result for ${splitSection.itemNo}: cost=${sectionWithCosts.cost}, estimatedCost=${sectionWithCosts.estimatedCost}`);
+        
         composedSections.push({
-          ...splitSection,
+          ...sectionWithCosts,
           derivedAt: run.finishedAt,
           rulesRunId: run.id,
           rulesetVersion: run.rulesetVersion,
@@ -215,5 +222,136 @@ export class SimpleRulesRunner {
     
     console.log(`✅ Composed ${composedSections.length} total sections`);
     return composedSections;
+  }
+
+  /**
+   * Calculate costs for a section using PR2 configurations
+   */
+  private static async calculateSectionCosts(section: any, uploadId: number) {
+    try {
+      // Import cost calculation logic from dashboard
+      const { db } = await import('./db');
+      const { pr2Configurations } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      // Skip cost calculation for Grade 0 sections
+      if (section.severityGrade === '0' || section.severityGrade === 0) {
+        return {
+          ...section,
+          cost: 'Complete',
+          estimatedCost: null
+        };
+      }
+      
+      // Get PR2 configurations for cost calculation - use utilities sector as default
+      const { and } = await import('drizzle-orm');
+      const configs = await db.select()
+        .from(pr2Configurations)
+        .where(and(
+          eq(pr2Configurations.userId, 'system'),
+          eq(pr2Configurations.sector, 'utilities')
+        ));
+      
+      // Apply cost calculation based on defect type
+      if (section.defectType === 'service') {
+        return await this.calculateServiceCosts(section, configs);
+      } else if (section.defectType === 'structural') {
+        return await this.calculateStructuralCosts(section, configs);
+      }
+      
+      return section;
+      
+    } catch (error) {
+      console.log(`⚠️ Cost calculation failed for section ${section.itemNo}:`, error.message);
+      return section;
+    }
+  }
+
+  /**
+   * Calculate service costs (CCTV/Jet Vac)
+   */
+  private static async calculateServiceCosts(section: any, configs: any[]) {
+    // Find CCTV/Jet Vac configuration
+    const cctvConfig = configs.find(c => c.categoryId === 'cctv-jet-vac');
+    if (!cctvConfig?.mmData?.mm4DataByPipeSize) {
+      return section;
+    }
+
+    const pipeSize = section.pipeSize?.replace('mm', '') || '150';
+    const mm4Data = cctvConfig.mmData.mm4DataByPipeSize[`${pipeSize}-${pipeSize}1`];
+    
+    if (mm4Data && mm4Data.length > 0) {
+      const dayRate = parseFloat(mm4Data[0].blueValue || '0');
+      const sectionLength = parseFloat(section.totalLength) || 0;
+      
+      if (dayRate > 0 && sectionLength > 0) {
+        return {
+          ...section,
+          cost: dayRate,
+          estimatedCost: dayRate,
+          costCalculation: 'MM4 Day Rate Applied'
+        };
+      }
+    }
+    
+    return section;
+  }
+
+  /**
+   * Calculate structural costs (MM4 Patching)
+   */
+  private static async calculateStructuralCosts(section: any, configs: any[]) {
+    // Find patching configuration
+    const patchingConfig = configs.find(c => c.categoryId === 'patching');
+    if (!patchingConfig?.mmData?.mm4DataByPipeSize) {
+      return section;
+    }
+
+    const pipeSize = section.pipeSize?.replace('mm', '') || '150';
+    const mm4Key = `${pipeSize}-${pipeSize}1`;
+    const mm4Data = patchingConfig.mmData.mm4DataByPipeSize[mm4Key];
+    
+    console.log(`💰 STR Cost Debug: pipeSize=${pipeSize}, key=${mm4Key}, hasData=${!!mm4Data}`, {
+      configId: patchingConfig.id,
+      available_keys: Object.keys(patchingConfig.mmData.mm4DataByPipeSize || {})
+    });
+    
+    if (mm4Data && mm4Data.length > 0) {
+      const costPerPatch = parseFloat(mm4Data[0].greenValue || '0');
+      
+      // Count structural defects for patch calculation
+      const defectsText = section.defects || '';
+      console.log(`💰 STR Defect Analysis for ${section.itemNo}: "${defectsText}"`);
+      
+      // Enhanced pattern to catch defect codes with locations (handle both 5. and 5m formats)
+      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN|D)\b.*?(\d+(?:\.\d+)?\.?m?)/g;
+      
+      let patchCount = 0;
+      let match;
+      while ((match = structuralDefectPattern.exec(defectsText)) !== null) {
+        console.log(`🔍 Pattern match found: ${match[0]} | Code: ${match[1]} | Location: ${match[2]}`);
+        const meterageText = match[2];
+        if (meterageText) {
+          const meteragesForThisDefect = meterageText.split(',').map(m => m.trim());
+          patchCount += meteragesForThisDefect.length;
+          console.log(`  ↳ Added ${meteragesForThisDefect.length} patches from: ${meterageText}`);
+        }
+      }
+      
+      console.log(`💰 STR Cost Summary: costPerPatch=${costPerPatch}, patchCount=${patchCount}, total=${costPerPatch * patchCount}`);
+      
+      if (costPerPatch > 0 && patchCount > 0) {
+        const totalCost = costPerPatch * patchCount;
+        console.log(`✅ STR Cost Applied: ${patchCount} patches × £${costPerPatch} = £${totalCost}`);
+        return {
+          ...section,
+          cost: totalCost,
+          estimatedCost: totalCost,
+          costCalculation: `${patchCount} patches × £${costPerPatch} = £${totalCost}`
+        };
+      }
+    }
+    
+    return section;
   }
 }
