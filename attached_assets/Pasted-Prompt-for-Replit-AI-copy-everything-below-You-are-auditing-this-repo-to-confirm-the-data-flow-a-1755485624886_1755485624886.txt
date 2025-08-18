@@ -1,0 +1,48 @@
+Prompt for Replit AI (copy everything below):
+
+You are auditing this repo to confirm the data-flow architecture used for Sewer Swarm AI.
+
+Goal
+
+Determine whether the system uses a raw-first pipeline (save raw input → parse to canonical tables → run MSCC5/WRc rules → materialize for the dashboard) OR the older buffer-centric flow (save to DB via a transient buffer/fallback system as the primary source of truth).
+
+What to produce (in this exact order)
+	1.	Verdict (ONE of): RAW-FIRST or BUFFER-CENTRIC
+	2.	Why (3–7 bullets): Cite concrete evidence (file paths, function names, table/column names, code snippets with line numbers).
+	3.	Flow Diagram (text): A → B → C → D showing where data is written/read.
+	4.	DB Evidence: Current Drizzle schema and migration files that prove (a) raw storage exists, (b) canonical tables exist, (c) derived/rules tables exist, and (d) any “buffer” tables are read/written (or not).
+	5.	Entry Points: The exact functions that run on upload/ingest and what they write first (file & line).
+	6.	Dash Binding: Where the dashboard queries from (view/materialized view/table) and whether it selects the latest successful rules_run (file & line).
+	7.	Mismatch/Smells: Any code paths or jobs still writing/reading the old buffer (file & line).
+	8.	One-sentence Summary for a non-dev.
+
+Where to look (patterns & filenames)
+	•	Parsing & ingest: upload*, ingest*, parse*, extract*, reader*, Pdf*, Db3* in /src, /server, /api, /lib, /workers, /jobs.
+	•	Drizzle schema/migrations: drizzle/*.ts, /db/schema.ts, /db/migrations/*.
+	•	Rules & WRc/MSCC5: WRc*, MSCC5*, Standards*, applyStandards, rules*, recommendation*.
+	•	Known functions (must check):
+	•	bulkCreatePipeSections()
+	•	WRcStandardsEngine.applyStandards(data)
+	•	UI/Dashboard data fetching: pages/*, app/*, routes/*, server/components/*, */dashboard*, */pricing*, load*, get*Data, useQuery, tRPC, REST handlers.
+
+Evidence I expect to see if it’s RAW-FIRST
+	•	Tables like:
+	•	raw_reports (blob or storage URI, sha256 unique, source_type, uploaded_at, uploaded_by)
+	•	sections (Item No., nodes, direction, dia, material, depths, etc.)
+	•	observations (position_m, code, full_text, grade_raw)
+	•	rules_runs (parser_version, ruleset_version, started_at, finished_at, status)
+	•	observation_rules (per-observation derivations: mscc5/os19x/os20x/adoptability/recommendation/op_action_type/pricing_json)
+	•	Append-only writes to derived tables keyed by rules_run_id.
+	•	UI reads latest successful rules_run via a view/materialized view or an explicit “ORDER BY created_at DESC LIMIT 1”.
+
+Evidence I expect to see if it’s BUFFER-CENTRIC
+	•	“Buffer”, “fallback”, or “staging” tables that are treated as the source of truth for the dashboard.
+	•	UI queries reading directly from the buffer or mixed read/write between buffer and final tables.
+	•	Parsing/rules steps mutating the same buffer rows in place instead of generating a new derived run.
+
+Actions to take (read-only)
+	•	Do not modify code.
+	•	Grep/scan the repo and list the exact files/lines that support your verdict.
+	•	If both patterns exist, state which one is actually wired into the current upload → dashboard path.
+
+Output format (use this skeleton)
