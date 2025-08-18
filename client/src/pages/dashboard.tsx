@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { DataIntegrityWarning } from "@/components/data-integrity-warning";
+import ObservationRenderer from "@/components/ObservationRenderer";
 
 import { SectorStandardsDisplay } from "@/components/sector-standards-display";
 import { ReportValidationStatus } from "@/components/ReportValidationStatus";
@@ -1247,9 +1248,10 @@ export default function Dashboard() {
         if (!defectsText || defectsText.trim() === '') {
           return (
             <div className="text-sm p-2 w-full">
-              <div className="text-gray-500 text-left leading-relaxed">
-                No defects found
-              </div>
+              <ObservationRenderer 
+                observations={[]}
+                className="text-left leading-relaxed"
+              />
             </div>
           );
         }
@@ -1317,9 +1319,10 @@ export default function Dashboard() {
           if (observations.length === 0) {
             return (
               <div className="text-sm p-2 w-full">
-                <div className="break-words text-left leading-relaxed">
-                  No service or structural defect found
-                </div>
+                <ObservationRenderer 
+                  observations={["No service or structural defect found"]}
+                  className="text-left leading-relaxed"
+                />
               </div>
             );
           }
@@ -1328,16 +1331,10 @@ export default function Dashboard() {
           
           return (
             <div className="text-sm p-2 w-full">
-              <ul className="space-y-1 text-left leading-relaxed">
-                {observations.map((observation, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="text-blue-500 mr-2 flex-shrink-0">•</span>
-                    <span className="break-words" dangerouslySetInnerHTML={{
-                      __html: formatStandardizedObservation(observation, section.defectType)
-                    }}></span>
-                  </li>
-                ))}
-              </ul>
+              <ObservationRenderer 
+                observations={observations.map(obs => formatStandardizedObservation(obs, section.defectType))}
+                className="text-left leading-relaxed"
+              />
             </div>
           );
         }
@@ -1351,9 +1348,10 @@ export default function Dashboard() {
         if (isOnlyLineDeviation) {
           return (
             <div className="text-sm p-2 w-full">
-              <div className="break-words text-left leading-relaxed">
-                No service or structural defect found
-              </div>
+              <ObservationRenderer 
+                observations={["No service or structural defect found"]}
+                className="text-left leading-relaxed"
+              />
             </div>
           );
         }
@@ -1364,12 +1362,10 @@ export default function Dashboard() {
         // For single observations, also use bullet point format for consistency
         return (
           <div className="text-sm p-2 w-full">
-            <div className="flex items-start text-left leading-relaxed">
-              <span className="text-blue-500 mr-2 flex-shrink-0">•</span>
-              <div className="break-words" dangerouslySetInnerHTML={{
-                __html: displayText
-              }}></div>
-            </div>
+            <ObservationRenderer 
+              observations={[displayText]}
+              className="text-left leading-relaxed"
+            />
           </div>
         );
       case 'severityGrade':
