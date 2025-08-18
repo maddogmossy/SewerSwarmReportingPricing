@@ -115,11 +115,11 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
   OBI: {
     code: 'OBI',
     description: 'Other obstacles',
-    type: 'structural',
+    type: 'service',
     default_grade: 5,
-    risk: 'Structural obstacle requiring immediate removal and repair',
+    risk: 'Service obstacle requiring immediate removal and repair',
     recommended_action: 'IMS cutting to cut the rebar top and bottom and install a patch repair',
-    action_type: 1
+    action_type: 2
   },
   DEF: {
     code: 'DEF',
@@ -993,8 +993,8 @@ export class MSCC5Classifier {
     const upperText = defectText.toUpperCase();
     const lowerText = defectText.toLowerCase();
     
-    // Common defect codes to search for
-    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL'];
+    // Common defect codes to search for - MSCC5 Complete Coverage
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL', 'CN', 'SA', 'CUW'];
     
     for (const code of defectCodes) {
       const pattern = new RegExp(`\\b${code}\\b[^,]*?(?:,|$)`, 'g');
@@ -1012,8 +1012,8 @@ export class MSCC5Classifier {
       }
     }
     
-    // CRITICAL FIX: Detect deformity defects even without explicit DEF codes
-    // This fixes items 19, 20 that contain "Deformity" text but no "DEF" code
+    // CRITICAL FIX: Detect descriptive defects without explicit codes
+    // This fixes deformity defects that contain "Deformity" text but no "DEF" code
     if ((lowerText.includes('deformity') || lowerText.includes('deformed')) && 
         !defects.some(d => d.code === 'DEF')) {
       console.log(`🔧 DEFORMITY DETECTION FIX: Found descriptive deformity without DEF code in: "${defectText}"`);
@@ -1031,6 +1031,26 @@ export class MSCC5Classifier {
         });
         
         console.log(`✅ DEFORMITY FIX: Added synthetic DEF code for: "${deformityDescription}"`);
+      }
+    }
+    
+    // CRITICAL FIX: Detect Open Joint defects without explicit codes
+    // This fixes Item 22 and similar cases with "Open joint" text but missing OJM/OJL codes
+    if (upperText.includes('OPEN JOINT') && !defects.some(d => ['OJM', 'OJL'].includes(d.code))) {
+      const openJointMatch = defectText.match(/(Open joint[^.]*?)(?:\.|$|,)/i);
+      if (openJointMatch) {
+        const description = openJointMatch[1].trim();
+        const isMajor = description.toLowerCase().includes('major');
+        const code = isMajor ? 'OJM' : 'OJL';
+        const meterageMatch = description.match(/(\d+\.?\d*m)/);
+        
+        defects.push({
+          code,
+          description,
+          meterage: meterageMatch ? meterageMatch[1] : undefined
+        });
+        
+        console.log(`✅ OPEN JOINT FIX: Added ${code} code for: "${description}"`);
       }
     }
     

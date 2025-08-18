@@ -148,7 +148,13 @@ export class WRcStandardsEngine {
       'DES': ['deposit', 'fine', 'silt', 'mud'],
       'WL': ['water level', 'standing water', 'high water'],
       'JDL': ['joint', 'displacement', 'large', 'major'],
-      'DEF': ['deformity', 'deformed', 'deform']
+      'JDM': ['joint', 'displacement', 'major'],
+      'OJM': ['open joint', 'major'],
+      'OJL': ['open joint', 'longitudinal'],
+      'DEF': ['deformity', 'deformed', 'deform'],
+      'CN': ['connection', 'other than junction'],
+      'SA': ['service', 'connection'],
+      'CUW': ['camera', 'under water']
     };
     
     const codePatterns = patterns[code];
