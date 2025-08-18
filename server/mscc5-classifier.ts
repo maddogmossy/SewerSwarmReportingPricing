@@ -955,22 +955,22 @@ export class MSCC5Classifier {
     
     
     const subsections = [];
-    let suffixCounter = 0;
     
-    // Create subsection for service defects (if any)
+    // Create subsection for service defects (if any) - gets original item number
     if (serviceDefects.length > 0) {
       const serviceSection = { ...sectionData };
-      serviceSection.itemNo = suffixCounter === 0 ? itemNo : `${itemNo}${String.fromCharCode(97 + suffixCounter - 1)}`;
+      serviceSection.itemNo = itemNo; // Service gets original number
+      serviceSection.letterSuffix = null;
       serviceSection.defects = serviceDefects.map(d => d.description).join(', ');
       serviceSection.defectType = 'service';
       subsections.push(serviceSection);
-      suffixCounter++;
     }
     
-    // Create subsection for structural defects (if any)
+    // Create subsection for structural defects (if any) - gets 'a' suffix
     if (structuralDefects.length > 0) {
       const structuralSection = { ...sectionData };
-      structuralSection.itemNo = suffixCounter === 0 ? itemNo : `${itemNo}${String.fromCharCode(97 + suffixCounter - 1)}`;
+      structuralSection.itemNo = `${itemNo}a`; // Structural gets 'a' suffix
+      structuralSection.letterSuffix = 'a';
       structuralSection.defects = structuralDefects.map(d => d.description).join(', ');
       structuralSection.defectType = 'structural';
       subsections.push(structuralSection);

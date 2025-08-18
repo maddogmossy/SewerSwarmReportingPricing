@@ -106,30 +106,33 @@ export class SimpleRulesRunner {
       );
       
       // Apply letter suffixes: service first (no suffix), structural gets "a"
+      const processedSections = [];
       let hasService = false;
       let hasStructural = false;
       
-      const processedSections = splitSections.map((splitSection, index) => {
-        const defectType = splitSection.defectType;
-        
-        if (defectType === 'service' && !hasService) {
+      // Process service defects first (original item number)
+      for (const splitSection of splitSections) {
+        if (splitSection.defectType === 'service' && !hasService) {
           hasService = true;
-          return {
+          processedSections.push({
             ...splitSection,
-            letterSuffix: null, // Service defects get original item number
+            letterSuffix: null,
             itemNo: section.itemNo
-          };
-        } else if (defectType === 'structural' && !hasStructural) {
-          hasStructural = true;
-          return {
-            ...splitSection,
-            letterSuffix: 'a', // Structural defects get "a" suffix
-            itemNo: `${section.itemNo}a`
-          };
+          });
         }
-        
-        return splitSection;
-      });
+      }
+      
+      // Process structural defects second (with 'a' suffix)
+      for (const splitSection of splitSections) {
+        if (splitSection.defectType === 'structural' && !hasStructural) {
+          hasStructural = true;
+          processedSections.push({
+            ...splitSection,
+            letterSuffix: 'a',
+            itemNo: `${section.itemNo}a`
+          });
+        }
+      }
       
       return processedSections;
       
