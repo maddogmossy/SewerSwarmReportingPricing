@@ -967,7 +967,7 @@ export class MSCC5Classifier {
       const serviceSection = { ...sectionData };
       serviceSection.itemNo = itemNo; // Service gets original number
       serviceSection.letterSuffix = null;
-      serviceSection.defects = serviceDefects.map(d => d.description).join(', ');
+      serviceSection.defects = serviceDefects.map(d => `${d.code} ${d.description}`).join(', ');
       serviceSection.defectType = 'service';
       subsections.push(serviceSection);
     }
@@ -977,7 +977,7 @@ export class MSCC5Classifier {
       const structuralSection = { ...sectionData };
       structuralSection.itemNo = `${itemNo}a`; // Structural gets 'a' suffix
       structuralSection.letterSuffix = 'a';
-      structuralSection.defects = structuralDefects.map(d => d.description).join(', ');
+      structuralSection.defects = structuralDefects.map(d => `${d.code} ${d.description}`).join(', ');
       structuralSection.defectType = 'structural';
       subsections.push(structuralSection);
     }
