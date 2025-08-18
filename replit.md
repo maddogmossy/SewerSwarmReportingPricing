@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application processes compliant document formats (WRc MSCC5 + OS20X standards) for utilities, adoption, and highways sectors. It integrates payment functionalities for intelligent cost decision persistence. The project's purpose is to enhance operational efficiency and regulatory compliance through accurate report processing and cost calculation, aiming to streamline operations and ensure compliance for critical infrastructure sectors.
+This full-stack TypeScript application processes compliant document formats (WRc MSCC5 + OS20X standards) for utilities, adoption, and highways sectors. It integrates payment functionalities for intelligent cost decision persistence. The project aims to enhance operational efficiency and regulatory compliance through accurate report processing and cost calculation, streamlining operations for critical infrastructure sectors.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
