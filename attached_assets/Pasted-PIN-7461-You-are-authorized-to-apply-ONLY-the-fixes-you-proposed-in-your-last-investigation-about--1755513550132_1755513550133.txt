@@ -1,0 +1,61 @@
+PIN 7461 — You are authorized to apply ONLY the fixes you proposed in your last investigation about observation formatting (missing bullet points and inconsistent bolding of defect codes).
+
+STRICT SAFETY:
+- Apply ONLY the exact patches you previously proposed. If anything differs, STOP and ask me first.
+- Do not change unrelated files or logic.
+- Keep changes minimal, readable, and reversible.
+- If the prior investigation was not run, STOP and tell me to run the investigation prompt first.
+
+GOALS (must all be met):
+1) Every observation item renders with a bullet (or a single, consistent list marker) across the app.
+2) Defect codes render in a consistent style (all bold, or all not bold — choose bold for codes).
+3) No formatting logic lives in the database layer; normalize either at API (as structured fields) OR at UI render, not both.
+4) No double-formatting (e.g., markdown + HTML both applied).
+5) Typography is consistent (same font, weight, and spacing for observation body text).
+
+SPECIFICS TO IMPLEMENT (adapt to repo):
+- Centralize list rendering in a single component/helper (e.g., `ObservationList` or shared renderer).
+- Use one bullet strategy:
+  - Option A: semantic `<ul><li>` (preferred for accessibility).
+  - Option B: CSS `list-style: disc;` on a shared class.
+- Defect codes bolding:
+  - Use the same rule everywhere (e.g., wrap the code token in `<strong>`).
+  - Implement a single regex/parse step to identify a defect code token at the start of the line, without bolding the rest.
+  - Avoid mutating raw text in DB; transform at render time or via a dedicated API formatter field.
+- Remove/disable duplicate formatting paths (e.g., both markdown parser and manual HTML).
+- Ensure consistent CSS classes (e.g., `.observation`, `.observation__code`, `.observation__text`) and inheritance for fonts/weights.
+
+ACCESSIBILITY:
+- Use semantic lists (`<ul><li>`) and ensure screen readers announce list length.
+- Preserve plain text for copy/paste (avoid hidden characters).
+
+TESTS (add or update):
+- Unit tests for the formatter/renderer:
+  - Cases: with/without defect code, mixed casing, trailing spaces, international text.
+  - Assert: a single bullet per item, defect code wrapped in `<strong>`, rest not bold.
+- Integration/DOM test:
+  - Render a list of 3 observations; assert there are exactly 3 `<li>` items and the first token in each (when present) is bold.
+- Snapshot/visual test (optional): ensure class names applied consistently.
+
+CHANGES TO MAKE (fill with your investigation’s file/line refs):
+- [file:line] Implement single renderer for bullets.
+- [file:line] Implement code-token bolding (regex/parse).
+- [file:line] Remove duplicate/legacy formatting path(s).
+- [file:line] Align CSS/typography for observation text.
+
+AFTER CHANGES — RUN & SHOW:
+1) Diffs for each file changed.
+2) Test results (unit/integration).
+3) A short HTML snippet (or DOM text) from the rendered observations showing:
+   - Bullet present,
+   - Code token bolded,
+   - Rest normal weight,
+   - Consistent font/spacing.
+4) Confirm no formatting is applied in DB writes (grep results/files/lines).
+5) Confirm no double-formatting (list of disabled/removed code paths).
+
+ROLLBACK:
+- If any test fails or the DOM output doesn’t match the spec, REVERT and STOP. Ask me how to proceed.
+
+REMINDER:
+- Apply only the previously proposed patches. If you discover new issues, document them but do not fix without my approval.
