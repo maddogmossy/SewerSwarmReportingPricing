@@ -156,9 +156,15 @@ export class SimpleRulesRunner {
       for (const splitSection of splitSections) {
         if (splitSection.defectType === 'structural' && !hasStructural) {
           hasStructural = true;
+          
+          // Validate no double suffixes exist (preventive measure)
+          if (splitSection.itemNo && splitSection.itemNo.toString().includes('aa')) {
+            throw new Error(`Double suffix detected in structural section: ${splitSection.itemNo}`);
+          }
+          
           processedSections.push({
             ...splitSection,
-            letterSuffix: splitSection.letterSuffix || 'a',
+            letterSuffix: splitSection.letterSuffix, // Trust pre-processed suffix from MSCC5Classifier
             itemNo: splitSection.itemNo  // Use pre-processed itemNo to prevent double-suffix
           });
         }
