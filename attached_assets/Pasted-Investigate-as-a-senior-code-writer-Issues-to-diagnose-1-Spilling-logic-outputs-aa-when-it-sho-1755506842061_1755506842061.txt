@@ -1,0 +1,69 @@
+Investigate as a senior code writer.
+
+Issues to diagnose:
+1) Spilling logic outputs "aa" when it should be "a".
+2) Not all sections are displayed.
+3) Sections are not ordered 1 → 24.
+
+STRICT SAFETY:
+- Do NOT change any code.
+- Only analyze, run read-only commands, and explain.
+- At the end, propose precise edits, but do nothing until I provide a PIN.
+
+What to do (step-by-step):
+A) Reproduce & locate
+- Show where the “spilling” / label-building logic lives (files + line numbers).
+- Show where section lists are fetched/sorted/paginated (API/DB + UI files + line numbers).
+- Print the exact values that become "aa" (before/after any transforms) and the call stack that creates them.
+
+B) String/label checks (for "aa")
+- Check for accidental concatenation (e.g., appending suffix twice or joining already-suffixed values).
+- Check trimming/normalization: whitespace, case-folding, Unicode NFC/NFKC.
+- Verify mapping of inspection sequence: expected {"a":1,"b":2,"c":3,...}. Ensure no place maps {"a":1,"aa":2}.
+- Search for regexes like `[aA]+` or `.+=.+` that could double-append.
+- Identify any default value or fallback that might add an extra "a".
+- Output: the minimal code-path that turns intended "a" → "aa" (files:lines).
+
+C) Section visibility (missing sections)
+- In the DB layer: verify if queries use INNER JOINs that drop rows; propose LEFT JOIN where appropriate.
+- Check WHERE filters (e.g., status flags, null checks) that might hide sections.
+- Check LIMIT/OFFSET or pagination that might truncate results.
+- Check DISTINCT/ GROUP BY that might collapse rows.
+- Print counts: total sections for uploadId, sections returned by API, sections rendered in UI.
+
+D) Ordering 1 → 24 (numeric + sequence ordering)
+- Show the current ORDER BY at each layer (SQL/ORM, API, UI sorting).
+- Confirm numeric sort for item numbers (cast to integer) vs lexicographic.
+- Confirm secondary sort for inspection sequence (map a<b<c<...).
+- If item id is like "Item No. 1", show the extractor that parses the integer; detect zero-padding issues.
+- Print a sample list of item_no + seq from DB → API → UI to show where the order breaks.
+
+E) Proposed changes (plan only)
+- List the exact files and lines to edit.
+- Provide corrected code snippets:
+  1) Label/sequence fix (ensure single "a" and proper sequence mapping).
+  2) ORDER BY fix (numeric item_no, then sequence comparator).
+  3) Visibility fix (LEFT JOIN / filter adjustments / pagination).
+- Include quick unit/integration tests (names + assertions) to prevent regressions.
+
+F) Output format (fill with real values)
+VERDICT:
+- Root cause for "aa": <file:line, function, why it doubles>
+- Root cause for missing sections: <where dropped/filtered>
+- Root cause for ordering: <where lexicographic or missing comparator>
+
+EVIDENCE:
+- Files/lines involved:
+  - <path>:<line-range> – brief note
+- DB counts: total=<n>, api=<n>, ui=<n>
+- Sample before/after values for the problematic labels
+
+PROPOSED FIXES (DO NOT APPLY YET):
+- File/line -> patch snippet #1
+- File/line -> patch snippet #2
+- File/line -> patch snippet #3
+
+TEST PLAN:
+- Commands/queries to validate labels, visibility, and sorted order 1..24 with sequences a<b<c<...
+
+IMPORTANT: Do NOT edit code until I reply with the PIN.
