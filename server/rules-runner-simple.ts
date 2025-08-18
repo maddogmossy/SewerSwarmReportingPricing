@@ -1,5 +1,5 @@
 /**
- * Simplified Rules Runner for MVP versioned derivations
+ * Enhanced Rules Runner with SER/STR splitting for versioned derivations
  */
 
 import { db } from './db';
@@ -32,20 +32,27 @@ export class SimpleRulesRunner {
         .where(eq(sectionInspections.fileUploadId, uploadId));
       
       for (const section of sections) {
-        // Create one observation rule per section
-        await db.insert(observationRules).values({
-          rulesRunId: run.id,
-          sectionId: section.id,
-          observationIdx: 0,
-          mscc5Json: JSON.stringify({
-            type: section.defectType || 'service',
-            grade: parseInt(section.severityGrade) || 0
-          }),
-          defectType: section.defectType || 'service',
-          severityGrade: parseInt(section.severityGrade) || 0,
-          recommendationText: section.recommendations || 'No action required',
-          adoptability: section.adoptable || 'Yes',
-        });
+        // Apply SER/STR splitting logic if section has mixed defects
+        const splitSections = this.applySplittingLogic(section);
+        
+        for (let i = 0; i < splitSections.length; i++) {
+          const splitSection = splitSections[i];
+          await db.insert(observationRules).values({
+            rulesRunId: run.id,
+            sectionId: section.id, // Original section ID for reference
+            observationIdx: i, // Index for split sections
+            mscc5Json: JSON.stringify({
+              type: splitSection.defectType || 'service',
+              grade: parseInt(splitSection.severityGrade) || 0,
+              splitType: splitSections.length > 1 ? 'split' : 'original',
+              letterSuffix: splitSection.letterSuffix || null
+            }),
+            defectType: splitSection.defectType || 'service',
+            severityGrade: parseInt(splitSection.severityGrade) || 0,
+            recommendationText: splitSection.recommendations || 'No action required',
+            adoptability: splitSection.adoptable || 'Yes',
+          });
+        }
       }
       
       console.log(`✅ Created ${sections.length} observation rules for run ${run.id}`);
@@ -83,20 +90,80 @@ export class SimpleRulesRunner {
   }
   
   /**
-   * Build composed sections with derived metadata
+   * Apply SER/STR splitting logic to a section
+   */
+  private static applySplittingLogic(section: any): any[] {
+    if (!section.defects || typeof section.defects !== 'string') {
+      return [section];
+    }
+    
+    // Use MSCC5Classifier splitting logic
+    try {
+      const splitSections = MSCC5Classifier.splitMultiDefectSection(
+        section.defects,
+        section.itemNo,
+        section
+      );
+      
+      // Apply letter suffixes: service first (no suffix), structural gets "a"
+      let hasService = false;
+      let hasStructural = false;
+      
+      const processedSections = splitSections.map((splitSection, index) => {
+        const defectType = splitSection.defectType;
+        
+        if (defectType === 'service' && !hasService) {
+          hasService = true;
+          return {
+            ...splitSection,
+            letterSuffix: null, // Service defects get original item number
+            itemNo: section.itemNo
+          };
+        } else if (defectType === 'structural' && !hasStructural) {
+          hasStructural = true;
+          return {
+            ...splitSection,
+            letterSuffix: 'a', // Structural defects get "a" suffix
+            itemNo: `${section.itemNo}a`
+          };
+        }
+        
+        return splitSection;
+      });
+      
+      return processedSections;
+      
+    } catch (error) {
+      console.log(`⚠️ Splitting failed for section ${section.itemNo}, using original:`, error.message);
+      return [section];
+    }
+  }
+  
+  /**
+   * Build composed sections with derived metadata and splitting
    */
   private static async buildComposedSections(uploadId: number, run: any) {
     const sections = await db.select()
       .from(sectionInspections)
       .where(eq(sectionInspections.fileUploadId, uploadId));
     
-    // Add derived metadata to sections
-    const composedSections = sections.map(section => ({
-      ...section,
-      derivedAt: run.finishedAt,
-      rulesRunId: run.id,
-      rulesetVersion: run.rulesetVersion
-    }));
+    // Apply splitting logic and create composed sections
+    const composedSections: any[] = [];
+    
+    for (const section of sections) {
+      const splitSections = this.applySplittingLogic(section);
+      
+      for (const splitSection of splitSections) {
+        composedSections.push({
+          ...splitSection,
+          derivedAt: run.finishedAt,
+          rulesRunId: run.id,
+          rulesetVersion: run.rulesetVersion,
+          // Preserve original section ID for reference
+          originalSectionId: section.id
+        });
+      }
+    }
     
     return composedSections;
   }
