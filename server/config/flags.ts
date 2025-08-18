@@ -2,7 +2,7 @@
  * Feature flags for versioned derivations pipeline
  */
 
-export const USE_LATEST_RULES_RUN = (process.env.USE_LATEST_RULES_RUN ?? 'true') === 'true';
+export const USE_LATEST_RULES_RUN = (process.env.USE_LATEST_RULES_RUN?.toLowerCase() ?? 'true') === 'true';
 
 export const FLAGS = {
   USE_LATEST_RULES_RUN,

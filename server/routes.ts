@@ -869,30 +869,22 @@ export async function registerRoutes(app: Express) {
       
       // NEW: Use latest rules run pipeline if enabled
       if (USE_LATEST_RULES_RUN) {
-        const { RulesRunner } = await import('./rules-runner');
+        const { SimpleRulesRunner } = await import('./rules-runner-simple');
         
-        // Check if we have a latest successful run
-        const latestRun = await RulesRunner.getLatestRulesRun(uploadId);
-        
-        if (!latestRun) {
-          // No rules run exists - create one
-          console.log(`🔄 SECTIONS API (NEW): No rules run found for upload ${uploadId}, creating one...`);
-          const runResult = await RulesRunner.runClassificationForUpload(uploadId);
+        try {
+          console.log(`🔄 SECTIONS API (NEW): Using versioned derivations for upload ${uploadId}`);
           
-          if (runResult.status === 'failed') {
-            console.error(`❌ SECTIONS API (NEW): Rules run failed:`, runResult.errorText);
-            return res.status(500).json({ error: 'Failed to process sections with current rules' });
-          }
+          // Get composed data with derivations
+          const composedSections = await SimpleRulesRunner.getComposedData(uploadId);
           
-          console.log(`✅ SECTIONS API (NEW): Created rules run ${runResult.runId} with ${runResult.observationsCreated} observations`);
+          console.log(`🚀 SECTIONS API (NEW): Returning ${composedSections.length} sections with versioned derivations`);
+          
+          return res.json(composedSections);
+          
+        } catch (error) {
+          console.error(`❌ SECTIONS API (NEW): Versioned derivations failed:`, error);
+          // Fall through to legacy path
         }
-        
-        // Get composed data from latest successful run
-        const composedData = await RulesRunner.getComposedSectionData(uploadId);
-        
-        console.log(`🚀 SECTIONS API (NEW): Returning ${composedData.sections.length} sections from rules run ${composedData.rulesRun?.id}`);
-        
-        return res.json(composedData.sections);
       }
       
       // FALLBACK: Legacy path for backwards compatibility

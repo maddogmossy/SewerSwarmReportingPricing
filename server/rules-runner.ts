@@ -170,11 +170,23 @@ export class RulesRunner {
     // Apply MSCC5 classification
     const mscc5Result = await MSCC5Classifier.classifyDefect(observation, 'utilities');
     
-    // Apply WRc standards
-    const wrcResult = WRcStandardsEngine.applyStandards({
-      defectText: observation,
-      sector: 'utilities'
-    });
+    // Apply WRc standards (simplified for now due to missing JSON files)
+    let wrcResult;
+    try {
+      wrcResult = WRcStandardsEngine.applyStandards({
+        defectText: observation,
+        sector: 'utilities'
+      });
+    } catch (error) {
+      // Fallback if WRc files are missing
+      wrcResult = {
+        defectCode: mscc5Result.defectCode || 'UNKNOWN',
+        recommendationMethods: [mscc5Result.recommendations || 'Assessment required'],
+        recommendationPriority: 'planned',
+        adoptable: mscc5Result.severityGrade <= 2,
+        estimatedCost: this.getCostBand(mscc5Result.severityGrade)
+      };
+    }
     
     // Combine results
     return {
