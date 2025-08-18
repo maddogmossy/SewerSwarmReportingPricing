@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application is a compliant document analysis platform designed for highly regulated sectors (Utilities, Adoption, Highways). Its primary purpose is intelligent cost decision persistence, achieved by processing report formats based on WRc MSCC5 + OS20X standards and integrating payment functionalities. The project aims to enhance operational efficiency and compliance through accurate report processing, cost calculation, and regulatory adherence within critical infrastructure sectors.
+This full-stack TypeScript application provides a compliant document analysis platform for highly regulated sectors (Utilities, Adoption, Highways). Its core purpose is intelligent cost decision persistence through processing report formats based on WRc MSCC5 + OS20X standards and integrating payment functionalities. The project aims to enhance operational efficiency and regulatory compliance within critical infrastructure sectors by ensuring accurate report processing, cost calculation, and adherence to industry standards.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality

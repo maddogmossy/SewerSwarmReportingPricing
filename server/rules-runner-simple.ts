@@ -115,17 +115,25 @@ export class SimpleRulesRunner {
    * Apply SER/STR splitting logic to a section
    */
   private static applySplittingLogic(section: any): any[] {
-    if (!section.defects || typeof section.defects !== 'string') {
+    // Handle observation-only sections (no defects or empty defects)
+    if (!section.defects || typeof section.defects !== 'string' || section.defects.trim() === '') {
+      console.log(`📝 Observation-only section ${section.itemNo} included as-is`);
       return [section];
     }
     
-    // Use MSCC5Classifier splitting logic
+    // Use MSCC5Classifier splitting logic for sections with defects
     try {
       const splitSections = MSCC5Classifier.splitMultiDefectSection(
         section.defects,
         section.itemNo,
         section
       );
+      
+      // If no split sections returned, keep original
+      if (!splitSections || splitSections.length === 0) {
+        console.log(`📝 No split sections for ${section.itemNo}, keeping original`);
+        return [section];
+      }
       
       // Apply letter suffixes: service first (no suffix), structural gets "a"
       const processedSections = [];
@@ -156,7 +164,8 @@ export class SimpleRulesRunner {
         }
       }
       
-      return processedSections;
+      // If no processed sections, return original
+      return processedSections.length > 0 ? processedSections : [section];
       
     } catch (error) {
       console.log(`⚠️ Splitting failed for section ${section.itemNo}, using original:`, error.message);
