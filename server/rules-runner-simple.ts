@@ -37,15 +37,22 @@ export class SimpleRulesRunner {
         
         for (let i = 0; i < splitSections.length; i++) {
           const splitSection = splitSections[i];
+          
+          // Ensure all required fields are populated with debugging
+          console.log(`📝 Creating observation rule for section ${section.itemNo}, split ${i+1}/${splitSections.length}`);
+          
           await db.insert(observationRules).values({
             rulesRunId: run.id,
             sectionId: section.id, // Original section ID for reference
             observationIdx: i, // Index for split sections
             mscc5Json: JSON.stringify({
-              type: splitSection.defectType || 'service',
+              itemNo: splitSection.itemNo,
+              originalItemNo: section.itemNo,
+              defectType: splitSection.defectType || 'service',
+              letterSuffix: splitSection.letterSuffix || null,
+              splitCount: splitSections.length,
               grade: parseInt(splitSection.severityGrade) || 0,
-              splitType: splitSections.length > 1 ? 'split' : 'original',
-              letterSuffix: splitSection.letterSuffix || null
+              splitType: splitSections.length > 1 ? 'split' : 'original'
             }),
             defectType: splitSection.defectType || 'service',
             severityGrade: parseInt(splitSection.severityGrade) || 0,
@@ -79,14 +86,29 @@ export class SimpleRulesRunner {
    * Get composed section data with derivations
    */
   static async getComposedData(uploadId: number) {
-    const runs = await this.getLatestRun(uploadId);
-    if (runs.length === 0) {
-      console.log('No rules run found, creating one...');
-      const newRun = await this.createSimpleRun(uploadId);
-      return this.buildComposedSections(uploadId, newRun);
+    try {
+      console.log(`🔄 getComposedData: Starting for upload ${uploadId}`);
+      
+      const runs = await this.getLatestRun(uploadId);
+      if (runs.length === 0) {
+        console.log('🔄 No rules run found, creating new run for upload', uploadId);
+        const newRun = await this.createSimpleRun(uploadId);
+        console.log('✅ Created new run:', newRun.id);
+        const result = await this.buildComposedSections(uploadId, newRun);
+        console.log('📊 Built composed sections:', result.length);
+        return result;
+      }
+      
+      console.log('♻️ Using existing run:', runs[0].id);
+      const result = await this.buildComposedSections(uploadId, runs[0]);
+      console.log('📊 Composed sections from existing run:', result.length);
+      return result;
+      
+    } catch (error) {
+      console.error('❌ getComposedData failed:', error);
+      console.error('❌ Stack trace:', error.stack);
+      throw error;
     }
-    
-    return this.buildComposedSections(uploadId, runs[0]);
   }
   
   /**
@@ -146,15 +168,23 @@ export class SimpleRulesRunner {
    * Build composed sections with derived metadata and splitting
    */
   private static async buildComposedSections(uploadId: number, run: any) {
+    console.log(`🔧 buildComposedSections: uploadId=${uploadId}, runId=${run.id}`);
+    
     const sections = await db.select()
       .from(sectionInspections)
       .where(eq(sectionInspections.fileUploadId, uploadId));
     
+    console.log(`📊 Found ${sections.length} sections to process`);
+    
     // Apply splitting logic and create composed sections
     const composedSections: any[] = [];
     
-    for (const section of sections) {
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i];
+      console.log(`🔍 Processing section ${i+1}/${sections.length}: Item ${section.itemNo}`);
+      
       const splitSections = this.applySplittingLogic(section);
+      console.log(`  ↳ Split into ${splitSections.length} subsections`);
       
       for (const splitSection of splitSections) {
         composedSections.push({
@@ -168,6 +198,7 @@ export class SimpleRulesRunner {
       }
     }
     
+    console.log(`✅ Composed ${composedSections.length} total sections`);
     return composedSections;
   }
 }

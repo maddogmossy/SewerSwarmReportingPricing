@@ -926,7 +926,13 @@ export class MSCC5Classifier {
   static getDefectType(defectCode: string): 'structural' | 'service' {
     // MSCC5 COMPLIANT: Authentic structural codes only - CO/BF removed pending WRc verification
     const structuralDefects = ['CR', 'FC', 'FL', 'DEF', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'CN'];
-    return structuralDefects.includes(defectCode) ? 'structural' : 'service';
+    const serviceDefects = ['DER', 'DES', 'OB', 'OBI', 'RI', 'WL', 'SA', 'CUW'];
+    
+    if (structuralDefects.includes(defectCode)) return 'structural';
+    if (serviceDefects.includes(defectCode)) return 'service';
+    
+    console.log(`⚠️ Unknown defect code: ${defectCode}, defaulting to service`);
+    return 'service';
   }
 
   /**

@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application is a compliant document analysis platform for highly regulated sectors (Utilities, Adoption, Highways). It processes report formats based on WRc MSCC5 + OS20X standards and integrates payment functionalities. The primary objective is intelligent cost decision persistence, aiming to enhance operational efficiency and compliance.
+This full-stack TypeScript application provides a compliant document analysis platform for highly regulated sectors (Utilities, Adoption, Highways). It processes report formats based on WRc MSCC5 + OS20X standards and integrates payment functionalities. The primary objective is intelligent cost decision persistence, aiming to enhance operational efficiency and compliance. The project envisions a robust system for accurate report processing, cost calculation, and regulatory adherence within critical infrastructure sectors.
 
 ## User Preferences
 - Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
@@ -13,7 +13,7 @@ This full-stack TypeScript application is a compliant document analysis platform
 - UI Design:
   - TP1 (cleanse/survey) and TP2 (repair) popups should have identical styling and layout
   - Use category card icons instead of generic icons (Edit for patching, PaintBucket for lining, Pickaxe for excavation)
-  - Make entire UI containers clickable rather than separate buttons
+  - Make entire UI containers clickable rather not separate buttons
   - CCTV/Jet Vac should be first option with "Primary" badge
 - Zero Synthetic Data Policy: NEVER create, suggest, or use mock, placeholder, fallback, or synthetic data.
 - Database-First Architecture: System uses pure database-first approach without buffer layers. All UI values reflect authentic database state with immediate persistence.
@@ -51,6 +51,7 @@ This full-stack TypeScript application is a compliant document analysis platform
 - Versioned Derivations Pipeline Implementation: Successfully implemented complete raw-first, versioned derivations system with append-only rules_runs and observation_rules tables. New pipeline creates versioned MSCC5/WRc outputs per upload run, enabling reprocessing of historical data with updated rules while maintaining backward compatibility. Feature flag USE_LATEST_RULES_RUN controls pipeline activation. Architecture supports pure raw-first approach with no mutation of canonical sectionInspections processed* fields during transition period. SimpleRulesRunner MVP class provides immediate testing capability with database-direct persistence and composed section data delivery.
 - SER/STR Splitting Logic Fix: Fixed critical splitting logic issues in versioned derivations pipeline. Corrected suffix assignment where service defects get original item numbers (no suffix) and structural defects get "a" suffix (e.g., Item 13, Item 13a). Fixed flawed suffixCounter logic in MSCC5Classifier.splitMultiDefectSection() and enhanced SimpleRulesRunner.applySplittingLogic() to process service defects first, then structural defects with proper suffix assignment. System now properly handles mixed defect sections with correct numerical ordering display.
 - Double-Suffix Application Fix: Eliminated "aa" suffix generation bug by preventing double-processing in SimpleRulesRunner. Fixed applySplittingLogic() to use pre-processed itemNo from MSCC5Classifier instead of re-applying suffix transformations. Implemented proper numeric sorting in API response to ensure systematic 1→24 section ordering. Service sections maintain original numbers (13) while structural sections get single "a" suffix (13a) as per WRc MSCC5 standards.
+- Critical DER Defect Classification Fix (Jan 2025): Fixed misclassification of DER (Settled deposits) from structural to service defect type in MSCC5Classifier.getDefectType(). Added explicit serviceDefects array including DER, DES, OB, OBI, RI, WL, SA, CUW codes. Enhanced error handling and comprehensive logging throughout versioned derivations pipeline for better debugging and monitoring. Fixed observation_rules population with complete metadata including itemNo, originalItemNo, and splitCount.
 
 ## System Architecture
 
@@ -89,4 +90,3 @@ This full-stack TypeScript application is a compliant document analysis platform
 - **Payments**: Stripe API
 - **UI Components**: Radix UI, shadcn/ui
 - **File Upload**: Multer
-```
