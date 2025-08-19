@@ -92,12 +92,12 @@ const SECTORS = [
 
 // MMP1 SECTOR DEFINITIONS - ID7-ID12 System (Cross-Sector Price Copying)
 const MMP1_IDS = [
-  { id: 'utilities', name: 'Utilities', label: 'ID7', devId: 'A1-A16', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'adoption', name: 'Adoption', label: 'ID8', devId: 'B1-B16', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'highways', name: 'Highways', label: 'ID9', devId: 'C1-C16', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'insurance', name: 'Insurance', label: 'ID10', devId: 'D1-D16', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'construction', name: 'Construction', label: 'ID11', devId: 'E1-E16', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'domestic', name: 'Domestic', label: 'ID12', devId: 'F1-F16', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'utilities', name: 'Utilities', label: 'ID7', devId: 'ID7', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', label: 'ID8', devId: 'ID8', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', label: 'ID9', devId: 'ID9', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', label: 'ID10', devId: 'ID10', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', label: 'ID11', devId: 'ID11', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', label: 'ID12', devId: 'ID12', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // Removed P26 Upper Level Data Structure - deprecated
@@ -3824,7 +3824,7 @@ export default function PR2ConfigClean() {
                     {MMP1_IDS.map((idOption) => {
                       // Auto-select utilities when coming from dashboard structural recommendations
                       const shouldAutoSelect = autoSelectUtilities && idOption.id === 'utilities' && !selectedIds.includes('utilities');
-                      const isSelected = selectedIds.includes(idOption.id) || shouldAutoSelect;
+                      const isSelected = selectedIds.includes(idOption.id);
                       const hasConfiguration = idsWithConfig.includes(idOption.id);
                       
                       return (
@@ -3836,8 +3836,9 @@ export default function PR2ConfigClean() {
                               : 'border-gray-300 hover:border-gray-400'
                           }`}
                           onClick={() => {
-                            console.log('🎯 MM1 ID CARD CLICKED:', { id: idOption.id, willSelect: !isSelected });
-                            handleMMP1IdChange(idOption.id, !isSelected);
+                            const willToggle = !selectedIds.includes(idOption.id);
+                            console.log('🎯 MM1 ID CARD CLICKED:', { id: idOption.id, willSelect: willToggle });
+                            handleMMP1IdChange(idOption.id, willToggle);
                           }}
                         >
                           <CardContent className="p-4 text-center relative">
