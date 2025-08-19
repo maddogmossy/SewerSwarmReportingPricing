@@ -994,7 +994,7 @@ export class MSCC5Classifier {
     const lowerText = defectText.toLowerCase();
     
     // Common defect codes to search for - MSCC5 Complete Coverage
-    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL', 'CN', 'SA', 'CUW'];
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL', 'CN', 'SA', 'CUW', 'JN'];
     
     for (const code of defectCodes) {
       const pattern = new RegExp(`\\b${code}\\b[^,]*?(?:,|$)`, 'g');
@@ -1051,6 +1051,24 @@ export class MSCC5Classifier {
         });
         
         console.log(`✅ OPEN JOINT FIX: Added ${code} code for: "${description}"`);
+      }
+    }
+    
+    // CRITICAL FIX: Detect Junction defects without explicit codes
+    // This fixes Item 19 and similar cases with "Junction" text but missing JN codes
+    if (lowerText.includes('junction') && !defects.some(d => d.code === 'JN')) {
+      const junctionMatch = defectText.match(/(Junction[^.]*?)(?:\.|$|,)/i);
+      if (junctionMatch) {
+        const description = junctionMatch[1].trim();
+        const meterageMatch = description.match(/(\d+\.?\d*m)/);
+        
+        defects.push({
+          code: 'JN',
+          description,
+          meterage: meterageMatch ? meterageMatch[1] : undefined
+        });
+        
+        console.log(`✅ JUNCTION FIX: Added JN code for: "${description}"`);
       }
     }
     
