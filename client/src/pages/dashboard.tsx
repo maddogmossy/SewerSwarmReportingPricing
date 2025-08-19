@@ -3153,7 +3153,12 @@ export default function Dashboard() {
       
       if (mm4Data && mm4Data[0]) {
         // Use green value as cost per 1mts patch
-        costPerUnit = parseFloat(mm4Data[0].greenValue) || 0;
+        // CRITICAL FIX: Use row 2 for double layer patches
+        let rowIndex = 0;
+        if (recommendations.toLowerCase().includes('double layer')) {
+          rowIndex = 1; // Use row 2 for double layer patches
+        }
+        costPerUnit = parseFloat(mm4Data[rowIndex]?.greenValue || mm4Data[0]?.greenValue) || 0;
         
         // REPURPOSED: Use purple fields as minimum quantities (field names remain same for compatibility)
         const purpleMinQty1 = parseFloat(mm4Data[0].purpleDebris) || 0;  // Now stores min quantity
@@ -4034,7 +4039,17 @@ export default function Dashboard() {
         };
       }
       
-      const mm4Row = matchingMM4Data[0];
+      // CRITICAL FIX: Use row 2 for double layer patches, row 1 for others
+      let mm4Row;
+      const patchType = section.recommendations?.toLowerCase() || '';
+      if (patchType.includes('double layer')) {
+        mm4Row = matchingMM4Data[1] || matchingMM4Data[0]; // Row 2 for double layer, fallback to row 1
+        console.log('🎯 Using MM4 row 2 for double layer patch:', { itemNo: section.itemNo, rowIndex: 1 });
+      } else {
+        mm4Row = matchingMM4Data[0]; // Row 1 for other patch types
+        console.log('🎯 Using MM4 row 1 for standard patch:', { itemNo: section.itemNo, rowIndex: 0 });
+      }
+      
       const blueValue = parseFloat(mm4Row.blueValue || '0');
       const greenValue = parseFloat(mm4Row.greenValue || '0');
       

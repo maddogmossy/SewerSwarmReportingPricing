@@ -3822,8 +3822,8 @@ export default function PR2ConfigClean() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-3">
                     {MMP1_IDS.map((idOption) => {
-                      // Auto-select utilities (id7) when coming from dashboard 150mm recommendations
-                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'id7' && !selectedIds.includes('id7');
+                      // Auto-select utilities when coming from dashboard 150mm recommendations
+                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'utilities' && !selectedIds.includes('utilities');
                       const isSelected = selectedIds.includes(idOption.id) || shouldAutoSelect;
                       const hasConfiguration = idsWithConfig.includes(idOption.id);
                       
