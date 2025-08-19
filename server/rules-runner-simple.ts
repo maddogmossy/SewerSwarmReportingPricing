@@ -325,13 +325,14 @@ export class SimpleRulesRunner {
       
       // Enhanced pattern to catch defect codes with locations (handle both 5. and 5m formats)
       // REMOVED LEGACY |D - Use only proper MSCC5 codes
-      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b.*?(\d+(?:\.\d+)?\.?m?)/g;
+      // CRITICAL FIX: Also detect descriptive deformity text without explicit DEF codes
+      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b.*?(\d+(?:\.\d+)?\.?m?)|Deformity at (\d+(?:\.\d+)?\.?\d*m?)/g;
       
       let patchCount = 0;
       let match;
       while ((match = structuralDefectPattern.exec(defectsText)) !== null) {
-        console.log(`🔍 Pattern match found: ${match[0]} | Code: ${match[1]} | Location: ${match[2]}`);
-        const meterageText = match[2];
+        console.log(`🔍 Pattern match found: ${match[0]} | Code: ${match[1] || 'DEF'} | Location: ${match[2] || match[3]}`);
+        const meterageText = match[2] || match[3]; // Handle both code-based and descriptive matches
         if (meterageText) {
           const meteragesForThisDefect = meterageText.split(',').map(m => m.trim());
           patchCount += meteragesForThisDefect.length;

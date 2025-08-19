@@ -126,6 +126,24 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     description: 'Deformity',
     type: 'structural',
     default_grade: 3,
+    risk: 'Medium risk of structural compromise',
+    recommended_action: 'Structural assessment and repair consideration',
+    action_type: 1
+  },
+  JN: {
+    code: 'JN',
+    description: 'Junction',
+    type: 'service',
+    default_grade: 0,
+    risk: 'Structural observation requiring assessment',
+    recommended_action: 'No action required unless combined with defects',
+    action_type: 0
+  },
+  D: {
+    code: 'DEF',
+    description: 'Deformity',
+    type: 'structural',
+    default_grade: 3,
     risk: 'Progressive structural deterioration affecting pipe integrity',
     recommended_action: 'Structural assessment and repair',
     action_type: 1
