@@ -82,8 +82,7 @@ This full-stack TypeScript application processes compliant document formats (WRc
 
 ### Database
 - **Database**: PostgreSQL (configured for Neon serverless)
-- **ORM**: Drizzle ORM (schema-first approach)
-- **Schema Location**: `shared/schema.ts`
+- **ORM**: Drizzle ORM (schema-first approach, `shared/schema.ts`)
 - **Schema**: Manages Users, Sessions, File Uploads, Subscription Plans, and Report Pricing.
 
 ### Deployment Strategy
