@@ -363,35 +363,28 @@ export class SimpleRulesRunner {
       console.log(`💰 STR Cost Summary: costPerPatch=${costPerPatch}, patchCount=${patchCount}, minQuantity=${minQuantity}, reopeningCost=${reopeningCost}`);
       
       if (costPerPatch > 0 && patchCount > 0) {
-        // Check if patch count meets minimum quantity requirement
-        if (patchCount >= minQuantity) {
-          const totalCost = costPerPatch * patchCount + reopeningCost;
-          const calculation = reopeningCost > 0 
-            ? `${patchCount} patches × £${costPerPatch} + £${reopeningCost} reopening = £${totalCost}`
-            : `${patchCount} patches × £${costPerPatch} = £${totalCost}`;
-            
-          console.log(`✅ STR Cost Applied: ${calculation}`);
-          return {
-            ...section,
-            cost: totalCost,
-            estimatedCost: totalCost,
-            costCalculation: calculation
-          };
-        } else {
-          // Use day rate when below minimum quantity
-          const totalCost = dayRate + reopeningCost;
-          const calculation = reopeningCost > 0
-            ? `Day rate £${dayRate} (below min ${minQuantity} patches) + £${reopeningCost} reopening = £${totalCost}`
-            : `Day rate £${dayRate} (below min ${minQuantity} patches) = £${totalCost}`;
-            
-          console.log(`🔴 STR Day Rate Applied: ${calculation}`);
-          return {
-            ...section,
-            cost: totalCost,
-            estimatedCost: totalCost,
-            costCalculation: calculation
-          };
-        }
+        // Always calculate patch cost (no day rate application)
+        const totalCost = costPerPatch * patchCount + reopeningCost;
+        const calculation = reopeningCost > 0 
+          ? `${patchCount} patches × £${costPerPatch} + £${reopeningCost} reopening = £${totalCost}`
+          : `${patchCount} patches × £${costPerPatch} = £${totalCost}`;
+        
+        // Check if patch count meets minimum quantity for status
+        const meetsMinimum = patchCount >= minQuantity;
+        const status = meetsMinimum ? 'meets_minimum' : 'below_minimum';
+        
+        console.log(`${meetsMinimum ? '✅' : '🔴'} STR Patch Cost: ${calculation} ${meetsMinimum ? '' : `(below min ${minQuantity})`}`);
+        
+        return {
+          ...section,
+          cost: totalCost,
+          estimatedCost: totalCost,
+          costCalculation: calculation,
+          patchCount,
+          minQuantity,
+          meetsMinimum,
+          status
+        };
       }
     }
     
