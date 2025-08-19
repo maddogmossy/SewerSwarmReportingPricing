@@ -1129,7 +1129,7 @@ export default function Dashboard() {
             if (deformityMatch) {
               const meterage = deformityMatch[1];
               const description = deformityMatch[2].trim();
-              return `D Deformity${description} at ${meterage}m`;
+              return `DEF Deformity${description} at ${meterage}m`;
             }
             
             // Handle fractures
