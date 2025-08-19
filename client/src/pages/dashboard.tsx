@@ -4512,9 +4512,17 @@ export default function Dashboard() {
     }
     
     // ITEM 13A CRITICAL DEBUG: Check if Item 13a even reaches this function
-    if (section.itemNo === 13) {
+    // BROADER ITEM 13A DEBUG: Check for any section that might be item 13a
+    const isItem13Variant = section.itemNo === 13 || section.itemNo === '13' || section.itemNo === '13a' || 
+                           String(section.itemNo).includes('13') || 
+                           (section.letterSuffix === 'a' && section.itemNo === 13) ||
+                           (section.id && String(section.id).includes('13'));
+    
+    if (isItem13Variant) {
       console.log('🚨 ITEM 13A EARLY DEBUG - FUNCTION ENTRY:', {
         itemNo: section.itemNo,
+        letterSuffix: section.letterSuffix,
+        sectionId: section.id,
         defectType: section.defectType,
         isStructural: section.defectType === 'structural',
         hasRepairPricingData: !!repairPricingData,
@@ -4589,10 +4597,13 @@ export default function Dashboard() {
               const defectsText = section.defects || '';
               const defectMeterages = extractDefectMeterages(defectsText);
               
-              // ITEM 13A CRITICAL DEBUG: Detailed defect analysis
-              if (section.itemNo === 13) {
+              // ITEM 13A CRITICAL DEBUG: Detailed defect analysis - Check all variations
+              if (section.itemNo === 13 || section.itemNo === '13' || section.itemNo === '13a' || 
+                  (section.letterSuffix && section.itemNo.toString() === '13')) {
                 console.log('🚨 ITEM 13A DEFECTS ANALYSIS:', {
                   itemNo: section.itemNo,
+                  letterSuffix: section.letterSuffix,
+                  sectionId: section.id,
                   defectsText: defectsText,
                   defectsTextLength: defectsText.length,
                   extractedMeterages: defectMeterages,
@@ -4609,10 +4620,12 @@ export default function Dashboard() {
               let totalStructuralPatches = 0;
               let structuralMatch;
               
-              // ITEM 13A ENHANCED DEBUG: Show pattern matching process
-              if (section.itemNo === 13) {
+              // ITEM 13A ENHANCED DEBUG: Show pattern matching process - Check all variations
+              if (section.itemNo === 13 || section.itemNo === '13' || section.itemNo === '13a' || 
+                  (section.letterSuffix && section.itemNo.toString() === '13')) {
                 console.log('🚨 ITEM 13A ENHANCED PATTERN MATCHING:', {
                   itemNo: section.itemNo,
+                  letterSuffix: section.letterSuffix,
                   defectsText: defectsText,
                   patternUsed: structuralDefectPattern.source,
                   willExtractMatches: true
@@ -4623,8 +4636,9 @@ export default function Dashboard() {
                 const defectCode = structuralMatch[1];
                 const meterageText = structuralMatch[2];
                 
-                // ITEM 13A DEBUG: Log each match found
-                if (section.itemNo === 13) {
+                // ITEM 13A DEBUG: Log each match found - Check all variations
+                if (section.itemNo === 13 || section.itemNo === '13' || section.itemNo === '13a' || 
+                    (section.letterSuffix && section.itemNo.toString() === '13')) {
                   console.log('🚨 ITEM 13A FOUND STRUCTURAL MATCH:', {
                     defectCode: defectCode,
                     meterageText: meterageText,
@@ -4641,10 +4655,12 @@ export default function Dashboard() {
               
               const patchCount = totalStructuralPatches;
               
-              // ITEM 13A CRITICAL DEBUG: Show patch count calculation
-              if (section.itemNo === 13) {
+              // ITEM 13A CRITICAL DEBUG: Show patch count calculation - Check all variations
+              if (section.itemNo === 13 || section.itemNo === '13' || section.itemNo === '13a' || 
+                  (section.letterSuffix && section.itemNo.toString() === '13')) {
                 console.log('🚨 ITEM 13A PATCH COUNT CALCULATION:', {
                   itemNo: section.itemNo,
+                  letterSuffix: section.letterSuffix,
                   totalStructuralPatches: totalStructuralPatches,
                   finalPatchCount: patchCount,
                   patchCountIsZero: patchCount === 0,
@@ -4692,9 +4708,11 @@ export default function Dashboard() {
                 recommendation: `ID763 structural patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost} (min: ${minimumQuantity})`
               };
               
-              if (section.itemNo === 13) {
+              if (section.itemNo === 13 || section.itemNo === '13' || section.itemNo === '13a' || 
+                  (section.letterSuffix && section.itemNo.toString() === '13')) {
                 console.log('🚨 ITEM 13A FINAL RETURN OBJECT:', {
                   itemNo: section.itemNo,
+                  letterSuffix: section.letterSuffix,
                   returnObject: returnObject,
                   finalCostToDisplay: returnObject.cost,
                   isRedCost: !meetsMinimumRuns,
