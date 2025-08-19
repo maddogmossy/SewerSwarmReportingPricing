@@ -317,7 +317,17 @@ export class SimpleRulesRunner {
     });
     
     if (mm4Data && mm4Data.length > 0) {
-      const costPerPatch = parseFloat(mm4Data[0].greenValue || '0');
+      // CRITICAL FIX: Use Row 2 (Double Layer) for structural patches per MM4 logic
+      // Row 1 = Standard patches (£350)
+      // Row 2 = Double layer patches (£420) ← Use this for structural repairs
+      // Row 3 = Triple layer patches (£510)
+      // Row 4 = Extra cure time patches (£600)
+      const patchRow = mm4Data.find(row => row.id === 2) || mm4Data[0];
+      const costPerPatch = parseFloat(patchRow.greenValue || '0');
+      const dayRate = parseFloat(mm4Data[0].blueValue || '0');
+      const minQuantity = parseInt(patchRow.purpleLength || '0');
+      
+      console.log(`💰 STR MM4 Access: Row ${patchRow.id}, Cost=${costPerPatch}, DayRate=${dayRate}, MinQty=${minQuantity}`);
       
       // Count structural defects for patch calculation
       const defectsText = section.defects || '';
@@ -350,21 +360,38 @@ export class SimpleRulesRunner {
         console.log(`🔧 Junction Proximity: ${junctionAnalysis.connectionDetails.join(', ')} - Adding £${reopeningCost} reopening cost`);
       }
       
-      console.log(`💰 STR Cost Summary: costPerPatch=${costPerPatch}, patchCount=${patchCount}, reopeningCost=${reopeningCost}, total=${costPerPatch * patchCount + reopeningCost}`);
+      console.log(`💰 STR Cost Summary: costPerPatch=${costPerPatch}, patchCount=${patchCount}, minQuantity=${minQuantity}, reopeningCost=${reopeningCost}`);
       
       if (costPerPatch > 0 && patchCount > 0) {
-        const totalCost = costPerPatch * patchCount + reopeningCost;
-        const calculation = reopeningCost > 0 
-          ? `${patchCount} patches × £${costPerPatch} + £${reopeningCost} reopening = £${totalCost}`
-          : `${patchCount} patches × £${costPerPatch} = £${totalCost}`;
-          
-        console.log(`✅ STR Cost Applied: ${calculation}`);
-        return {
-          ...section,
-          cost: totalCost,
-          estimatedCost: totalCost,
-          costCalculation: calculation
-        };
+        // Check if patch count meets minimum quantity requirement
+        if (patchCount >= minQuantity) {
+          const totalCost = costPerPatch * patchCount + reopeningCost;
+          const calculation = reopeningCost > 0 
+            ? `${patchCount} patches × £${costPerPatch} + £${reopeningCost} reopening = £${totalCost}`
+            : `${patchCount} patches × £${costPerPatch} = £${totalCost}`;
+            
+          console.log(`✅ STR Cost Applied: ${calculation}`);
+          return {
+            ...section,
+            cost: totalCost,
+            estimatedCost: totalCost,
+            costCalculation: calculation
+          };
+        } else {
+          // Use day rate when below minimum quantity
+          const totalCost = dayRate + reopeningCost;
+          const calculation = reopeningCost > 0
+            ? `Day rate £${dayRate} (below min ${minQuantity} patches) + £${reopeningCost} reopening = £${totalCost}`
+            : `Day rate £${dayRate} (below min ${minQuantity} patches) = £${totalCost}`;
+            
+          console.log(`🔴 STR Day Rate Applied: ${calculation}`);
+          return {
+            ...section,
+            cost: totalCost,
+            estimatedCost: totalCost,
+            costCalculation: calculation
+          };
+        }
       }
     }
     
