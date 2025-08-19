@@ -62,51 +62,49 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const [pendingRangeValue, setPendingRangeValue] = useState<string>('');
   const [pendingRowId, setPendingRowId] = useState<number | null>(null);
 
-  // SECTOR INDEPENDENCE: Clear selectedIds and reset states when sector or category changes
+  // SECTOR INDEPENDENCE: Clear selectedIds only for new configurations, preserve for existing ones
   useEffect(() => {
-    console.log(`🔧 SECTOR INDEPENDENCE: Clearing selections for sector=${sector} categoryId=${categoryId}`);
-    // Always start fresh to prevent cross-contamination between sectors
-    setSelectedIds([]);
-    setIdsWithConfig([]);
-    // DATABASE-FIRST: MM4 data comes from database, not localStorage
-    console.log(`✅ SECTOR INDEPENDENCE: Clean state initialized for ${sector} (database-first loading)`);
-  }, [sector, categoryId]);
+    console.log(`🔧 SECTOR INDEPENDENCE: Managing selections for sector=${sector} categoryId=${categoryId} editId=${editId}`);
+    
+    // Only clear selections when creating new configurations (no editId)
+    // Preserve existing selections when editing configurations (editId present)
+    if (!editId) {
+      setSelectedIds([]);
+      setIdsWithConfig([]);
+      console.log(`✅ SECTOR INDEPENDENCE: Clean state for new configuration`);
+    } else {
+      console.log(`🔒 SECTOR INDEPENDENCE: Preserving state for existing configuration ID ${editId}`);
+    }
+  }, [sector, categoryId, editId]);
 
-  // **SEPARATE EFFECT FOR MM1 SECTOR AUTO-HIGHLIGHTING** - Runs after page initialization
+  // **DATABASE-DRIVEN SECTOR AUTO-HIGHLIGHTING** - Immediate selection for existing configurations
   useEffect(() => {
-    // Wait longer to ensure page-level URL processing is complete
-    const timeoutId = setTimeout(() => {
-      const sectorToIdMapping = {
-        'utilities': 'id7',
-        'adoption': 'id8', 
-        'highways': 'id9',
-        'insurance': 'id10',
-        'construction': 'id11',
-        'domestic': 'id12'
-      };
+    const sectorToIdMapping = {
+      'utilities': 'id7',
+      'adoption': 'id8', 
+      'highways': 'id9',
+      'insurance': 'id10',
+      'construction': 'id11',
+      'domestic': 'id12'
+    };
+    
+    const correspondingId = sectorToIdMapping[sector as keyof typeof sectorToIdMapping];
+    if (correspondingId) {
+      console.log(`🎯 DATABASE-DRIVEN AUTO-SELECT:`, {
+        sector,
+        editId,
+        correspondingId,
+        isExistingConfig: !!editId,
+        categoryId,
+        immediateExecution: true
+      });
       
-      const correspondingId = sectorToIdMapping[sector as keyof typeof sectorToIdMapping];
-      if (correspondingId) {
-        console.log(`🎯 AUTO-SELECT DEBUG:`, {
-          autoSelectUtilities: sector === 'utilities',
-          autoSelectParam: correspondingId,
-          selectedId: correspondingId,
-          categoryId,
-          templateType: 'MMP1',
-          shouldTrigger: true,
-          currentURL: window.location.href,
-          delayedExecution: true
-        });
-        
-        // **FORCE SECTOR SELECTION** - This should run after page URL processing
-        setSelectedIds([correspondingId]);
-        setIdsWithConfig(prev => [...new Set([...prev, correspondingId])]);
-        console.log(`✅ MM1 sector auto-highlighted: ${sector} → ${correspondingId}`);
-      }
-    }, 500); // Longer delay to ensure it runs AFTER page-level useEffects
-
-    return () => clearTimeout(timeoutId);
-  }, [sector, categoryId]);
+      // **IMMEDIATE SECTOR SELECTION** - No delay needed for database-driven approach
+      setSelectedIds([correspondingId]);
+      setIdsWithConfig(prev => [...new Set([...prev, correspondingId])]);
+      console.log(`✅ Sector auto-selected: ${sector} → ${correspondingId} (editId: ${editId || 'new'})`);
+    }
+  }, [sector, categoryId, editId]);
 
   // Auto-save functionality
   const triggerAutoSave = useCallback(async () => {
