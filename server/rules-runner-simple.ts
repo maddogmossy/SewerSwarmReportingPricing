@@ -339,16 +339,31 @@ export class SimpleRulesRunner {
         }
       }
       
-      console.log(`💰 STR Cost Summary: costPerPatch=${costPerPatch}, patchCount=${patchCount}, total=${costPerPatch * patchCount}`);
+      // Check for junction proximity requiring reopening costs
+      const { MSCC5Classifier } = await import('./mscc5-classifier');
+      const junctionAnalysis = MSCC5Classifier.analyzeJunctionProximityToStructuralDefects(defectsText);
+      
+      let reopeningCost = 0;
+      if (junctionAnalysis.recommendReopening && patchCount > 0) {
+        // Add £150 reopening cost per nearby junction/connection
+        reopeningCost = junctionAnalysis.connectionDetails.length * 150;
+        console.log(`🔧 Junction Proximity: ${junctionAnalysis.connectionDetails.join(', ')} - Adding £${reopeningCost} reopening cost`);
+      }
+      
+      console.log(`💰 STR Cost Summary: costPerPatch=${costPerPatch}, patchCount=${patchCount}, reopeningCost=${reopeningCost}, total=${costPerPatch * patchCount + reopeningCost}`);
       
       if (costPerPatch > 0 && patchCount > 0) {
-        const totalCost = costPerPatch * patchCount;
-        console.log(`✅ STR Cost Applied: ${patchCount} patches × £${costPerPatch} = £${totalCost}`);
+        const totalCost = costPerPatch * patchCount + reopeningCost;
+        const calculation = reopeningCost > 0 
+          ? `${patchCount} patches × £${costPerPatch} + £${reopeningCost} reopening = £${totalCost}`
+          : `${patchCount} patches × £${costPerPatch} = £${totalCost}`;
+          
+        console.log(`✅ STR Cost Applied: ${calculation}`);
         return {
           ...section,
           cost: totalCost,
           estimatedCost: totalCost,
-          costCalculation: `${patchCount} patches × £${costPerPatch} = £${totalCost}`
+          costCalculation: calculation
         };
       }
     }
