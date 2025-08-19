@@ -324,7 +324,8 @@ export class SimpleRulesRunner {
       console.log(`💰 STR Defect Analysis for ${section.itemNo}: "${defectsText}"`);
       
       // Enhanced pattern to catch defect codes with locations (handle both 5. and 5m formats)
-      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN|D)\b.*?(\d+(?:\.\d+)?\.?m?)/g;
+      // REMOVED LEGACY |D - Use only proper MSCC5 codes
+      const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|OJL|OJM|JDM|CN)\b.*?(\d+(?:\.\d+)?\.?m?)/g;
       
       let patchCount = 0;
       let match;
