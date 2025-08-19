@@ -3651,8 +3651,15 @@ export default function PR2ConfigClean() {
                     if (categoryId === 'cctv-van-pack') return 'ID759';
                     if (categoryId === 'cctv-jet-vac') return 'ID760';
                     
+                    // For patching, show known database IDs
+                    if (categoryId === 'patching') {
+                      if (sector === 'utilities') return 'ID763';
+                      if (sector === 'adoption') return 'ID2216'; 
+                      if (sector === 'highways') return 'ID2232';
+                    }
+                    
                     // For all others, use dynamic database ID lookup
-                    return editId ? `ID${editId}` : 'ID-TBD';
+                    return editId ? `ID${editId}` : `ID${editId || 'Loading'}`;
                   };
 
                   // Use clean category names from card definitions, not database categoryName
