@@ -4601,33 +4601,60 @@ export default function Dashboard() {
                 });
               }
               
-              // MSCC5-Compliant patch counting: Only authentic structural defect codes (includes 'D' for deformity)
+              // MSCC5-Compliant patch counting: Enhanced pattern for structural defect codes
               // LEGACY REMOVED: DER, DES are service defects, not structural 
-              const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b[^.]*?(?:at\s+)?(\d+(?:\.\d+)?m(?:\s*,\s*\d+(?:\.\d+)?m)*)/g;
+              // Enhanced pattern to handle various defect text formats
+              const structuralDefectPattern = /\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN|deformity|crack|fracture)\b[^.]*?(\d+(?:\.\d+)?m)/gi;
               
               let totalStructuralPatches = 0;
               let structuralMatch;
+              
+              // ITEM 13A ENHANCED DEBUG: Show pattern matching process
+              if (section.itemNo === 13) {
+                console.log('🚨 ITEM 13A ENHANCED PATTERN MATCHING:', {
+                  itemNo: section.itemNo,
+                  defectsText: defectsText,
+                  patternUsed: structuralDefectPattern.source,
+                  willExtractMatches: true
+                });
+              }
               
               while ((structuralMatch = structuralDefectPattern.exec(defectsText)) !== null) {
                 const defectCode = structuralMatch[1];
                 const meterageText = structuralMatch[2];
                 
-                // Count comma-separated meterages for this defect
-                const meteragesForThisDefected = meterageText.split(/\s*,\s*/).filter(m => m.trim().length > 0);
-                totalStructuralPatches += meteragesForThisDefected.length;
+                // ITEM 13A DEBUG: Log each match found
+                if (section.itemNo === 13) {
+                  console.log('🚨 ITEM 13A FOUND STRUCTURAL MATCH:', {
+                    defectCode: defectCode,
+                    meterageText: meterageText,
+                    fullMatch: structuralMatch[0]
+                  });
+                }
                 
-                // Item 13a structural defect processing optimized
+                // Count this defect occurrence (1 patch per meterage location)
+                totalStructuralPatches += 1;
               }
               
-              // MSCC5-Compliant fallback: only authentic structural codes (includes 'D' for deformity)
-              if (totalStructuralPatches === 0) {
-                const basicStructuralMatches = defectsText.match(/\b(FC|FL|CR|JDL|JDS|DEF|D|OJL|OJM|JDM|CN)\b/g) || [];
-                totalStructuralPatches = Math.max(basicStructuralMatches.length, defectMeterages.length, 1);
-                
-                // Item 13a fallback logic optimized
-              }
+              // REMOVED: Fallback logic that was masking primary pattern matching issues
+              // Now relying solely on precise MSCC5-compliant structural defect detection
               
               const patchCount = totalStructuralPatches;
+              
+              // ITEM 13A CRITICAL DEBUG: Show patch count calculation
+              if (section.itemNo === 13) {
+                console.log('🚨 ITEM 13A PATCH COUNT CALCULATION:', {
+                  itemNo: section.itemNo,
+                  totalStructuralPatches: totalStructuralPatches,
+                  finalPatchCount: patchCount,
+                  patchCountIsZero: patchCount === 0,
+                  defectsTextAnalysis: {
+                    hasDefectsText: !!defectsText && defectsText.length > 0,
+                    defectsTextPreview: defectsText.substring(0, 100),
+                    containsStructuralWords: /\b(deformity|crack|fracture|DEF|D)\b/i.test(defectsText)
+                  }
+                });
+              }
               
               const totalPatchCost = costPerPatch * patchCount;
               
@@ -4671,7 +4698,13 @@ export default function Dashboard() {
                   returnObject: returnObject,
                   finalCostToDisplay: returnObject.cost,
                   isRedCost: !meetsMinimumRuns,
-                  minimumLogic: `${totalStructuralItems} structural items >= ${minimumQuantity} minimum = ${meetsMinimumRuns}`
+                  costCalculation: `${costPerPatch} × ${patchCount} = £${totalPatchCost}`,
+                  minimumLogic: `${totalStructuralItems} structural items >= ${minimumQuantity} minimum = ${meetsMinimumRuns}`,
+                  rootCauseAnalysis: {
+                    patchCountFromPatternMatching: patchCount,
+                    costPerPatchFromMM4: costPerPatch,
+                    whyZeroCost: patchCount === 0 ? 'PATCH COUNT IS ZERO - No structural defects matched pattern' : 'Cost calculation is normal'
+                  }
                 });
               }
               
