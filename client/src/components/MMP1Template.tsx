@@ -77,32 +77,23 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     }
   }, [sector, categoryId, editId]);
 
-  // **DATABASE-DRIVEN SECTOR AUTO-HIGHLIGHTING** - Immediate selection for existing configurations
+  // **DATABASE-DRIVEN SECTOR AUTO-HIGHLIGHTING** - Use actual sector names, not id7-id12
   useEffect(() => {
-    const sectorToIdMapping = {
-      'utilities': 'id7',
-      'adoption': 'id8', 
-      'highways': 'id9',
-      'insurance': 'id10',
-      'construction': 'id11',
-      'domestic': 'id12'
-    };
-    
-    const correspondingId = sectorToIdMapping[sector as keyof typeof sectorToIdMapping];
-    if (correspondingId) {
+    // Use sector name directly as MMP1_IDS array uses sector names as IDs
+    if (sector) {
       console.log(`🎯 DATABASE-DRIVEN AUTO-SELECT:`, {
         sector,
         editId,
-        correspondingId,
+        selectedSector: sector,
         isExistingConfig: !!editId,
         categoryId,
         immediateExecution: true
       });
       
-      // **IMMEDIATE SECTOR SELECTION** - No delay needed for database-driven approach
-      setSelectedIds([correspondingId]);
-      setIdsWithConfig(prev => [...new Set([...prev, correspondingId])]);
-      console.log(`✅ Sector auto-selected: ${sector} → ${correspondingId} (editId: ${editId || 'new'})`);
+      // **IMMEDIATE SECTOR SELECTION** - Use sector name directly
+      setSelectedIds([sector]);
+      setIdsWithConfig(prev => [...new Set([...prev, sector])]);
+      console.log(`✅ Sector auto-selected: ${sector} (editId: ${editId || 'new'})`);
     }
   }, [sector, categoryId, editId]);
 
