@@ -1029,7 +1029,7 @@ export class MSCC5Classifier {
     const lowerText = defectText.toLowerCase();
     
     // Common defect codes to search for - MSCC5 Complete Coverage
-    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL', 'CN', 'SA', 'CUW', 'JN'];
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL', 'CN', 'SA', 'CUW'];
     
     for (const code of defectCodes) {
       const pattern = new RegExp(`\\b${code}\\b[^,]*?(?:,|$)`, 'g');
@@ -1089,23 +1089,8 @@ export class MSCC5Classifier {
       }
     }
     
-    // CRITICAL FIX: Detect Junction defects without explicit codes
-    // This fixes Item 19 and similar cases with "Junction" text but missing JN codes
-    if (lowerText.includes('junction') && !defects.some(d => d.code === 'JN')) {
-      const junctionMatch = defectText.match(/(Junction[^.]*?)(?:\.|$|,)/i);
-      if (junctionMatch) {
-        const description = junctionMatch[1].trim();
-        const meterageMatch = description.match(/(\d+\.?\d*m)/);
-        
-        defects.push({
-          code: 'JN',
-          description,
-          meterage: meterageMatch ? meterageMatch[1] : undefined
-        });
-        
-        console.log(`✅ JUNCTION FIX: Added JN code for: "${description}"`);
-      }
-    }
+    // REMOVED: Junction detection - JN is not a defect code per user requirements
+    // Junction observations should not be treated as defects for section splitting
     
     // Remove duplicates
     const uniqueDefects = defects.filter((defect, index, self) => 

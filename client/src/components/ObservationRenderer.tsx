@@ -33,7 +33,7 @@ const formatObservationItem = (observation: string): { code: string | null; text
       // Service codes
       'DER', 'DES', 'WL', 'SA', 'CUW', 'OBI', 'OB', 'RI',
       // Structural codes  
-      'FC', 'FL', 'CR', 'DEF', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'CN', 'COL', 'BRK', 'JN',
+      'FC', 'FL', 'CR', 'DEF', 'JDL', 'JDS', 'JDM', 'OJM', 'OJL', 'CN', 'COL', 'BRK',
       // Conditional codes
       'SC'
     ];
