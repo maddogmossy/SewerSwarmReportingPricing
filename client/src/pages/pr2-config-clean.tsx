@@ -90,14 +90,14 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'F1-F16', description: 'Residential and domestic drainage work', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// MMP1 SECTOR DEFINITIONS - DATABASE-FIRST APPROACH (Unified with SECTORS array)
+// MMP1 CATEGORY/EQUIPMENT DEFINITIONS - ID7-ID12 System (Equipment Types, not Sectors)
 const MMP1_IDS = [
-  { id: 'utilities', name: 'Utilities', label: 'Utilities', devId: 'A1-A16', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'adoption', name: 'Adoption', label: 'Adoption', devId: 'B1-B16', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'highways', name: 'Highways', label: 'Highways', devId: 'C1-C16', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'insurance', name: 'Insurance', label: 'Insurance', devId: 'D1-D16', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'construction', name: 'Construction', label: 'Construction', devId: 'E1-E16', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'domestic', name: 'Domestic', label: 'Domestic', devId: 'F1-F16', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', label: 'CCTV/Van Pack', devId: 'A4', description: 'CCTV inspection with van pack equipment', icon: Package, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', label: 'CCTV/Jet Vac', devId: 'A5', description: 'CCTV inspection with jet vac equipment', icon: Zap, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'directional-water-cutter', name: 'Water Cutter', label: 'Water Cutter', devId: 'A6', description: 'Directional water cutting operations', icon: Scissors, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'patching', name: 'Patching', label: 'Patching', devId: 'A8', description: 'Structural patching and repairs', icon: Shield, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'excavation', name: 'Excavation', label: 'Excavation', devId: 'A13', description: 'Excavation and replacement work', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'tankering', name: 'Tankering', label: 'Tankering', devId: 'A15', description: 'Tankering and waste removal', icon: Truck, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // Removed P26 Upper Level Data Structure - deprecated
@@ -899,8 +899,8 @@ export default function PR2ConfigClean() {
     const shouldAutoSelect = (autoSelectUtilities || autoSelectParam === 'true') && getTemplateType(categoryId || '') === 'MMP1';
     
     if (shouldAutoSelect) {
-      console.log('🎯 AUTO-SELECTING utilities card due to autoSelectUtilities=true');
-      setSelectedIds(['utilities']);
+      console.log('🎯 AUTO-SELECTING patching card due to autoSelectUtilities=true');
+      setSelectedIds(['patching']);
     }
     // Priority 2: Use selectedId from URL parameter
     else if (selectedId && getTemplateType(categoryId || '') === 'MMP1') {
@@ -3822,8 +3822,8 @@ export default function PR2ConfigClean() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-3">
                     {MMP1_IDS.map((idOption) => {
-                      // Auto-select utilities when coming from dashboard 150mm recommendations
-                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'utilities' && !selectedIds.includes('utilities');
+                      // Auto-select patching when coming from dashboard structural recommendations
+                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'patching' && !selectedIds.includes('patching');
                       const isSelected = selectedIds.includes(idOption.id) || shouldAutoSelect;
                       const hasConfiguration = idsWithConfig.includes(idOption.id);
                       
