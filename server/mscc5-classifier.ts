@@ -963,8 +963,8 @@ export class MSCC5Classifier {
     // Parse all defects from the text
     const allDefects = this.parseAllDefectsFromText(defectText);
     
-    if (allDefects.length <= 1) {
-      return [sectionData]; // Return original section if only one defect type
+    if (allDefects.length === 0) {
+      return [sectionData]; // Return original section if no defects found
     }
     
     // Group defects by type (service vs structural)
@@ -973,8 +973,25 @@ export class MSCC5Classifier {
     
     const hasMultipleTypes = serviceDefects.length > 0 && structuralDefects.length > 0;
     
+    // CRITICAL FIX: Apply synthetic code transformation even for single-type sections
+    // This ensures Items 19-20 get proper DEF codes applied from parseAllDefectsFromText
+    if (!hasMultipleTypes && allDefects.length === 1) {
+      const singleDefect = allDefects[0];
+      const reconstructedDefects = `${singleDefect.code} ${singleDefect.description}`;
+      
+      // If synthetic code was added, apply it to the section
+      if (reconstructedDefects !== defectText.trim()) {
+        const updatedSection = { ...sectionData };
+        updatedSection.defects = reconstructedDefects;
+        updatedSection.defectType = this.getDefectType(singleDefect.code);
+        console.log(`🔧 SINGLE-TYPE FIX: Applied synthetic code for Item ${itemNo}: "${reconstructedDefects}"`);
+        return [updatedSection];
+      }
+      return [sectionData]; // No synthetic codes, return original
+    }
+    
     if (!hasMultipleTypes) {
-      return [sectionData]; // Return original if all same type
+      return [sectionData]; // Return original if all same type (multiple defects of same type)
     }
     
     
