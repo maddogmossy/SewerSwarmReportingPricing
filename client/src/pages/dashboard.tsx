@@ -1858,20 +1858,9 @@ export default function Dashboard() {
               config.categoryId === 'patching' && config.sector === currentSector.id
             );
             
-            if (patchingConfig && patchingConfig.mmData) {
-              console.log('✅ Found patching config for MM4 calculation:', patchingConfig.id);
-              costCalculation = calculateID763StructuralPatching(section, patchingConfig);
-              
-              if (costCalculation && costCalculation.cost > 0) {
-                console.log('✅ MM4 structural cost calculated:', costCalculation.cost);
-              } else {
-                console.log('⚠️ MM4 calculation failed, falling back to calculateAutoCost');
-                costCalculation = calculateAutoCost(section);
-              }
-            } else {
-              console.log('⚠️ No patching config found, using calculateAutoCost');
-              costCalculation = calculateAutoCost(section);
-            }
+            // Use calculateAutoCost for all defect types - it handles both service and structural
+            console.log('🏗️ Using calculateAutoCost for structural defects');
+            costCalculation = calculateAutoCost(section);
           } else if (isServiceDefectForCost || needsCleaning) {
             // Fallback to old calculation only if no API data
             console.log('🧹 FALLBACK calculateAutoCost for SERVICE:', section.itemNo);
@@ -1946,10 +1935,9 @@ export default function Dashboard() {
           }
           
           // Check if this is a valid cost calculation (not a failed configuration)
-          // MODERNIZED: Removed all TP1 legacy status codes - using only MM4-based validation
+          // MODERNIZED: Allow calculated costs to display even with warning statuses
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
-            costCalculation.cost >= 0 && 
-            !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config'].includes(costCalculation.status);
+            costCalculation.cost > 0;
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
