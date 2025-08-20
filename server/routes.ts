@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
 import { storage } from "./storage";
-import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories, depotSettings, travelCalculations, vehicleTravelRates } from "@shared/schema";
+import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, reportPricing, workCategories, depotSettings, travelCalculations, vehicleTravelRates } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
@@ -479,12 +479,13 @@ export async function registerRoutes(app: Express) {
         const result = await readWincanDatabase(mainDbPath, fileUpload.sector || 'utilities', uploadId);
         const sections = result.sections;
         const detectedFormat = result.detectedFormat;
+        const defPercentsBySection = result.defPercentsBySection;
         
         console.log(`🔄 REPROCESS: Extracted ${sections.length} sections, format: ${detectedFormat}`);
         
         // Store sections with latest storage logic (includes pipe size corrections)
         if (sections.length > 0) {
-          await storeWincanSections(sections, uploadId);
+          await storeWincanSections(sections, uploadId, defPercentsBySection);
         }
         
         // Update status to completed
@@ -713,12 +714,13 @@ export async function registerRoutes(app: Express) {
           console.log('🔍 Sector:', req.body.sector || 'utilities');
           console.log('🔍 File exists:', fs.existsSync(mainDbPath));
           
-          let sections, detectedFormat;
+          let sections, detectedFormat, defPercentsBySection;
           try {
             console.log('🔍 Calling readWincanDatabase...');
             const result = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities', fileUpload.id);
             sections = result.sections;
             detectedFormat = result.detectedFormat;
+            defPercentsBySection = result.defPercentsBySection;
             console.log(`✅ readWincanDatabase completed successfully - Detected format: ${detectedFormat}`);
           } catch (readError) {
             console.error('❌ readWincanDatabase failed:', readError);
@@ -749,7 +751,7 @@ export async function registerRoutes(app: Express) {
           
           // Store sections in database
           if (sections.length > 0) {
-            await storeWincanSections(sections, fileUpload.id);
+            await storeWincanSections(sections, fileUpload.id, defPercentsBySection);
           }
           
           // Update file upload status to completed

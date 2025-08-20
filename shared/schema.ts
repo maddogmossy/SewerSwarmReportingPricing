@@ -116,6 +116,7 @@ export const sectionInspections = pgTable("section_inspections", {
   rawObservations: text("raw_observations").array().default(sql`ARRAY[]::text[]`), // Authentic WinCan observations
   secstatGrades: jsonb("secstat_grades"), // Original SECSTAT data: {structural: number, service: number}
   inspectionDirection: varchar("inspection_direction"), // upstream/downstream
+  deformationPct: integer("deformation_pct"), // Maximum deformation percentage from DEF defects
   
   // PROCESSED DATA CACHE - Store processed results for performance
   processedDefectType: varchar("processed_defect_type", { length: 50 }),
@@ -518,7 +519,6 @@ export const insertUserSchema = createInsertSchema(users).omit({
 export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 });
 
 export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({

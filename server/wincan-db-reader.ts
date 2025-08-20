@@ -50,6 +50,18 @@ export interface WincanSectionData {
   defectType: string;
 }
 
+export interface WincanDatabaseResult {
+  sections: WincanSectionData[];
+  detectedFormat: string;
+  defPercentsBySection: Map<string, number>;
+}
+
+// Helper function to extract percentage from defect text
+function extractPercent(text: string): number {
+  const match = text.match(/(\d+)\s*%/);
+  return match ? Number(match[1]) : 0;
+}
+
 // Enhanced observation with remark system
 function enhanceObservationWithRemark(observation: string): string {
   // Define remark mappings for common observation codes
@@ -492,7 +504,7 @@ function getAuthenticWRcRecommendations(severityGrade: number, defectType: 'stru
   }
 }
 
-export async function readWincanDatabase(filePath: string, sector: string = 'utilities', uploadId?: number): Promise<{ sections: WincanSectionData[], detectedFormat: string }> {
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities', uploadId?: number): Promise<WincanDatabaseResult> {
   
   try {
     // Check if file exists
@@ -667,7 +679,9 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         console.log('🔍 SECSTAT record count:', Object.keys(severityGrades).length);
         console.log('🔍 Observation mapping size:', observationMap.size);
         
-        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades, detectedFormat);
+        const result = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades, detectedFormat);
+        sectionData = result.sections;
+        const defPercentsBySection = result.defPercentsBySection;
         console.log(`🔍 Processed sections result: ${sectionData.length} sections extracted`);
       }
     }
@@ -697,7 +711,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       }
       
       database.close();
-      return { sections: [], detectedFormat: 'UNIFIED' };
+      return { sections: [], detectedFormat: 'UNIFIED', defPercentsBySection: new Map() };
     }
     
     database.close();
@@ -720,11 +734,11 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       }
     }
     
-    return { sections: sectionData, detectedFormat };
+    return { sections: sectionData, detectedFormat, defPercentsBySection };
     
   } catch (error) {
     console.error("❌ Error reading Wincan database:", error);
-    return { sections: [], detectedFormat: 'UNIFIED' };
+    return { sections: [], detectedFormat: 'UNIFIED', defPercentsBySection: new Map() };
   }
 }
 
@@ -736,9 +750,12 @@ async function processSectionTable(
   sector: string,
   severityGrades: Record<number, { structural: number | null, service: number | null }>,
   detectedFormat: string = 'UNIFIED'
-): Promise<WincanSectionData[]> {
+): Promise<{sections: WincanSectionData[], defPercentsBySection: Map<string, number>}> {
   
   const authenticSections: WincanSectionData[] = [];
+  
+  // Collect DEF percentages per section while parsing
+  const defPercentsBySection = new Map<string, number>(); // sectionId -> max%
   
   // Process all sections with unified logic - no format-specific filtering
   console.log('🔍 UNIFIED PROCESSING: Processing all sections with same standardized workflow');
@@ -795,6 +812,21 @@ async function processSectionTable(
     // QUALITY CONTROL: Ensure uniform processing - no artificial observation creation
     // Each report must be processed the same without artificial data generation
     const observations = rawObservations.filter(obs => obs && obs.trim() !== '');
+    
+    // Collect DEF percentages for this section
+    let maxDefPercent = 0;
+    for (const obs of observations) {
+      if (obs.includes('DEF ') || obs.toLowerCase().includes('deformity') || obs.toLowerCase().includes('deformed')) {
+        const pct = extractPercent(obs);
+        if (pct > maxDefPercent) {
+          maxDefPercent = pct;
+        }
+      }
+    }
+    // Store max percentage for later database update
+    if (maxDefPercent > 0) {
+      defPercentsBySection.set(record.OBJ_PK, maxDefPercent);
+    }
     
     console.log(`🔍 Section ${sectionKey}: Found ${observations.length} authentic observations`);
     if (observations.length > 0) {
@@ -1352,7 +1384,12 @@ async function processSectionTable(
     console.log(`🔍 UNIFIED SECTION ADDED: Item ${authenticItemNo}, manholes: ${sectionData.startMH} → ${sectionData.finishMH}, defects: ${defectText ? defectText.substring(0, 50) + '...' : 'None'}`);
   }
   
-  return authenticSections;
+  console.log(`🔍 DEF percentage extraction complete: ${defPercentsBySection.size} sections with deformation data`);
+  if (defPercentsBySection.size > 0) {
+    console.log('📊 Collected DEF percentages by section:', Object.fromEntries(defPercentsBySection));
+  }
+  
+  return { sections: authenticSections, defPercentsBySection };
 }
 
 // Extract authentic values from database records
@@ -1463,7 +1500,7 @@ async function classifyWincanObservations(observationText: string, sector: strin
 }
 
 // Store WinCan sections in database - RESTORED FROM BACKUP
-export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
+export async function storeWincanSections(sections: WincanSectionData[], uploadId: number, defPercentsBySection?: Map<string, number>): Promise<void> {
   
   // First, clear any existing sections for this upload to prevent accumulation
   try {
@@ -1503,6 +1540,16 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         correctionApplied: [1,2,3,4,5,17,18,19].includes(section.itemNo) && section.pipeSize === '150'
       });
       
+      // Extract DEF percentage for this specific section
+      let sectionDefPct = 0;
+      if (defPercentsBySection && section.defects) {
+        // Extract percentages from the defect text of this specific section
+        const extractedPct = extractPercent(section.defects);
+        if (extractedPct > 0) {
+          sectionDefPct = extractedPct;
+        }
+      }
+
       // Ensure all required fields have valid values - FIXED: Prevent incorrect fallback for pipe size
       const insertData = {
         fileUploadId: uploadId,
@@ -1523,7 +1570,8 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         severityGrade: section.severityGrade || 0,
         adoptable: section.adoptable || 'Yes',
         startMHDepth: 'No data',
-        finishMHDepth: 'No data'
+        finishMHDepth: 'No data',
+        deformationPct: sectionDefPct > 0 ? sectionDefPct : null
       };
       
       // Insert directly without upsert to avoid constraint issues
