@@ -16,16 +16,16 @@ interface RepairOptionsPopoverProps {
 }
 
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded, reportId }: RepairOptionsPopoverProps) {
-  // FIXED: Use same working logic as CleaningOptionsPopover with autoSelectUtilities=true
+  // FIXED: Route directly to ID 763 patching configuration instead of generic patching page
   const handleDirectClick = async () => {
     // Extract pipe size from section data
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    // Use CleaningOptionsPopover's working approach with autoSelectUtilities=true
-    // This triggers proper sector-based configuration selection in pr2-config-clean
+    // Route directly to ID 763 (A8-Utilities Patching) configuration
+    // This is the authentic database ID for structural patching in utilities sector
     const reportParam = reportId ? `&reportId=${reportId}` : '';
-    window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+    window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&editId=763${reportParam}`;
   };
 
   // Return simple clickable element that triggers auto-detection
