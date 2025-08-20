@@ -1848,29 +1848,30 @@ export default function Dashboard() {
           });
           
           let costCalculation;
-          if (isStructuralDefectForCost) {
-            // Route structural defects (21a, 22a) to TP2/TP3 calculation
-            console.log('🏗️ CALLING calculateAutoCost for STRUCTURAL:', section.itemNo);
+          
+          // Check if this section already has cost data from versioned derivations API
+          if (section.cost !== undefined && section.cost !== null && typeof section.cost === 'number') {
+            console.log('✅ USING API COST DATA for', section.itemNo, ':', section.cost);
+            costCalculation = {
+              cost: section.cost,
+              status: section.status || (section.meetsMinimum === false ? 'below_minimum' : 'calculated'),
+              meetsMinimum: section.meetsMinimum,
+              patchCount: section.patchCount,
+              minQuantity: section.minQuantity,
+              costCalculation: section.costCalculation || `API calculated cost: £${section.cost}`,
+              method: 'MM4 Versioned Derivations'
+            };
+          } else if (isStructuralDefectForCost) {
+            // Fallback to old calculation only if no API data
+            console.log('🏗️ FALLBACK calculateAutoCost for STRUCTURAL:', section.itemNo);
             costCalculation = calculateAutoCost(section);
           } else if (isServiceDefectForCost || needsCleaning) {
-            // Route service defects to MM4 calculation (with fallback to TP1)
-            console.log('🧹 CALLING calculateAutoCost for SERVICE:', section.itemNo);
+            // Fallback to old calculation only if no API data
+            console.log('🧹 FALLBACK calculateAutoCost for SERVICE:', section.itemNo);
             costCalculation = calculateAutoCost(section);
-            
-            // CRITICAL DEBUG: Check what calculateAutoCost returns for service sections
-            console.log('📊 SERVICE COST CALCULATION RESULT:', {
-              itemNo: section.itemNo,
-              costCalculation: costCalculation,
-              costCalculationType: typeof costCalculation,
-              hasCost: costCalculation && 'cost' in costCalculation,
-              costValue: costCalculation && 'cost' in costCalculation ? costCalculation.cost : 'NO_COST',
-              status: costCalculation && 'status' in costCalculation ? costCalculation.status : 'NO_STATUS',
-              method: costCalculation && 'method' in costCalculation ? costCalculation.method : 'NO_METHOD',
-              isID760Result: costCalculation && 'method' in costCalculation && costCalculation.method?.includes('A5')
-            });
           } else {
             // Fallback to auto cost calculation
-            console.log('🔄 CALLING calculateAutoCost for FALLBACK:', section.itemNo);
+            console.log('🔄 FALLBACK calculateAutoCost for FALLBACK:', section.itemNo);
             costCalculation = calculateAutoCost(section);
           }
           
@@ -1900,12 +1901,8 @@ export default function Dashboard() {
                 </div>
               );
             }
-            // Use totalCost (with day rate adjustment) if available, otherwise calculate base cost
-            const calculatedCost = ('totalCost' in costCalculation && costCalculation.totalCost) 
-              ? costCalculation.totalCost 
-              : ('defectCount' in costCalculation && 'costPerUnit' in costCalculation) 
-                ? costCalculation.defectCount * costCalculation.costPerUnit || 0 
-                : 0;
+            // Use the actual cost from API calculation
+            const calculatedCost = costCalculation.cost || 0;
             
             // Extract day rate from CCTV/Jet Vac configuration for dialog
             let dayRate = 0; // No synthetic fallbacks - must come from user configuration
@@ -1924,7 +1921,7 @@ export default function Dashboard() {
             return (
               <div 
                 className="flex items-center justify-center p-1 rounded cursor-pointer hover:bg-red-50 transition-colors" 
-                title={`${('triangleMessage' in costCalculation) ? costCalculation.triangleMessage : ''}\nTP2 patching: ${('defectCount' in costCalculation) ? costCalculation.defectCount : 0} defects × £${('costPerUnit' in costCalculation) ? costCalculation.costPerUnit : 0} = £${('baseCost' in costCalculation && costCalculation.baseCost) ? costCalculation.baseCost.toFixed(2) : '0.00'}\nDay rate adjustment: +£${('dayRateAdjustment' in costCalculation && costCalculation.dayRateAdjustment) ? costCalculation.dayRateAdjustment.toFixed(2) : '0.00'}\nTotal with day rate: £${calculatedCost.toFixed(2)}\nRequires minimum ${('minRequired' in costCalculation) ? costCalculation.minRequired : 0} patches\n\nClick to adjust pricing`}
+                title={`${costCalculation.costCalculation || 'Patch cost calculation'}\nActual patches: ${costCalculation.patchCount || 0}\nMinimum required: ${costCalculation.minQuantity || 0}\nCost per patch: £${((costCalculation.cost || 0) / (costCalculation.patchCount || 1)).toFixed(0)}\nTotal: £${calculatedCost.toFixed(2)}\nStatus: Below minimum requirement\n\nClick to adjust pricing`}
                 onClick={() => handlePatchPricingClick(section, {
                   ...costCalculation,
                   currentCost: calculatedCost,
