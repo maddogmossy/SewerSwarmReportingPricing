@@ -1,0 +1,123 @@
+Investigate as a senior code writer.
+
+STRICT SAFETY:
+- Do NOT modify any code, files, or settings.
+- Only inspect, run read-only commands/queries, and report back.
+
+GOAL:
+Explain exactly how the system currently works end-to-end, with special focus on:
+- Feature flags and which path is live
+- Pricing for id 759 / 760 / 763
+- Sector logic usage (if any)
+- .db3/meta-db3 ingestion of key fields
+- Warnings/modal flow for configuration issues
+- Any remaining legacy code references
+
+TASKS:
+
+1) FLAGS & MODES
+- List all environment flags referenced in code (e.g., USE_LATEST_RULES_RUN, USE_SECTOR_MATRIX, ENABLE_LINER_THICKNESS).
+- For each flag: show the files + line numbers where read/checked and what behavior it toggles.
+- Report what values are currently set in the Replit environment and what mode the app is running in (new pipeline vs legacy).
+
+2) PIPELINE HEALTH (RAW-FIRST)
+- Identify the code that triggers a rules run (e.g., /api/reprocess/:uploadId).
+- Show the files/lines where rules_runs and observation_rules are written.
+- Confirm the dashboard/API reads the **latest successful** rules_run (files/lines).
+
+3) .DB3 INGESTION (RAW FIELDS)
+- Show where these are read from .db3/meta-db3 and persisted (files/lines + table/columns):
+  - depth_m
+  - total_length_m
+  - inspected_length_m
+  - deformation_pct (ovality)
+- If any are NOT extracted, say which are missing and where they should be added.
+
+4) PRICING PATHS (ID 759 / 760 / 763)
+- Show the call sites (files/lines) that compute pricing for:
+  - 759 (patch options 1–4)
+  - 760 (lining; method/resin/length)
+  - 763 (generic/other)
+- Identify any shared pricing engine or separate calculators and where band data (patchBands/liningBands) come from.
+- Show where errors/warnings from pricing are surfaced to the UI (files/lines).
+
+5) SECTOR LOGIC & RECOMMENDATIONS
+- If sector matrices exist: show where evaluateRecommendation(...) is called and where sector is read from.
+- If not wired: show the exact insertion point to call it before pricing.
+
+6) WARNINGS / MODAL (CONFIG POP-UP)
+- Show where validation happens and where a modal/pop-up is rendered that:
+  - lists missing configuration (e.g., length, method, resin, patch option),
+  - and on “OK” routes the user to the correct configuration screen.
+- If not present, propose the minimal integration point (files/lines) for a validator + modal, but do not change code.
+
+7) LEGACY & FALLBACK CHECK
+- List any files/lines that:
+  - write to sectionInspections.processed* columns,
+  - import from /legacy/ or /experiments/,
+  - implement “silent fallback” (e.g., if new derived = 0 then use old path).
+- For each, state whether it’s active and what to remove/guard.
+
+8) RUNTIME SMOKE (READ-ONLY)
+- Pick one real uploadId (print which one).
+- Run a reprocess and paste the console/HTTP output (no code changes).
+- DB checks (paste the SQL and results):
+  - Latest successful rules_run for that upload (id/status).
+  - COUNT(*) of observation_rules for that rules_run_id.
+- API check:
+  - GET /api/uploads/:id/sections — paste the first ~30 lines.
+  - State whether it reflects the latest rules_run.
+- Pricing quick check:
+  - For the same section, show current inputs being used for 759/760/763 and the computed pricing results (subtotal, breakdown, any errors/warnings).
+  - If pricing cannot compute, list the missing inputs it expects.
+
+OUTPUT FORMAT (fill with real paths/lines/values):
+
+CURRENT STATE
+- Flags detected: <NAME=VALUE> … 
+- Live mode: <new pipeline | legacy>
+- New vs legacy selector: <file:line>
+
+PIPELINE
+- Run trigger: <file:line>
+- Writes: rules_runs @ <file:line>, observation_rules @ <file:line>
+- Dashboard/API read: <file:line>
+
+DB3 FIELDS
+- depth_m: read @ <file:line> -> table.column=<...>
+- total_length_m: read @ <file:line> -> <...>
+- inspected_length_m: read @ <file:line> -> <...>
+- deformation_pct: read @ <file:line> -> <...>
+- Missing fields: <... or none>
+
+PRICING
+- 759 call site: <file:line> (bands: <where>)
+- 760 call site: <file:line> (bands: <where>)
+- 763 call site: <file:line>
+- Errors/warnings surfaced at: <file:line>
+
+SECTOR LOGIC
+- evaluateRecommendation wired at: <file:line> (sector source: <file:line>)
+- If not wired: suggested insertion point: <file:line>
+
+WARNINGS/MODAL
+- Validator: <file:line>
+- Modal component: <file:line>
+- Navigation-to-config: <file:line>
+
+LEGACY
+- processed* writes at: <file:line> (active? yes/no)
+- /legacy/ imports at: <file:line> (active? yes/no)
+- Silent fallback at: <file:line> (active? yes/no)
+
+RUNTIME EVIDENCE
+- Upload used: <id>
+- rules_run: <id, status=success>
+- observation_rules count: <n>
+- API sample: <first lines>
+- Pricing 759/760/763:
+  - inputs used: <…>
+  - result: subtotal=<…>, breakdown=<…>, errors=<[]|…>, warnings=<[]|…>
+
+RECOMMENDATIONS
+- (Bullet list of minimal, safe changes if any are required; no edits performed.)
