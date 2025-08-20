@@ -922,7 +922,12 @@ export default function PR2ConfigClean() {
       console.log('🔧 Setting selectedIds from URL parameter:', selectedId);
       setSelectedIds([selectedId]);
     }
-  }, [selectedId, categoryId, autoSelectUtilities]);
+    // Priority 3: Default selection for patching category (ID 763 structural recommendations)
+    else if (categoryId === 'patching' && editId === '763' && getTemplateType(categoryId || '') === 'MMP1') {
+      console.log('🎯 AUTO-SELECTING utilities for ID 763 structural patching');
+      setSelectedIds(['utilities']);
+    }
+  }, [selectedId, categoryId, autoSelectUtilities, editId]);
 
 
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
@@ -3837,8 +3842,6 @@ export default function PR2ConfigClean() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-3">
                     {MMP1_IDS.map((idOption) => {
-                      // Auto-select utilities when coming from dashboard structural recommendations
-                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'utilities' && !selectedIds.includes('utilities');
                       const isSelected = selectedIds.includes(idOption.id);
                       const hasConfiguration = idsWithConfig.includes(idOption.id);
                       
