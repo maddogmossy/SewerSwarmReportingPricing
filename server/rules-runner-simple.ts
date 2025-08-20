@@ -13,62 +13,93 @@ export class SimpleRulesRunner {
    * Create a simple rules run for testing
    */
   static async createSimpleRun(uploadId: number) {
-    try {
-      // Create rules run record
-      const [run] = await db.insert(rulesRuns).values({
-        upload_id: uploadId,
-        parser_version: '1.0.0',
-        ruleset_version: 'MSCC5-2024.1',
-        started_at: new Date(),
-        status: 'success',
-        finished_at: new Date(),
-      }).returning();
-      
-      console.log(`✅ Created simple rules run ${run.id} for upload ${uploadId}`);
-      
-      // Get sections and create simple observation rules
-      const sections = await db.select()
-        .from(sectionInspections)
-        .where(eq(sectionInspections.fileUploadId, uploadId));
-      
-      for (const section of sections) {
-        // Apply SER/STR splitting logic if section has mixed defects
-        const splitSections = this.applySplittingLogic(section);
+    // Start transaction for atomic operation
+    return await db.transaction(async (tx) => {
+      try {
+        // Create rules run record (initially pending)
+        const [run] = await tx.insert(rulesRuns).values({
+          upload_id: uploadId,
+          parser_version: '1.0.0',
+          ruleset_version: 'MSCC5-2024.1',
+          started_at: new Date(),
+          status: 'pending', // Start as pending, mark success only after all inserts
+          finished_at: null,
+        }).returning();
         
-        for (let i = 0; i < splitSections.length; i++) {
-          const splitSection = splitSections[i];
+        console.log(`✅ Created rules run ${run.id} for upload ${uploadId}`);
+        
+        // Get sections and create observation rules
+        const sections = await tx.select()
+          .from(sectionInspections)
+          .where(eq(sectionInspections.fileUploadId, uploadId));
+        
+        console.log(`📊 Processing ${sections.length} sections for observation rules`);
+        
+        let totalObservationRules = 0;
+        
+        // Process each section and create observation rules
+        for (const section of sections) {
+          // Apply SER/STR splitting logic if section has mixed defects
+          const splitSections = this.applySplittingLogic(section);
           
-          // Ensure all required fields are populated with debugging
-          console.log(`📝 Creating observation rule for section ${section.itemNo}, split ${i+1}/${splitSections.length}`);
-          
-          await db.insert(observationRules).values({
-            rules_run_id: run.id,
-            section_id: section.id, // Original section ID for reference
-            observation_idx: i, // Index for split sections
-            mscc5_json: JSON.stringify({
-              itemNo: splitSection.itemNo,
-              originalItemNo: section.itemNo,
-              defectType: splitSection.defectType || 'service',
-              letterSuffix: splitSection.letterSuffix || null,
-              splitCount: splitSections.length,
-              grade: parseInt(splitSection.severityGrade) || 0,
-              splitType: splitSections.length > 1 ? 'split' : 'original'
-            }),
-            defect_type: splitSection.defectType || 'service',
-            severity_grade: parseInt(splitSection.severityGrade) || 0,
-            recommendation_text: splitSection.recommendations || 'No action required',
-            adoptability: splitSection.adoptable || 'Yes',
-          });
+          for (let i = 0; i < splitSections.length; i++) {
+            const splitSection = splitSections[i];
+            
+            console.log(`📝 Creating observation rule for section ${section.itemNo}, split ${i+1}/${splitSections.length}`);
+            
+            await tx.insert(observationRules).values({
+              rules_run_id: run.id,
+              section_id: section.id, // Original section ID for reference
+              observation_idx: i, // Index for split sections
+              mscc5_json: JSON.stringify({
+                itemNo: splitSection.itemNo,
+                originalItemNo: section.itemNo,
+                defectType: splitSection.defectType || 'service',
+                letterSuffix: splitSection.letterSuffix || null,
+                splitCount: splitSections.length,
+                grade: parseInt(splitSection.severityGrade) || 0,
+                splitType: splitSections.length > 1 ? 'split' : 'original'
+              }),
+              defect_type: splitSection.defectType || 'service',
+              severity_grade: parseInt(splitSection.severityGrade) || 0,
+              recommendation_text: splitSection.recommendations || 'No action required',
+              adoptability: splitSection.adoptable || 'Yes',
+            });
+            
+            totalObservationRules++;
+          }
         }
+        
+        // CRITICAL: Fail fast if no observation rules created
+        if (totalObservationRules === 0) {
+          console.error(`❌ No observation rules created for upload ${uploadId} - marking as failed`);
+          await tx.update(rulesRuns)
+            .set({ 
+              status: 'failed', 
+              finished_at: new Date(),
+              derived_count: 0 
+            })
+            .where(eq(rulesRuns.id, run.id));
+          throw new Error(`Failed: No observation rules derived for upload ${uploadId}`);
+        }
+        
+        // Mark run as successful with count
+        await tx.update(rulesRuns)
+          .set({ 
+            status: 'success', 
+            finished_at: new Date(),
+            derived_count: totalObservationRules 
+          })
+          .where(eq(rulesRuns.id, run.id));
+        
+        console.log(`✅ Successfully created ${totalObservationRules} observation rules for run ${run.id}`);
+        return run;
+        
+      } catch (error) {
+        console.error('❌ Rules run failed in transaction:', error);
+        throw error; // Transaction will rollback automatically
       }
-      
-      console.log(`✅ Created ${sections.length} observation rules for run ${run.id}`);
-      return run;
-      
-    } catch (error) {
-      console.error('❌ Simple rules run failed:', error);
-      throw error;
-    }
+    });
   }
   
   /**
@@ -298,7 +329,7 @@ export class SimpleRulesRunner {
   }
 
   /**
-   * Calculate structural costs (MM4 Patching)
+   * Calculate structural costs (MM4 Patching) with deformation percentage consideration
    */
   private static async calculateStructuralCosts(section: any, configs: any[]) {
     // Find patching configuration
@@ -311,18 +342,32 @@ export class SimpleRulesRunner {
     const mm4Key = `${pipeSize}-${pipeSize}1`;
     const mm4Data = patchingConfig.mmData.mm4DataByPipeSize[mm4Key];
     
-    console.log(`💰 STR Cost Debug: pipeSize=${pipeSize}, key=${mm4Key}, hasData=${!!mm4Data}`, {
+    // Extract deformation percentage for thickness escalation
+    const deformationPct = section.deformationPct || section.deformation_pct || 0;
+    
+    console.log(`💰 STR Cost Debug: pipeSize=${pipeSize}, key=${mm4Key}, hasData=${!!mm4Data}, defPct=${deformationPct}%`, {
       configId: patchingConfig.id,
-      available_keys: Object.keys(patchingConfig.mmData.mm4DataByPipeSize || {})
+      available_keys: Object.keys(patchingConfig.mmData.mm4DataByPipeSize || {}),
+      deformationThreshold: deformationPct > 15 ? 'HIGH' : 'NORMAL'
     });
     
     if (mm4Data && mm4Data.length > 0) {
-      // CRITICAL FIX: Use Row 2 (Double Layer) for structural patches per MM4 logic
-      // Row 1 = Standard patches (£350)
-      // Row 2 = Double layer patches (£420) ← Use this for structural repairs
-      // Row 3 = Triple layer patches (£510)
-      // Row 4 = Extra cure time patches (£600)
-      const patchRow = mm4Data.find(row => row.id === 2) || mm4Data[0];
+      // Enhanced patch row selection based on deformation percentage
+      let patchRow;
+      
+      if (deformationPct > 25) {
+        // Severe deformation: Use triple layer patches (Row 3)
+        patchRow = mm4Data.find(row => row.id === 3) || mm4Data.find(row => row.id === 2) || mm4Data[0];
+        console.log(`🔧 Severe deformation (${deformationPct}%) → Triple layer patches`);
+      } else if (deformationPct > 15) {
+        // Moderate deformation: Use double layer patches (Row 2) 
+        patchRow = mm4Data.find(row => row.id === 2) || mm4Data[0];
+        console.log(`🔧 Moderate deformation (${deformationPct}%) → Double layer patches`);
+      } else {
+        // Standard/minor deformation: Use standard patches (Row 1)
+        patchRow = mm4Data[0];
+        console.log(`🔧 Standard deformation (${deformationPct}%) → Standard patches`);
+      }
       const costPerPatch = parseFloat(patchRow.greenValue || '0');
       const dayRate = parseFloat(mm4Data[0].blueValue || '0');
       const minQuantity = parseInt(patchRow.purpleLength || '0');
