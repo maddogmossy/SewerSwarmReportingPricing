@@ -613,6 +613,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     
     // Look for SECTION table (main inspection data)
     let sectionData: WincanSectionData[] = [];
+    let defPercentsBySection = new Map<string, number>(); // Initialize here for proper scope
     const sectionTable = tables.find(t => t.name.toUpperCase() === 'SECTION');
     
     if (sectionTable) {
@@ -681,7 +682,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         
         const result = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades, detectedFormat);
         sectionData = result.sections;
-        const defPercentsBySection = result.defPercentsBySection;
+        defPercentsBySection = result.defPercentsBySection;
         console.log(`🔍 Processed sections result: ${sectionData.length} sections extracted`);
       }
     }

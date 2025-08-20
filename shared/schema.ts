@@ -380,6 +380,7 @@ export const rulesRuns = pgTable("rules_runs", {
   startedAt: timestamp("started_at").notNull(),
   finishedAt: timestamp("finished_at"),
   status: varchar("status").notNull(), // 'success' | 'failed'
+  derivedCount: integer("derived_count").default(0),
   errorText: text("error_text"),
   createdAt: timestamp("created_at").defaultNow(),
 });

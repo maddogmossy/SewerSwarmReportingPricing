@@ -488,6 +488,17 @@ export async function registerRoutes(app: Express) {
           await storeWincanSections(sections, uploadId, defPercentsBySection);
         }
         
+        // Create rules run for versioned derivations pipeline
+        console.log(`🔄 REPROCESS: Creating rules run for upload ${uploadId}`);
+        try {
+          const { SimpleRulesRunner } = await import('./rules-runner-simple');
+          await SimpleRulesRunner.createSimpleRun(uploadId);
+          console.log(`✅ REPROCESS: Rules run created successfully for upload ${uploadId}`);
+        } catch (rulesError) {
+          console.error(`❌ REPROCESS: Failed to create rules run:`, rulesError);
+          throw rulesError;
+        }
+        
         // Update status to completed
         await db.update(fileUploads)
           .set({ 

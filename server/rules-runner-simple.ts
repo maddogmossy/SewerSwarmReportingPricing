@@ -17,14 +17,16 @@ export class SimpleRulesRunner {
     return await db.transaction(async (tx) => {
       try {
         // Create rules run record (initially pending)
-        const [run] = await tx.insert(rulesRuns).values({
-          upload_id: uploadId,
-          parser_version: '1.0.0',
-          ruleset_version: 'MSCC5-2024.1',
-          started_at: new Date(),
+        const insertData = {
+          uploadId: uploadId,
+          parserVersion: '1.0.0',
+          rulesetVersion: 'MSCC5-2024.1',
+          startedAt: new Date(),
           status: 'pending', // Start as pending, mark success only after all inserts
-          finished_at: null,
-        }).returning();
+          finishedAt: null,
+        };
+        console.log(`🔍 DEBUG: Inserting rules run with data:`, JSON.stringify(insertData));
+        const [run] = await tx.insert(rulesRuns).values(insertData).returning();
         
         console.log(`✅ Created rules run ${run.id} for upload ${uploadId}`);
         
@@ -48,10 +50,10 @@ export class SimpleRulesRunner {
             console.log(`📝 Creating observation rule for section ${section.itemNo}, split ${i+1}/${splitSections.length}`);
             
             await tx.insert(observationRules).values({
-              rules_run_id: run.id,
-              section_id: section.id, // Original section ID for reference
-              observation_idx: i, // Index for split sections
-              mscc5_json: JSON.stringify({
+              rulesRunId: run.id,
+              sectionId: section.id, // Original section ID for reference
+              observationIdx: i, // Index for split sections
+              mscc5Json: JSON.stringify({
                 itemNo: splitSection.itemNo,
                 originalItemNo: section.itemNo,
                 defectType: splitSection.defectType || 'service',
@@ -60,9 +62,9 @@ export class SimpleRulesRunner {
                 grade: parseInt(splitSection.severityGrade) || 0,
                 splitType: splitSections.length > 1 ? 'split' : 'original'
               }),
-              defect_type: splitSection.defectType || 'service',
-              severity_grade: parseInt(splitSection.severityGrade) || 0,
-              recommendation_text: splitSection.recommendations || 'No action required',
+              defectType: splitSection.defectType || 'service',
+              severityGrade: parseInt(splitSection.severityGrade) || 0,
+              recommendationText: splitSection.recommendations || 'No action required',
               adoptability: splitSection.adoptable || 'Yes',
             });
             
@@ -76,8 +78,8 @@ export class SimpleRulesRunner {
           await tx.update(rulesRuns)
             .set({ 
               status: 'failed', 
-              finished_at: new Date(),
-              derived_count: 0 
+              finishedAt: new Date(),
+              derivedCount: 0 
             })
             .where(eq(rulesRuns.id, run.id));
           throw new Error(`Failed: No observation rules derived for upload ${uploadId}`);
@@ -87,8 +89,8 @@ export class SimpleRulesRunner {
         await tx.update(rulesRuns)
           .set({ 
             status: 'success', 
-            finished_at: new Date(),
-            derived_count: totalObservationRules 
+            finishedAt: new Date(),
+            derivedCount: totalObservationRules 
           })
           .where(eq(rulesRuns.id, run.id));
         
@@ -108,7 +110,7 @@ export class SimpleRulesRunner {
   static async getLatestRun(uploadId: number) {
     return await db.select()
       .from(rulesRuns)
-      .where(eq(rulesRuns.upload_id, uploadId))
+      .where(eq(rulesRuns.uploadId, uploadId))
       .orderBy(desc(rulesRuns.id))
       .limit(1);
   }
