@@ -1849,22 +1849,29 @@ export default function Dashboard() {
           
           let costCalculation;
           
-          // Check if this section already has cost data from versioned derivations API
-          if (section.cost !== undefined && section.cost !== null && typeof section.cost === 'number') {
-            console.log('✅ USING API COST DATA for', section.itemNo, ':', section.cost);
-            costCalculation = {
-              cost: section.cost,
-              status: section.status || (section.meetsMinimum === false ? 'below_minimum' : 'calculated'),
-              meetsMinimum: section.meetsMinimum,
-              patchCount: section.patchCount,
-              minQuantity: section.minQuantity,
-              costCalculation: section.costCalculation || `API calculated cost: £${section.cost}`,
-              method: 'MM4 Versioned Derivations'
-            };
-          } else if (isStructuralDefectForCost) {
-            // Fallback to old calculation only if no API data
-            console.log('🏗️ FALLBACK calculateAutoCost for STRUCTURAL:', section.itemNo);
-            costCalculation = calculateAutoCost(section);
+          if (isStructuralDefectForCost) {
+            // Route structural defects (21a, 22a) to MM4-based calculation
+            console.log('🏗️ STRUCTURAL DEFECT - Direct MM4 calculation for:', section.itemNo);
+            
+            // First try direct MM4 calculation using patching configuration
+            const patchingConfig = repairPricingData?.find(config => 
+              config.categoryId === 'patching' && config.sector === currentSector.id
+            );
+            
+            if (patchingConfig && patchingConfig.mmData) {
+              console.log('✅ Found patching config for MM4 calculation:', patchingConfig.id);
+              costCalculation = calculateID763StructuralPatching(section, patchingConfig);
+              
+              if (costCalculation && costCalculation.cost > 0) {
+                console.log('✅ MM4 structural cost calculated:', costCalculation.cost);
+              } else {
+                console.log('⚠️ MM4 calculation failed, falling back to calculateAutoCost');
+                costCalculation = calculateAutoCost(section);
+              }
+            } else {
+              console.log('⚠️ No patching config found, using calculateAutoCost');
+              costCalculation = calculateAutoCost(section);
+            }
           } else if (isServiceDefectForCost || needsCleaning) {
             // Fallback to old calculation only if no API data
             console.log('🧹 FALLBACK calculateAutoCost for SERVICE:', section.itemNo);
@@ -1877,29 +1884,32 @@ export default function Dashboard() {
           
           // Check for structural defects with costs - show RED COST when below minimum
           if (costCalculation && 'cost' in costCalculation && costCalculation.cost > 0 && 
-              (costCalculation.status === 'below_minimum' || 
+              (costCalculation.status === 'below_minimum' || costCalculation.meetsMinimum === false ||
                ('showRedTriangle' in costCalculation && costCalculation.showRedTriangle))) {
             
-            // CRITICAL: Check if TP2 configuration has valid pricing data before showing popup
-            const tp2Config = repairPricingData.find(config => 
-              config.categoryId === 'patching' && 
-              config.sector === currentSector.id
-            );
-            
-
-            
-            // If configuration doesn't have valid pricing values, don't show clickable cost
-            if (!isConfigurationProperlyConfigured(tp2Config)) {
-              return (
-                <div 
-                  className="flex items-center justify-center p-1 rounded" 
-                  title="TP2 patching configuration requires pricing values before cost calculation"
-                >
-                  <span className="text-xs font-semibold text-gray-400">
-                    Configure TP2
-                  </span>
-                </div>
+            // For API-calculated structural costs, skip TP2 configuration check since costs are already calculated
+            if (costCalculation.method === 'MM4 Versioned Derivations') {
+              // Direct display of API-calculated costs without configuration check
+            } else {
+              // CRITICAL: Check if TP2 configuration has valid pricing data before showing popup
+              const tp2Config = repairPricingData.find(config => 
+                config.categoryId === 'patching' && 
+                config.sector === currentSector.id
               );
+              
+              // If configuration doesn't have valid pricing values, don't show clickable cost
+              if (!isConfigurationProperlyConfigured(tp2Config)) {
+                return (
+                  <div 
+                    className="flex items-center justify-center p-1 rounded" 
+                    title="TP2 patching configuration requires pricing values before cost calculation"
+                  >
+                    <span className="text-xs font-semibold text-gray-400">
+                      Configure TP2
+                    </span>
+                  </div>
+                );
+              }
             }
             // Use the actual cost from API calculation
             const calculatedCost = costCalculation.cost || 0;
