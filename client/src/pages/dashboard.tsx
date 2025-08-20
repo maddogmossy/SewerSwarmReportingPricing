@@ -1874,8 +1874,10 @@ export default function Dashboard() {
             costCalculation = calculateAutoCost(section);
           }
           
-          // Check for TP2 below minimum quantity case - show RED COST instead of triangle
-          if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
+          // Check for structural defects with costs - show RED COST when below minimum
+          if (costCalculation && 'cost' in costCalculation && costCalculation.cost > 0 && 
+              (costCalculation.status === 'below_minimum' || 
+               ('showRedTriangle' in costCalculation && costCalculation.showRedTriangle))) {
             
             // CRITICAL: Check if TP2 configuration has valid pricing data before showing popup
             const tp2Config = repairPricingData.find(config => 
@@ -1940,7 +1942,7 @@ export default function Dashboard() {
           // MODERNIZED: Removed all TP1 legacy status codes - using only MM4-based validation
           const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
             costCalculation.cost >= 0 && 
-            !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config', 'day_rate_missing', 'mm4_pipe_config_missing'].includes(costCalculation.status);
+            !['configuration_missing', 'mm4_validation_failed', 'mm4_incomplete_config'].includes(costCalculation.status);
             
           // CRITICAL DEBUG: Check validation logic for service sections specifically
           if (section.defectType === 'service' && [3,6,8].includes(section.itemNo)) {
@@ -1973,8 +1975,10 @@ export default function Dashboard() {
               );
             }
             
-            // REMOVED: All green cost display logic - only show costs when fully validated and confirmed
-            const costColor = "text-red-600"; // Always red until final user confirmation
+            // Show green when meets minimum, red when below minimum  
+            const costColor = (costCalculation.status === 'below_minimum' || costCalculation.meetsMinimum === false) 
+              ? "text-red-600" 
+              : "text-green-600";
             
             // For TP2 patching, show cost with patching type info
             if ('patchingType' in costCalculation && costCalculation.patchingType) {

@@ -16,12 +16,12 @@ export class SimpleRulesRunner {
     try {
       // Create rules run record
       const [run] = await db.insert(rulesRuns).values({
-        uploadId,
-        parserVersion: '1.0.0',
-        rulesetVersion: 'MSCC5-2024.1',
-        startedAt: new Date(),
+        upload_id: uploadId,
+        parser_version: '1.0.0',
+        ruleset_version: 'MSCC5-2024.1',
+        started_at: new Date(),
         status: 'success',
-        finishedAt: new Date(),
+        finished_at: new Date(),
       }).returning();
       
       console.log(`✅ Created simple rules run ${run.id} for upload ${uploadId}`);
@@ -42,10 +42,10 @@ export class SimpleRulesRunner {
           console.log(`📝 Creating observation rule for section ${section.itemNo}, split ${i+1}/${splitSections.length}`);
           
           await db.insert(observationRules).values({
-            rulesRunId: run.id,
-            sectionId: section.id, // Original section ID for reference
-            observationIdx: i, // Index for split sections
-            mscc5Json: JSON.stringify({
+            rules_run_id: run.id,
+            section_id: section.id, // Original section ID for reference
+            observation_idx: i, // Index for split sections
+            mscc5_json: JSON.stringify({
               itemNo: splitSection.itemNo,
               originalItemNo: section.itemNo,
               defectType: splitSection.defectType || 'service',
@@ -54,9 +54,9 @@ export class SimpleRulesRunner {
               grade: parseInt(splitSection.severityGrade) || 0,
               splitType: splitSections.length > 1 ? 'split' : 'original'
             }),
-            defectType: splitSection.defectType || 'service',
-            severityGrade: parseInt(splitSection.severityGrade) || 0,
-            recommendationText: splitSection.recommendations || 'No action required',
+            defect_type: splitSection.defectType || 'service',
+            severity_grade: parseInt(splitSection.severityGrade) || 0,
+            recommendation_text: splitSection.recommendations || 'No action required',
             adoptability: splitSection.adoptable || 'Yes',
           });
         }
@@ -289,7 +289,7 @@ export class SimpleRulesRunner {
           ...section,
           cost: dayRate,
           estimatedCost: dayRate,
-          costCalculation: 'MM4 Day Rate Applied'
+          costCalculation: 'MM4 Service Day Rate'
         };
       }
     }
