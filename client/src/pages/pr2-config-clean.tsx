@@ -729,20 +729,35 @@ export default function PR2ConfigClean() {
         }
       }
       
-      // For other categories, find existing general configuration
-      // Use sector name directly
+      // For other categories, route to specific database IDs to prevent generic page creation
+      // Map common categories to their specific database IDs
+      const categoryIdMap = {
+        'cctv-jet-vac': '760',   // ID 760 - A5 CCTV/Jet Vac (Utilities)
+        'cctv-van-pack': '759',  // ID 759 - A4 CCTV/Van Pack (Utilities)
+        'cctv': '759',           // Default CCTV to A4 configuration
+        'jet-vac': '760',        // Default Jet Vac to A5 configuration
+        'van-pack': '759'        // Default Van Pack to A4 configuration
+      };
       
-      const existingConfig = allCategoryConfigs.find(config => 
-        config.categoryId === categoryId && 
-        config.sector === sector &&
-        !config.categoryName?.includes('mm') // Exclude pipe-size-specific configs
-      );
+      const specificConfigId = categoryIdMap[categoryId as keyof typeof categoryIdMap];
       
-      if (existingConfig) {
-        console.log('🔄 EXISTING CONFIG FOUND - Redirecting to edit mode:', existingConfig.id);
-        setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${existingConfig.id}`);
+      if (specificConfigId) {
+        console.log(`🎯 CATEGORY ROUTING: Directing ${categoryId} to ID ${specificConfigId}`);
+        setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&editId=${specificConfigId}`);
       } else {
-        console.log('⚠️ NO EXISTING CONFIG - Staying in create mode (auto-creation disabled)');
+        // For unmapped categories, try to find existing config or stay in create mode
+        const existingConfig = allCategoryConfigs.find(config => 
+          config.categoryId === categoryId && 
+          config.sector === sector &&
+          !config.categoryName?.includes('mm') // Exclude pipe-size-specific configs
+        );
+        
+        if (existingConfig) {
+          console.log('🔄 EXISTING CONFIG FOUND - Redirecting to edit mode:', existingConfig.id);
+          setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&editId=${existingConfig.id}`);
+        } else {
+          console.log('⚠️ NO EXISTING CONFIG - Staying in create mode (auto-creation disabled)');
+        }
       }
     }
   }, [allCategoryConfigs, isEditing, editId, categoryId, sector, pipeSize, setLocation]);

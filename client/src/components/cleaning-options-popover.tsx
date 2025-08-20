@@ -71,35 +71,38 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     });
     
     try {
-      // Find existing configuration for the selected equipment
-      const response = await fetch(`/api/pr2-clean?sector=${sectionData.sector}`);
+      // Route directly to specific database IDs instead of creating generic pages
+      const reportParam = reportId ? `&reportId=${reportId}` : '';
       
-      if (response.ok) {
-        const configs = await response.json();
-        const selectedConfig = configs.find((config: any) => 
-          config.categoryId === equipment.id
-        );
-        
-        if (selectedConfig) {
-          // Route to existing configuration - use config's pipe size, not section pipe size
-          const configPipeSize = selectedConfig.pipeSize || pipeSizeNumber;
-          const reportParam = reportId ? `&reportId=${reportId}` : '';
-          window.location.href = `/pr2-config-clean?id=${selectedConfig.id}&categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
-        } else {
-          // Create new configuration
-          const reportParam = reportId ? `&reportId=${reportId}` : '';
-          window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
-        }
+      // Map equipment to specific database IDs based on A1-F16 system
+      const configIdMap = {
+        'cctv-jet-vac': '760',   // ID 760 - A5 CCTV/Jet Vac (Utilities)
+        'cctv-van-pack': '759'   // ID 759 - A4 CCTV/Van Pack (Utilities)
+      };
+      
+      const specificConfigId = configIdMap[equipment.id as keyof typeof configIdMap];
+      
+      if (specificConfigId) {
+        // Route directly to specific configuration ID
+        window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&editId=${specificConfigId}&autoSelectUtilities=true${reportParam}`;
+        console.log(`🎯 CLEANING ROUTING: Directing to ID ${specificConfigId} (${equipment.name})`);
       } else {
-        // Fallback to configuration creation
-        const reportParam = reportId ? `&reportId=${reportId}` : '';
+        // Fallback to generic routing if no specific ID mapped
         window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+        console.log(`⚠️ CLEANING ROUTING: No specific ID mapped for ${equipment.id}, using generic route`);
       }
     } catch (error) {
-      console.error('Error routing to equipment configuration:', error);
-      // Fallback routing
+      console.error('Error in cleaning options routing:', error);
+      // Fallback navigation without creating generic pages
       const reportParam = reportId ? `&reportId=${reportId}` : '';
-      window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&autoSelectUtilities=true${reportParam}`;
+      const configIdMap = {
+        'cctv-jet-vac': '760',
+        'cctv-van-pack': '759'
+      };
+      const specificConfigId = configIdMap[equipment.id as keyof typeof configIdMap];
+      if (specificConfigId) {
+        window.location.href = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&pipeSize=${finalPipeSizeNumber}&editId=${specificConfigId}&autoSelectUtilities=true${reportParam}`;
+      }
     }
     
     setIsOpen(false);
