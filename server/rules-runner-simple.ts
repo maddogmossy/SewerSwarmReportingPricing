@@ -108,7 +108,7 @@ export class SimpleRulesRunner {
   static async getLatestRun(uploadId: number) {
     return await db.select()
       .from(rulesRuns)
-      .where(eq(rulesRuns.uploadId, uploadId))
+      .where(eq(rulesRuns.upload_id, uploadId))
       .orderBy(desc(rulesRuns.id))
       .limit(1);
   }
