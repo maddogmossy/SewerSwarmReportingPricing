@@ -1,7 +1,7 @@
 # Replit Architecture Documentation
 
 ## Overview
-This full-stack TypeScript application processes compliant document formats (WRc MSCC5 + OS20X standards) for utilities, adoption, and highways sectors. It integrates payment functionalities for intelligent cost decision persistence. The business vision is to provide comprehensive MSCC5+SRM4 compliant analysis, enhancing operational efficiency and regulatory compliance through accurate report processing and cost calculation.
+This full-stack TypeScript application processes compliant document formats (WRc MSCC5 + OS20X standards) for utilities, adoption, and highways sectors. It integrates payment functionalities for intelligent cost decision persistence. The business vision is to provide comprehensive MSCC5+SRM4 compliant analysis, enhancing operational efficiency and regulatory compliance through accurate report processing and cost calculation. The project aims to provide a unified system for managing diverse report formats, ensuring data consistency and regulatory adherence.
 
 ## User Preferences
 Stability Priority: User prioritizes app stability over advanced features - avoid breaking working functionality
@@ -81,11 +81,13 @@ ID 763 Pricing System Validation Complete: Conducted comprehensive senior code w
 - **Session Management**: Express session
 - **File Handling**: Multer
 - **Technical Implementations**: Unified File Processing System for PDF and .db files with standardized processing, item number assignment, SECSTAT extraction, and WRc MSCC5 classification. Advanced Cost Calculation System integrates database ID processing, patch counting, and MM4 integration.
+- **Data Processing**: Implements a raw-first, versioned derivations pipeline with caching for performance, supporting reprocessing of historical data with updated rules and ensuring MSCC5/SRM4 compliance.
 
 ### Database
 - **Database**: PostgreSQL (configured for Neon serverless)
 - **ORM**: Drizzle ORM (schema-first approach, `shared/schema.ts`)
 - **Schema**: Manages Users, Sessions, File Uploads, Subscription Plans, and Report Pricing.
+- **Data Storage**: Stores raw observations and processed data with caching for performance.
 
 ### Deployment Strategy
 - **Development Environment**: Replit with Node.js 20, PostgreSQL 16, hot reloading.
