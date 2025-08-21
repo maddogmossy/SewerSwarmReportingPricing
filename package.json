@@ -4,13 +4,18 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "start": "NODE_ENV=production node dist/index.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },
+  "engines": { "node": ">=20" },
   "dependencies": {
+    "next": "14.2.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
@@ -79,9 +84,7 @@
     "pdf2pic": "^3.2.0",
     "pg": "^8.16.3",
     "pg-copy-streams": "^7.0.0",
-    "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
     "react-hook-form": "^7.55.0",
     "react-icons": "^5.4.0",
     "react-resizable-panels": "^2.1.7",
