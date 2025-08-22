@@ -10,7 +10,15 @@ export default function Home() {
       <div style={{ display: "grid", gap: 16 }}>
         <Card title="Health check" href="/api/health">
           <div data-uiid={IDS.cards.health}>
-            Returns {"{ status: 'ok', db: true }"} if the app and DB are reachable.
+            <a
+              href="/api/health"
+              data-actionid={IDS.actions.refreshHealth}
+            >
+              Run health check
+            </a>
+            <p>
+              Returns {"{ status: 'ok', db: true }"} if the app and DB are reachable.
+            </p>
           </div>
         </Card>
 
