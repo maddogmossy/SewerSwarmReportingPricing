@@ -4,7 +4,10 @@ import { IDS } from "./lib/ids";
 
 export default function Home() {
   return (
-    <main style={{ maxWidth: 720, margin: "40px auto", padding: 16 }}>
+    <main
+      data-uiid={IDS.pages.home}
+      style={{ maxWidth: 720, margin: "40px auto", padding: 16 }}
+    >
       <Header />
 
       <div style={{ display: "grid", gap: 16 }}>
