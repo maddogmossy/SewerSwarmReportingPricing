@@ -1,32 +1,28 @@
-
+{
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "moduleResolution": "node",
+    "allowJs": true,
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["./client/src/*"],
-      "@assets/*": ["./client/src/assets/*"],
-      "@shared/*": ["./shared/*"],
-      "@lib/*": ["./client/src/lib/*"],
-      "@components/*": ["./client/src/components/*"],
-      "@hooks/*": ["./client/src/hooks/*"]
-    }
+    "incremental": true
   },
   "include": [
-    "client/src",
-    "server",
-    "shared"
+    "next-env.d.ts",
+    "app/**/*",
+    ".next/types/**/*.ts"
   ],
-  "references": [{ "path
+  "exclude": [
+    "node_modules",
+    "client/**",
+    "server/**",
+    "shared/**"
+  ]
+}
