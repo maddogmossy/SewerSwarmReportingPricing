@@ -1,5 +1,10 @@
 // app/layout.tsx
-export const metadata = { title: "Sewer Swarm" };
+import "./globals.css";
+
+export const metadata = {
+  title: "Sewer Swarm AI – Report Analysis & Pricing",
+  description: "Drainage reporting and pricing platform",
+};
 
 export default function RootLayout({
   children,
@@ -8,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ fontFamily: "system-ui, sans-serif", margin: 20 }}>
+      <body className="font-sans antialiased bg-background text-foreground">
         {children}
       </body>
     </html>
