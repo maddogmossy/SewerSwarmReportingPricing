@@ -1,5 +1,4 @@
-// postcss.config.js (ESM because package.json has "type": "module")
-export default {
+module.exports = {
   plugins: {
     tailwindcss: {},
     autoprefixer: {},
