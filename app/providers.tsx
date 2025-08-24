@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 
