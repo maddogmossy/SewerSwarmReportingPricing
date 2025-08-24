@@ -1,9 +1,9 @@
-// components/ui/toaster.tsx
 "use client";
 
-import { Toaster as SonnerToaster } from "sonner";
+import * as React from "react";
 
-// default export so it can be imported as `import Toaster from "..."`
+// DEFAULT export to match `import Toaster from ...`
 export default function Toaster() {
-  return <SonnerToaster richColors position="top-right" />;
+  // Replace with your shadcn/ui <Toaster /> if you use it.
+  return <div id="toaster-root" aria-hidden />;
 }
