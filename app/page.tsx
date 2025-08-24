@@ -1,171 +1,153 @@
 // app/page.tsx
-"use client";
-
-import { Upload, BarChart3, Cog, FileText, Gift } from "lucide-react";
+import Link from "next/link";
+import { Upload, BarChart3, Settings, FileText } from "lucide-react";
+import { DevLabel } from "@/components/PageId";
 
 export default function Home() {
+  const card = {
+    container:
+      "relative rounded-2xl border border-slate-200 bg-white shadow-sm p-6 md:p-8",
+    title: "text-2xl font-extrabold tracking-tight text-slate-900",
+    subtitle: "mt-2 text-slate-600",
+    ctaPrimary:
+      "inline-block rounded-lg px-4 py-2 text-white bg-slate-900 hover:bg-slate-800",
+    ctaGhost:
+      "inline-block rounded-lg px-4 py-2 border border-slate-200 bg-slate-50 hover:bg-slate-100",
+  } as const;
+
   return (
     <main className="max-w-5xl mx-auto px-4 py-10 space-y-8">
       {/* Hero */}
-      <section className="text-center space-y-3">
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
-          Welcome to Sewer{" "}
-          <span className="text-primary">Swarm AI</span>
+      <section className="relative rounded-2xl bg-slate-100 p-6 md:p-8">
+        {/* Page badge */}
+        <DevLabel id="P1" position="top-right" />
+
+        <h1 className="text-5xl md:text-6xl font-black leading-tight">
+          Welcome to <span className="text-primary">Sewer Swarm AI</span>
         </h1>
-        <p className="text-muted-foreground text-lg">
-          Professional sewer condition analysis and reporting with AI-powered insights
+        <p className="mt-3 text-lg md:text-xl text-slate-600 max-w-3xl">
+          Professional sewer condition analysis and reporting with AI-powered
+          insights
         </p>
       </section>
 
-      {/* User actions */}
-      <section className="rounded-lg border bg-card shadow-card">
-        <div className="p-6 sm:p-7">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-2xl font-semibold">Welcome back, Test!</h2>
-              <p className="text-muted-foreground">
-                Choose your next action to manage your sewer inspection reports
-              </p>
-            </div>
+      {/* Quick actions */}
+      <section className="grid gap-6">
+        {/* C001 */}
+        <div className={card.container}>
+          <DevLabel id="C001" />
+          <h2 className={card.title}>Welcome back</h2>
+          <p className={card.subtitle}>
+            Choose your next action to manage your sewer inspection reports
+          </p>
+          <div className="mt-4 flex gap-2 flex-wrap">
+            {/* If /dashboard is removed for now, make this a disabled button or change the link */}
+            <Link href="#" aria-disabled className={card.ctaGhost}>
+              Dashboard
+            </Link>
+            <Link href="/settings" className={card.ctaGhost}>
+              Settings
+            </Link>
+            <Link href="/sign-out" className={card.ctaGhost}>
+              Sign Out
+            </Link>
+          </div>
+        </div>
 
-            {/* C001 – settings/sign out */}
-            <div className="flex items-center gap-2 text-sm" aria-label="(id: C001)">
-              <a
-                href="/settings"
-                className="inline-flex items-center gap-2 rounded-full border px-4 py-2
-                           text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground
-                           transition"
-              >
-                <Cog className="h-4 w-4" />
-                Settings
-              </a>
-              <a
-                href="/api/auth/signout"
-                className="inline-flex items-center gap-2 rounded-full border px-4 py-2
-                           text-white bg-destructive border-destructive hover:opacity-90 transition"
-              >
-                Sign Out
-              </a>
+        {/* C002 */}
+        <div className={card.container}>
+          <DevLabel id="C002" />
+          <div className="flex items-start gap-4">
+            <div className="mx-auto md:mx-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Upload className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h2 className={card.title}>Upload Report</h2>
+              <p className={card.subtitle}>
+                Upload CCTV inspection files and select sector for analysis
+              </p>
+              <div className="mt-4">
+                <Link href="/upload" className={card.ctaPrimary}>
+                  Go to Upload
+                </Link>
+              </div>
             </div>
           </div>
-          <p className="sr-only">(id: C001)</p>
         </div>
-      </section>
 
-      {/* Cards grid */}
-      <section className="grid sm:grid-cols-2 gap-6">
-        {/* Upload – brand.blue */}
-        <Card
-          idLabel="C002"
-          href="/upload"
-          title="Upload Report"
-          subtitle="Upload CCTV inspection files and select applicable sector for analysis"
-          icon={<Upload className="h-6 w-6" />}
-          iconClasses="bg-brand-blue/15 text-brand-blue"
-        />
-
-        {/* Dashboard – brand.green */}
-        <Card
-          idLabel="C003"
-          href="/dashboard"
-          title="Dashboard"
-          subtitle="View section inspection data and analysis results across all reports"
-          icon={<BarChart3 className="h-6 w-6" />}
-          iconClasses="bg-brand-green/15 text-brand-green"
-        />
-
-        {/* Pricing – brand.orange */}
-        <Card
-          idLabel="C004"
-          href="#"
-          title="Pricing Settings"
-          subtitle="Customize repair cost estimates for each sector based on your market rates"
-          icon={<Cog className="h-6 w-6" />}
-          iconClasses="bg-brand-orange/15 text-brand-orange"
-        />
-
-        {/* Reports – brand.sky */}
-        <Card
-          idLabel="C005"
-          href="#"
-          title="Uploaded Reports"
-          subtitle="Manage your inspection reports and organize project folders"
-          icon={<FileText className="h-6 w-6" />}
-          iconClasses="bg-brand-sky/15 text-brand-sky"
-        />
-
-        {/* Upgrade – brand.violet */}
-        <Card
-          idLabel="C006"
-          href="#"
-          title="Upgrade Plan"
-          subtitle="Access premium features and unlimited report processing"
-          icon={<Gift className="h-6 w-6" />}
-          iconClasses="bg-brand-violet/15 text-brand-violet"
-        />
-      </section>
-
-      {/* Supported sectors */}
-      <section className="rounded-lg border bg-card p-6 shadow-card">
-        <h3 className="text-xl font-semibold mb-3">Supported Sectors</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2 text-sm">
-          <Row left="Utilities" right="WRc SRM standards" />
-          <Row left="Adoption" right="SfA8 compliance" />
-          <Row left="Highways" right="DMRB standards" />
-          <Row left="Domestic" right="Regulatory compliance" />
-          <Row left="Insurance" right="ABI guidelines" />
-          <Row left="Construction" right="Building regs" />
+        {/* C003 */}
+        <div className={card.container}>
+          <DevLabel id="C003" />
+          <div className="flex items-start gap-4">
+            <div className="mx-auto md:mx-0 w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <BarChart3 className="h-6 w-6 text-emerald-600" />
+            </div>
+            <div className="flex-1">
+              <h2 className={card.title}>Dashboard</h2>
+              <p className={card.subtitle}>
+                View inspection data and analysis results across all reports
+              </p>
+              {/* If you’ve deleted /dashboard, keep this disabled until we add a new one */}
+              <div className="mt-4">
+                <span
+                  className="inline-block rounded-lg px-4 py-2 border border-slate-200 bg-slate-50 text-slate-400 select-none"
+                  aria-disabled
+                >
+                  Open Dashboard (coming soon)
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">(id: C007)</p>
+
+        {/* C004 */}
+        <div className={card.container}>
+          <DevLabel id="C004" />
+          <div className="flex items-start gap-4">
+            <div className="mx-auto md:mx-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Settings className="h-6 w-6 text-orange-600" />
+            </div>
+            <div className="flex-1">
+              <h2 className={card.title}>Pricing Settings</h2>
+              <p className={card.subtitle}>
+                Customize repair cost estimates per sector
+              </p>
+              <div className="mt-4">
+                <span
+                  className="inline-block rounded-lg px-4 py-2 border border-slate-200 bg-slate-50 text-slate-400 select-none"
+                  aria-disabled
+                >
+                  Configure (coming soon)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* C005 */}
+        <div className={card.container}>
+          <DevLabel id="C005" />
+          <div className="flex items-start gap-4">
+            <div className="mx-auto md:mx-0 w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+              <FileText className="h-6 w-6 text-cyan-600" />
+            </div>
+            <div className="flex-1">
+              <h2 className={card.title}>Uploaded Reports</h2>
+              <p className={card.subtitle}>
+                Manage reports and organize project folders
+              </p>
+              <div className="mt-4">
+                <span
+                  className="inline-block rounded-lg px-4 py-2 border border-slate-200 bg-slate-50 text-slate-400 select-none"
+                  aria-disabled
+                >
+                  Open Reports (soon)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );
 }
-
-/* ---------- helpers ---------- */
-
-function Card({
-  idLabel,
-  href,
-  title,
-  subtitle,
-  icon,
-  iconClasses,
-}: {
-  idLabel: string;
-  href: string;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  iconClasses: string;
-}) {
-  return (
-    <a
-      href={href}
-      className="group rounded-lg border bg-card p-6 shadow-card hover:shadow-md transition"
-    >
-      <div className="flex flex-col items-center text-center gap-4">
-        <div
-          className={`inline-flex h-14 w-14 items-center justify-center rounded-xl ${iconClasses}`}
-        >
-          {icon}
-        </div>
-        <div>
-          <h3 className="text-2xl font-semibold">{title}</h3>
-          <p className="mt-1 text-muted-foreground">{subtitle}</p>
-        </div>
-      </div>
-      <p className="mt-4 text-right text-xs text-muted-foreground">(id: {idLabel})</p>
-    </a>
-  );
-}
-
-function Row({ left, right }: { left: string; right: string }) {
-  return (
-    <>
-      <div>{left}</div>
-      <div className="text-muted-foreground">{right}</div>
-    </>
-  );
-}
-
