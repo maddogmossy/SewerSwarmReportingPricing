@@ -1,3 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Make Tailwind's font-sans use the Inter variable we loaded */
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
 // tailwind.config.ts
 import type { Config } from "tailwindcss";
 
