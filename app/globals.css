@@ -158,3 +158,24 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(240 5.9% 10%);
 }
+/* --- brand helpers --- */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md
+           bg-primary text-primary-foreground hover:opacity-90;
+  }
+  .card {
+    @apply rounded-xl border bg-card text-card-foreground shadow-sm;
+  }
+  .heading-gradient {
+    @apply text-transparent bg-clip-text
+           bg-gradient-to-r from-primary to-foreground;
+  }
+  .muted {
+    @apply text-muted-foreground;
+  }
+}
+
+@layer base {
+  a { @apply text-primary hover:underline; }
+}
