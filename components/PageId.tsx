@@ -3,8 +3,6 @@
 
 export default function PageId({ id }: { id: string }) {
   return (
-    <span className="text-sm text-muted-foreground select-none">
-      (id: {id})
-    </span>
+    <small className="text-xs text-muted-foreground whitespace-nowrap">(id: {id})</small>
   );
 }
