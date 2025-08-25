@@ -1,140 +1,190 @@
-"use client";
-
+// app/page.tsx
 import Link from "next/link";
 import { DevLabel, CardId } from "@/components/PageId";
-import { DashboardIcon, CogIcon, SignOutIcon, UploadIcon } from "@/components/Icons";
+import {
+  Upload,
+  BarChart3,
+  Settings as Gear,
+  FileText,
+  Gift,
+} from "lucide-react";
 
 export default function HomePage() {
   return (
-    <main className="max-w-5xl mx-auto px-4 py-10 relative space-y-6">
-      {/* Page label */}
-      <DevLabel id="P1" position="top-right" />
+    <main className="mx-auto max-w-5xl px-4 py-10">
+      {/* P1 tag for the whole page */}
+      <DevLabel id="P1" />
 
-      {/* C001 – Hero / Welcome card */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm relative">
+      {/* ===== C001: Hero / intro ===== */}
+      <section className="relative rounded-2xl border border-slate-200 bg-white/60 p-6 shadow-sm backdrop-blur">
         <CardId id="C001" />
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">
-          Welcome to <span className="text-blue-600">Sewer Swarm AI</span>
+        <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
+          Welcome to <span className="text-blue-600">Sewer</span>{" "}
+          <span className="text-blue-600">Swarm AI</span>
         </h1>
-        <p className="mt-2 text-lg text-slate-600">
+        <p className="mt-4 max-w-3xl text-slate-600 text-lg">
           Professional sewer condition analysis and reporting with AI-powered insights
         </p>
-        <div className="mt-3 flex gap-2">
-          <span className="rounded bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">MSCC5R</span>
-          <span className="rounded bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">WRc</span>
-          <span className="rounded bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">SRM4</span>
+
+        <div className="mt-4 flex gap-3">
+          <span className="rounded-md bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+            MSCC5R
+          </span>
+          <span className="rounded-md bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+            WRc
+          </span>
+          <span className="rounded-md bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+            SRM4
+          </span>
         </div>
       </section>
 
-      {/* C002 – Welcome back / quick actions */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm relative">
+      {/* ===== C002: Welcome back actions ===== */}
+      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C002" />
-        <h2 className="text-2xl font-bold text-slate-900">Welcome back, Test!</h2>
-        <p className="mt-1 text-slate-600">
-          Choose your next action to manage your sewer inspection reports
+        <h2 className="text-3xl font-extrabold text-slate-900">
+          Welcome back, Test!
+        </h2>
+        <p className="mt-2 text-slate-600 max-w-2xl">
+          Choose your next action to manage your sewer inspection reports.
         </p>
 
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-5 flex flex-wrap gap-3">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-3 font-semibold text-white hover:bg-green-700"
           >
-            <DashboardIcon className="h-5 w-5" />
+            <BarChart3 className="h-5 w-5" />
             Dashboard
           </Link>
 
           <Link
             href="/settings"
-            className="inline-flex items-center gap-2 rounded-md bg-slate-200 px-4 py-2 font-medium text-slate-800 hover:bg-slate-300"
+            className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-5 py-3 font-semibold text-slate-800 hover:bg-slate-200"
           >
-            <CogIcon className="h-5 w-5" />
+            <Gear className="h-5 w-5" />
             Settings
           </Link>
 
-          <button
-            className="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700"
-            type="button"
+          <Link
+            href="/signout"
+            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700"
           >
-            <SignOutIcon className="h-5 w-5" />
             Sign Out
-          </button>
+          </Link>
         </div>
       </section>
 
-      {/* C003 – Upload report (with large symbol) */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm relative">
+      {/* ===== C003: Upload ===== */}
+      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C003" />
         <div className="flex items-start gap-4">
-          <div className="rounded-xl bg-blue-50 p-4">
-            <UploadIcon className="h-10 w-10 text-blue-600" />
+          <div className="rounded-xl bg-sky-100 p-3">
+            <Upload className="h-6 w-6 text-sky-600" />
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-slate-900">Upload Report</h2>
-            <p className="mt-1 text-slate-600">
-              Upload CCTV inspection files and select sector for analysis.
+            <h3 className="text-3xl font-extrabold text-slate-900">Upload Report</h3>
+            <p className="mt-2 text-slate-600">
+              Upload CCTV inspection files and select applicable sector for analysis.
             </p>
-            <Link
-              href="/upload"
-              className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-            >
-              Go to Upload
-            </Link>
+            <div className="mt-5">
+              <Link
+                href="/upload"
+                className="inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+              >
+                Go to Upload
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* C004 – Dashboard card */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm relative">
+      {/* ===== C004: Dashboard card ===== */}
+      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C004" />
-        <h3 className="text-xl font-semibold text-slate-900">Dashboard</h3>
-        <p className="mt-1 text-slate-600">View inspection data and analysis across all reports.</p>
-        <Link
-          href="/dashboard"
-          className="mt-3 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
-        >
-          <DashboardIcon className="h-5 w-5" />
-          Open Dashboard
-        </Link>
+        <div className="flex items-start gap-4">
+          <div className="rounded-xl bg-emerald-100 p-3">
+            <BarChart3 className="h-6 w-6 text-emerald-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-3xl font-extrabold text-slate-900">Dashboard</h3>
+            <p className="mt-2 text-slate-600">
+              View section inspection data and analysis results across all reports.
+            </p>
+            <div className="mt-5">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center rounded-lg bg-green-600 px-5 py-3 font-semibold text-white hover:bg-green-700"
+              >
+                Open Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* C005 – Pricing settings */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm relative">
+      {/* ===== C005: Pricing settings ===== */}
+      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C005" />
-        <h3 className="text-xl font-semibold text-slate-900">Pricing Settings</h3>
-        <p className="mt-1 text-slate-600">Customize repair cost estimates per sector.</p>
-        <button
-          type="button"
-          className="mt-3 inline-flex items-center gap-2 rounded-md bg-slate-200 px-4 py-2 font-medium text-slate-800"
-        >
-          <CogIcon className="h-5 w-5" />
-          Configure (soon)
-        </button>
+        <div className="flex items-start gap-4">
+          <div className="rounded-xl bg-orange-100 p-3">
+            <Gear className="h-6 w-6 text-orange-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-3xl font-extrabold text-slate-900">Pricing Settings</h3>
+            <p className="mt-2 text-slate-600">
+              Customize repair cost estimates for each sector based on your market rates
+            </p>
+            <div className="mt-5">
+              <button
+                className="cursor-not-allowed inline-flex items-center rounded-lg bg-slate-100 px-5 py-3 font-semibold text-slate-500"
+                aria-disabled
+              >
+                Configure (soon)
+              </button>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* C006 – Uploaded reports */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm relative">
+      {/* ===== C006: Uploaded Reports ===== */}
+      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C006" />
-        <h3 className="text-xl font-semibold text-slate-900">Uploaded Reports</h3>
-        <p className="mt-1 text-slate-600">Manage reports and organize project folders.</p>
-        <button
-          type="button"
-          className="mt-3 inline-block rounded-md bg-slate-200 px-4 py-2 font-medium text-slate-800"
-        >
-          Open Reports (soon)
-        </button>
+        <div className="flex items-start gap-4">
+          <div className="rounded-xl bg-cyan-100 p-3">
+            <FileText className="h-6 w-6 text-cyan-700" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-3xl font-extrabold text-slate-900">Uploaded Reports</h3>
+            <p className="mt-2 text-slate-600">
+              Manage your inspection reports and organize project folders.
+            </p>
+            <div className="mt-5">
+              <button
+                className="cursor-not-allowed inline-flex items-center rounded-lg bg-slate-100 px-5 py-3 font-semibold text-slate-500"
+                aria-disabled
+              >
+                Open Reports (soon)
+              </button>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* C007 – Sectors */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm relative">
+      {/* ===== C007: Upgrade plan ===== */}
+      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C007" />
-        <h3 className="text-xl font-semibold text-slate-900">Sectors</h3>
-        <p className="mt-1 text-slate-600">Pick your industry sector to tailor analysis rules.</p>
-        <Link
-          href="/sectors"
-          className="mt-3 inline-block rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-        >
-          Go to Sectors
-        </Link>
+        <div className="flex items-start gap-4">
+          <div className="rounded-xl bg-violet-100 p-3">
+            <Gift className="h-6 w-6 text-violet-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-3xl font-extrabold text-slate-900">Upgrade Plan</h3>
+            <p className="mt-2 text-slate-600">
+              Access premium features and unlimited report processing
+            </p>
+          </div>
+        </div>
       </section>
     </main>
   );
