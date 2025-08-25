@@ -1,63 +1,29 @@
 // app/page.tsx
 import Link from "next/link";
 import { DevLabel, CardId } from "@/components/PageId";
-import {
-  Upload,
-  BarChart3,
-  Settings as Gear,
-  FileText,
-  Gift,
-} from "lucide-react";
+import { Upload, BarChart3, Settings as Gear, FileText, Gift } from "lucide-react";
 
 export default function HomePage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      {/* P1 tag for the whole page */}
+      {/* P1: Hero section */}
       <DevLabel id="P1" />
-
-      {/* ===== C001: Hero / intro ===== */}
-      <section className="relative rounded-2xl border border-slate-200 bg-white/60 p-6 shadow-sm backdrop-blur">
-        <CardId id="C001" />
-        <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
-          Welcome to <span className="text-blue-600">Sewer</span>{" "}
-          <span className="text-blue-600">Swarm AI</span>
-        </h1>
-        <p className="mt-4 max-w-3xl text-slate-600 text-lg">
-          Professional sewer condition analysis and reporting with AI-powered insights
-        </p>
-
-        <div className="mt-4 flex gap-3">
-          <span className="rounded-md bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
-            MSCC5R
-          </span>
-          <span className="rounded-md bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
-            WRc
-          </span>
-          <span className="rounded-md bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
-            SRM4
-          </span>
-        </div>
-      </section>
+      <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
+        Welcome to <span className="text-blue-600">Sewer</span>{" "}
+        <span className="text-blue-600">Swarm AI</span>
+      </h1>
+      <p className="mt-4 max-w-3xl text-slate-600 text-lg">
+        Professional sewer condition analysis and reporting with AI-powered insights
+      </p>
 
       {/* ===== C002: Welcome back actions ===== */}
-      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="relative mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C002" />
-        <h2 className="text-3xl font-extrabold text-slate-900">
-          Welcome back, Test!
-        </h2>
+        <h2 className="text-3xl font-extrabold text-slate-900">Welcome back, Test!</h2>
         <p className="mt-2 text-slate-600 max-w-2xl">
           Choose your next action to manage your sewer inspection reports.
         </p>
-
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-3 font-semibold text-white hover:bg-green-700"
-          >
-            <BarChart3 className="h-5 w-5" />
-            Dashboard
-          </Link>
-
           <Link
             href="/settings"
             className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-5 py-3 font-semibold text-slate-800 hover:bg-slate-200"
@@ -65,7 +31,6 @@ export default function HomePage() {
             <Gear className="h-5 w-5" />
             Settings
           </Link>
-
           <Link
             href="/signout"
             className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700"
@@ -87,14 +52,6 @@ export default function HomePage() {
             <p className="mt-2 text-slate-600">
               Upload CCTV inspection files and select applicable sector for analysis.
             </p>
-            <div className="mt-5">
-              <Link
-                href="/upload"
-                className="inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
-              >
-                Go to Upload
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -111,14 +68,6 @@ export default function HomePage() {
             <p className="mt-2 text-slate-600">
               View section inspection data and analysis results across all reports.
             </p>
-            <div className="mt-5">
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center rounded-lg bg-green-600 px-5 py-3 font-semibold text-white hover:bg-green-700"
-              >
-                Open Dashboard
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -135,14 +84,6 @@ export default function HomePage() {
             <p className="mt-2 text-slate-600">
               Customize repair cost estimates for each sector based on your market rates
             </p>
-            <div className="mt-5">
-              <button
-                className="cursor-not-allowed inline-flex items-center rounded-lg bg-slate-100 px-5 py-3 font-semibold text-slate-500"
-                aria-disabled
-              >
-                Configure (soon)
-              </button>
-            </div>
           </div>
         </div>
       </section>
@@ -159,14 +100,6 @@ export default function HomePage() {
             <p className="mt-2 text-slate-600">
               Manage your inspection reports and organize project folders.
             </p>
-            <div className="mt-5">
-              <button
-                className="cursor-not-allowed inline-flex items-center rounded-lg bg-slate-100 px-5 py-3 font-semibold text-slate-500"
-                aria-disabled
-              >
-                Open Reports (soon)
-              </button>
-            </div>
           </div>
         </div>
       </section>
