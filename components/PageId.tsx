@@ -1,19 +1,30 @@
 // components/PageId.tsx
-type Props = { id: string; position?: "top-right" | "top-left" };
+import React from "react";
 
-export function DevLabel({ id, position = "top-right" }: Props) {
-  const pos =
-    position === "top-left"
-      ? "left-2 top-2"
-      : "right-2 top-2";
-
+type DevLabelProps = { id: string; className?: string };
+export function DevLabel({ id, className = "" }: DevLabelProps) {
   return (
     <span
-      className={`pointer-events-none select-none absolute ${pos} 
-                  text-[11px] font-medium px-2 py-0.5 rounded 
-                  bg-slate-900 text-white opacity-80`}
+      className={
+        "absolute right-3 top-3 rounded-md bg-slate-900/80 px-2 py-1 text-xs font-semibold text-white shadow " +
+        className
+      }
     >
-      id: {id}
+      {id}
+    </span>
+  );
+}
+
+type CardIdProps = { id: string; className?: string };
+export function CardId({ id, className = "" }: CardIdProps) {
+  return (
+    <span
+      className={
+        "absolute -right-2 -top-2 rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-semibold text-white shadow " +
+        className
+      }
+    >
+      {id}
     </span>
   );
 }
