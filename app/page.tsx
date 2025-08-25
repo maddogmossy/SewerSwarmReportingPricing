@@ -3,10 +3,28 @@ import Link from "next/link";
 import { DevLabel, CardId } from "@/components/PageId";
 import { Upload, BarChart3, Settings as Gear, FileText, Gift } from "lucide-react";
 
+// Reusable clickable card that 404s by default (replace href later)
+function ClickCard({
+  id,
+  href = `/__todo/${id.toLowerCase()}`, // <- non-existent: shows 404 for now
+  children,
+}: {
+  id: string;
+  href?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link href={href} className="block relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+      <CardId id={id} />
+      {children}
+    </Link>
+  );
+}
+
 export default function HomePage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      {/* P1: Hero section */}
+      {/* P1: Hero (no card, no chips) */}
       <DevLabel id="P1" />
       <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
         Welcome to <span className="text-blue-600">Sewer</span>{" "}
@@ -16,33 +34,16 @@ export default function HomePage() {
         Professional sewer condition analysis and reporting with AI-powered insights
       </p>
 
-      {/* ===== C002: Welcome back actions ===== */}
-      <section className="relative mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C002" />
+      {/* C1: Welcome back (clickable card → 404 for now) */}
+      <ClickCard id="C1">
         <h2 className="text-3xl font-extrabold text-slate-900">Welcome back, Test!</h2>
         <p className="mt-2 text-slate-600 max-w-2xl">
           Choose your next action to manage your sewer inspection reports.
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            href="/settings"
-            className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-5 py-3 font-semibold text-slate-800 hover:bg-slate-200"
-          >
-            <Gear className="h-5 w-5" />
-            Settings
-          </Link>
-          <Link
-            href="/signout"
-            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700"
-          >
-            Sign Out
-          </Link>
-        </div>
-      </section>
+      </ClickCard>
 
-      {/* ===== C003: Upload ===== */}
-      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C003" />
+      {/* C2: Upload Report */}
+      <ClickCard id="C2">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-sky-100 p-3">
             <Upload className="h-6 w-6 text-sky-600" />
@@ -54,11 +55,10 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-      </section>
+      </ClickCard>
 
-      {/* ===== C004: Dashboard card ===== */}
-      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C004" />
+      {/* C3: Dashboard */}
+      <ClickCard id="C3">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-emerald-100 p-3">
             <BarChart3 className="h-6 w-6 text-emerald-600" />
@@ -70,11 +70,10 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-      </section>
+      </ClickCard>
 
-      {/* ===== C005: Pricing settings ===== */}
-      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C005" />
+      {/* C4: Pricing Settings */}
+      <ClickCard id="C4">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-orange-100 p-3">
             <Gear className="h-6 w-6 text-orange-600" />
@@ -82,15 +81,14 @@ export default function HomePage() {
           <div className="flex-1">
             <h3 className="text-3xl font-extrabold text-slate-900">Pricing Settings</h3>
             <p className="mt-2 text-slate-600">
-              Customize repair cost estimates for each sector based on your market rates
+              Customize repair cost estimates for each sector based on your market rates.
             </p>
           </div>
         </div>
-      </section>
+      </ClickCard>
 
-      {/* ===== C006: Uploaded Reports ===== */}
-      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C006" />
+      {/* C5: Uploaded Reports */}
+      <ClickCard id="C5">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-cyan-100 p-3">
             <FileText className="h-6 w-6 text-cyan-700" />
@@ -102,11 +100,10 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-      </section>
+      </ClickCard>
 
-      {/* ===== C007: Upgrade plan ===== */}
-      <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C007" />
+      {/* C6: Upgrade Plan */}
+      <ClickCard id="C6">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-violet-100 p-3">
             <Gift className="h-6 w-6 text-violet-600" />
@@ -114,11 +111,11 @@ export default function HomePage() {
           <div className="flex-1">
             <h3 className="text-3xl font-extrabold text-slate-900">Upgrade Plan</h3>
             <p className="mt-2 text-slate-600">
-              Access premium features and unlimited report processing
+              Access premium features and unlimited report processing.
             </p>
           </div>
         </div>
-      </section>
+      </ClickCard>
     </main>
   );
 }
