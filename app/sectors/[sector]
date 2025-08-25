@@ -1,0 +1,56 @@
+// app/sectors/[sector]/page.tsx
+import Link from "next/link";
+import DevLabel from "@/components/DevLabel";
+
+const SECTORS = {
+  utilities:   { title: "Utilities",    dev: "P2-utilities",    notes: "WRc SRM ruleset placeholder" },
+  adoption:    { title: "Adoption",     dev: "P2-adoption",     notes: "SfA8 ruleset placeholder" },
+  highways:    { title: "Highways",     dev: "P2-highways",     notes: "DMRB ruleset placeholder" },
+  domestic:    { title: "Domestic",     dev: "P2-domestic",     notes: "Domestic compliance placeholder" },
+  insurance:   { title: "Insurance",    dev: "P2-insurance",    notes: "ABI ruleset placeholder" },
+  construction:{ title: "Construction", dev: "P2-construction", notes: "Building regs placeholder" },
+} as const;
+
+type Params = { params: { sector: keyof typeof SECTORS } };
+
+export default function SectorPage({ params }: Params) {
+  const meta = SECTORS[params.sector];
+
+  if (!meta) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-600 mb-4">Unknown sector.</p>
+          <Link className="text-primary underline" href="/sectors">Back to Sectors</Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <DevLabel id={meta.dev} position="top-right" />
+
+      <section className="max-w-4xl mx-auto px-4 py-10">
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-3xl font-bold">{meta.title}</h1>
+          <Link href="/sectors" className="text-primary underline">← Back to Sectors (P2)</Link>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white shadow-sm p-6">
+          <h2 className="text-lg font-semibold">Ruleset</h2>
+          <p className="text-slate-600 mt-2">
+            {meta.notes}. This page will hold toggles/inputs for sector-specific pricing
+            and standard selectors (WRc / MSCC5R / SRM4), and it will persist to the DB once wiring is ready.
+          </p>
+
+          <div className="mt-6">
+            <Link className="inline-block rounded bg-primary text-primary-foreground px-4 py-2" href="/">
+              Back to Home (P1)
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
