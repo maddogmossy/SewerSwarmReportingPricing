@@ -77,7 +77,7 @@ export default function HomePage() {
       </section>
 
       {/* ---------- C2: Upload Report (card click only) ---------- */}
-      <ClickCard id="C2" href="/__todo/c2">
+    <ClickCard id="C2" href="/upload">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-blue-50 p-3">
             <Upload className="h-6 w-6 text-blue-500" />
