@@ -3,25 +3,24 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": { "node": ">=20" },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
-  "engines": { "node": ">=20" },
   "dependencies": {
     "next": "14.2.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "lucide-react": "0.453.0",
-    "pg": "^8.16.3",
-    "@neondatabase/serverless": "^0.10.4"
+    "lucide-react": "^0.453.0"
   },
   "devDependencies": {
-    "autoprefixer": "10.4.20",
-    "postcss": "8.4.47",
+    "typescript": "5.6.3",
+    "@types/react": "18.3.11",
+    "@types/react-dom": "18.3.1",
     "tailwindcss": "3.4.17",
-    "tailwindcss-animate": "1.0.7",
-    "typescript": "5.6.3"
+    "postcss": "8.4.47",
+    "autoprefixer": "10.4.20"
   }
 }
