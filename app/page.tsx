@@ -1,6 +1,6 @@
 // app/page.tsx
 import Link from "next/link";
-import DevLabel from "@/components/PageId";
+import { DevLabel } from "@/components/PageId"; // <-- named import
 
 export default function HomePage() {
   return (
@@ -24,29 +24,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Welcome Back Section */}
+      {/* Welcome Back */}
       <section className="mb-10">
         <h2 className="text-xl font-semibold text-slate-900">Welcome back</h2>
         <p className="text-slate-600">
           Choose your next action to manage your sewer inspection reports.
         </p>
         <div className="mt-4 flex gap-3">
-          <Link
-            href="/dashboard"
-            className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-          >
+          <Link href="/dashboard" className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">
             Dashboard
           </Link>
-          <Link
-            href="/settings"
-            className="px-4 py-2 rounded bg-slate-200 text-slate-800 hover:bg-slate-300"
-          >
+          <Link href="/settings" className="px-4 py-2 rounded bg-slate-200 text-slate-800 hover:bg-slate-300">
             Settings
           </Link>
-          <Link
-            href="/signout"
-            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-          >
+          <Link href="/signout" className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
             Sign Out
           </Link>
         </div>
@@ -55,13 +46,8 @@ export default function HomePage() {
       {/* Upload Report */}
       <section className="mb-10">
         <h2 className="text-xl font-semibold text-slate-900">Upload Report</h2>
-        <p className="text-slate-600">
-          Upload CCTV inspection files and select sector for analysis.
-        </p>
-        <Link
-          href="/upload"
-          className="mt-3 inline-block px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-        >
+        <p className="text-slate-600">Upload CCTV inspection files and select sector for analysis.</p>
+        <Link href="/upload" className="mt-3 inline-block px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
           Go to Upload
         </Link>
       </section>
