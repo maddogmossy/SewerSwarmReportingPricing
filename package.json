@@ -13,7 +13,9 @@
     "next": "14.2.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "lucide-react": "^0.453.0"
+    "lucide-react": "^0.453.0",
+    "pg": "^8.11.5",
+    "@neondatabase/serverless": "^0.10.4"
   },
   "devDependencies": {
     "typescript": "5.6.3",
