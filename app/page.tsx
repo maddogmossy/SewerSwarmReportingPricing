@@ -1,99 +1,95 @@
-"use client";
-
+// app/page.tsx
 import Link from "next/link";
-import { Upload, BarChart3, Settings, FileText, Gift, Waves } from "lucide-react";
 import { DevLabel } from "@/components/PageId";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-12">
-      {/* Dev label for this page */}
-      <DevLabel id="P1" title="Page" position="top-right" />
+    <main className="max-w-6xl mx-auto px-4 py-10">
+      {/* Dev page id */}
+      <div className="relative">
+        <DevLabel id="P1" position="top-right" />
+      </div>
 
-      {/* Hero Section */}
-      <section className="text-center mb-16">
-        <div className="flex justify-center items-center mb-6">
-          <Waves className="h-10 w-10 text-primary mr-2" />
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-            Sewer Swarm AI
-          </h1>
-        </div>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-          Professional sewer condition analysis and reporting with AI-powered insights
+      {/* Hero */}
+      <section className="rounded-xl p-8 bg-gradient-to-br from-primary/5 to-slate-100 border border-slate-200">
+        <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-slate-900">
+          Sewer Swarm AI
+          <span className="block text-primary mt-2">Report Analysis & Pricing</span>
+        </h1>
+        <p className="text-lg text-slate-600 mt-4 max-w-2xl">
+          Professional sewer condition analysis and reporting with AI-powered insights.
         </p>
       </section>
 
-      {/* Quick Actions */}
-      <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-        <Link href="/upload">
-          <div className="relative bg-white border rounded-lg p-6 shadow hover:shadow-lg transition cursor-pointer">
-            <DevLabel id="C002" position="top-right" />
-            <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <Upload className="h-6 w-6 text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold mb-2">Upload Report</h2>
-            <p className="text-slate-600 text-sm">
-              Upload CCTV inspection files and select sector for analysis
-            </p>
+      {/* Cards */}
+      <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {/* C001 */}
+        <Link href="/" className="group rounded-xl border border-slate-200 bg-white p-6 hover:shadow-md transition">
+          <div className="flex items-start justify-between">
+            <h2 className="text-xl font-semibold">Welcome back</h2>
+            <DevLabel id="C001" />
+          </div>
+          <p className="text-slate-600 mt-2">Quick links to common actions</p>
+          <div className="mt-4 flex gap-2">
+            <span className="inline-block text-xs px-2 py-1 rounded bg-slate-100 text-slate-700">Home</span>
+            <span className="inline-block text-xs px-2 py-1 rounded bg-slate-100 text-slate-700">Health</span>
           </div>
         </Link>
 
-        <Link href="/dashboard">
-          <div className="relative bg-white border rounded-lg p-6 shadow hover:shadow-lg transition cursor-pointer">
-            <DevLabel id="C003" position="top-right" />
-            <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
-              <BarChart3 className="h-6 w-6 text-emerald-600" />
-            </div>
-            <h2 className="text-lg font-semibold mb-2">Dashboard</h2>
-            <p className="text-slate-600 text-sm">
-              View inspection data and analysis across all reports
-            </p>
+        {/* C002 Upload */}
+        <Link href="/upload" className="group rounded-xl border border-slate-200 bg-white p-6 hover:shadow-md transition">
+          <div className="flex items-start justify-between">
+            <h2 className="text-xl font-semibold">Upload Report</h2>
+            <DevLabel id="C002" />
           </div>
+          <p className="text-slate-600 mt-2">Upload PDF or database files for analysis</p>
+          <div className="mt-4 w-12 h-12 rounded-lg bg-blue-100 grid place-items-center text-blue-600 text-2xl">⬆️</div>
         </Link>
 
-        <Link href="/sector-pricing">
-          <div className="relative bg-white border rounded-lg p-6 shadow hover:shadow-lg transition cursor-pointer">
-            <DevLabel id="C004" position="top-right" />
-            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-              <Settings className="h-6 w-6 text-orange-600" />
-            </div>
-            <h2 className="text-lg font-semibold mb-2">Pricing Settings</h2>
-            <p className="text-slate-600 text-sm">
-              Customize repair cost estimates per sector
-            </p>
+        {/* C003 Dashboard (kept, link where your dashboard lives) */}
+        <Link href="/dashboard" className="group rounded-xl border border-slate-200 bg-white p-6 hover:shadow-md transition">
+          <div className="flex items-start justify-between">
+            <h2 className="text-xl font-semibold">Dashboard</h2>
+            <DevLabel id="C003" />
           </div>
+          <p className="text-slate-600 mt-2">View inspection data & analysis</p>
+          <div className="mt-4 w-12 h-12 rounded-lg bg-emerald-100 grid place-items-center text-emerald-600 text-2xl">📊</div>
         </Link>
 
-        <Link href="/reports">
-          <div className="relative bg-white border rounded-lg p-6 shadow hover:shadow-lg transition cursor-pointer">
-            <DevLabel id="C005" position="top-right" />
-            <div className="mx-auto w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
-              <FileText className="h-6 w-6 text-cyan-600" />
-            </div>
-            <h2 className="text-lg font-semibold mb-2">Uploaded Reports</h2>
-            <p className="text-slate-600 text-sm">
-              Manage reports and organize project folders
-            </p>
+        {/* C004 Pricing Settings (placeholder) */}
+        <Link href="/pricing" className="group rounded-xl border border-slate-200 bg-white p-6 hover:shadow-md transition">
+          <div className="flex items-start justify-between">
+            <h2 className="text-xl font-semibold">Pricing Settings</h2>
+            <DevLabel id="C004" />
           </div>
+          <p className="text-slate-600 mt-2">Customize repair cost estimates</p>
+          <div className="mt-4 w-12 h-12 rounded-lg bg-orange-100 grid place-items-center text-orange-600 text-2xl">⚙️</div>
         </Link>
 
-        <Link href="/checkout">
-          <div className="relative bg-white border rounded-lg p-6 shadow hover:shadow-lg transition cursor-pointer">
-            <DevLabel id="C006" position="top-right" />
-            <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <Gift className="h-6 w-6 text-purple-600" />
-            </div>
-            <h2 className="text-lg font-semibold mb-2">Upgrade Plan</h2>
-            <p className="text-slate-600 text-sm">
-              Access premium features and unlimited report processing
-            </p>
+        {/* C005 Reports (placeholder) */}
+        <Link href="/reports" className="group rounded-xl border border-slate-200 bg-white p-6 hover:shadow-md transition">
+          <div className="flex items-start justify-between">
+            <h2 className="text-xl font-semibold">Uploaded Reports</h2>
+            <DevLabel id="C005" />
           </div>
+          <p className="text-slate-600 mt-2">Manage & organise reports</p>
+          <div className="mt-4 w-12 h-12 rounded-lg bg-cyan-100 grid place-items-center text-cyan-600 text-2xl">📄</div>
+        </Link>
+
+        {/* C006 -> P2 (Sectors) */}
+        <Link href="/sectors" className="group rounded-xl border border-slate-200 bg-white p-6 hover:shadow-md transition">
+          <div className="flex items-start justify-between">
+            <h2 className="text-xl font-semibold">Sectors</h2>
+            <DevLabel id="C006" />
+          </div>
+          <p className="text-slate-600 mt-2">Browse the six industry sectors</p>
+          <div className="mt-4 w-12 h-12 rounded-lg bg-violet-100 grid place-items-center text-violet-600 text-2xl">🏷️</div>
         </Link>
       </section>
 
-      {/* Footer/Health Check */}
-      <p className="text-center text-slate-500 text-sm mt-16">
-        Health check: <Link href="/api/health">/api/health</Link>
+      {/* Health link */}
+      <p className="mt-8 text-sm">
+        Health check: <Link href="/api/health" className="text-primary underline">/api/health</Link>
       </p>
     </main>
   );
