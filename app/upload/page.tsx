@@ -1,17 +1,16 @@
-import PageId from "@/components/PageId";
+// app/upload/page.tsx
+import Link from "next/link";
+import { DevLabel } from "@/components/PageId";
 
 export default function UploadPage() {
   return (
-    <main className="mx-auto max-w-4xl px-4 py-10 space-y-8">
-      <header className="flex items-end justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Upload Report</h1>
-        <PageId id="P003" />
-      </header>
-
-      <p className="text-muted-foreground">
-        Upload your CCTV inspection files here. We’ll add drag-and-drop and
-        sector selection next.
-      </p>
+    <main className="max-w-4xl mx-auto px-4 py-10 relative">
+      <DevLabel id="P-Upload" position="top-right" />
+      <h1 className="text-3xl font-bold text-slate-900">Upload Report</h1>
+      <p className="text-slate-600 mt-2">Upload PDF or .db files (placeholder page).</p>
+      <div className="mt-6">
+        <Link href="/" className="text-primary underline">← Back to Home (P1)</Link>
+      </div>
     </main>
   );
 }
