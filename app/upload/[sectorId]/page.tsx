@@ -1,4 +1,7 @@
-use client";
+
+
+// app/upload/[sectorId]/page.tsx
+"use client";
 
 import { useState } from "react";
 import { notFound } from "next/navigation";
