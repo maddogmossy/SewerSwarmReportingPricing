@@ -1,13 +1,4 @@
-// app/upload/[sectorId]/page.tsx
-"use client";
-
-import { useState } from "react";
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { DevLabel, CardId } from "@/components/PageId";
-import { Upload } from "lucide-react";
-import { type SectorId, getSectorMeta } from "@/lib/standards";
-import Notice from "@/components/Notice";
+ from "@/components/Notice";
 
 // Allow single PDF OR (main .db/.db3 + META .db/.db3) pair (UI hint only; server re-validates)
 function isDbPairPresent(files: FileList | null) {
