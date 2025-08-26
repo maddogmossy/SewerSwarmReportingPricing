@@ -7,7 +7,7 @@ import Link from "next/link";
 import { DevLabel, CardId } from "@/components/PageId";
 import { Upload } from "lucide-react";
 import { type SectorId, getSectorMeta } from "@/lib/standards";
-import Notice from "@/components/Notice";
+import { Notice } from "@/components/Notice";
 
 // Allow single PDF OR (main .db/.db3 + META .db/.db3) pair
 function isDbPairPresent(files: FileList | null) {
@@ -42,62 +42,7 @@ export default function SectorUploadPage({
 
   if (!meta) return notFound();
 
-async function handlePlaceholderUpload() {
-  if (!files || files.length === 0) {
-    setNotice({
-      kind: "warning",
-      title: "No file selected",
-      message: "Please choose at least one file before uploading.",
-    });
-    return;
-  }
-
-  // Client-side rule (keeps UX snappy). Server re-validates too.
-  const names = Array.from(files).map(f => f.name.toLowerCase());
-  const pdfOnly = names.length === 1 && names[0].endsWith(".pdf");
-  const anyDb = names.some(n => n.endsWith(".db") || n.endsWith(".db3"));
-  const anyMeta = names.some(n => n.includes("meta") && (n.endsWith(".db") || n.endsWith(".db3")));
-  const valid = pdfOnly || (anyDb && anyMeta);
-
-  if (!valid) {
-    setNotice({
-      kind: "warning",
-      title: "Database pair required",
-      message:
-        "Upload either a single PDF, or a main .db/.db3 file WITH its META .db/.db3 file.",
-    });
-    return;
-  }
-
-  try {
-    const body = new FormData();
-    body.append("sectorId", id);
-    Array.from(files).forEach(f => body.append("files", f));
-
-    const res = await fetch("/api/upload", { method: "POST", body });
-    const data = await res.json();
-
-    if (!res.ok || !data.ok) {
-      throw new Error(data?.error || "Upload failed.");
-    }
-
-    setNotice({
-      kind: "success",
-      title: "Upload received",
-      message: `Mode: ${data.mode.toUpperCase()} • Files: ${data.files.join(", ")}`,
-    });
-
-    // (Optional) navigate to Uploaded Reports once we have that page wired
-    // router.push("/uploads?justUploaded=true")
-  } catch (e: any) {
-    setNotice({
-      kind: "error",
-      title: "Upload failed",
-      message: e?.message || "Unexpected error. Please try again.",
-    });
-  }
-}
-
+  function handleUploadClick() {
     if (!files || files.length === 0) {
       setNotice({
         kind: "warning",
@@ -165,7 +110,7 @@ async function handlePlaceholderUpload() {
           />
           <button
             type="button"
-            onClick={handlePlaceholderUpload}
+            onClick={handleUploadClick}
             className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
           >
             Upload
