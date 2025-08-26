@@ -1,38 +1,36 @@
-// app/api/uploads/route.ts
 import { NextResponse } from "next/server";
-
-export const runtime = "nodejs";
+import { db } from "@/db";
+import { uploads } from "@/db/schema";
 
 export async function POST(req: Request) {
-  const form = await req.formData();
+  try {
+    const form = await req.formData();
 
-  // Get all "files" fields and keep only File instances
-  const uploaded = (form.getAll("files") || []).filter(
-    (v): v is File => v instanceof File
-  );
+    const uploaded: File[] = [];
+    form.forEach((value, key) => {
+      if (key === "files" && value instanceof File) {
+        uploaded.push(value);
+      }
+    });
 
-  const sectorVal = form.get("sectorId");
-  const sector = typeof sectorVal === "string" ? sectorVal : null;
+    const sector = form.get("sector")?.toString() || "unknown";
+    const projectId = Number(form.get("projectId")); // comes from form/hidden input
 
-  if (uploaded.length === 0) {
-    return NextResponse.json(
-      { success: false, error: "No files received" },
-      { status: 400 }
-    );
+    if (!projectId) {
+      return NextResponse.json({ ok: false, error: "Missing projectId" }, { status: 400 });
+    }
+
+    for (const file of uploaded) {
+      await db.insert(uploads).values({
+        projectId,
+        sector,
+        filename: file.name,
+      });
+    }
+
+    return NextResponse.json({ ok: true, count: uploaded.length });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ ok: false, error: "Upload failed" }, { status: 500 });
   }
-
-  // Echo back for now; storage/DB wiring comes next
-  return NextResponse.json({
-    success: true,
-    sector,
-    files: uploaded.map((f) => ({
-      name: f.name,
-      type: f.type || "application/octet-stream",
-      size: f.size,
-    })),
-  });
-}
-
-export async function GET() {
-  return NextResponse.json({ ok: true, route: "/api/uploads" });
 }
