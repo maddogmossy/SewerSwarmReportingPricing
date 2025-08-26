@@ -52,6 +52,9 @@ export function CardId({ id, className = "", position = "top-right" }: CardIdPro
   );
 }
 
+// Alias so pages can import AutoCardId
+export { CardId as AutoCardId };
+
 /**
  * Optional no-op exports so pages that import these don’t break.
  * If you’re not using them, it’s fine to leave as-is.
