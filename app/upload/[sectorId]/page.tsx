@@ -1,5 +1,3 @@
-
-
 // app/upload/[sectorId]/page.tsx
 "use client";
 
@@ -8,14 +6,15 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { DevLabel, CardId } from "@/components/PageId";
 import { Upload } from "lucide-react";
-import { SECTORS, type SectorId, getSectorMeta } from "@/lib/standards";
+import Notice from "@/components/Notice";
+import { type SectorId, getSectorMeta } from "@/lib/standards";
 
 // Allow single PDF OR (main .db/.db3 + META .db/.db3) pair
 function isDbPairPresent(files: FileList | null) {
   if (!files || files.length === 0) return false;
   const names = Array.from(files).map((f) => f.name.toLowerCase());
 
-  // single PDF is allowed
+  // Single PDF is allowed
   if (names.length === 1 && names[0].endsWith(".pdf")) return true;
 
   const anyDb = names.some((n) => n.endsWith(".db") || n.endsWith(".db3"));
@@ -35,21 +34,38 @@ export default function SectorUploadPage({
   const meta = getSectorMeta(id);
 
   const [files, setFiles] = useState<FileList | null>(null);
+  const [notice, setNotice] = useState<{
+    kind: "info" | "warning" | "success" | "error";
+    title: string;
+    message?: string;
+  } | null>(null);
 
   if (!meta) return notFound();
 
   function handlePlaceholderUpload() {
     if (!files || files.length === 0) {
-      alert("Please choose a file first.");
+      setNotice({
+        kind: "info",
+        title: "Choose a file first",
+        message:
+          "Select a PDF, or select both the main .db/.db3 and its META .db/.db3 file.",
+      });
       return;
     }
     if (!isDbPairPresent(files)) {
-      alert(
-        "For database uploads, please include BOTH the main .db/.db3 file and its META .db/.db3 file. (A single PDF is fine on its own.)"
-      );
+      setNotice({
+        kind: "warning",
+        title: "Both database files are required",
+        message:
+          "For database uploads, include BOTH the main .db/.db3 file and its META .db/.db3 file. (A single PDF is fine on its own.)",
+      });
       return;
     }
-    alert("Looks good ✅ (placeholder). We’ll wire the real upload next.");
+    setNotice({
+      kind: "success",
+      title: "Looks good (placeholder)",
+      message: "We’ll wire the real upload next.",
+    });
   }
 
   return (
@@ -74,7 +90,20 @@ export default function SectorUploadPage({
         </div>
       </section>
 
-      {/* Upload form (client-side validation only) */}
+      {/* App-styled notice (replaces browser alerts) */}
+      {notice && (
+        <div className="mt-4">
+          <Notice
+            kind={notice.kind}
+            title={notice.title}
+            onClose={() => setNotice(null)}
+          >
+            {notice.message}
+          </Notice>
+        </div>
+      )}
+
+      {/* Upload form — single input, iOS-friendly, no duplicates */}
       <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-900">Upload files</h2>
         <p className="mt-2 text-slate-600">
@@ -87,7 +116,7 @@ export default function SectorUploadPage({
             type="file"
             name="files"
             multiple
-            // NOTE: accept="*/*" so iOS Safari doesn’t block .db/.db3
+            // accept="*/*" keeps .db/.db3 selectable on iOS Safari
             accept="*/*"
             onChange={(e) => setFiles(e.target.files)}
             className="block w-full rounded-lg border border-slate-300 px-3 py-2"
