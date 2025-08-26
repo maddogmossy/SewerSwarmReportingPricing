@@ -1,6 +1,7 @@
 // app/upload/[sectorId]/page.tsx
 "use client";
 
+import { Notice } from "@/components/Notice";
 import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
