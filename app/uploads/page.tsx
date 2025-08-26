@@ -1,10 +1,13 @@
 // app/uploads/page.tsx
 import Link from "next/link";
-import { CardId } from "@/components/PageId";
+import { DevLabel, CardId } from "@/components/PageId";   // ✅ add DevLabel here
 
 export default function UploadedReportsPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
+      {/* Page label */}
+      <DevLabel id="P4" />   {/* ✅ add this right under <main> */}
+
       <section className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <CardId id="C5" />
         <h1 className="text-2xl font-extrabold text-slate-900">Uploaded Reports</h1>
