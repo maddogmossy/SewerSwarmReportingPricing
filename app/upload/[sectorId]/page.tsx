@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { DevCountersProvider, AutoDevLabel, AutoCardId } from "@/components/PageId";
+import { DevCountersProvider, AutoDevLabel, CardId } from "@/components/PageId";
 import { Upload } from "lucide-react";
 import { type SectorId, getSectorMeta } from "@/lib/standards";
 import Notice from "@/components/Notice";
@@ -75,7 +75,8 @@ export default function SectorUploadPage({
 
         {/* Header */}
         <section className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <AutoCardId />
+          {/* Keep explicit S1–S6 badge here */}
+          <CardId id={id} />
           <div className="flex items-start gap-4">
             <div className="rounded-xl bg-blue-50 p-3">
               <Upload className="h-6 w-6 text-blue-600" />
