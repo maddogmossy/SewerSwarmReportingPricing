@@ -1,63 +1,45 @@
 // components/Notice.tsx
-import { X } from "lucide-react";
 import React from "react";
 
 export type NoticeKind = "info" | "warning" | "success" | "error";
 
 export type NoticeProps = {
-  title?: string;
   kind?: NoticeKind;
-  onClose?: () => void;
+  title?: string;
   children?: React.ReactNode;
+  onClose?: () => void;
 };
 
-const KIND_BG: Record<NoticeKind, string> = {
-  info: "bg-blue-50",
-  warning: "bg-yellow-50",
-  success: "bg-emerald-50",
-  error: "bg-red-50",
-};
-const KIND_TEXT: Record<NoticeKind, string> = {
-  info: "text-blue-800",
-  warning: "text-yellow-800",
-  success: "text-emerald-800",
-  error: "text-red-800",
-};
-const KIND_BORDER: Record<NoticeKind, string> = {
-  info: "border-blue-200",
-  warning: "border-yellow-200",
-  success: "border-emerald-200",
-  error: "border-red-200",
+const KIND_STYLES: Record<NoticeKind, string> = {
+  info: "bg-blue-50 border-blue-200 text-blue-900",
+  warning: "bg-yellow-50 border-yellow-200 text-yellow-900",
+  success: "bg-emerald-50 border-emerald-200 text-emerald-900",
+  error: "bg-red-50 border-red-200 text-red-900",
 };
 
-export function Notice({
-  title,
-  kind = "info",
-  onClose,
-  children,
-}: NoticeProps) {
+function Notice({ kind = "info", title, children, onClose }: NoticeProps) {
   return (
     <div
+      role="status"
       className={[
-        "relative rounded-xl border p-4",
-        KIND_BG[kind],
-        KIND_BORDER[kind],
-        KIND_TEXT[kind],
+        "relative rounded-xl border px-4 py-3",
+        KIND_STYLES[kind],
       ].join(" ")}
-      role="alert"
     >
+      {title && <div className="font-semibold">{title}</div>}
+      {children && <div className={title ? "mt-1" : ""}>{children}</div>}
       {onClose && (
         <button
           type="button"
           aria-label="Close"
-          className="absolute right-2 top-2 rounded p-1 hover:bg-black/5"
           onClick={onClose}
+          className="absolute right-2 top-2 rounded-md px-2 py-1 text-xs hover:bg-white/40"
         >
-          <X className="h-4 w-4" />
+          ✕
         </button>
       )}
-      {title && <div className="mb-1 font-semibold">{title}</div>}
-      <div className="text-sm">{children}</div>
     </div>
   );
 }
+
+export default Notice;
