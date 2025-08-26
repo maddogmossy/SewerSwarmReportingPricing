@@ -1,21 +1,20 @@
 // app/upload/[sectorId]/page.tsx
 "use client";
 
-import { Notice } from "@/components/Notice";
 import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { DevLabel, CardId } from "@/components/PageId";
 import { Upload } from "lucide-react";
-import Notice from "@/components/Notice";
 import { type SectorId, getSectorMeta } from "@/lib/standards";
+import { Notice } from "@/components/Notice";
 
 // Allow single PDF OR (main .db/.db3 + META .db/.db3) pair
 function isDbPairPresent(files: FileList | null) {
   if (!files || files.length === 0) return false;
   const names = Array.from(files).map((f) => f.name.toLowerCase());
 
-  // Single PDF is allowed
+  // single PDF is allowed
   if (names.length === 1 && names[0].endsWith(".pdf")) return true;
 
   const anyDb = names.some((n) => n.endsWith(".db") || n.endsWith(".db3"));
@@ -38,7 +37,7 @@ export default function SectorUploadPage({
   const [notice, setNotice] = useState<{
     kind: "info" | "warning" | "success" | "error";
     title: string;
-    message?: string;
+    message: string;
   } | null>(null);
 
   if (!meta) return notFound();
@@ -46,17 +45,16 @@ export default function SectorUploadPage({
   function handlePlaceholderUpload() {
     if (!files || files.length === 0) {
       setNotice({
-        kind: "info",
-        title: "Choose a file first",
-        message:
-          "Select a PDF, or select both the main .db/.db3 and its META .db/.db3 file.",
+        kind: "warning",
+        title: "No file selected",
+        message: "Please choose at least one file before uploading.",
       });
       return;
     }
     if (!isDbPairPresent(files)) {
       setNotice({
         kind: "warning",
-        title: "Both database files are required",
+        title: "Database pair required",
         message:
           "For database uploads, include BOTH the main .db/.db3 file and its META .db/.db3 file. (A single PDF is fine on its own.)",
       });
@@ -64,8 +62,9 @@ export default function SectorUploadPage({
     }
     setNotice({
       kind: "success",
-      title: "Looks good (placeholder)",
-      message: "We’ll wire the real upload next.",
+      title: "Looks good",
+      message:
+        "Files passed validation ✅ This is a placeholder. We’ll wire the real upload next.",
     });
   }
 
@@ -91,20 +90,7 @@ export default function SectorUploadPage({
         </div>
       </section>
 
-      {/* App-styled notice (replaces browser alerts) */}
-      {notice && (
-        <div className="mt-4">
-          <Notice
-            kind={notice.kind}
-            title={notice.title}
-            onClose={() => setNotice(null)}
-          >
-            {notice.message}
-          </Notice>
-        </div>
-      )}
-
-      {/* Upload form — single input, iOS-friendly, no duplicates */}
+      {/* Upload form (client-side validation only) */}
       <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-900">Upload files</h2>
         <p className="mt-2 text-slate-600">
@@ -117,7 +103,7 @@ export default function SectorUploadPage({
             type="file"
             name="files"
             multiple
-            // accept="*/*" keeps .db/.db3 selectable on iOS Safari
+            // NOTE: accept="*/*" so iOS Safari doesn’t block .db/.db3
             accept="*/*"
             onChange={(e) => setFiles(e.target.files)}
             className="block w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -130,6 +116,14 @@ export default function SectorUploadPage({
             Upload (placeholder)
           </button>
         </form>
+
+        {notice && (
+          <div className="mt-4">
+            <Notice kind={notice.kind} title={notice.title} onClose={() => setNotice(null)}>
+              {notice.message}
+            </Notice>
+          </div>
+        )}
 
         <div className="mt-6">
           <Link href="/upload" className="text-blue-600 hover:underline">
