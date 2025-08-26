@@ -7,7 +7,7 @@ import Link from "next/link";
 import { DevLabel, CardId } from "@/components/PageId";
 import { Upload } from "lucide-react";
 import { type SectorId, getSectorMeta } from "@/lib/standards";
-import { Notice } from "@/components/Notice";
+import Notice from "@/components/Notice";
 
 // Allow single PDF OR (main .db/.db3 + META .db/.db3) pair
 function isDbPairPresent(files: FileList | null) {
