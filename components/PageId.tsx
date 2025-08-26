@@ -1,7 +1,21 @@
 // components/PageId.tsx
-import React from "react";
+"use client";
+
+import React, { createContext, useContext, useRef } from "react";
 
 type Corner = "top-right" | "top-left" | "bottom-right" | "bottom-left";
+
+export type DevLabelProps = {
+  id: string;
+  position?: Corner;
+  className?: string;
+};
+
+export type CardIdProps = {
+  id: string;
+  position?: Corner;
+  className?: string;
+};
 
 function cornerToClasses(pos: Corner = "top-right") {
   switch (pos) {
@@ -16,12 +30,7 @@ function cornerToClasses(pos: Corner = "top-right") {
   }
 }
 
-export type DevLabelProps = {
-  id: string;
-  position?: Corner;
-  className?: string;
-};
-
+/** Manual page label (e.g. <DevLabel id="P1" />) */
 export function DevLabel({ id, position = "top-right", className = "" }: DevLabelProps) {
   return (
     <span
@@ -36,9 +45,8 @@ export function DevLabel({ id, position = "top-right", className = "" }: DevLabe
   );
 }
 
-export type CardIdProps = { id: string; className?: string; position?: Corner };
-
-export function CardId({ id, className = "", position = "top-right" }: CardIdProps) {
+/** Manual card label (e.g. <CardId id="C3" />) */
+export function CardId({ id, position = "top-right", className = "" }: CardIdProps) {
   return (
     <span
       className={[
@@ -52,19 +60,58 @@ export function CardId({ id, className = "", position = "top-right" }: CardIdPro
   );
 }
 
-// Alias so pages can import AutoCardId
-export { CardId as AutoCardId };
+/* -----------------------------------------------------------
+   Auto counters (optional): AutoDevLabel / AutoCardId
+   These generate P1, P2... and C1, C2... automatically.
+   Works with DevCountersProvider; also has a global fallback.
+----------------------------------------------------------- */
 
-/**
- * Optional no-op exports so pages that import these don’t break.
- * If you’re not using them, it’s fine to leave as-is.
- */
+type CtxType = { getNext: (prefix: string) => number };
+const Ctx = createContext<CtxType | null>(null);
+
 export function DevCountersProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
-export function AutoDevLabel() {
-  return null; // placeholder; we’re using explicit <DevLabel id="P…"/> instead
+  const countersRef = useRef<Record<string, number>>({});
+
+  const getNext = (prefix: string) => {
+    countersRef.current[prefix] = (countersRef.current[prefix] ?? 0) + 1;
+    return countersRef.current[prefix];
+  };
+
+  return <Ctx.Provider value={{ getNext }}>{children}</Ctx.Provider>;
 }
 
-// Also export DevLabel as default so both `import DevLabel …` and `import { DevLabel } …` work
-export default DevLabel;
+// Fallback global counters if provider is not used
+const globalCounts: Record<string, number> = {};
+
+function useStableAutoNumber(prefix: string) {
+  const ctx = useContext(Ctx);
+  const getNext = ctx?.getNext ?? ((p: string) => {
+    globalCounts[p] = (globalCounts[p] ?? 0) + 1;
+    return globalCounts[p];
+  });
+
+  // Ensure the number is stable per component instance
+  const nRef = useRef<number | null>(null);
+  if (nRef.current === null) {
+    nRef.current = getNext(prefix);
+  }
+  return nRef.current;
+}
+
+/** Automatically renders P1, P2, ... */
+export function AutoDevLabel({
+  position = "top-right",
+  className = "",
+}: Omit<DevLabelProps, "id">) {
+  const n = useStableAutoNumber("P");
+  return <DevLabel id={`P${n}`} position={position} className={className} />;
+}
+
+/** Automatically renders C1, C2, ... */
+export function AutoCardId({
+  position = "top-right",
+  className = "",
+}: Omit<CardIdProps, "id">) {
+  const n = useStableAutoNumber("C");
+  return <CardId id={`C${n}`} position={position} className={className} />;
+}
