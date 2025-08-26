@@ -18,7 +18,7 @@ export default function SectorUploadPage({
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      <DevLabel id="P2" />
+      <DevLabel id="P3" />
 
       {/* Header */}
       <section className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
