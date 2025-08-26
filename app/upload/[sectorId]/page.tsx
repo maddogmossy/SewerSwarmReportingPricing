@@ -39,12 +39,13 @@ export default function SectorUploadPage({
     title: string;
     message: string;
   } | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!meta) return notFound();
 
+  // ✅ Real upload handler (calls /api/uploads)
   async function handleUpload() {
-    setNotice(null);
+    const fd = new FormData();
+    fd.set("sectorId", id);
 
     if (!files || files.length === 0) {
       setNotice({
@@ -54,6 +55,8 @@ export default function SectorUploadPage({
       });
       return;
     }
+
+    // validate rules
     if (!isDbPairPresent(files)) {
       setNotice({
         kind: "warning",
@@ -64,40 +67,25 @@ export default function SectorUploadPage({
       return;
     }
 
+    Array.from(files).forEach((f) => fd.append("files", f));
+
     try {
-      setIsSubmitting(true);
-      const form = new FormData();
-      form.set("sectorId", id);
-      Array.from(files).forEach((f) => form.append("files", f));
-
-      const res = await fetch("/api/uploads", {
-        method: "POST",
-        body: form,
-      });
-
+      const res = await fetch("/api/uploads", { method: "POST", body: fd });
       const data = await res.json();
-
-      if (!res.ok || !data?.ok) {
+      if (!res.ok || !data.success) {
         throw new Error(data?.error || "Upload failed");
       }
-
       setNotice({
         kind: "success",
-        title: "Upload received",
-        message: `Uploaded ${data.files.length} file(s) for ${id}. (Temporary echo response; persistence coming next.)`,
+        title: "Uploaded (stub)",
+        message: `Received ${data.files.length} file(s) for sector ${data.sector || id}. (Storage/DB wiring is next.)`,
       });
-
-      // Optional: navigate to /uploads after a short pause
-      // setTimeout(() => { window.location.href = "/uploads"; }, 800);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Unexpected error";
+    } catch (err: any) {
       setNotice({
         kind: "error",
         title: "Upload error",
-        message: msg,
+        message: err?.message || "Something went wrong while uploading.",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -127,7 +115,8 @@ export default function SectorUploadPage({
       <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-900">Upload files</h2>
         <p className="mt-2 text-slate-600">
-          Select a <strong>PDF</strong> or a pair of <strong>.db/.db3</strong> files (max 50MB).
+          Select a <strong>PDF</strong> or a pair of <strong>.db/.db3</strong>{" "}
+          files (max 50MB).
         </p>
 
         <form className="mt-4 space-y-4" onSubmit={(e) => e.preventDefault()}>
@@ -141,20 +130,22 @@ export default function SectorUploadPage({
             onChange={(e) => setFiles(e.target.files)}
             className="block w-full rounded-lg border border-slate-300 px-3 py-2"
           />
-
           <button
             type="button"
             onClick={handleUpload}
-            disabled={isSubmitting}
-            className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+            className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
           >
-            {isSubmitting ? "Uploading…" : "Upload"}
+            Upload
           </button>
         </form>
 
         {notice && (
           <div className="mt-4">
-            <Notice kind={notice.kind} title={notice.title} onClose={() => setNotice(null)}>
+            <Notice
+              kind={notice.kind}
+              title={notice.title}
+              onClose={() => setNotice(null)}
+            >
               {notice.message}
             </Notice>
           </div>
