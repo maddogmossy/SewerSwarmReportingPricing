@@ -9,11 +9,14 @@ import { Upload } from "lucide-react";
 import { type SectorId, getSectorMeta } from "@/lib/standards";
 import Notice from "@/components/Notice";
 
-// Allow single PDF OR (main .db/.db3 + META .db/.db3) pair
+// Allow single PDF OR (main .db/.db3 + META .db/.db3) pair (UI hint only; server re-validates)
 function isDbPairPresent(files: FileList | null) {
   if (!files || files.length === 0) return false;
   const names = Array.from(files).map((f) => f.name.toLowerCase());
+
+  // single PDF is allowed
   if (names.length === 1 && names[0].endsWith(".pdf")) return true;
+
   const anyDb = names.some((n) => n.endsWith(".db") || n.endsWith(".db3"));
   const anyMeta = names.some(
     (n) => n.includes("meta") && (n.endsWith(".db") || n.endsWith(".db3"))
@@ -35,7 +38,7 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
 
   if (!meta) return notFound();
 
-  function handlePlaceholderUpload() {
+  async function handleRealUpload() {
     if (!files || files.length === 0) {
       setNotice({
         kind: "warning",
@@ -53,16 +56,41 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
       });
       return;
     }
-    setNotice({
-      kind: "success",
-      title: "Looks good",
-      message: "Files passed validation ✅ This is a placeholder. We’ll wire the real upload next.",
-    });
+
+    const form = new FormData();
+    form.append("sectorId", id);
+    Array.from(files).forEach((f) => form.append("files", f));
+
+    try {
+      const res = await fetch("/api/uploads", { method: "POST", body: form });
+      const data = await res.json();
+
+      if (!res.ok || !data?.ok) {
+        setNotice({
+          kind: "warning",
+          title: "Upload failed",
+          message: data?.error ?? "Please check your files and try again.",
+        });
+        return;
+      }
+
+      setNotice({
+        kind: "success",
+        title: "Upload received",
+        message: `Sector ${data.sectorId}: ${data.files.join(", ")}`,
+      });
+    } catch {
+      setNotice({
+        kind: "error",
+        title: "Network error",
+        message: "Could not reach the server. Please try again.",
+      });
+    }
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 relative">
-      <DevLabel id="P3" position="top-left" />
+    <main className="mx-auto max-w-5xl px-4 py-10">
+      <DevLabel id="P3" />
 
       {/* Header */}
       <section className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -82,7 +110,7 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
         </div>
       </section>
 
-      {/* Upload form */}
+      {/* Upload form (client-side validation; server re-validates) */}
       <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-900">Upload files</h2>
         <p className="mt-2 text-slate-600">
@@ -95,13 +123,14 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
             type="file"
             name="files"
             multiple
-            accept="*/*" // allow .db/.db3 on iOS
+            // accept="*/*" so iOS Safari doesn’t block .db/.db3 picking
+            accept="*/*"
             onChange={(e) => setFiles(e.target.files)}
             className="block w-full rounded-lg border border-slate-300 px-3 py-2"
           />
           <button
             type="button"
-            onClick={handlePlaceholderUpload}
+            onClick={handleRealUpload}
             className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
           >
             Upload
