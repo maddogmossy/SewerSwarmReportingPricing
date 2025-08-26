@@ -1,6 +1,15 @@
- from "@/components/Notice";
+// app/upload/[sectorId]/page.tsx
+"use client";
 
-// Allow single PDF OR (main .db/.db3 + META .db/.db3) pair (UI hint only; server re-validates)
+import { useState } from "react";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { DevLabel, CardId } from "@/components/PageId";
+import { Upload } from "lucide-react";
+import { type SectorId, getSectorMeta } from "@/lib/standards";
+import Notice from "@/components/Notice";
+
+// Allow single PDF OR (main .db/.db3 + META .db/.db3) pair
 function isDbPairPresent(files: FileList | null) {
   if (!files || files.length === 0) return false;
   const names = Array.from(files).map((f) => f.name.toLowerCase());
@@ -15,7 +24,11 @@ function isDbPairPresent(files: FileList | null) {
   return anyDb && anyMeta;
 }
 
-export default function SectorUploadPage({ params }: { params: { sectorId: string } }) {
+export default function SectorUploadPage({
+  params,
+}: {
+  params: { sectorId: string };
+}) {
   const raw = (params.sectorId || "").toUpperCase();
   const id = raw as SectorId;
   const meta = getSectorMeta(id);
@@ -26,10 +39,13 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
     title: string;
     message: string;
   } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!meta) return notFound();
 
-  async function handleRealUpload() {
+  async function handleUpload() {
+    setNotice(null);
+
     if (!files || files.length === 0) {
       setNotice({
         kind: "warning",
@@ -48,34 +64,40 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
       return;
     }
 
-    const form = new FormData();
-    form.append("sectorId", id);
-    Array.from(files).forEach((f) => form.append("files", f));
-
     try {
-      const res = await fetch("/api/uploads", { method: "POST", body: form });
+      setIsSubmitting(true);
+      const form = new FormData();
+      form.set("sectorId", id);
+      Array.from(files).forEach((f) => form.append("files", f));
+
+      const res = await fetch("/api/uploads", {
+        method: "POST",
+        body: form,
+      });
+
       const data = await res.json();
 
       if (!res.ok || !data?.ok) {
-        setNotice({
-          kind: "warning",
-          title: "Upload failed",
-          message: data?.error ?? "Please check your files and try again.",
-        });
-        return;
+        throw new Error(data?.error || "Upload failed");
       }
 
       setNotice({
         kind: "success",
         title: "Upload received",
-        message: `Sector ${data.sectorId}: ${data.files.join(", ")}`,
+        message: `Uploaded ${data.files.length} file(s) for ${id}. (Temporary echo response; persistence coming next.)`,
       });
-    } catch {
+
+      // Optional: navigate to /uploads after a short pause
+      // setTimeout(() => { window.location.href = "/uploads"; }, 800);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Unexpected error";
       setNotice({
         kind: "error",
-        title: "Network error",
-        message: "Could not reach the server. Please try again.",
+        title: "Upload error",
+        message: msg,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -101,7 +123,7 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
         </div>
       </section>
 
-      {/* Upload form (client-side validation; server re-validates) */}
+      {/* Upload form */}
       <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-900">Upload files</h2>
         <p className="mt-2 text-slate-600">
@@ -114,17 +136,19 @@ export default function SectorUploadPage({ params }: { params: { sectorId: strin
             type="file"
             name="files"
             multiple
-            // accept="*/*" so iOS Safari doesn’t block .db/.db3 picking
+            // NOTE: accept="*/*" so iOS Safari doesn’t block .db/.db3
             accept="*/*"
             onChange={(e) => setFiles(e.target.files)}
             className="block w-full rounded-lg border border-slate-300 px-3 py-2"
           />
+
           <button
             type="button"
-            onClick={handleRealUpload}
-            className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+            onClick={handleUpload}
+            disabled={isSubmitting}
+            className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
           >
-            Upload
+            {isSubmitting ? "Uploading…" : "Upload"}
           </button>
         </form>
 
