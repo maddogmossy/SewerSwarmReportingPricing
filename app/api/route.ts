@@ -1,25 +1,37 @@
 // app/api/upload/route.ts
 import { NextResponse } from "next/server";
 
-/**
- * Accepts multipart/form-data:
- * - sectorId: string (S1..S6)
- * - files: File[] (either 1 PDF OR main .db/.db3 + META .db/.db3)
- *
- * No storage yet — just validates and echoes back a JSON result.
- */
+function looksLikeDbPair(files: File[]) {
+  const names = files.map(f => f.name.toLowerCase());
+  const pdfOnly = names.length === 1 && names[0].endsWith(".pdf");
+  if (pdfOnly) return { ok: true, mode: "pdf" as const };
+
+  const anyDb = names.some(n => n.endsWith(".db") || n.endsWith(".db3"));
+  const anyMeta = names.some(n =>
+    n.includes("meta") && (n.endsWith(".db") || n.endsWith(".db3"))
+  );
+  if (anyDb && anyMeta) return { ok: true, mode: "dbpair" as const };
+
+  return { ok: false as const, mode: "invalid" as const };
+}
+
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
-    const sectorId = String(formData.get("sectorId") || "").toUpperCase();
-    const files = formData.getAll("files").filter(Boolean) as File[];
+    const form = await req.formData();
 
+    const sectorId = (form.get("sectorId") as string | null)?.toUpperCase();
     if (!sectorId) {
       return NextResponse.json(
         { ok: false, error: "Missing sectorId." },
         { status: 400 }
       );
     }
+
+    const fileFields = form.getAll("files");
+    const files: File[] = fileFields.filter(
+      (v): v is File => typeof v !== "string"
+    );
+
     if (!files.length) {
       return NextResponse.json(
         { ok: false, error: "No files received." },
@@ -27,34 +39,30 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate: single PDF OR db pair (main + META)
-    const names = files.map((f) => f.name.toLowerCase());
-    const isSinglePdf = names.length === 1 && names[0].endsWith(".pdf");
-    const anyDb = names.some((n) => n.endsWith(".db") || n.endsWith(".db3"));
-    const anyMetaDb = names.some(
-      (n) => n.includes("meta") && (n.endsWith(".db") || n.endsWith(".db3"))
-    );
-    const isDbPair = names.length >= 2 && anyDb && anyMetaDb;
-
-    if (!(isSinglePdf || isDbPair)) {
+    const check = looksLikeDbPair(files);
+    if (!check.ok) {
       return NextResponse.json(
         {
           ok: false,
           error:
-            "For database uploads, include BOTH the main .db/.db3 and its META .db/.db3. A single PDF is also supported.",
+            "Invalid selection. Upload either a single PDF, or a main .db/.db3 file WITH its META .db/.db3 file.",
         },
         { status: 400 }
       );
     }
 
-    // (Future) Persist: save to blob/S3; write a DB record with sector + standards mapping.
-    // For now, just reply with what we received so the client can continue flow.
+    // NOTE: This is where we will:
+    // - stream to storage (Vercel Blob/S3)
+    // - create DB rows in Neon
+    // For now, we just echo back filenames & mode.
+    const filenames = files.map(f => f.name);
+
     return NextResponse.json({
       ok: true,
       sectorId,
-      fileNames: names,
-      accepted: isSinglePdf ? "pdf" : "db_pair",
-      // (Future) standardsKey: map from sectorId (S1..S6) -> "wrc_srm" | "sfa8" | "dmrb" | ...
+      mode: check.mode, // "pdf" | "dbpair"
+      files: filenames,
+      message: "Upload received (placeholder) — storage/DB wiring comes next.",
     });
   } catch (err) {
     console.error(err);
