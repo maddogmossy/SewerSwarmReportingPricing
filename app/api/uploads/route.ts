@@ -1,25 +1,18 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 
-// If you ever switch this route to the Edge runtime, FormData types differ.
-// Keeping Node.js runtime is simpler for file uploads.
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
-  // Parse the multipart form
   const form = await req.formData();
 
-  // ✅ Explicitly cast to FormData so TS knows .entries() is iterable
-  const uploaded: File[] = [];
-  for (const [key, value] of (form as FormData).entries()) {
-    if (key === "files" && value instanceof File) {
-      uploaded.push(value);
-    }
-  }
+  // Get all "files" fields and keep only File instances
+  const uploaded = (form.getAll("files") || []).filter(
+    (v): v is File => v instanceof File
+  );
 
-  // Optional: read extra fields (e.g., sectorId) if you include them in your form
-  const sectorId = (form as FormData).get("sectorId");
-  const sector = typeof sectorId === "string" ? sectorId : null;
+  const sectorVal = form.get("sectorId");
+  const sector = typeof sectorVal === "string" ? sectorVal : null;
 
   if (uploaded.length === 0) {
     return NextResponse.json(
@@ -28,7 +21,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // For now we just echo what was received. Next step will stream to object storage + DB.
+  // Echo back for now; storage/DB wiring comes next
   return NextResponse.json({
     success: true,
     sector,
@@ -40,7 +33,6 @@ export async function POST(req: Request) {
   });
 }
 
-// (Optional) quick health check
 export async function GET() {
   return NextResponse.json({ ok: true, route: "/api/uploads" });
 }
