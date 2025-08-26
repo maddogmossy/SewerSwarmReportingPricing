@@ -113,7 +113,8 @@ export default function HomePage() {
       </ClickCard>
 
       {/* ---------- C5: Uploaded Reports (placeholder) ---------- */}
-      <ClickCard id="C5" href="/__todo/c5">
+      {/* ---------- C5: Uploaded Reports (card click only) ---------- */}
+<ClickCard id="C5" href="/uploads">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-sky-50 p-3">
             <FileText className="h-6 w-6 text-sky-600" />
