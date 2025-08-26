@@ -1,22 +1,38 @@
-// app/uploads/page.tsx
-import Link from "next/link";
-import { DevLabel, CardId } from "@/components/PageId";
+// app/api/uploads/route.ts
+import { NextResponse } from "next/server";
 
-export default function UploadedReportsPage() {
-  return (
-    <main className="mx-auto max-w-5xl px-4 py-10 relative">
-      <DevLabel id="P4" position="top-left" />
+export const runtime = "nodejs";
 
-      <section className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C5" />
-        <h1 className="text-2xl font-extrabold text-slate-900">Uploaded Reports</h1>
-        <p className="mt-2 text-slate-600">
-          This will list client → project → files after we wire storage & database.
-        </p>
-        <div className="mt-4">
-          <Link href="/" className="text-blue-600 hover:underline">← Back to home</Link>
-        </div>
-      </section>
-    </main>
+export async function POST(req: Request) {
+  const form = await req.formData();
+
+  // Grab all "files" fields and keep only File instances
+  const uploaded = (form.getAll("files") || []).filter(
+    (v): v is File => v instanceof File
   );
+
+  const sectorVal = form.get("sectorId");
+  const sector = typeof sectorVal === "string" ? sectorVal : null;
+
+  if (uploaded.length === 0) {
+    return NextResponse.json(
+      { success: false, error: "No files received" },
+      { status: 400 }
+    );
+    }
+
+  // Echo back for now; next step is storing + DB rows
+  return NextResponse.json({
+    success: true,
+    sector,
+    files: uploaded.map((f) => ({
+      name: f.name,
+      type: f.type || "application/octet-stream",
+      size: f.size,
+    })),
+  });
+}
+
+export async function GET() {
+  return NextResponse.json({ ok: true, route: "/api/uploads" });
 }
