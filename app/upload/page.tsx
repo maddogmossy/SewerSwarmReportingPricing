@@ -9,35 +9,25 @@ import {
   Hammer,
   Factory,
   Upload,
+  FileQuestion,
 } from "lucide-react";
+import { SECTORS, COLOR_MAP } from "@/lib/standards";
 
-// Color classes per sector (icon badge + icon color)
-const COLOR_MAP: Record<
-  string,
-  { badge: string; icon: string }
-> = {
-  S1: { badge: "bg-emerald-50", icon: "text-emerald-600" }, // Utilities
-  S2: { badge: "bg-indigo-50",  icon: "text-indigo-600" },  // Adoption
-  S3: { badge: "bg-amber-50",   icon: "text-amber-600" },   // Highways
-  S4: { badge: "bg-sky-50",     icon: "text-sky-600" },     // Domestic
-  S5: { badge: "bg-violet-50",  icon: "text-violet-600" },  // Insurance
-  S6: { badge: "bg-rose-50",    icon: "text-rose-600" },    // Construction
+// Map icon string to actual Lucide component
+const ICONS: Record<string, React.ComponentType<any>> = {
+  Building2,
+  Home,
+  CarFront,
+  ShieldCheck,
+  Hammer,
+  Factory,
+  FileQuestion,
+  Upload,
 };
-
-// Simple sector list with IDs S1..S6
-const SECTORS = [
-  { id: "S1", name: "Utilities",    note: "WRc SRM standards",     icon: Factory },
-  { id: "S2", name: "Adoption",     note: "SFA8 compliance",       icon: ShieldCheck },
-  { id: "S3", name: "Highways",     note: "DMRB standards",        icon: CarFront },
-  { id: "S4", name: "Domestic",     note: "Regulatory compliance", icon: Home },
-  { id: "S5", name: "Insurance",    note: "ABI guidelines",        icon: Building2 },
-  { id: "S6", name: "Construction", note: "Building regs",         icon: Hammer },
-];
 
 export default function UploadLanding() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      {/* P2 tag in the corner */}
       <DevLabel id="P2" />
 
       {/* Hero / Intro */}
@@ -71,14 +61,15 @@ export default function UploadLanding() {
         </div>
       </section>
 
-      {/* Sector grid (click cards to 404 placeholders) */}
+      {/* Sector grid (S1..S8 all clickable to the upload form) */}
       <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {SECTORS.map(({ id, name, note, icon: Icon }) => {
-          const colors = COLOR_MAP[id] ?? { badge: "bg-slate-50", icon: "text-slate-600" };
+        {SECTORS.map(({ id, name, note, icon }) => {
+          const Icon = ICONS[icon] ?? FileQuestion;
+          const colors = COLOR_MAP[id];
           return (
             <Link
               key={id}
-              href={`/__todo/${id.toLowerCase()}`} // 404 for now
+              href={`/upload/${id}`}
               className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow block"
             >
               <CardId id={id} />
