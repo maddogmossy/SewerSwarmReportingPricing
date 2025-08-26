@@ -1,69 +1,69 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 
-// Reuse the same rule: allow single PDF OR (main .db/.db3 + META .db/.db3)
-function isDbPairPresent(fileNames: string[]) {
-  if (fileNames.length === 0) return false;
-  const names = fileNames.map((n) => n.toLowerCase());
-
-  // single PDF is allowed
-  if (names.length === 1 && names[0].endsWith(".pdf")) return true;
-
-  const anyDb = names.some((n) => n.endsWith(".db") || n.endsWith(".db3"));
-  const anyMeta = names.some(
-    (n) => n.includes("meta") && (n.endsWith(".db") || n.endsWith(".db3"))
-  );
-  return anyDb && anyMeta;
-}
+export const runtime = "nodejs"; // keep Node runtime (not edge)
 
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
-    const sectorId = (form.get("sectorId") as string | null) ?? null;
 
-    // Collect all "files" fields (can be multiple)
-    const files: File[] = [];
-    for (const [key, value] of form.entries()) {
-      if (key === "files" && value instanceof File) files.push(value);
-    }
+    // Sector (string)
+    const sectorIdRaw = form.get("sectorId");
+    const sectorId = (typeof sectorIdRaw === "string" ? sectorIdRaw : "").toUpperCase();
+
+    // All uploaded files
+    const files = form
+      .getAll("files")
+      .filter((v): v is File => v instanceof File);
 
     if (!sectorId) {
-      return NextResponse.json(
-        { ok: false, error: "Missing sectorId." },
-        { status: 400 }
-      );
+      return NextResponse.json({ ok: false, error: "Missing sectorId" }, { status: 400 });
     }
-
     if (files.length === 0) {
+      return NextResponse.json({ ok: false, error: "No files provided" }, { status: 400 });
+    }
+
+    // Validate types/sizes (basic — server will be extended later)
+    const names = files.map((f) => f.name.toLowerCase());
+    const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+    const maxBytes = 50 * 1024 * 1024; // 50MB per file (adjust if you want total)
+
+    if (files.some((f) => f.size > maxBytes)) {
       return NextResponse.json(
-        { ok: false, error: "No files uploaded." },
+        { ok: false, error: "Each file must be ≤ 50MB" },
         { status: 400 }
       );
     }
 
-    // Validate pair rule
-    const fileNames = files.map((f) => f.name);
-    if (!isDbPairPresent(fileNames)) {
+    const isPDFOnly = files.length === 1 && names[0].endsWith(".pdf");
+    const hasDb = names.some((n) => n.endsWith(".db") || n.endsWith(".db3"));
+    const hasMetaDb = names.some(
+      (n) => n.includes("meta") && (n.endsWith(".db") || n.endsWith(".db3"))
+    );
+    const isDbPair = hasDb && hasMetaDb;
+
+    if (!isPDFOnly && !isDbPair) {
       return NextResponse.json(
         {
           ok: false,
           error:
-            "For database uploads, include BOTH the main .db/.db3 file and its META .db/.db3 file. (A single PDF is fine on its own.)",
+            "For database uploads, include BOTH the main .db/.db3 and its META .db/.db3. (A single PDF is fine.)",
         },
         { status: 400 }
       );
     }
 
-    // Stubbed response (no storage yet)
+    // TODO: Persist to storage & DB. For now just echo back.
     return NextResponse.json({
       ok: true,
-      message: "Received files (stub). Storage/DB wiring comes next.",
       sectorId,
-      files: fileNames,
+      files: files.map((f) => f.name),
+      totalBytes,
     });
   } catch (err) {
+    console.error("Upload API error:", err);
     return NextResponse.json(
-      { ok: false, error: "Unexpected error parsing upload." },
+      { ok: false, error: "Unexpected server error" },
       { status: 500 }
     );
   }
