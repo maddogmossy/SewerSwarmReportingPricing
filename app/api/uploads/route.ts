@@ -1,7 +1,7 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { clients, projects, uploads, type InsertUpload } from "@/db/schema";
+import { clients, projects, uploads, type InsertUpload } from "../../../db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
 // tiny helpers
