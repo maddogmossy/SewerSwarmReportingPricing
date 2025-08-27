@@ -10,5 +10,5 @@ if (!process.env.DATABASE_URL) {
 const sql = neon(process.env.DATABASE_URL);
 export const db = drizzle(sql, { schema });
 
-// Re-export schema + types so you can `import { uploadsTable } from "@/db"`
+// Re-export schema so callers can do `import { reportUploads } from "@/db"`
 export * from "./schema";
