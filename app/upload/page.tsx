@@ -2,7 +2,6 @@
 import { listUploads } from "@/db/queries";
 
 export default async function UploadsPage() {
-  // Fetch all uploads with relations
   const uploads = await listUploads();
 
   return (
