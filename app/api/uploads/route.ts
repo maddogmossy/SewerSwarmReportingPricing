@@ -1,7 +1,13 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { clients, projects, reportUploads } from "@/db/schema";
+
+import {
+  clients,
+  projects,
+  reportUploads,
+  type InsertReportUpload,
+} from "@/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
 // tiny helpers
@@ -93,8 +99,8 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // ⬇️ derive the insert type directly from the SAME table (cannot drift)
-      const row: typeof reportUploads.$inferInsert = {
+      // ⬇️ derive the insert type directly from the SAME table
+      const row: InsertReportUpload = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
@@ -105,7 +111,11 @@ export async function POST(req: Request) {
         .insert(reportUploads)
         .values(row)
         .onConflictDoUpdate({
-          target: [reportUploads.projectId, reportUploads.sector, reportUploads.filename],
+          target: [
+            reportUploads.projectId,
+            reportUploads.sector,
+            reportUploads.filename,
+          ],
           set: { storagePath, uploadedAt: new Date() },
         });
 
