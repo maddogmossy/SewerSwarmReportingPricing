@@ -1,64 +1,17 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { clients, projects, reportUploads, type InsertReportUpload } from "@/db/schema";
-import { and, eq, isNull } from "drizzle-orm";
-
-// small helper
-const slug = (s: string) =>
-  s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-
-async function ensureClient(name: string | null) {
-  const trimmed = (name || "").trim();
-  if (!trimmed) return null;
-
-  const found = await db
-    .select({ id: clients.id })
-    .from(clients)
-    .where(eq(clients.name, trimmed))
-    .limit(1);
-
-  if (found.length) return found[0].id;
-
-  const created = await db
-    .insert(clients)
-    .values({ name: trimmed })
-    .returning({ id: clients.id });
-
-  return created[0].id;
-}
-
-async function ensureProject(clientId: number | null, name: string | null) {
-  const trimmed = (name || "").trim();
-  if (!trimmed) return null;
-
-  const where = clientId
-    ? and(eq(projects.name, trimmed), eq(projects.clientId, clientId))
-    : and(eq(projects.name, trimmed), isNull(projects.clientId));
-
-  const found = await db
-    .select({ id: projects.id })
-    .from(projects)
-    .where(where)
-    .limit(1);
-
-  if (found.length) return found[0].id;
-
-  const created = await db
-    .insert(projects)
-    .values({ ...(clientId != null ? { clientId } : {}), name: trimmed })
-    .returning({ id: projects.id });
-
-  return created[0].id;
-}
+import { uploads } from "@/db/schema";
 
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
+    // Sector comes from the form. Accept "sectorId" or "sector", normalize to UPPERCASE.
     const sector = (form.get("sectorId") || form.get("sector") || "")
       .toString()
       .toUpperCase();
+
     if (!sector) {
       return NextResponse.json(
         { success: false, error: "Missing sectorId" },
@@ -66,13 +19,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const clientName = (form.get("clientName") || "").toString();
-    const projectName = (form.get("projectName") || "").toString();
+    // Collect all files sent under the "files" field
+    const uploaded = form
+      .getAll("files")
+      .filter((v): v is File => v instanceof File);
 
-    const clientId = await ensureClient(clientName);
-    const projectId = await ensureProject(clientId, projectName);
-
-    const uploaded: File[] = form.getAll("files").filter((v): v is File => v instanceof File);
     if (uploaded.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files received" },
@@ -80,38 +31,20 @@ export async function POST(req: Request) {
       );
     }
 
+    // ✅ Correct: declare an array, then loop and push
     const saved: string[] = [];
-
     for (const file of uploaded) {
-      const clientSlug = clientName ? slug(clientName) : "no-client";
-      const projectSlug = projectName ? slug(projectName) : "no-project";
-      const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
-
-      // Build a row that *matches the table* type exactly
-      const row: InsertReportUpload = {
-        projectId: projectId ?? null,
+      await db.insert(uploads).values({
         sector,
         filename: file.name,
-        storagePath,
-        // uploadedAt is defaulted by DB
-      };
-
-      await db
-        .insert(reportUploads)
-        .values(row)
-        .onConflictDoUpdate({
-          target: [reportUploads.projectId, reportUploads.sector, reportUploads.filename],
-          set: { storagePath, uploadedAt: new Date() },
-        });
-
+      });
       saved.push(file.name);
     }
 
     return NextResponse.json({
       success: true,
       sector,
-      clientId,
-      projectId,
+      count: saved.length,
       files: saved,
     });
   } catch (err: any) {
