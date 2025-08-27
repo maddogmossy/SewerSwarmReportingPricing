@@ -19,10 +19,10 @@ export const projects = pgTable("projects", {
 // ---- uploads (THIS is the one causing your error) ----
 export const uploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
-  projectId: integer("project_id").references(() => projects.id), // <-- NEW
-  sector: text("sector").notNull(),                                // S1..S6
+  projectId: integer("project_id").references(() => projects.id),   // 👈 add this
+  sector: text("sector").notNull(),
   filename: text("filename").notNull(),
-  uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
+  uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(), // 👈 add this
 });
 
 export type InsertUpload = typeof uploads.$inferInsert;
