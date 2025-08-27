@@ -1,4 +1,5 @@
 // app/api/uploads/route.ts
+import type { InsertReportUpload } from "@/db/schema";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 
