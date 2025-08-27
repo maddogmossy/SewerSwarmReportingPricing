@@ -1,20 +1,15 @@
 // app/api/uploads/route.ts
-import type { InsertReportUpload } from "@/db/schema";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-
-import * as DBS from "@/db/schema";
+import * as DBS from "@/db/schema"; // clients, projects, reportUploads
 import type { InsertReportUpload } from "@/db/schema";
-
 import { and, eq, isNull } from "drizzle-orm";
 
-// derive from the exact table we just imported
-
-
-// tiny helpers
+// slug helper
 const slug = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
+// --- upsert helpers ---
 async function ensureClient(name: string | null) {
   const trimmed = (name || "").trim();
   if (!trimmed) return null;
@@ -62,6 +57,7 @@ async function ensureProject(clientId: number | null, name: string | null) {
   return created[0].id;
 }
 
+// --- route ---
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
@@ -100,19 +96,24 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // ✅ UploadRow is inferred from DBS.uploads (the correct table with projectId/storagePath)
-      const row: UploadRow = {
+      // Use the type from schema (no duplicate aliasing)
+      const row: InsertReportUpload = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
+        // uploadedAt is DB default
       };
 
       await db
-        .insert(DBS.uploads)
+        .insert(DBS.reportUploads)
         .values(row)
         .onConflictDoUpdate({
-          target: [DBS.uploads.projectId, DBS.uploads.sector, DBS.uploads.filename],
+          target: [
+            DBS.reportUploads.projectId,
+            DBS.reportUploads.sector,
+            DBS.reportUploads.filename,
+          ],
           set: { storagePath, uploadedAt: new Date() },
         });
 
