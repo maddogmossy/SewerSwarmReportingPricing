@@ -1,7 +1,7 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { uploads, type InsertUpload } from "@/db/schema";
+import { uploads } from "@/db/schema";
 
 export async function POST(req: Request) {
   try {
