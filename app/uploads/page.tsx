@@ -1,26 +1,17 @@
-// app/uploads/page.tsx
-import { getUploadsWithRelations } from "@/db/queries";
-
-export default async function UploadsPage() {
-  const list = await getUploadsWithRelations();
-
+export default function UploadsPage() {
   return (
-    <main className="p-6 space-y-4">
-      <h1 className="text-xl font-semibold">Uploads</h1>
-      <ul className="space-y-2">
-        {list.map((u) => (
-          <li key={u.id} className="border p-3 rounded">
-            <div className="font-medium">{u.filename}</div>
-            <div className="text-sm text-gray-500">
-              sector: {u.sector} · path: {u.storagePath ?? "(none)"} · uploaded:{" "}
-              {new Date(u.uploadedAt).toLocaleString()}
-            </div>
-            <div className="text-sm">
-              project: {u.project?.name ?? "(none)"} · client: {u.client?.name ?? "(none)"}
-            </div>
-          </li>
-        ))}
-      </ul>
+    <main className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-3">Upload Report</h1>
+      <p className="text-slate-600 mb-6">
+        Upload CCTV inspection files and select the sector for analysis.
+      </p>
+
+      {/* TODO: replace this with your actual upload form */}
+      <div className="rounded-lg border p-4 bg-white">
+        <p className="text-slate-500">
+          Placeholder: upload form goes here. Posting to <code>/api/uploads</code>.
+        </p>
+      </div>
     </main>
   );
 }
