@@ -122,7 +122,6 @@ fd.set("projectId", "1");
         </p>
 
         <form className="mt-4 space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <input type="hidden" name="sectorId" value={id} />
           <input
             type="file"
             name="files"
