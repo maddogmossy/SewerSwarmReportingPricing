@@ -1,40 +1,26 @@
 // app/uploads/page.tsx
-import { getReportUploadsWithRelations } from "@/db/queries";
+import { getUploadsWithRelations } from "@/db/queries";
 
 export default async function UploadsPage() {
-  const rows = await getReportUploadsWithRelations();
+  const list = await getUploadsWithRelations();
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Uploads</h1>
-      {rows.length === 0 ? (
-        <p>No uploads yet.</p>
-      ) : (
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>When</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Sector</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Filename</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Project</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Client</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Storage Path</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <td style={{ padding: 8 }}>{new Date(r.uploadedAt).toLocaleString()}</td>
-                <td style={{ padding: 8 }}>{r.sector}</td>
-                <td style={{ padding: 8 }}>{r.filename}</td>
-                <td style={{ padding: 8 }}>{r.project?.name ?? "—"}</td>
-                <td style={{ padding: 8 }}>{r.client?.name ?? "—"}</td>
-                <td style={{ padding: 8 }}>{r.storagePath ?? "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <main className="p-6 space-y-4">
+      <h1 className="text-xl font-semibold">Uploads</h1>
+      <ul className="space-y-2">
+        {list.map((u) => (
+          <li key={u.id} className="border p-3 rounded">
+            <div className="font-medium">{u.filename}</div>
+            <div className="text-sm text-gray-500">
+              sector: {u.sector} · path: {u.storagePath ?? "(none)"} · uploaded:{" "}
+              {new Date(u.uploadedAt).toLocaleString()}
+            </div>
+            <div className="text-sm">
+              project: {u.project?.name ?? "(none)"} · client: {u.client?.name ?? "(none)"}
+            </div>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
