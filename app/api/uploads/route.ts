@@ -1,3 +1,4 @@
+// app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { clients, projects, uploads, type InsertUpload } from "@/db/schema";
@@ -5,7 +6,9 @@ import { and, eq, isNull } from "drizzle-orm";
 
 // tiny helpers
 const slug = (s: string) =>
-  s.toLowerCase().trim()
+  s
+    .toLowerCase()
+    .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
@@ -17,13 +20,15 @@ async function ensureClient(name: string | null) {
     .select({ id: clients.id })
     .from(clients)
     .where(eq(clients.name, trimmed))
-    .limit(1);
+  .limit(1);
+
   if (found.length) return found[0].id;
 
   const created = await db
     .insert(clients)
     .values({ name: trimmed })
     .returning({ id: clients.id });
+
   return created[0].id;
 }
 
@@ -40,12 +45,17 @@ async function ensureProject(clientId: number | null, name: string | null) {
     .from(projects)
     .where(where)
     .limit(1);
+
   if (found.length) return found[0].id;
 
   const created = await db
     .insert(projects)
-    .values({ clientId: clientId ?? null, name: trimmed })
+    .values({
+      ...(clientId != null ? { clientId } : {}),
+      name: trimmed,
+    })
     .returning({ id: projects.id });
+
   return created[0].id;
 }
 
@@ -72,7 +82,10 @@ export async function POST(req: Request) {
     const projectId = await ensureProject(clientId, projectName);
 
     // files
-    const uploaded: File[] = form.getAll("files").filter((v): v is File => v instanceof File);
+    const uploaded: File[] = form
+      .getAll("files")
+      .filter((v): v is File => v instanceof File);
+
     if (uploaded.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files received" },
@@ -83,23 +96,21 @@ export async function POST(req: Request) {
     const saved: string[] = [];
 
     for (const file of uploaded) {
-      // build a logical path (we’re not uploading to storage yet — just recording the path)
+      // logical path (recorded in DB; actual storage wiring comes later)
       const clientSlug = clientName ? slug(clientName) : "no-client";
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      const row: InsertUpload = {
-        projectId: projectId ?? null,   // nullable OK
+      // Build values; include projectId only if we have one
+      const base = {
         sector,
         filename: file.name,
-        storagePath,                    // 👈 NEW
-        // uploadedAt is DB default
-      };
+        storagePath,
+      } as const;
 
-      // upsert by (project_id, sector, filename) — index added in SQL step
       await db
         .insert(uploads)
-        .values(row)
+        .values(projectId != null ? { ...base, projectId } : base)
         .onConflictDoUpdate({
           target: [uploads.projectId, uploads.sector, uploads.filename],
           set: { storagePath, uploadedAt: new Date() },
