@@ -1,13 +1,14 @@
-// app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { clients, projects, uploads, type InsertUpload } from "@/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-/**
- * Create the client if missing and return its id.
- * If name is empty, return null.
- */
+// tiny helpers
+const slug = (s: string) =>
+  s.toLowerCase().trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 async function ensureClient(name: string | null) {
   const trimmed = (name || "").trim();
   if (!trimmed) return null;
@@ -17,21 +18,15 @@ async function ensureClient(name: string | null) {
     .from(clients)
     .where(eq(clients.name, trimmed))
     .limit(1);
-
   if (found.length) return found[0].id;
 
   const created = await db
     .insert(clients)
     .values({ name: trimmed })
     .returning({ id: clients.id });
-
   return created[0].id;
 }
 
-/**
- * Create the project (optionally tied to a client) if missing and return its id.
- * If name is empty, return null.
- */
 async function ensureProject(clientId: number | null, name: string | null) {
   const trimmed = (name || "").trim();
   if (!trimmed) return null;
@@ -45,14 +40,12 @@ async function ensureProject(clientId: number | null, name: string | null) {
     .from(projects)
     .where(where)
     .limit(1);
-
   if (found.length) return found[0].id;
 
   const created = await db
     .insert(projects)
-    .values({ name: trimmed }) // ← no clientId for now because your schema types may not include it
+    .values({ clientId: clientId ?? null, name: trimmed })
     .returning({ id: projects.id });
-
   return created[0].id;
 }
 
@@ -60,7 +53,7 @@ export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
-    // sectorId is required
+    // sector from the URL/page
     const sector = (form.get("sectorId") || form.get("sector") || "")
       .toString()
       .toUpperCase();
@@ -71,19 +64,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // optional: client & project names
+    // optional names typed by user (we’ll auto-create)
     const clientName = (form.get("clientName") || "").toString();
     const projectName = (form.get("projectName") || "").toString();
 
-    // Upsert client & project (safe if empty; returns nulls)
     const clientId = await ensureClient(clientName);
     const projectId = await ensureProject(clientId, projectName);
 
-    // Collect uploaded files (field name: "files")
-    const uploaded: File[] = form
-      .getAll("files")
-      .filter((v): v is File => v instanceof File);
-
+    // files
+    const uploaded: File[] = form.getAll("files").filter((v): v is File => v instanceof File);
     if (uploaded.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files received" },
@@ -91,25 +80,40 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save metadata rows — match your current InsertUpload type: { sector, filename }
     const saved: string[] = [];
+
     for (const file of uploaded) {
+      // build a logical path (we’re not uploading to storage yet — just recording the path)
+      const clientSlug = clientName ? slug(clientName) : "no-client";
+      const projectSlug = projectName ? slug(projectName) : "no-project";
+      const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
+
       const row: InsertUpload = {
+        projectId: projectId ?? null,   // nullable OK
         sector,
         filename: file.name,
-        // uploadedAt is defaulted in DB (if present in schema)
-        // projectId is intentionally omitted until your InsertUpload includes it
+        storagePath,                    // 👈 NEW
+        // uploadedAt is DB default
       };
-      await db.insert(uploads).values(row);
+
+      // upsert by (project_id, sector, filename) — index added in SQL step
+      await db
+        .insert(uploads)
+        .values(row)
+        .onConflictDoUpdate({
+          target: [uploads.projectId, uploads.sector, uploads.filename],
+          set: { storagePath, uploadedAt: new Date() },
+        });
+
       saved.push(file.name);
     }
 
     return NextResponse.json({
       success: true,
       sector,
+      clientId,
+      projectId,
       files: saved,
-      clientId,   // returned for UI, not written to uploads yet
-      projectId,  // returned for UI, not written to uploads yet
     });
   } catch (err: any) {
     return NextResponse.json(
