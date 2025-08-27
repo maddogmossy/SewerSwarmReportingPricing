@@ -16,7 +16,7 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// ----- Report uploads (single source of truth)
+// ----- Report uploads (ONLY uploads table)
 export const reportUploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id),
@@ -26,6 +26,6 @@ export const reportUploads = pgTable("uploads", {
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// Drizzle types
+// Types
 export type InsertReportUpload = typeof reportUploads.$inferInsert;
 export type SelectReportUpload = typeof reportUploads.$inferSelect;
