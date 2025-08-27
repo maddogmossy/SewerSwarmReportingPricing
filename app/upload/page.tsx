@@ -1,19 +1,31 @@
-// app/upload/page.tsx
-import { listUploads } from "@/db/queries";
+// app/uploads/page.tsx
+import { getReportUploadsWithRelations } from "@/db/queries";
 
 export default async function UploadsPage() {
-  const uploads = await listUploads();
+  const uploads = await getReportUploadsWithRelations();
 
   return (
-    <main>
-      <h1>All Uploads</h1>
-      <ul>
-        {uploads.map((u) => (
-          <li key={u.id}>
-            {u.filename} — {u.sector} — Project {u.project?.name ?? "N/A"} — Client {u.client?.name ?? "N/A"}
-          </li>
-        ))}
-      </ul>
+    <main style={{ padding: 24 }}>
+      <h1>Uploads</h1>
+      {uploads.length === 0 ? (
+        <p>No uploads yet.</p>
+      ) : (
+        <ul style={{ lineHeight: 1.7 }}>
+          {uploads.map((u) => (
+            <li key={u.id}>
+              <strong>{u.filename}</strong> — {u.sector}
+              {u.project?.name ? <> — Project: {u.project.name}</> : null}
+              {u.client?.name ? <> — Client: {u.client.name}</> : null}
+              {u.storagePath ? (
+                <>
+                  {" "}
+                  — <code>{u.storagePath}</code>
+                </>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
