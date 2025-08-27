@@ -1,60 +1,56 @@
-// app/uploads/page.tsx
+import { getUploadsWithRelations } from "@/db/queries";
 import Link from "next/link";
-import { DevLabel, CardId } from "@/components/PageId";
-import { db } from "@/db";
-import { uploads } from "@/db/schema";
-import { desc } from "drizzle-orm";
 
-export default async function UploadedReportsPage() {
-  // Fetch uploads newest → oldest
-  const rows = await db
-    .select()
-    .from(uploads)
-    .orderBy(desc(uploads.uploadedAt ?? uploads.id)); // fallback to id if uploadedAt not in schema
+export const dynamic = "force-dynamic";
+
+export default async function UploadsPage() {
+  const rows = await getUploadsWithRelations();
+
+  // group: client -> project
+  const byClient = new Map<string, Map<string, typeof rows>>();
+  for (const r of rows) {
+    const c = r.clientName ?? "No Client";
+    const p = r.projectName ?? "No Project";
+    if (!byClient.has(c)) byClient.set(c, new Map());
+    const m = byClient.get(c)!;
+    if (!m.has(p)) m.set(p, []);
+    m.get(p)!.push(r);
+  }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
-      <DevLabel id="P4" />
+    <main className="mx-auto max-w-5xl px-4 py-8">
+      <h1 className="text-2xl font-extrabold">Uploaded Reports</h1>
+      <p className="text-slate-600 mb-6">Grouped by Client → Project (newest first).</p>
 
-      <section className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <CardId id="C5" />
-        <h1 className="text-2xl font-extrabold text-slate-900">Uploaded Reports</h1>
-        <p className="mt-2 text-slate-600">
-          Lists the files you’ve uploaded by sector (newest first).
-        </p>
+      {[...byClient.entries()].map(([client, projects]) => (
+        <section key={client} className="mb-8">
+          <h2 className="text-xl font-bold">{client}</h2>
+          {[...projects.entries()].map(([project, files]) => (
+            <div key={project} className="mt-2 rounded-lg border p-4">
+              <h3 className="font-semibold">{project}</h3>
+              <ul className="mt-2 space-y-2">
+                {files.map(f => (
+                  <li key={f.id} className="border-t pt-2 first:border-t-0 first:pt-0">
+                    <div className="font-medium">{f.filename}</div>
+                    <div className="text-sm text-slate-600">
+                      Sector: {f.sector} · Uploaded: {new Date(f.uploadedAt).toLocaleString()}
+                    </div>
+                    {f.storagePath && (
+                      <div className="text-xs text-slate-500 break-all">
+                        Path: {f.storagePath}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+      ))}
 
-        {rows.length === 0 ? (
-          <p className="mt-6 text-slate-500">No uploads yet.</p>
-        ) : (
-          <ul className="mt-6 divide-y divide-slate-200">
-            {rows.map((r) => (
-              <li key={r.id} className="py-3 flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-slate-900">{r.filename}</div>
-                  <div className="text-sm text-slate-600">
-                    Sector: <span className="font-semibold">{r.sector}</span>
-                    {r.projectId ? (
-                      <> · Project ID: <span className="font-mono">{r.projectId}</span></>
-                    ) : null}
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    Uploaded:{" "}
-                    {r.uploadedAt
-                      ? new Date(r.uploadedAt).toLocaleString()
-                      : "—"}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-6 flex gap-4">
-          <Link href="/upload" className="text-blue-600 hover:underline">
-            ← Back to sectors
-          </Link>
-        </div>
-      </section>
+      <div className="mt-6">
+        <Link href="/upload" className="text-blue-600 hover:underline">← Back to sectors</Link>
+      </div>
     </main>
   );
 }
