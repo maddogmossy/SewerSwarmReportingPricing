@@ -33,6 +33,9 @@ export default function SectorUploadPage({
   const id = raw as SectorId;
   const meta = getSectorMeta(id);
 
+  const [clientName, setClientName] = useState("");
+  const [projectName, setProjectName] = useState("");
+
   const [files, setFiles] = useState<FileList | null>(null);
   const [notice, setNotice] = useState<{
     kind: "info" | "warning" | "success" | "error";
@@ -46,8 +49,9 @@ export default function SectorUploadPage({
   async function handleUpload() {
     const fd = new FormData();
     fd.set("sectorId", id);
-
-fd.set("projectId", "1");
+    // send the names so the API can upsert client/project and link the upload
+    fd.set("clientName", clientName);
+    fd.set("projectName", projectName);
 
     if (!files || files.length === 0) {
       setNotice({
@@ -79,8 +83,8 @@ fd.set("projectId", "1");
       }
       setNotice({
         kind: "success",
-        title: "Uploaded (stub)",
-        message: `Received ${data.files.length} file(s) for sector ${data.sector || id}. (Storage/DB wiring is next.)`,
+        title: "Uploaded",
+        message: `Received ${data.files.length} file(s) for sector ${data.sector || id}.`,
       });
     } catch (err: any) {
       setNotice({
@@ -122,6 +126,34 @@ fd.set("projectId", "1");
         </p>
 
         <form className="mt-4 space-y-4" onSubmit={(e) => e.preventDefault()}>
+          {/* NEW: client + project */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="block">
+              <span className="block text-sm font-medium text-slate-700">
+                Client
+              </span>
+              <input
+                type="text"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                placeholder="e.g. Anglian Water"
+                className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-medium text-slate-700">
+                Project
+              </span>
+              <input
+                type="text"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="e.g. 40 Hollow Road – IP32 7AY"
+                className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+          </div>
+
           <input
             type="file"
             name="files"
@@ -152,11 +184,11 @@ fd.set("projectId", "1");
           </div>
         )}
 
-<div className="mt-2">
-  <Link href="/uploads" className="text-blue-600 hover:underline">
-    → View uploaded reports
-  </Link>
-</div>
+        <div className="mt-2">
+          <Link href="/uploads" className="text-blue-600 hover:underline">
+            → View uploaded reports
+          </Link>
+        </div>
 
         <div className="mt-6">
           <Link href="/upload" className="text-blue-600 hover:underline">
