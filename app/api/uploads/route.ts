@@ -8,6 +8,8 @@ export async function POST(req: Request) {
     const form = await req.formData();
 
     const sector = (form.get("sectorId") || form.get("sector") || "").toString().toUpperCase();
+    const projectId = parseInt((form.get("projectId") || "0").toString(), 10) || null;
+
     if (!sector) {
       return NextResponse.json({ success: false, error: "Missing sectorId" }, { status: 400 });
     }
@@ -22,21 +24,28 @@ export async function POST(req: Request) {
     const saved: string[] = [];
 
     for (const file of uploaded) {
-      // NOTE: Your current schema exposes only { sector, filename } for InsertUpload
       const row: InsertUpload = {
+        projectId,
         sector,
         filename: file.name,
-        // uploadedAt is defaulted in DB if you added it; if not, it’s fine to omit
-        // projectId is NOT in your current schema type, so we omit it for now
+        uploadedAt: new Date(), // always refresh timestamp
       };
 
-      await db.insert(uploads).values(row);
+      await db
+        .insert(uploads)
+        .values(row)
+        .onConflictDoUpdate({
+          target: [uploads.projectId, uploads.sector, uploads.filename],
+          set: { uploadedAt: new Date() }, // update timestamp instead of duplicate
+        });
+
       saved.push(file.name);
     }
 
     return NextResponse.json({
       success: true,
       sector,
+      projectId,
       count: saved.length,
       files: saved,
     });
