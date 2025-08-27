@@ -1,7 +1,7 @@
 // db/queries.ts
 import { db } from "@/db";
+import { reportUploads, projects, clients } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
-import { clients, projects, reportUploads } from "@/db/schema";
 
 export type UploadWithRelations = {
   id: number;
@@ -9,11 +9,12 @@ export type UploadWithRelations = {
   filename: string;
   storagePath: string | null;
   uploadedAt: Date;
-  project: { id: number; name: string | null } | null;
-  client: { id: number; name: string | null } | null;
+  projectId: number | null;
+  projectName: string | null;
+  clientName: string | null;
 };
 
-export async function getUploadsWithRelations(): Promise<UploadWithRelations[]> {
+export async function getReportUploadsWithRelations(): Promise<UploadWithRelations[]> {
   const rows = await db
     .select({
       id: reportUploads.id,
@@ -23,7 +24,6 @@ export async function getUploadsWithRelations(): Promise<UploadWithRelations[]> 
       uploadedAt: reportUploads.uploadedAt,
       projectId: reportUploads.projectId,
       projectName: projects.name,
-      clientId: clients.id,
       clientName: clients.name,
     })
     .from(reportUploads)
@@ -31,17 +31,14 @@ export async function getUploadsWithRelations(): Promise<UploadWithRelations[]> 
     .leftJoin(clients, eq(clients.id, projects.clientId))
     .orderBy(desc(reportUploads.uploadedAt));
 
-  return rows.map((r) => ({
-    id: r.id!,
-    sector: r.sector!,
-    filename: r.filename!,
-    storagePath: r.storagePath ?? null,
-    uploadedAt: r.uploadedAt!,
-    project: r.projectId
-      ? { id: r.projectId, name: r.projectName ?? null }
-      : null,
-    client: r.clientId
-      ? { id: r.clientId, name: r.clientName ?? null }
-      : null,
+  return rows.map(r => ({
+    id: r.id,
+    sector: r.sector,
+    filename: r.filename,
+    storagePath: r.storagePath,
+    uploadedAt: r.uploadedAt,
+    projectId: r.projectId,
+    projectName: r.projectName ?? null,
+    clientName: r.clientName ?? null,
   }));
 }
