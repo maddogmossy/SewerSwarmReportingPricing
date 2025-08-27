@@ -9,13 +9,10 @@ export type UploadWithRelations = {
   filename: string;
   storagePath: string | null;
   uploadedAt: Date;
-  projectId: number | null;
-  projectName: string | null;
-  clientId: number | null;
-  clientName: string | null;
+  project: { id: number; name: string } | null;
+  client: { id: number; name: string } | null;
 };
 
-// Simple list with client/project names
 export async function listUploads(): Promise<UploadWithRelations[]> {
   const rows = await db
     .select({
@@ -40,9 +37,7 @@ export async function listUploads(): Promise<UploadWithRelations[]> {
     filename: r.filename,
     storagePath: r.storagePath,
     uploadedAt: r.uploadedAt,
-    projectId: r.projectId,
-    projectName: r.projectName ?? null,
-    clientId: r.clientId ?? null,
-    clientName: r.clientName ?? null,
+    project: r.projectId ? { id: r.projectId, name: r.projectName! } : null,
+    client: r.clientId ? { id: r.clientId, name: r.clientName! } : null,
   }));
 }
