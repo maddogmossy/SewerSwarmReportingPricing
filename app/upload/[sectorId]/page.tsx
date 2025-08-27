@@ -4,18 +4,17 @@
 import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Upload } from "lucide-react";
-
 import { DevLabel, CardId } from "@/components/PageId";
-import Notice from "@/components/Notice";
+import { Upload } from "lucide-react";
 import { type SectorId, getSectorMeta } from "@/lib/standards";
+import Notice from "@/components/Notice";
 
-// Accept either: (1) a single PDF OR (2) main .db/.db3 + META .db/.db3
-function isDbPairOrPdf(files: FileList | null) {
+// Allow single PDF OR (main .db/.db3 + META .db/.db3) pair
+function isDbPairPresent(files: FileList | null) {
   if (!files || files.length === 0) return false;
   const names = Array.from(files).map((f) => f.name.toLowerCase());
 
-  // Single PDF is valid
+  // single PDF is allowed
   if (names.length === 1 && names[0].endsWith(".pdf")) return true;
 
   const anyDb = names.some((n) => n.endsWith(".db") || n.endsWith(".db3"));
@@ -23,18 +22,6 @@ function isDbPairOrPdf(files: FileList | null) {
     (n) => n.includes("meta") && (n.endsWith(".db") || n.endsWith(".db3"))
   );
   return anyDb && anyMeta;
-}
-
-// Very light heuristic to suggest a project name from the first filename
-function suggestProjectName(files: FileList | null) {
-  if (!files || files.length === 0) return "";
-  const first = files[0].name;
-
-  // strip extension
-  const base = first.replace(/\.[^.]+$/i, "");
-
-  // try to remove trailing "_Meta" if present
-  return base.replace(/_meta$/i, "").trim();
 }
 
 export default function SectorUploadPage({
@@ -45,30 +32,24 @@ export default function SectorUploadPage({
   const raw = (params.sectorId || "").toUpperCase();
   const id = raw as SectorId;
   const meta = getSectorMeta(id);
-  if (!meta) return notFound();
 
-  const [files, setFiles] = useState<FileList | null>(null);
   const [clientName, setClientName] = useState("");
   const [projectName, setProjectName] = useState("");
 
+  const [files, setFiles] = useState<FileList | null>(null);
   const [notice, setNotice] = useState<{
     kind: "info" | "warning" | "success" | "error";
     title: string;
     message: string;
   } | null>(null);
 
-  function onFilesChanged(list: FileList | null) {
-    setFiles(list);
-    // If user hasn’t typed a project yet, try a guess from filename
-    if (!projectName || projectName.trim() === "") {
-      const guess = suggestProjectName(list);
-      if (guess) setProjectName(guess);
-    }
-  }
+  if (!meta) return notFound();
 
+  // ✅ Real upload handler (calls /api/uploads)
   async function handleUpload() {
     const fd = new FormData();
     fd.set("sectorId", id);
+    // send the names so the API can upsert client/project and link the upload
     fd.set("clientName", clientName);
     fd.set("projectName", projectName);
 
@@ -81,12 +62,13 @@ export default function SectorUploadPage({
       return;
     }
 
-    if (!isDbPairOrPdf(files)) {
+    // validate rules
+    if (!isDbPairPresent(files)) {
       setNotice({
         kind: "warning",
-        title: "Invalid selection",
+        title: "Database pair required",
         message:
-          "Upload either a single PDF, or BOTH the main .db/.db3 file and its META .db/.db3 file.",
+          "For database uploads, include BOTH the main .db/.db3 file and its META .db/.db3 file. (A single PDF is fine on its own.)",
       });
       return;
     }
@@ -96,19 +78,14 @@ export default function SectorUploadPage({
     try {
       const res = await fetch("/api/uploads", { method: "POST", body: fd });
       const data = await res.json();
-
-      if (!res.ok || !data?.success) {
+      if (!res.ok || !data.success) {
         throw new Error(data?.error || "Upload failed");
       }
-
       setNotice({
         kind: "success",
-        title: "Upload complete",
-        message: `Saved ${data.files.length} file(s) for sector ${data.sector}.`,
+        title: "Uploaded",
+        message: `Received ${data.files.length} file(s) for sector ${data.sector || id}.`,
       });
-
-      // optional: clear the file picker after success
-      setFiles(null);
     } catch (err: any) {
       setNotice({
         kind: "error",
@@ -144,13 +121,17 @@ export default function SectorUploadPage({
       <section className="relative mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-900">Upload files</h2>
         <p className="mt-2 text-slate-600">
-          Upload a <strong>PDF</strong> or a <strong>.db/.db3 + META</strong> pair (max 50MB).
+          Select a <strong>PDF</strong> or a pair of <strong>.db/.db3</strong>{" "}
+          files (max 50MB).
         </p>
 
         <form className="mt-4 space-y-4" onSubmit={(e) => e.preventDefault()}>
+          {/* NEW: client + project */}
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="block text-sm font-medium text-slate-700">Client</span>
+              <span className="block text-sm font-medium text-slate-700">
+                Client
+              </span>
               <input
                 type="text"
                 value={clientName}
@@ -160,7 +141,9 @@ export default function SectorUploadPage({
               />
             </label>
             <label className="block">
-              <span className="block text-sm font-medium text-slate-700">Project</span>
+              <span className="block text-sm font-medium text-slate-700">
+                Project
+              </span>
               <input
                 type="text"
                 value={projectName}
@@ -175,12 +158,11 @@ export default function SectorUploadPage({
             type="file"
             name="files"
             multiple
-            // accept="*/*" so iOS Safari doesn’t block .db/.db3
+            // NOTE: accept="*/*" so iOS Safari doesn’t block .db/.db3
             accept="*/*"
-            onChange={(e) => onFilesChanged(e.target.files)}
+            onChange={(e) => setFiles(e.target.files)}
             className="block w-full rounded-lg border border-slate-300 px-3 py-2"
           />
-
           <button
             type="button"
             onClick={handleUpload}
