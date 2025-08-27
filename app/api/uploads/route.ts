@@ -1,5 +1,4 @@
 // app/api/uploads/route.ts
-import type { InsertReportUpload } from "@/db/schema";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { clients, projects, reportUploads } from "@/db/schema";
@@ -90,13 +89,13 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // Use the type from schema
-      const row: InsertReportUpload = {
+      // ⬇️ derive the *exact* insert type from the table here
+      const row: typeof reportUploads.$inferInsert = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
-        // uploadedAt is defaulted by DB
+        // uploadedAt is DB default
       };
 
       await db
