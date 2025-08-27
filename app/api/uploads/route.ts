@@ -2,10 +2,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { clients, projects, uploads, type InsertUpload } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
-async function getOrCreateClient(name: string) {
-  const trimmed = name.trim();
+async function ensureClient(name: string | null) {
+  const trimmed = (name || "").trim();
   if (!trimmed) return null;
 
   const found = await db
@@ -20,34 +20,31 @@ async function getOrCreateClient(name: string) {
     .insert(clients)
     .values({ name: trimmed })
     .returning({ id: clients.id });
+
   return created[0].id;
 }
 
-async function getOrCreateProject(clientId: number | null, name: string) {
-  const trimmed = name.trim();
+async function ensureProject(clientId: number | null, name: string | null) {
+  const trimmed = (name || "").trim();
   if (!trimmed) return null;
 
-  // If no clientId, we create a project unattached (can attach later)
-  if (!clientId) {
-    const created = await db
-      .insert(projects)
-      .values({ clientId: null, name: trimmed })
-      .returning({ id: projects.id });
-    return created[0].id;
-  }
+  const where = clientId
+    ? and(eq(projects.name, trimmed), eq(projects.clientId, clientId))
+    : and(eq(projects.name, trimmed), isNull(projects.clientId));
 
   const found = await db
     .select({ id: projects.id })
     .from(projects)
-    .where(and(eq(projects.clientId, clientId), eq(projects.name, trimmed)))
+    .where(where)
     .limit(1);
 
   if (found.length) return found[0].id;
 
   const created = await db
     .insert(projects)
-    .values({ clientId, name: trimmed })
+    .values({ clientId: clientId ?? null, name: trimmed })
     .returning({ id: projects.id });
+
   return created[0].id;
 }
 
@@ -55,15 +52,9 @@ export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
-    const sector = (
-      form.get("sectorId") ||
-      form.get("sector") ||
-      ""
-    ).toString().toUpperCase();
-
-    const clientName = (form.get("clientName") || "").toString();
-    const projectName = (form.get("projectName") || "").toString();
-
+    const sector = (form.get("sectorId") || form.get("sector") || "")
+      .toString()
+      .toUpperCase();
     if (!sector) {
       return NextResponse.json(
         { success: false, error: "Missing sectorId" },
@@ -71,6 +62,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // names from the new fields on the form
+    const clientName = (form.get("clientName") || "").toString();
+    const projectName = (form.get("projectName") || "").toString();
+
+    // Upsert client + project (both nullable, project may exist without client)
+    const clientId = await ensureClient(clientName);
+    const projectId = await ensureProject(clientId, projectName);
+
+    // Collect files
     const uploaded: File[] = form
       .getAll("files")
       .filter((v): v is File => v instanceof File);
@@ -82,24 +82,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Upsert client/project if names provided
-    let projectId: number | null = null;
-    if (clientName || projectName) {
-      const clientId = await getOrCreateClient(clientName);
-      projectId = await getOrCreateProject(clientId, projectName);
-    }
-
     const saved: string[] = [];
 
     for (const file of uploaded) {
       const row: InsertUpload = {
+        projectId: projectId ?? null,
         sector,
         filename: file.name,
-        // these next two are safe if your schema has them;
-        // uploadedAt defaults in DB, but setting it is fine too
-        uploadedAt: new Date(),
-        projectId: projectId ?? null,
+        // uploadedAt defaults in DB
       };
+
       await db.insert(uploads).values(row);
       saved.push(file.name);
     }
@@ -108,6 +100,7 @@ export async function POST(req: Request) {
       success: true,
       sector,
       files: saved,
+      clientId,
       projectId,
     });
   } catch (err: any) {
