@@ -1,16 +1,10 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-
-import {
-  clients,
-  projects,
-  reportUploads,
-  type InsertReportUpload,
-} from "@/db/schema";
+import { clients, projects, reportUploads, type InsertReportUpload } from "@/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-// tiny helpers
+// helpers
 const slug = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
@@ -52,10 +46,7 @@ async function ensureProject(clientId: number | null, name: string | null) {
 
   const created = await db
     .insert(projects)
-    .values({
-      ...(clientId != null ? { clientId } : {}),
-      name: trimmed,
-    })
+    .values({ ...(clientId != null ? { clientId } : {}), name: trimmed })
     .returning({ id: projects.id });
 
   return created[0].id;
@@ -65,6 +56,7 @@ export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
+    // sector
     const sector = (form.get("sectorId") || form.get("sector") || "")
       .toString()
       .toUpperCase();
@@ -75,16 +67,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // names typed by user
     const clientName = (form.get("clientName") || "").toString();
     const projectName = (form.get("projectName") || "").toString();
 
     const clientId = await ensureClient(clientName);
     const projectId = await ensureProject(clientId, projectName);
 
-    const uploaded: File[] = form
-      .getAll("files")
-      .filter((v): v is File => v instanceof File);
-
+    // files
+    const uploaded: File[] = form.getAll("files").filter((v): v is File => v instanceof File);
     if (uploaded.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files received" },
@@ -99,23 +90,19 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // ⬇️ derive the insert type directly from the SAME table
-      const row: InsertReportUpload = {
+      // Build the row; validate shape with `satisfies` to ensure it matches the table
+      const row = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
-      };
+      } satisfies InsertReportUpload;
 
       await db
         .insert(reportUploads)
         .values(row)
         .onConflictDoUpdate({
-          target: [
-            reportUploads.projectId,
-            reportUploads.sector,
-            reportUploads.filename,
-          ],
+          target: [reportUploads.projectId, reportUploads.sector, reportUploads.filename],
           set: { storagePath, uploadedAt: new Date() },
         });
 
