@@ -1,32 +1,29 @@
 // app/api/uploads/route.ts
+import type { InsertReportUpload } from "@/db/schema";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import * as DBS from "@/db/schema"; // clients, projects, reportUploads
-import type { InsertReportUpload } from "@/db/schema";
+import { clients, projects, reportUploads } from "@/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-// slug helper
+// helpers
 const slug = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-// --- upsert helpers ---
 async function ensureClient(name: string | null) {
   const trimmed = (name || "").trim();
   if (!trimmed) return null;
 
   const found = await db
-    .select({ id: DBS.clients.id })
-    .from(DBS.clients)
-    .where(eq(DBS.clients.name, trimmed))
+    .select({ id: clients.id })
+    .from(clients)
+    .where(eq(clients.name, trimmed))
     .limit(1);
-
   if (found.length) return found[0].id;
 
   const created = await db
-    .insert(DBS.clients)
+    .insert(clients)
     .values({ name: trimmed })
-    .returning({ id: DBS.clients.id });
-
+    .returning({ id: clients.id });
   return created[0].id;
 }
 
@@ -35,29 +32,26 @@ async function ensureProject(clientId: number | null, name: string | null) {
   if (!trimmed) return null;
 
   const where = clientId
-    ? and(eq(DBS.projects.name, trimmed), eq(DBS.projects.clientId, clientId))
-    : and(eq(DBS.projects.name, trimmed), isNull(DBS.projects.clientId));
+    ? and(eq(projects.name, trimmed), eq(projects.clientId, clientId))
+    : and(eq(projects.name, trimmed), isNull(projects.clientId));
 
   const found = await db
-    .select({ id: DBS.projects.id })
-    .from(DBS.projects)
+    .select({ id: projects.id })
+    .from(projects)
     .where(where)
     .limit(1);
-
   if (found.length) return found[0].id;
 
   const created = await db
-    .insert(DBS.projects)
+    .insert(projects)
     .values({
       ...(clientId != null ? { clientId } : {}),
       name: trimmed,
     })
-    .returning({ id: DBS.projects.id });
-
+    .returning({ id: projects.id });
   return created[0].id;
 }
 
-// --- route ---
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
@@ -96,24 +90,20 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // Use the type from schema (no duplicate aliasing)
+      // Use the type from schema
       const row: InsertReportUpload = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
-        // uploadedAt is DB default
+        // uploadedAt is defaulted by DB
       };
 
       await db
-        .insert(DBS.reportUploads)
+        .insert(reportUploads)
         .values(row)
         .onConflictDoUpdate({
-          target: [
-            DBS.reportUploads.projectId,
-            DBS.reportUploads.sector,
-            DBS.reportUploads.filename,
-          ],
+          target: [reportUploads.projectId, reportUploads.sector, reportUploads.filename],
           set: { storagePath, uploadedAt: new Date() },
         });
 
