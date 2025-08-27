@@ -1,48 +1,30 @@
 // app/uploads/page.tsx
-import { listUploads } from "@/db/queries";
+import { getUploadsWithRelations } from "@/db/queries";
 
 export default async function UploadsPage() {
-  const uploads = await listUploads();
+  const items = await getUploadsWithRelations();
 
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>All Uploads</h1>
-      {uploads.length === 0 ? (
-        <p>No uploads yet.</p>
-      ) : (
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
-          <thead>
-            <tr>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>File</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Sector</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Project</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Client</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Uploaded</th>
-            </tr>
-          </thead>
-          <tbody>
-            {uploads.map((u) => (
-              <tr key={u.id}>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  {u.filename}
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  {u.sector}
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  {u.projectName || "-"}
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  {u.clientName || "-"}
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  {u.uploadedAt ? new Date(u.uploadedAt).toLocaleString() : "-"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <main className="mx-auto max-w-5xl px-4 py-10">
+      <h1 className="text-2xl font-bold">Uploaded Reports</h1>
+      <div className="mt-6 space-y-4">
+        {items.length === 0 && <p>No uploads yet.</p>}
+        {items.map((u) => (
+          <div key={u.id} className="rounded border p-4">
+            <div className="font-mono text-sm">{u.filename}</div>
+            <div className="text-slate-600">
+              Sector: <b>{u.sector}</b>
+              {" · "}
+              Project: <b>{u.project?.name ?? "—"}</b>
+              {" · "}
+              Client: <b>{u.client?.name ?? "—"}</b>
+            </div>
+            <div className="text-xs text-slate-500 mt-1">
+              Path: {u.storagePath ?? "—"}
+            </div>
+          </div>
+        ))}
+      </div>
     </main>
   );
 }
