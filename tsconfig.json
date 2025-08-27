@@ -29,3 +29,19 @@
     "scripts/**/*"
   ]
 }
+{
+  "compilerOptions": {
+    "...": "your existing options"
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "server/**/*",
+    "shared/**/*",
+    "scripts/**/*",
+    "**/shared/**",
+    "**/server/**"
+  ]
+}
+
