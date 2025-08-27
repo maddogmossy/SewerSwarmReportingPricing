@@ -1,14 +1,14 @@
-// db/schema.ts
 import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { clients } from "./schema"; // if circular, adjust accordingly
 
-// ---------- Clients
+// ----- Clients
 export const clients = pgTable("clients", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// ---------- Projects
+// ----- Projects
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
   clientId: integer("client_id").references(() => clients.id),
@@ -16,8 +16,8 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// ---------- Uploads (single source of truth)
-export const uploadsTable = pgTable("uploads", {
+// ----- Report uploads
+export const reportUploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id),
   sector: text("sector").notNull(),
@@ -26,6 +26,6 @@ export const uploadsTable = pgTable("uploads", {
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// Types
-export type InsertUpload = typeof uploadsTable.$inferInsert;
-export type SelectUpload = typeof uploadsTable.$inferSelect;
+// Drizzle types
+export type InsertReportUpload = typeof reportUploads.$inferInsert;
+export type SelectReportUpload = typeof reportUploads.$inferSelect;
