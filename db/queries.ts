@@ -1,19 +1,19 @@
 // db/queries.ts
 import { db } from "@/db";
-import { clients, projects, reportUploads } from "@/db/schema";
+import { reportUploads, projects, clients } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 
-export type UploadWithRelations = {
+export type ReportUploadWithRelations = {
   id: number;
   sector: string;
   filename: string;
   storagePath: string | null;
   uploadedAt: Date;
-  project: { id: number; name: string } | null;
-  client: { id: number; name: string } | null;
+  project: { id: number | null; name: string | null } | null;
+  client: { id: number | null; name: string | null } | null;
 };
 
-export async function listUploads(): Promise<UploadWithRelations[]> {
+export async function getReportUploadsWithRelations(): Promise<ReportUploadWithRelations[]> {
   const rows = await db
     .select({
       id: reportUploads.id,
@@ -37,7 +37,7 @@ export async function listUploads(): Promise<UploadWithRelations[]> {
     filename: r.filename,
     storagePath: r.storagePath,
     uploadedAt: r.uploadedAt,
-    project: r.projectId ? { id: r.projectId, name: r.projectName! } : null,
-    client: r.clientId ? { id: r.clientId, name: r.clientName! } : null,
+    project: r.projectId ? { id: r.projectId, name: r.projectName ?? null } : null,
+    client: r.clientId ? { id: r.clientId, name: r.clientName ?? null } : null,
   }));
 }
