@@ -47,6 +47,8 @@ export default function SectorUploadPage({
     const fd = new FormData();
     fd.set("sectorId", id);
 
+fd.set("projectId", "1");
+
     if (!files || files.length === 0) {
       setNotice({
         kind: "warning",
