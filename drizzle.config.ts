@@ -1,14 +1,15 @@
+// drizzle.config.ts
 import { defineConfig } from "drizzle-kit";
 
 if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL missing, ensure the database is provisioned");
+  throw new Error("DATABASE_URL missing");
 }
 
 export default defineConfig({
   out: "./migrations",
-  schema: "./db/schema.ts",   // 👈 needs quotes
+  schema: "./db/schema.ts",   // ✅ use ONLY this schema file
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL!,
   },
 });
