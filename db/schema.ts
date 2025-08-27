@@ -14,7 +14,10 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// ⬇️ renamed to avoid any collision with other “uploads” symbols
+/**
+ * We expose this as `reportUploads` to avoid name clashes with any legacy `uploads`.
+ * It still maps to the DB table named "uploads".
+ */
 export const reportUploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id),
@@ -24,5 +27,6 @@ export const reportUploads = pgTable("uploads", {
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Typed helpers
 export type InsertReportUpload = typeof reportUploads.$inferInsert;
 export type SelectReportUpload = typeof reportUploads.$inferSelect;
