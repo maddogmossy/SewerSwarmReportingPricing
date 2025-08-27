@@ -59,9 +59,11 @@ export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
+    // sector from the URL/page
     const sector = (form.get("sectorId") || form.get("sector") || "")
       .toString()
       .toUpperCase();
+
     if (!sector) {
       return NextResponse.json(
         { success: false, error: "Missing sectorId" },
@@ -69,13 +71,18 @@ export async function POST(req: Request) {
       );
     }
 
+    // optional names typed by user (we’ll auto-create)
     const clientName = (form.get("clientName") || "").toString();
     const projectName = (form.get("projectName") || "").toString();
 
     const clientId = await ensureClient(clientName);
     const projectId = await ensureProject(clientId, projectName);
 
-    const uploaded: File[] = form.getAll("files").filter((v): v is File => v instanceof File);
+    // files
+    const uploaded: File[] = form
+      .getAll("files")
+      .filter((v): v is File => v instanceof File);
+
     if (uploaded.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files received" },
@@ -86,21 +93,20 @@ export async function POST(req: Request) {
     const saved: string[] = [];
 
     for (const file of uploaded) {
+      // build a logical path (we’re not uploading to storage yet — just recording the path)
       const clientSlug = clientName ? slug(clientName) : "no-client";
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // ✅ Let the TABLE define the insert type. No named Insert type here.
-      const row = {
-        projectId: projectId ?? null,
-        sector,
-        filename: file.name,
-        storagePath,
-      } satisfies typeof reportUploads.$inferInsert;
-
+      // Inline the insert object so Drizzle infers the type from `reportUploads`
       await db
         .insert(reportUploads)
-        .values(row)
+        .values({
+          projectId: projectId ?? null,
+          sector,
+          filename: file.name,
+          storagePath,
+        })
         .onConflictDoUpdate({
           target: [reportUploads.projectId, reportUploads.sector, reportUploads.filename],
           set: { storagePath, uploadedAt: new Date() },
