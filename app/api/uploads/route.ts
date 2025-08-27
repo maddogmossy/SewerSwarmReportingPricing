@@ -21,26 +21,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "No files received" }, { status: 400 });
     }
 
-    const saved: string[] = [];
-
-    for (const file of uploaded) {
-      const row: InsertUpload = {
-        projectId,
-        sector,
-        filename: file.name,
-        uploadedAt: new Date(), // always refresh timestamp
-      };
-
-      await db
-        .insert(uploads)
-        .values(row)
-        .onConflictDoUpdate({
-          target: [uploads.projectId, uploads.sector, uploads.filename],
-          set: { uploadedAt: new Date() }, // update timestamp instead of duplicate
-        });
-
-      saved.push(file.name);
-    }
+    const saved: for (const file of uploaded) {
+  await db.insert(uploads).values({
+    sector,
+    filename: file.name,
+  });
+  saved.push(file.name);
 
     return NextResponse.json({
       success: true,
