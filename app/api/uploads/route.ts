@@ -96,25 +96,27 @@ export async function POST(req: Request) {
     const saved: string[] = [];
 
     for (const file of uploaded) {
-      // logical path (recorded in DB; actual storage wiring comes later)
-      const clientSlug = clientName ? slug(clientName) : "no-client";
-      const projectSlug = projectName ? slug(projectName) : "no-project";
-      const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
+      
+// logical path...
+const clientSlug = clientName ? slug(clientName) : "no-client";
+const projectSlug = projectName ? slug(projectName) : "no-project";
+const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // Build values; include projectId only if we have one
-      const base = {
-        sector,
-        filename: file.name,
-        storagePath,
-      } as const;
+// Build a concrete InsertUpload so TS knows the exact shape
+const row: InsertUpload = {
+  projectId: projectId ?? null, // always present; null when unknown
+  sector,
+  filename: file.name,
+  storagePath,
+};
 
-      await db
-        .insert(uploads)
-        .values(projectId != null ? { ...base, projectId } : base)
-        .onConflictDoUpdate({
-          target: [uploads.projectId, uploads.sector, uploads.filename],
-          set: { storagePath, uploadedAt: new Date() },
-        });
+await db
+  .insert(uploads)
+  .values(row)
+  .onConflictDoUpdate({
+    target: [uploads.projectId, uploads.sector, uploads.filename],
+    set: { storagePath, uploadedAt: new Date() },
+  });
 
       saved.push(file.name);
     }
