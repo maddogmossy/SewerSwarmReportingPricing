@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Insert each file name into the uploads table (sector + filename)
+    // ✅ Correct: declare an array, then loop and push
     const saved: string[] = [];
     for (const file of uploaded) {
       await db.insert(uploads).values({
@@ -52,5 +52,5 @@ export async function POST(req: Request) {
       { success: false, error: err?.message || "Unexpected error" },
       { status: 500 }
     );
-    }
+  }
 }
