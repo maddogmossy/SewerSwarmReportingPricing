@@ -1,10 +1,14 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { clients, projects, reportUploads } from "@/db/schema";
+import {
+  clients,
+  projects,
+  uploadsTable,
+  type InsertUploadRow,
+} from "@/db";
 import { and, eq, isNull } from "drizzle-orm";
 
-// tiny helpers
 const slug = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
@@ -93,23 +97,19 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // ✅ row must match the reportUploads schema
+      // ✅ Strong type check against the exact table insert shape
       const row = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
-      } satisfies typeof reportUploads.$inferInsert;
+      } satisfies InsertUploadRow;
 
       await db
-        .insert(reportUploads)
+        .insert(uploadsTable)
         .values(row)
         .onConflictDoUpdate({
-          target: [
-            reportUploads.projectId,
-            reportUploads.sector,
-            reportUploads.filename,
-          ],
+          target: [uploadsTable.projectId, uploadsTable.sector, uploadsTable.filename],
           set: { storagePath, uploadedAt: new Date() },
         });
 
