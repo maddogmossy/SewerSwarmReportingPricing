@@ -152,6 +152,12 @@ fd.set("projectId", "1");
           </div>
         )}
 
+<div className="mt-2">
+  <Link href="/uploads" className="text-blue-600 hover:underline">
+    → View uploaded reports
+  </Link>
+</div>
+
         <div className="mt-6">
           <Link href="/upload" className="text-blue-600 hover:underline">
             ← Back to sectors
