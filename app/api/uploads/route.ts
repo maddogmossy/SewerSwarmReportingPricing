@@ -4,10 +4,7 @@ import { db } from "@/db";
 import { clients, projects, uploads, type InsertUpload } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-/**
- * Create (or fetch) a client by name.
- * Returns the client id or null if no name given.
- */
+/** Create (or fetch) a client by name. Returns id or null if no name. */
 async function ensureClient(name: string | null) {
   const trimmed = (name || "").trim();
   if (!trimmed) return null;
@@ -28,10 +25,7 @@ async function ensureClient(name: string | null) {
   return created[0].id;
 }
 
-/**
- * Create (or fetch) a project by name ONLY.
- * (We’re not using clientId here so it works with your current schema.)
- */
+/** Create (or fetch) a project by NAME only (schema-safe today). */
 async function ensureProjectByName(name: string | null) {
   const trimmed = (name || "").trim();
   if (!trimmed) return null;
@@ -46,7 +40,7 @@ async function ensureProjectByName(name: string | null) {
 
   const created = await db
     .insert(projects)
-    .values({ name: trimmed }) // <- only name to match your schema
+    .values({ name: trimmed }) // only name, to match your current schema
     .returning({ id: projects.id });
 
   return created[0].id;
@@ -59,6 +53,7 @@ export async function POST(req: Request) {
     const sector = (form.get("sectorId") || form.get("sector") || "")
       .toString()
       .toUpperCase();
+
     if (!sector) {
       return NextResponse.json(
         { success: false, error: "Missing sectorId" },
@@ -66,17 +61,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // names from the form
+    // Names from the form (free text)
     const clientName = (form.get("clientName") || "").toString();
     const projectName = (form.get("projectName") || "").toString();
 
-    // Upsert client; keep the id for returning (not used in project insert here)
+    // Upsert client; keep id for returning (not used in project insert yet)
     const clientId = await ensureClient(clientName);
 
-    // Upsert project by NAME (schema-safe today)
+    // Upsert project by NAME (no clientId dependency)
     const projectId = await ensureProjectByName(projectName);
 
-    // Collect files
+    // Files
     const uploaded: File[] = form
       .getAll("files")
       .filter((v): v is File => v instanceof File);
@@ -91,13 +86,11 @@ export async function POST(req: Request) {
     const saved: string[] = [];
 
     for (const file of uploaded) {
-      // Type-safe insert that matches db/schema.ts
       const row: InsertUpload = {
-        // projectId is allowed if your uploads table has it; if not, remove this line
+        // projectId can be null; uploadedAt defaults in DB
         projectId: projectId ?? null,
         sector,
         filename: file.name,
-        // uploadedAt defaults in DB (per your schema)
       };
 
       await db.insert(uploads).values(row);
@@ -109,4 +102,12 @@ export async function POST(req: Request) {
       sector,
       files: saved,
       clientId,
-      project
+      projectId,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { success: false, error: err?.message || "Unexpected error" },
+      { status: 500 }
+    );
+  }
+}
