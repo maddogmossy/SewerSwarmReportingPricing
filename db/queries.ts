@@ -1,5 +1,4 @@
-import { reportUploads as uploads } from "@/db/schema";
-import { clients, projects, uploads } from "@/db/schema";
+import { clients, projects, reportUploads } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 export type UploadWithRelations = {
