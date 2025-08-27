@@ -1,16 +1,12 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { reportUploads, clients, projects } from "@/db/schema";
+import { clients, projects, reportUploads, type InsertReportUpload } from "@/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-// helper to make safe path parts
+// small helper
 const slug = (s: string) =>
-  (s || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
 async function ensureClient(name: string | null) {
   const trimmed = (name || "").trim();
@@ -50,10 +46,7 @@ async function ensureProject(clientId: number | null, name: string | null) {
 
   const created = await db
     .insert(projects)
-    .values({
-      ...(clientId != null ? { clientId } : {}),
-      name: trimmed,
-    })
+    .values({ ...(clientId != null ? { clientId } : {}), name: trimmed })
     .returning({ id: projects.id });
 
   return created[0].id;
@@ -63,11 +56,9 @@ export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
-    // sector comes from the route/page form
     const sector = (form.get("sectorId") || form.get("sector") || "")
       .toString()
       .toUpperCase();
-
     if (!sector) {
       return NextResponse.json(
         { success: false, error: "Missing sectorId" },
@@ -75,18 +66,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // optional client/project names (auto-create if provided)
     const clientName = (form.get("clientName") || "").toString();
     const projectName = (form.get("projectName") || "").toString();
 
     const clientId = await ensureClient(clientName);
     const projectId = await ensureProject(clientId, projectName);
 
-    // files[]
-    const uploaded: File[] = form
-      .getAll("files")
-      .filter((v): v is File => v instanceof File);
-
+    const uploaded: File[] = form.getAll("files").filter((v): v is File => v instanceof File);
     if (uploaded.length === 0) {
       return NextResponse.json(
         { success: false, error: "No files received" },
@@ -97,19 +83,18 @@ export async function POST(req: Request) {
     const saved: string[] = [];
 
     for (const file of uploaded) {
-      // build logical storage path
       const clientSlug = clientName ? slug(clientName) : "no-client";
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // NOTE: using `as any` to bypass stale/duplicate table-type conflicts
-      // at build time. The runtime insert is correct and uses `reportUploads`.
-      const row = {
+      // Build a row that *matches the table* type exactly
+      const row: InsertReportUpload = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
-      } as any;
+        // uploadedAt is defaulted by DB
+      };
 
       await db
         .insert(reportUploads)
