@@ -1,10 +1,15 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { clients, projects, reportUploads } from "@/db/schema";
+import {
+  clients,
+  projects,
+  reportUploads,
+  type InsertReportUpload,
+} from "@/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-// helpers
+// tiny helpers
 const slug = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
@@ -17,12 +22,14 @@ async function ensureClient(name: string | null) {
     .from(clients)
     .where(eq(clients.name, trimmed))
     .limit(1);
+
   if (found.length) return found[0].id;
 
   const created = await db
     .insert(clients)
     .values({ name: trimmed })
     .returning({ id: clients.id });
+
   return created[0].id;
 }
 
@@ -39,6 +46,7 @@ async function ensureProject(clientId: number | null, name: string | null) {
     .from(projects)
     .where(where)
     .limit(1);
+
   if (found.length) return found[0].id;
 
   const created = await db
@@ -48,6 +56,7 @@ async function ensureProject(clientId: number | null, name: string | null) {
       name: trimmed,
     })
     .returning({ id: projects.id });
+
   return created[0].id;
 }
 
@@ -89,13 +98,13 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // ⬇️ derive the *exact* insert type from the table here
-      const row: typeof reportUploads.$inferInsert = {
+      // ⬇️ Use the type exported by schema so TS includes projectId + storagePath
+      const row: InsertReportUpload = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
-        // uploadedAt is DB default
+        // uploadedAt is set by DB default
       };
 
       await db
