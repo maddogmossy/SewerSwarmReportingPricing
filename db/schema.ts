@@ -16,7 +16,7 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-// --- uploads (must match Neon) ---
+// --- uploads (MUST match Neon) ---
 export const uploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id), // nullable OK
