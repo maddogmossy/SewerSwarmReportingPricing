@@ -1,56 +1,48 @@
-import { getUploadsWithRelations } from "@/db/queries";
-import Link from "next/link";
-
-export const dynamic = "force-dynamic";
+// app/uploads/page.tsx
+import { listUploads } from "@/db/queries";
 
 export default async function UploadsPage() {
-  const rows = await getUploadsWithRelations();
-
-  // group: client -> project
-  const byClient = new Map<string, Map<string, typeof rows>>();
-  for (const r of rows) {
-    const c = r.clientName ?? "No Client";
-    const p = r.projectName ?? "No Project";
-    if (!byClient.has(c)) byClient.set(c, new Map());
-    const m = byClient.get(c)!;
-    if (!m.has(p)) m.set(p, []);
-    m.get(p)!.push(r);
-  }
+  const uploads = await listUploads();
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-2xl font-extrabold">Uploaded Reports</h1>
-      <p className="text-slate-600 mb-6">Grouped by Client → Project (newest first).</p>
-
-      {[...byClient.entries()].map(([client, projects]) => (
-        <section key={client} className="mb-8">
-          <h2 className="text-xl font-bold">{client}</h2>
-          {[...projects.entries()].map(([project, files]) => (
-            <div key={project} className="mt-2 rounded-lg border p-4">
-              <h3 className="font-semibold">{project}</h3>
-              <ul className="mt-2 space-y-2">
-                {files.map(f => (
-                  <li key={f.id} className="border-t pt-2 first:border-t-0 first:pt-0">
-                    <div className="font-medium">{f.filename}</div>
-                    <div className="text-sm text-slate-600">
-                      Sector: {f.sector} · Uploaded: {new Date(f.uploadedAt).toLocaleString()}
-                    </div>
-                    {f.storagePath && (
-                      <div className="text-xs text-slate-500 break-all">
-                        Path: {f.storagePath}
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-      ))}
-
-      <div className="mt-6">
-        <Link href="/upload" className="text-blue-600 hover:underline">← Back to sectors</Link>
-      </div>
+    <main style={{ padding: "2rem" }}>
+      <h1>All Uploads</h1>
+      {uploads.length === 0 ? (
+        <p>No uploads yet.</p>
+      ) : (
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+          <thead>
+            <tr>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>File</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Sector</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Project</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Client</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Uploaded</th>
+            </tr>
+          </thead>
+          <tbody>
+            {uploads.map((u) => (
+              <tr key={u.id}>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {u.filename}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {u.sector}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {u.projectName || "-"}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {u.clientName || "-"}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {u.uploadedAt ? new Date(u.uploadedAt).toLocaleString() : "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </main>
   );
 }
