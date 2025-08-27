@@ -1,14 +1,10 @@
 // app/api/uploads/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import {
-  clients,
-  projects,
-  uploadsTable,
-  type InsertUploadRow,
-} from "@/db";
+import { clients, projects, uploadsTable } from "@/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
+// helpers
 const slug = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
@@ -66,6 +62,7 @@ export async function POST(req: Request) {
     const sector = (form.get("sectorId") || form.get("sector") || "")
       .toString()
       .toUpperCase();
+
     if (!sector) {
       return NextResponse.json(
         { success: false, error: "Missing sectorId" },
@@ -97,13 +94,13 @@ export async function POST(req: Request) {
       const projectSlug = projectName ? slug(projectName) : "no-project";
       const storagePath = `/clients/${clientSlug}/projects/${projectSlug}/sectors/${sector}/${file.name}`;
 
-      // ✅ Strong type check against the exact table insert shape
+      // Build + type-check against the table
       const row = {
         projectId: projectId ?? null,
         sector,
         filename: file.name,
         storagePath,
-      } satisfies InsertUploadRow;
+      } satisfies typeof uploadsTable.$inferInsert;
 
       await db
         .insert(uploadsTable)
