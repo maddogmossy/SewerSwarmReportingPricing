@@ -1,3 +1,4 @@
+// db/schema.ts
 import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
 
 export const clients = pgTable("clients", {
@@ -18,7 +19,7 @@ export const uploads = pgTable("uploads", {
   projectId: integer("project_id").references(() => projects.id),
   sector: text("sector").notNull(),
   filename: text("filename").notNull(),
-  storagePath: text("storage_path"), // 👈 NEW
+  storagePath: text("storage_path"),
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
