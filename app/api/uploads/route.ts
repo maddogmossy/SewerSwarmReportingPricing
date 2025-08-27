@@ -1,49 +1,49 @@
 // app/api/uploads/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { uploads, type InsertUpload } from "@/db/schema";
 
-// Vercel / Next edge runtimes don't expose FormData.entries types well.
-// We'll iterate with a small helper for strict TS.
-function iterForm(form: FormData): Iterable<[string, FormDataEntryValue]> {
-  // The runtime supports iteration; TS just doesn't know it.
-  return form as unknown as Iterable<[string, FormDataEntryValue]>;
-}
+export async function POST(req: Request) {
+  try {
+    const form = await req.formData();
 
-export async function POST(req: NextRequest) {
-  const form = await req.formData();
-
-  const sector = String(form.get("sectorId") ?? "");
-  const projectIdRaw = form.get("projectId");
-  const projectId = projectIdRaw ? Number(projectIdRaw) : null;
-
-  // Gather uploaded File objects from the "files" fields
-  const uploaded: File[] = [];
-  for (const [key, value] of iterForm(form)) {
-    if (key === "files" && value instanceof File) {
-      uploaded.push(value);
+    const sector = (form.get("sectorId") || form.get("sector") || "").toString().toUpperCase();
+    if (!sector) {
+      return NextResponse.json({ success: false, error: "Missing sectorId" }, { status: 400 });
     }
-  }
 
-  if (!sector) {
-    return NextResponse.json({ success: false, error: "Missing sectorId" }, { status: 400 });
-  }
-  if (uploaded.length === 0) {
-    return NextResponse.json({ success: false, error: "No files uploaded" }, { status: 400 });
-  }
+    // Collect all files from formData with the field name "files"
+    const uploaded: File[] = form.getAll("files").filter((v): v is File => v instanceof File);
 
-  const filenames: string[] = [];
-  for (const file of uploaded) {
-    // Type-safe insert that matches db/schema.ts
-    const row: InsertUpload = {
-      projectId,            // nullable is fine (no .notNull() in schema)
+    if (uploaded.length === 0) {
+      return NextResponse.json({ success: false, error: "No files received" }, { status: 400 });
+    }
+
+    const saved: string[] = [];
+
+    for (const file of uploaded) {
+      // NOTE: Your current schema exposes only { sector, filename } for InsertUpload
+      const row: InsertUpload = {
+        sector,
+        filename: file.name,
+        // uploadedAt is defaulted in DB if you added it; if not, it’s fine to omit
+        // projectId is NOT in your current schema type, so we omit it for now
+      };
+
+      await db.insert(uploads).values(row);
+      saved.push(file.name);
+    }
+
+    return NextResponse.json({
+      success: true,
       sector,
-      filename: file.name,
-      // uploadedAt is defaulted by DB → no need to set here
-    };
-    await db.insert(uploads).values(row);
-    filenames.push(file.name);
+      count: saved.length,
+      files: saved,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { success: false, error: err?.message || "Unexpected error" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ success: true, sector, files: filenames });
 }
