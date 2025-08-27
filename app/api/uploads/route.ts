@@ -2,12 +2,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 
-// ⬇️ Import the SINGLE source of truth
 import * as DBS from "@/db/schema";
+import type { InsertReportUpload } from "@/db/schema";
+
 import { and, eq, isNull } from "drizzle-orm";
 
 // derive from the exact table we just imported
-type UploadRow = typeof DBS.uploads.$inferInsert;
+
 
 // tiny helpers
 const slug = (s: string) =>
