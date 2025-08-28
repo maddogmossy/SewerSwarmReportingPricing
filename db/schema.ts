@@ -1,4 +1,3 @@
-// db/schema.ts
 import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
 
 /** Clients */
@@ -16,8 +15,8 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-/** Report uploads (use this name everywhere) */
-export const reportUploads = pgTable("uploads", {
+/** Canonical uploads table + export name */
+export const uploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id),
   sector: text("sector").notNull(),
@@ -26,5 +25,9 @@ export const reportUploads = pgTable("uploads", {
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export type InsertReportUpload = typeof reportUploads.$inferInsert;
-export type SelectReportUpload = typeof reportUploads.$inferSelect;
+/** DEBUG guard so we can prove which schema file is imported */
+export const __SCHEMA_MARK = "ROOT_DB_SCHEMA";
+
+/** Drizzle types */
+export type InsertUpload = typeof uploads.$inferInsert;
+export type SelectUpload = typeof uploads.$inferSelect;
