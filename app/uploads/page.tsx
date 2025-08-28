@@ -1,42 +1,24 @@
-// app/uploads/page.tsx
-import { getReportUploadsWithRelations } from "@/db/queries";
-
-export const revalidate = 0; // keep it simple during dev
+import { getUploadsWithRelations } from "@/db/queries";
 
 export default async function UploadsPage() {
-  const rows = await getReportUploadsWithRelations();
+  const data = await getUploadsWithRelations();
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Uploaded Reports</h1>
-      {rows.length === 0 ? (
-        <p>No uploads yet.</p>
-      ) : (
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>When</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Sector</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Filename</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Project</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Client</th>
-              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Storage Path</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <td style={{ padding: 8 }}>{new Date(r.uploadedAt).toLocaleString()}</td>
-                <td style={{ padding: 8 }}>{r.sector}</td>
-                <td style={{ padding: 8 }}>{r.filename}</td>
-                <td style={{ padding: 8 }}>{r.project?.name ?? "—"}</td>
-                <td style={{ padding: 8 }}>{r.client?.name ?? "—"}</td>
-                <td style={{ padding: 8 }}>{r.storagePath ?? "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <main className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Uploaded Reports</h1>
+      <ul className="space-y-3">
+        {data.map((u) => (
+          <li key={u.id} className="border rounded p-3">
+            <div className="font-medium">{u.filename}</div>
+            <div className="text-sm text-gray-600">
+              Sector: {u.sector} • Uploaded: {new Date(u.uploadedAt).toLocaleString()}
+            </div>
+            <div className="text-sm">
+              Project: {u.project?.name ?? "—"} • Client: {u.client?.name ?? "—"}
+            </div>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
