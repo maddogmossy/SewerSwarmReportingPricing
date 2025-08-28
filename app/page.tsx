@@ -1,37 +1,40 @@
-// app/page.tsx
 import Link from "next/link";
 
 export default function HomePage() {
-  return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Home (P1)</h1>
-      <p style={{ color: "#666", marginBottom: 20 }}>
-        Pick a sector (C2), upload reports (P3), or view uploaded reports (P4).
-      </p>
+  const cards = [
+    { id: "C1", title: "Overview", href: "", disabled: true },
+    { id: "C2", title: "Sector Standards", href: "/sectors" },     // ➜ P2
+    { id: "C3", title: "Pricing", href: "", disabled: true },
+    { id: "C4", title: "Reports", href: "", disabled: true },
+    { id: "C5", title: "Uploaded Reports", href: "/uploads" },     // ➜ P4
+  ];
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
-        <Card title="C2: Sector Standards" href="/sectors" desc="S1–S6 sectors" />
-        <Card title="P3: Upload" href="/upload" desc="Upload your report files" />
-        <Card title="C5/P4: Uploaded Reports" href="/uploads" desc="See all uploaded reports" />
+  return (
+    <main className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-semibold mb-6">P1 · Home</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {cards.map((c) =>
+          c.disabled ? (
+            <div
+              key={c.id}
+              className="rounded border p-4 opacity-50 cursor-not-allowed"
+              title="Coming soon"
+            >
+              <div className="font-medium">{c.id}</div>
+              <div className="text-lg">{c.title}</div>
+            </div>
+          ) : (
+            <Link
+              key={c.id}
+              href={c.href!}
+              className="rounded border p-4 hover:bg-gray-50"
+            >
+              <div className="font-medium">{c.id}</div>
+              <div className="text-lg">{c.title}</div>
+            </Link>
+          )
+        )}
       </div>
-    </div>
-  );
-}
-
-function Card({ title, desc, href }: { title: string; desc: string; href: string }) {
-  return (
-    <Link
-      href={href}
-      style={{
-        border: "1px solid #eee",
-        borderRadius: 10,
-        padding: 16,
-        textDecoration: "none",
-        color: "#111",
-      }}
-    >
-      <div style={{ fontWeight: 700, marginBottom: 6 }}>{title}</div>
-      <div style={{ color: "#666" }}>{desc}</div>
-    </Link>
+    </main>
   );
 }
