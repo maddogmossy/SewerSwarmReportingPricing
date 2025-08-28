@@ -1,3 +1,4 @@
+// db/queries.ts
 import { db } from "@/db";
 import { uploads, projects, clients } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
