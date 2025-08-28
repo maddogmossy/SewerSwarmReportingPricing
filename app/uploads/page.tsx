@@ -1,24 +1,61 @@
-import { getUploadsWithRelations } from "@/db/queries";
+// Server component
+import { getUploadsWithRelations } from '@/db/queries';
 
-export default async function UploadsPage() {
-  const data = await getUploadsWithRelations();
+export const dynamic = 'force-dynamic';
+
+export default async function UploadsListPage() {
+  const uploads = await getUploadsWithRelations();
 
   return (
-    <main className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Uploaded Reports</h1>
-      <ul className="space-y-3">
-        {data.map((u) => (
-          <li key={u.id} className="border rounded p-3">
-            <div className="font-medium">{u.filename}</div>
-            <div className="text-sm text-gray-600">
-              Sector: {u.sector} • Uploaded: {new Date(u.uploadedAt).toLocaleString()}
-            </div>
-            <div className="text-sm">
-              Project: {u.project?.name ?? "—"} • Client: {u.client?.name ?? "—"}
-            </div>
-          </li>
-        ))}
-      </ul>
+    <main className="mx-auto max-w-5xl p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Uploaded Reports</h1>
+        <a
+          href="/upload"
+          className="rounded bg-blue-600 px-4 py-2 text-white font-medium"
+        >
+          New Upload
+        </a>
+      </div>
+
+      {uploads.length === 0 ? (
+        <p className="text-sm text-gray-600">
+          No uploads yet. <a href="/upload" className="text-blue-600 underline">Upload one</a> to get started.
+        </p>
+      ) : (
+        <div className="overflow-x-auto rounded border">
+          <table className="min-w-full whitespace-nowrap text-sm">
+            <thead className="bg-gray-50 text-left">
+              <tr>
+                <th className="px-4 py-3">ID</th>
+                <th className="px-4 py-3">Sector</th>
+                <th className="px-4 py-3">Filename</th>
+                <th className="px-4 py-3">Project</th>
+                <th className="px-4 py-3">Client</th>
+                <th className="px-4 py-3">Uploaded</th>
+              </tr>
+            </thead>
+            <tbody>
+              {uploads.map((u) => (
+                <tr key={u.id} className="border-t">
+                  <td className="px-4 py-3">{u.id}</td>
+                  <td className="px-4 py-3">{u.sector}</td>
+                  <td className="px-4 py-3">{u.filename}</td>
+                  <td className="px-4 py-3">
+                    {u.project ? `${u.project.name ?? '(unnamed)'} (#${u.project.id})` : '—'}
+                  </td>
+                  <td className="px-4 py-3">
+                    {u.client ? `${u.client.name ?? '(unnamed)'} (#${u.client.id})` : '—'}
+                  </td>
+                  <td className="px-4 py-3">
+                    {new Date(u.uploadedAt).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </main>
   );
 }
