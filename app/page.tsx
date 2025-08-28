@@ -13,7 +13,17 @@ const Card = ({ href, title, desc }: { href: string; title: string; desc: string
 export default function Page() {
   return (
     <main className="mx-auto max-w-3xl p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Sewer Swarm — Reporting & Pricing</h1>
+      {/* New main title */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold">Welcome to Sewer Swarm AI</h1>
+        <p className="text-lg text-gray-700">
+          Professional sewer condition analysis and reporting with AI-powered insights
+        </p>
+      </div>
+
+      {/* Existing section title */}
+      <h2 className="text-2xl font-bold">Sewer Swarm — Reporting & Pricing</h2>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* C1 -> P2 */}
         <Card href="/sectors" title="C1 · Sector Standards" desc="Open S1–S6 sectors." />
