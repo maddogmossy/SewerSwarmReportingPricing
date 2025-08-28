@@ -1,49 +1,42 @@
 // app/uploads/page.tsx
 import { getReportUploadsWithRelations } from "@/db/queries";
 
-export const dynamic = "force-dynamic"; // helpful on Vercel to avoid caching
+export const revalidate = 0; // keep it simple during dev
 
-export default async function UploadedReportsPage() {
+export default async function UploadsPage() {
   const rows = await getReportUploadsWithRelations();
 
   return (
-    <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>P4: Uploaded Reports</h1>
-      {!rows.length ? (
-        <p style={{ color: "#666" }}>No uploads yet.</p>
+    <main style={{ padding: 24 }}>
+      <h1>Uploaded Reports</h1>
+      {rows.length === 0 ? (
+        <p>No uploads yet.</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <thead>
             <tr>
-              <Th>ID</Th>
-              <Th>Sector</Th>
-              <Th>Filename</Th>
-              <Th>Client</Th>
-              <Th>Project</Th>
-              <Th>Uploaded</Th>
+              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>When</th>
+              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Sector</th>
+              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Filename</th>
+              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Project</th>
+              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Client</th>
+              <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>Storage Path</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id} style={{ borderTop: "1px solid #eee" }}>
-                <Td>{r.id}</Td>
-                <Td>{r.sector}</Td>
-                <Td>{r.filename}</Td>
-                <Td>{r.client?.name ?? "—"}</Td>
-                <Td>{r.project?.name ?? "—"}</Td>
-                <Td>{new Date(r.uploadedAt).toLocaleString()}</Td>
+              <tr key={r.id}>
+                <td style={{ padding: 8 }}>{new Date(r.uploadedAt).toLocaleString()}</td>
+                <td style={{ padding: 8 }}>{r.sector}</td>
+                <td style={{ padding: 8 }}>{r.filename}</td>
+                <td style={{ padding: 8 }}>{r.project?.name ?? "—"}</td>
+                <td style={{ padding: 8 }}>{r.client?.name ?? "—"}</td>
+                <td style={{ padding: 8 }}>{r.storagePath ?? "—"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
-    </div>
+    </main>
   );
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return <th style={{ textAlign: "left", padding: "8px 6px" }}>{children}</th>;
-}
-function Td({ children }: { children: React.ReactNode }) {
-  return <td style={{ padding: "8px 6px" }}>{children}</td>;
 }
