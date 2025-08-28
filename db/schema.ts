@@ -15,15 +15,16 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-/** Canonical uploads table */
+/** Uploads (single canonical table) */
 export const uploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
-  projectId: integer("project_id").references(() => projects.id), // <-- needed
+  projectId: integer("project_id").references(() => projects.id), // <— REQUIRED
   sector: text("sector").notNull(),
   filename: text("filename").notNull(),
-  storagePath: text("storage_path"),                               // <-- needed
+  storagePath: text("storage_path"),                               // <— REQUIRED
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Optional helper types
 export type InsertUpload = typeof uploads.$inferInsert;
 export type SelectUpload = typeof uploads.$inferSelect;
