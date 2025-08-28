@@ -1,87 +1,68 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function UploadPage() {
-  const sp = useSearchParams();
-  const [submitting, setSubmitting] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
 
-  const sectorInitial = sp.get("sector") ?? "";
-  const [sector, setSector] = useState(sectorInitial);
-  const [projectId, setProjectId] = useState<string>(""); // optional
-  const [file, setFile] = useState<File | null>(null);
-  const [msg, setMsg] = useState<string>("");
-
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setMsg("");
-    try {
-      setSubmitting(true);
-      const fd = new FormData();
-      if (projectId) fd.set("projectId", projectId);
-      fd.set("sector", sector);
-      if (!file) {
-        setMsg("Please choose a file.");
-        setSubmitting(false);
-        return;
-      }
-      fd.set("file", file);
+    setMsg(null);
+    setBusy(true);
 
-      const res = await fetch("/api/uploads", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok || !json?.ok) throw new Error(json?.error || "Upload failed");
-      setMsg("✅ Uploaded!");
-      setFile(null);
-    } catch (err: any) {
-      setMsg(`❌ ${err.message || "Upload failed"}`);
-    } finally {
-      setSubmitting(false);
+    const fd = new FormData(e.currentTarget);
+    const res = await fetch("/api/uploads", { method: "POST", body: fd });
+    const json = await res.json();
+    setBusy(false);
+
+    if (res.ok) {
+      setMsg("Upload saved.");
+      e.currentTarget.reset();
+    } else {
+      setMsg(json?.error || "Upload failed.");
     }
   }
 
   return (
-    <main className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">P3 · Upload Report</h1>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm mb-1">Sector</label>
-          <input
-            value={sector}
-            onChange={(e) => setSector(e.target.value)}
-            className="w-full rounded border px-3 py-2"
-            placeholder="e.g. Potable Water"
-            required
-          />
-        </div>
+    <main className="mx-auto max-w-xl p-6 space-y-6">
+      <h1 className="text-xl font-semibold">P3 · Upload a Report</h1>
 
-        <div>
-          <label className="block text-sm mb-1">Project ID (optional)</label>
+      <form onSubmit={onSubmit} className="space-y-4 rounded border bg-white p-4">
+        <div className="grid gap-2">
+          <label className="text-sm font-medium">Project ID (optional)</label>
           <input
-            value={projectId}
-            onChange={(e) => setProjectId(e.target.value)}
-            className="w-full rounded border px-3 py-2"
+            type="number"
+            name="projectId"
             placeholder="e.g. 12"
-            inputMode="numeric"
+            className="w-full rounded border p-2"
           />
         </div>
 
-        <div>
-          <label className="block text-sm mb-1">File</label>
+        <div className="grid gap-2">
+          <label className="text-sm font-medium">Sector (required)</label>
           <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="w-full"
+            type="text"
+            name="sector"
             required
+            placeholder="e.g. S1"
+            className="w-full rounded border p-2"
           />
+        </div>
+
+        <div className="grid gap-2">
+          <label className="text-sm font-medium">File (required)</label>
+          <input type="file" name="file" required className="w-full" />
         </div>
 
         <button
-          disabled={submitting}
-          className="rounded bg-black text-white px-4 py-2 disabled:opacity-50"
+          type="submit"
+          disabled={busy}
+          className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
         >
-          {submitting ? "Uploading…" : "Upload"}
+          {busy ? "Uploading..." : "Upload"}
         </button>
+
         {msg && <p className="text-sm">{msg}</p>}
       </form>
     </main>
