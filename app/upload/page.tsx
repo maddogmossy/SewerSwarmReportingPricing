@@ -1,231 +1,128 @@
-// app/upload/page.tsx
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import * as React from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-type PostResult =
-  | { success: true; sector: string; clientId: number | null; projectId: number | null; files: string[] }
-  | { success: false; error: string };
+export default function UploadPage() {
+  const router = useRouter();
+  const sp = useSearchParams();
 
-const SECTORS = [
-  { id: "S1", label: "S1 — Potable Water" },
-  { id: "S2", label: "S2 — Wastewater" },
-  { id: "S3", label: "S3 — Stormwater" },
-  { id: "S4", label: "S4 — Highways" },
-  { id: "S5", label: "S5 — Rail" },
-  { id: "S6", label: "S6 — Other" },
-];
+  // If you navigated from /sectors?sector=..., we pick it up here.
+  const sectorFromQuery = sp.get('sector') ?? '';
 
-export default function UploadPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const prefilledSector = typeof searchParams?.sectorId === "string" ? searchParams?.sectorId : "";
-  const [sectorId, setSectorId] = useState<string>(prefilledSector || "");
-  const [clientName, setClientName] = useState<string>("");
-  const [projectName, setProjectName] = useState<string>("");
-  const [files, setFiles] = useState<FileList | null>(null);
+  const [sector, setSector] = React.useState(sectorFromQuery);
+  const [file, setFile] = React.useState<File | null>(null);
+  const [projectId, setProjectId] = React.useState<string>(''); // optional
+  const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (prefilledSector) setSectorId(prefilledSector);
-  }, [prefilledSector]);
-
-  const onPickFiles = () => fileInputRef.current?.click();
-
-  const onFilesChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    setFiles(e.target.files && e.target.files.length ? e.target.files : null);
-    setMessage(null);
-    setError(null);
-  };
-
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitting(true);
-    setMessage(null);
     setError(null);
+
+    if (!file) {
+      setError('Please choose a file to upload.');
+      return;
+    }
+    if (!sector) {
+      setError('Please select a sector.');
+      return;
+    }
 
     try {
-      if (!sectorId) {
-        setError("Please choose a sector.");
-        setSubmitting(false);
-        return;
-      }
-      if (!files || files.length === 0) {
-        setError("Please select at least one file.");
-        setSubmitting(false);
-        return;
+      setSubmitting(true);
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('sector', sector);
+      // Only send projectId if present (API treats it as optional)
+      if (projectId.trim().length > 0) {
+        fd.append('projectId', projectId.trim());
       }
 
-      const form = new FormData();
-      form.set("sectorId", sectorId);
-      form.set("clientName", clientName);
-      form.set("projectName", projectName);
-      Array.from(files).forEach((f) => form.append("files", f));
+      const res = await fetch('/api/uploads', {
+        method: 'POST',
+        body: fd,
+      });
 
-      const res = await fetch("/api/uploads", { method: "POST", body: form });
-      const data = (await res.json()) as PostResult;
-
-      if (!res.ok || !("success" in data) || !data.success) {
-        throw new Error(("error" in data && data.error) || "Upload failed");
+      if (!res.ok) {
+        const msg = await res.text().catch(() => 'Upload failed.');
+        throw new Error(msg || 'Upload failed.');
       }
 
-      setMessage(
-        `Uploaded ${data.files.length} file${data.files.length === 1 ? "" : "s"} to ${data.sector}.`
-      );
-      setFiles(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      // On success, go to the list page
+      router.push('/uploads');
     } catch (err: any) {
-      setError(err?.message || "Unexpected error while uploading");
+      setError(err?.message || 'Something went wrong.');
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>P3: Upload Report Files</h1>
+    <main className="mx-auto max-w-2xl p-6">
+      <h1 className="text-2xl font-semibold mb-4">Upload CCTV Report</h1>
+      <p className="text-sm text-gray-600 mb-6">
+        Choose a sector and upload your CCTV inspection file. On success you’ll be redirected to the Uploaded Reports page.
+      </p>
 
-      <form onSubmit={onSubmit}>
-        <label style={{ display: "block", fontWeight: 600, marginTop: 8, marginBottom: 6 }}>
-          Sector <span style={{ color: "#d00" }}>*</span>
-        </label>
-        <select
-          value={sectorId}
-          onChange={(e) => setSectorId(e.target.value)}
-          required
-          style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 8, marginBottom: 16 }}
-        >
-          <option value="">— Select a sector —</option>
-          {SECTORS.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>Client (optional)</label>
-            <input
-              type="text"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              placeholder="e.g. Thames Water"
-              style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 8, marginBottom: 16 }}
-            />
-          </div>
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>Project (optional)</label>
-            <input
-              type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder="e.g. City Centre Renewal"
-              style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 8, marginBottom: 16 }}
-            />
-          </div>
-        </div>
-
-        <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>
-          Files <span style={{ color: "#d00" }}>*</span>
-        </label>
-        <input ref={fileInputRef} type="file" multiple onChange={onFilesChange} style={{ display: "none" }} />
-        <div
-          onClick={onPickFiles}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (e.dataTransfer?.files?.length) {
-              setFiles(e.dataTransfer.files);
-              setMessage(null);
-              setError(null);
-            }
-          }}
-          style={{
-            border: "2px dashed #bbb",
-            borderRadius: 10,
-            padding: 20,
-            textAlign: "center",
-            cursor: "pointer",
-            marginBottom: 12,
-            background: "#fafafa",
-          }}
-          title="Click to choose files, or drop them here"
-        >
-          {files && files.length > 0 ? (
-            <div style={{ textAlign: "left" }}>
-              <strong>{files.length} selected:</strong>
-              <ul style={{ marginTop: 8 }}>
-                {Array.from(files).map((f) => (
-                  <li key={f.name}>{f.name}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>Click to choose files or drop them here</div>
-              <div style={{ color: "#666" }}>You can select multiple files</div>
-            </>
-          )}
-        </div>
-
-        <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 10 }}>
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{
-              background: submitting ? "#888" : "#111",
-              color: "white",
-              border: "none",
-              padding: "10px 16px",
-              borderRadius: 8,
-              fontWeight: 600,
-              cursor: submitting ? "not-allowed" : "pointer",
-            }}
+      <form onSubmit={onSubmit} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium mb-1">Sector</label>
+          <select
+            value={sector}
+            onChange={(e) => setSector(e.target.value)}
+            className="w-full rounded border px-3 py-2"
+            required
           >
-            {submitting ? "Uploading…" : "Upload"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setFiles(null);
-              if (fileInputRef.current) fileInputRef.current.value = "";
-              setMessage(null);
-              setError(null);
-            }}
-            style={{
-              background: "transparent",
-              color: "#111",
-              border: "1px solid #ccc",
-              padding: "10px 16px",
-              borderRadius: 8,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            Clear files
-          </button>
+            <option value="" disabled>Select a sector</option>
+            <option value="S1">S1</option>
+            <option value="S2">S2</option>
+            <option value="S3">S3</option>
+            <option value="S4">S4</option>
+            <option value="S5">S5</option>
+            <option value="S6">S6</option>
+          </select>
         </div>
 
-        {message && (
-          <div style={{ marginTop: 16, padding: 12, background: "#e6ffed", border: "1px solid #b5f2c5", borderRadius: 8 }}>
-            {message}
-          </div>
-        )}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            File (MP4, MOV, PDF, ZIP, etc.)
+          </label>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.currentTarget.files?.[0] ?? null)}
+            className="w-full rounded border px-3 py-2 bg-white"
+            required
+          />
+        </div>
+
+        {/* Optional: link the upload to a project id if you have one */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Project ID (optional)</label>
+          <input
+            type="number"
+            inputMode="numeric"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+            className="w-full rounded border px-3 py-2"
+            placeholder="e.g. 12"
+          />
+        </div>
+
         {error && (
-          <div style={{ marginTop: 16, padding: 12, background: "#ffecec", border: "1px solid #ffb3b3", borderRadius: 8 }}>
+          <div className="rounded border border-red-300 bg-red-50 text-red-700 px-3 py-2 text-sm">
             {error}
           </div>
         )}
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="inline-flex items-center rounded bg-blue-600 px-4 py-2 font-medium text-white disabled:opacity-60"
+        >
+          {submitting ? 'Uploading…' : 'Upload'}
+        </button>
       </form>
-    </div>
+    </main>
   );
 }
