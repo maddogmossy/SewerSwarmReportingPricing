@@ -10,5 +10,5 @@ if (!process.env.DATABASE_URL) {
 const sql = neon(process.env.DATABASE_URL);
 export const db = drizzle(sql, { schema });
 
-// Re-export schema types if you want to import from "@/db"
+// Re-export schema so imports can come from "@/db"
 export * from "./schema";
