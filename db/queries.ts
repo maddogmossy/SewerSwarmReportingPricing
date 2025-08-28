@@ -1,6 +1,4 @@
-// db/queries.ts
-import { db } from "@/db";
-import { uploads, projects, clients } from "@/db/schema";
+import { db, uploads, projects, clients } from "@/db";
 import { desc, eq } from "drizzle-orm";
 
 export type UploadWithRelations = {
@@ -31,7 +29,7 @@ export async function getUploadsWithRelations(): Promise<UploadWithRelations[]> 
     .leftJoin(clients, eq(clients.id, projects.clientId))
     .orderBy(desc(uploads.uploadedAt));
 
-  return rows.map((r) => ({
+  return rows.map(r => ({
     id: r.id,
     sector: r.sector,
     filename: r.filename,
