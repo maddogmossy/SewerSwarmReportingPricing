@@ -1,9 +1,19 @@
-export const metadata = { title: "Sewer Swarm", description: "Reporting & Pricing" };
+import "./globals.css";
+import type { Metadata } from "next";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: "Sewer Swarm AI",
+  description: "Professional sewer condition analysis and reporting with AI-powered insights",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-50 text-gray-900">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
