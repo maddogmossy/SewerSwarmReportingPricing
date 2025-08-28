@@ -15,19 +15,15 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-/** Canonical uploads table + export name */
+/** Canonical uploads table */
 export const uploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
-  projectId: integer("project_id").references(() => projects.id),
+  projectId: integer("project_id").references(() => projects.id), // <-- needed
   sector: text("sector").notNull(),
   filename: text("filename").notNull(),
-  storagePath: text("storage_path"),
+  storagePath: text("storage_path"),                               // <-- needed
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-/** DEBUG guard so we can prove which schema file is imported */
-export const __SCHEMA_MARK = "ROOT_DB_SCHEMA";
-
-/** Drizzle types */
 export type InsertUpload = typeof uploads.$inferInsert;
 export type SelectUpload = typeof uploads.$inferSelect;
