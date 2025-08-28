@@ -16,7 +16,7 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-/** Report uploads (canonical uploads table) */
+/** Report uploads (use this name everywhere) */
 export const reportUploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id),
