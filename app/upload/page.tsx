@@ -1,7 +1,7 @@
 // app/upload/page.tsx
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type PostResult =
   | { success: true; sector: string; clientId: number | null; projectId: number | null; files: string[] }
@@ -16,8 +16,13 @@ const SECTORS = [
   { id: "S6", label: "S6 — Other" },
 ];
 
-export default function UploadPage() {
-  const [sectorId, setSectorId] = useState<string>("");
+export default function UploadPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  const prefilledSector = typeof searchParams?.sectorId === "string" ? searchParams?.sectorId : "";
+  const [sectorId, setSectorId] = useState<string>(prefilledSector || "");
   const [clientName, setClientName] = useState<string>("");
   const [projectName, setProjectName] = useState<string>("");
   const [files, setFiles] = useState<FileList | null>(null);
@@ -27,6 +32,10 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (prefilledSector) setSectorId(prefilledSector);
+  }, [prefilledSector]);
 
   const onPickFiles = () => fileInputRef.current?.click();
 
@@ -55,16 +64,12 @@ export default function UploadPage() {
       }
 
       const form = new FormData();
-      form.set("sectorId", sectorId); // ← your API reads sectorId or sector
+      form.set("sectorId", sectorId);
       form.set("clientName", clientName);
       form.set("projectName", projectName);
       Array.from(files).forEach((f) => form.append("files", f));
 
-      const res = await fetch("/api/uploads", {
-        method: "POST",
-        body: form,
-      });
-
+      const res = await fetch("/api/uploads", { method: "POST", body: form });
       const data = (await res.json()) as PostResult;
 
       if (!res.ok || !("success" in data) || !data.success) {
@@ -72,11 +77,8 @@ export default function UploadPage() {
       }
 
       setMessage(
-        `Uploaded ${data.files.length} file${data.files.length === 1 ? "" : "s"} to sector ${data.sector}${
-          projectName ? ` (project: ${projectName})` : ""
-        }.`
+        `Uploaded ${data.files.length} file${data.files.length === 1 ? "" : "s"} to ${data.sector}.`
       );
-      // Reset files but keep sector/client/project to make multiple uploads easier
       setFiles(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err: any) {
@@ -87,14 +89,10 @@ export default function UploadPage() {
   }
 
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto", padding: "1.5rem" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Upload Report Files</h1>
-      <p style={{ color: "#666", marginBottom: 24 }}>
-        Choose a sector, optionally enter Client and Project, then select one or more files to upload.
-      </p>
+    <div style={{ maxWidth: 860, margin: "0 auto" }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>P3: Upload Report Files</h1>
 
       <form onSubmit={onSubmit}>
-        {/* Sector */}
         <label style={{ display: "block", fontWeight: 600, marginTop: 8, marginBottom: 6 }}>
           Sector <span style={{ color: "#d00" }}>*</span>
         </label>
@@ -102,13 +100,7 @@ export default function UploadPage() {
           value={sectorId}
           onChange={(e) => setSectorId(e.target.value)}
           required
-          style={{
-            width: "100%",
-            padding: "10px 12px",
-            border: "1px solid #ccc",
-            borderRadius: 8,
-            marginBottom: 16,
-          }}
+          style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 8, marginBottom: 16 }}
         >
           <option value="">— Select a sector —</option>
           {SECTORS.map((s) => (
@@ -118,7 +110,6 @@ export default function UploadPage() {
           ))}
         </select>
 
-        {/* Client / Project */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
             <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>Client (optional)</label>
@@ -127,13 +118,7 @@ export default function UploadPage() {
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
               placeholder="e.g. Thames Water"
-              style={{
-                width: "100%",
-                padding: "10px 12px",
-                border: "1px solid #ccc",
-                borderRadius: 8,
-                marginBottom: 16,
-              }}
+              style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 8, marginBottom: 16 }}
             />
           </div>
           <div>
@@ -143,28 +128,15 @@ export default function UploadPage() {
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               placeholder="e.g. City Centre Renewal"
-              style={{
-                width: "100%",
-                padding: "10px 12px",
-                border: "1px solid #ccc",
-                borderRadius: 8,
-                marginBottom: 16,
-              }}
+              style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 8, marginBottom: 16 }}
             />
           </div>
         </div>
 
-        {/* Files */}
         <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>
           Files <span style={{ color: "#d00" }}>*</span>
         </label>
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          onChange={onFilesChange}
-          style={{ display: "none" }}
-        />
+        <input ref={fileInputRef} type="file" multiple onChange={onFilesChange} style={{ display: "none" }} />
         <div
           onClick={onPickFiles}
           onDragOver={(e) => e.preventDefault()}
@@ -204,7 +176,6 @@ export default function UploadPage() {
           )}
         </div>
 
-        {/* Actions */}
         <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 10 }}>
           <button
             type="submit"
@@ -244,7 +215,6 @@ export default function UploadPage() {
           </button>
         </div>
 
-        {/* Status */}
         {message && (
           <div style={{ marginTop: 16, padding: 12, background: "#e6ffed", border: "1px solid #b5f2c5", borderRadius: 8 }}>
             {message}
