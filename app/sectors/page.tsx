@@ -1,31 +1,26 @@
 import Link from "next/link";
 
 const sectors = [
-  { code: "S1", label: "Potable Water" },
-  { code: "S2", label: "Wastewater" },
-  { code: "S3", label: "Stormwater" },
-  { code: "S4", label: "Roads" },
-  { code: "S5", label: "Parks" },
-  { code: "S6", label: "Other" },
+  { id: "S1", name: "Sector 1" },
+  { id: "S2", name: "Sector 2" },
+  { id: "S3", name: "Sector 3" },
+  { id: "S4", name: "Sector 4" },
+  { id: "S5", name: "Sector 5" },
+  { id: "S6", name: "Sector 6" },
 ];
 
 export default function SectorsPage() {
   return (
-    <main className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">P2 · Sector Standards</h1>
-      <p className="mb-4 text-gray-600">
-        Pick a sector below. You’ll go to P3 (Upload Report) with the sector preselected.
-      </p>
+    <main className="mx-auto max-w-3xl p-6 space-y-6">
+      <h1 className="text-xl font-semibold">P2 · Sectors</h1>
       <ul className="space-y-2">
-        {sectors.map((s) => (
-          <li key={s.code}>
-            <Link
-              href={`/upload?sector=${encodeURIComponent(s.label)}`}
-              className="block rounded border px-4 py-2 hover:bg-gray-50"
-            >
-              <span className="mr-2 font-mono">{s.code}</span>
-              {s.label}
-            </Link>
+        {sectors.map(s => (
+          <li key={s.id} className="rounded border bg-white p-4 flex items-center justify-between">
+            <div>
+              <div className="font-medium">{s.name}</div>
+              <div className="text-xs text-gray-500">{s.id}</div>
+            </div>
+            <Link className="text-blue-600 underline" href="/upload">Upload (P3)</Link>
           </li>
         ))}
       </ul>
