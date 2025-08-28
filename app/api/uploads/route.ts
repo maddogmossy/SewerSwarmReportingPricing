@@ -2,61 +2,45 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { uploads } from "@/db/schema";
 
-/**
- * Simple slug helper to keep paths clean
- */
-function slug(s: string) {
-  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
-    // Accept either `sector` or `sectorId`
-    const sector = (form.get("sector") || form.get("sectorId") || "").toString().toUpperCase();
+    const projectIdRaw = form.get("projectId");
+    const sector = String(form.get("sector") ?? "");
+    const file = form.get("file");
+
     if (!sector) {
-      return NextResponse.json({ success: false, error: "Missing sector" }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "sector is required" }, { status: 400 });
+    }
+    if (!(file instanceof File)) {
+      return NextResponse.json({ ok: false, error: "file is required" }, { status: 400 });
     }
 
-    // Optional projectId (string/number -> number | null)
-    const projectIdRaw = form.get("projectId");
+    // allow null/blank projectId
     const projectId =
-      projectIdRaw != null && `${projectIdRaw}`.trim() !== ""
-        ? Number(`${projectIdRaw}`)
+      typeof projectIdRaw === "string" && projectIdRaw.trim() !== ""
+        ? Number(projectIdRaw)
         : null;
 
-    const file = form.get("file");
-    if (!(file instanceof File)) {
-      return NextResponse.json({ success: false, error: "No file uploaded" }, { status: 400 });
-    }
+    // wherever you store the blob (S3/etc). null is fine if you haven’t wired storage yet
+    const storagePath = null as string | null;
 
-    // Build a predictable storage path (customize as you like)
-    const projectPart = projectId != null ? `project-${projectId}` : "no-project";
-    const storagePath = `/uploads/${projectPart}/sector-${slug(sector)}/${file.name}`;
-
-    // Type is inferred directly from the table
+    // The type is derived from the table. If `projectId` or `storagePath` were missing
+    // on the table, the next line would be the one TypeScript complains about.
     const row: typeof uploads.$inferInsert = {
-      projectId,              // <-- now valid because schema includes it
+      projectId,
       sector,
       filename: file.name,
-      storagePath,            // <-- now valid because schema includes it
-      // uploadedAt is defaulted by DB
+      storagePath,
+      // uploadedAt is DB-defaulted
     };
 
     await db.insert(uploads).values(row);
 
-    return NextResponse.json({
-      success: true,
-      sector,
-      projectId,
-      filename: file.name,
-      storagePath,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      { success: false, error: err?.message || "Unexpected error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ ok: false, error: "internal error" }, { status: 500 });
   }
 }
