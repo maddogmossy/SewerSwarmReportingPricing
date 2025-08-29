@@ -1,70 +1,57 @@
-"use client";
+// app/upload/page.tsx
+import Link from "next/link";
 
-import { useState } from "react";
+const sectors = [
+  { slug: "utilities", code: "S1", title: "Utilities", note: "WRc SRM standards" },
+  { slug: "adoption", code: "S2", title: "Adoption", note: "SFA8 compliance" },
+  { slug: "highways", code: "S3", title: "Highways", note: "DMRB standards" },
+  { slug: "domestic", code: "S4", title: "Domestic", note: "Regulatory compliance" },
+  { slug: "insurance", code: "S5", title: "Insurance", note: "ABI guidelines" },
+  { slug: "construction", code: "S6", title: "Construction", note: "Building regs" },
+];
 
-export default function UploadPage() {
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setMsg(null);
-    setBusy(true);
-
-    const fd = new FormData(e.currentTarget);
-    const res = await fetch("/api/uploads", { method: "POST", body: fd });
-    const json = await res.json();
-    setBusy(false);
-
-    if (res.ok) {
-      setMsg("Upload saved.");
-      e.currentTarget.reset();
-    } else {
-      setMsg(json?.error || "Upload failed.");
-    }
-  }
-
+function SectorCard({
+  slug,
+  code,
+  title,
+  note,
+}: (typeof sectors)[number]) {
   return (
-    <main className="mx-auto max-w-xl p-6 space-y-6">
-      <h1 className="text-xl font-semibold">P3 · Upload a Report</h1>
+    <Link
+      href={`/upload/${slug}`}
+      className="relative block rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+    >
+      <div className="absolute right-4 top-4 rounded-md bg-gray-900/90 px-2 py-1 text-xs font-semibold text-white">
+        {code}
+      </div>
+      <div className="text-xl font-semibold">{title}</div>
+      <div className="mt-1 text-gray-600">{note}</div>
+    </Link>
+  );
+}
 
-      <form onSubmit={onSubmit} className="space-y-4 rounded border bg-white p-4">
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">Project ID (optional)</label>
-          <input
-            type="number"
-            name="projectId"
-            placeholder="e.g. 12"
-            className="w-full rounded border p-2"
-          />
+export default function UploadLanding() {
+  return (
+    <main className="mx-auto max-w-5xl p-6">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Supported Files</h1>
+          <div className="rounded-md bg-gray-900/90 px-2 py-1 text-xs font-semibold text-white">
+            C2
+          </div>
         </div>
+        <ul className="mt-3 list-disc pl-5 text-gray-700">
+          <li>PDF reports (up to 50MB)</li>
+          <li>Database files <code>.db</code> / <code>.db3</code> (up to 50MB)</li>
+        </ul>
+        <p className="mt-3 text-gray-600">Choose a sector below to continue to the upload form.</p>
+      </section>
 
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">Sector (required)</label>
-          <input
-            type="text"
-            name="sector"
-            required
-            placeholder="e.g. S1"
-            className="w-full rounded border p-2"
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">File (required)</label>
-          <input type="file" name="file" required className="w-full" />
-        </div>
-
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-        >
-          {busy ? "Uploading..." : "Upload"}
-        </button>
-
-        {msg && <p className="text-sm">{msg}</p>}
-      </form>
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        {sectors.map((s) => (
+          <SectorCard key={s.slug} {...s} />
+        ))}
+      </div>
     </main>
   );
 }
