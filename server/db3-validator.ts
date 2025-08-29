@@ -1,69 +1,82 @@
-import fs from 'fs';
-import path from 'path';
+// server/db3-validator.ts
+// Validates presence of matching WinCan database pairs: <NAME>.db3 and <NAME>_Meta.db3
 
-export function validateDb3Files(directory: string): { valid: boolean; message: string } {
-  const mainFile = fs.existsSync(path.join(directory, 'GR7188 - 40 Hollow Road - Bury St Edmunds - IP32 7AY.db3'));
-  const metaFile = fs.existsSync(path.join(directory, 'GR7188 - 40 Hollow Road - Bury St Edmunds - IP32 7AY_Meta.db3'));
+import { readdir } from "node:fs/promises";
+import { join } from "node:path";
 
-  if (!mainFile && !metaFile) {
-    return { valid: false, message: "❌ No .db3 files found. Please upload both inspection and metadata files." };
-  }
-  if (!mainFile) {
-    return { valid: false, message: "⚠️ Missing main .db3 file. Please upload the inspection file." };
-  }
-  if (!metaFile) {
-    return { valid: false, message: "⚠️ Missing _Meta.db3 file. Please upload the metadata file." };
-  }
+export type Db3Pair = {
+  base: string;
+  main: string; // absolute path to <NAME>.db3
+  meta: string; // absolute path to <NAME>_Meta.db3 (or "- Meta.db3")
+};
 
-  return { valid: true, message: "✅ Both database files loaded successfully." };
+export type ValidationResult = {
+  valid: boolean;
+  message: string;
+  pairs?: Db3Pair[];
+};
+
+function errorToString(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
 }
 
-export function validateGenericDb3Files(directory: string, baseName?: string): { valid: boolean; message: string; files?: { main: string; meta?: string }; warning?: string } {
+/**
+ * Scan a directory for matching .db3 + _Meta.db3 pairs.
+ * Accepts both "<NAME>_Meta.db3" and "<NAME>- Meta.db3" variants.
+ */
+export async function validateDb3Directory(dir: string): Promise<ValidationResult> {
   try {
-    const files = fs.readdirSync(directory);
-    const db3Files = files.filter(file => file.endsWith('.db3') && !file.includes('_Meta'));
-    const metaFiles = files.filter(file => file.endsWith('_Meta.db3'));
+    const entries = await readdir(dir);
+    const db3Files = entries.filter((f) => /\.db3$/i.test(f));
 
-    if (db3Files.length === 0 && metaFiles.length === 0) {
-      return { valid: false, message: "❌ No .db3 files found. Please upload inspection database files." };
+    // Group files by base name with the Meta suffix stripped
+    const grouped = new Map<string, { main?: string; meta?: string }>();
+
+    for (const f of db3Files) {
+      const isMeta = /(_Meta|- Meta)\.db3$/i.test(f);
+      const base = f.replace(/(_Meta|- Meta)?\.db3$/i, "");
+      const rec = grouped.get(base) ?? {};
+      if (isMeta) rec.meta = f;
+      else rec.main = f;
+      grouped.set(base, rec);
     }
 
-    if (db3Files.length === 0) {
-      return { valid: false, message: "⚠️ Missing main .db3 file. Please upload the inspection file." };
-    }
-
-    // Try to find matching pairs
-    for (const mainFile of db3Files) {
-      const baseName = mainFile.replace('.db3', '');
-      const expectedMetaFile = `${baseName}_Meta.db3`;
-      
-      if (metaFiles.includes(expectedMetaFile)) {
-        return { 
-          valid: true, 
-          message: "✅ Both database files loaded successfully.",
-          files: {
-            main: path.join(directory, mainFile),
-            meta: path.join(directory, expectedMetaFile)
-          }
-        };
+    const pairs: Db3Pair[] = [];
+    for (const [base, rec] of grouped) {
+      if (rec.main && rec.meta) {
+        pairs.push({
+          base,
+          main: join(dir, rec.main),
+          meta: join(dir, rec.meta),
+        });
       }
     }
 
-    // If no meta file found, require it for complete processing
-    if (metaFiles.length === 0) {
-      console.error("❌ Meta.db3 REQUIRED for accurate WRc MSCC5 grading");
-      
-      return { 
-        valid: false, 
-        message: "❌ Meta.db3 file required. Please upload both files together for accurate WRc MSCC5 classification.",
-        files: {
-          main: path.join(directory, db3Files[0])
-        }
+    if (pairs.length === 0) {
+      return {
+        valid: false,
+        message:
+          "⚠️ No matching .db3 and _Meta.db3 file pairs found. Please ensure files have matching names.",
       };
     }
 
-    return { valid: false, message: "⚠️ No matching .db3 and _Meta.db3 file pairs found. Please ensure files have matching names." };
-  } catch (error) {
-    return { valid: false, message: `❌ Error reading directory: ${error.message}` };
+    return {
+      valid: true,
+      message: `✅ Found ${pairs.length} matching pair(s).`,
+      pairs,
+    };
+  } catch (err: unknown) {
+    return {
+      valid: false,
+      message: `❌ Error reading directory: ${errorToString(err)}`,
+    };
   }
 }
+
+// Provide both named and default export to be import-safe.
+export default validateDb3Directory;
