@@ -2,18 +2,14 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sewer Swarm AI",
-  description: "Professional sewer condition analysis and reporting with AI-powered insights",
+  title: "Sewer Swarm AI — Reporting & Pricing",
+  description: "Upload, analyze, and manage sewer inspection reports.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
