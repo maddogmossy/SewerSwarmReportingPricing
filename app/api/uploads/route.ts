@@ -1,5 +1,5 @@
 // app/api/uploads/route.ts
-// Force Node.js runtime (multipart uploads can stall on Edge)
+// Keep uploads on Node to avoid Edge stalls with multipart bodies.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -9,7 +9,7 @@ import { put } from "@vercel/blob";
 
 // ---------- helpers ----------
 const isPdf = (name: string) => /\.pdf$/i.test(name);
-const isDb = (name: string) => /\.db3?$/i.test(name) || /\.db$/i.test(name);
+const isDb  = (name: string) => /\.db3?$/i.test(name) || /\.db$/i.test(name);
 const isMeta = (name: string) =>
   /(_Meta|- Meta)\.db3?$/i.test(name) || /(_Meta|- Meta)\.db$/i.test(name);
 
@@ -25,7 +25,6 @@ function sanitizeSegment(seg: string) {
     .trim()
     .replace(/\s+/g, " ");
 }
-
 function keyJoin(...parts: string[]) {
   return parts
     .map((p) => sanitizeSegment(p))
@@ -35,10 +34,11 @@ function keyJoin(...parts: string[]) {
 }
 
 async function saveBlob(file: File, key: string, contentType?: string) {
-  const ab = await file.arrayBuffer(); // <= 50MB per your UI
+  const ab = await file.arrayBuffer(); // <= ~50MB from UI
   const data = Buffer.from(ab);
+  // NOTE: this SDK version expects "public" access
   const { url } = await put(key, data, {
-    access: "private",
+    access: "public",
     contentType:
       contentType ||
       file.type ||
@@ -66,14 +66,14 @@ export async function POST(req: Request) {
     const clientId = form.get("clientId") ? String(form.get("clientId")) : undefined;
     const clientName = form.get("clientName") ? String(form.get("clientName")) : undefined;
 
-    // Files (ensure they are File objects)
+    // Files
     const files = form.getAll("files").filter((v): v is File => v instanceof File);
     if (!files.length) {
       return NextResponse.json({ ok: false, error: "No files provided." }, { status: 400 });
     }
 
     const pdfs = files.filter((f) => isPdf(f.name));
-    const dbs = files.filter((f) => isDb(f.name));
+    const dbs  = files.filter((f) => isDb(f.name));
 
     if (pdfs.length && dbs.length) {
       return NextResponse.json(
@@ -82,12 +82,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Safe folder path (Client/Address)
-    const clientFolder = clientName || "Client";
+    // Folder (Client/Address) and base filename
+    const clientFolder  = clientName || "Client";
     const addressFolder = address || "Address";
     const baseFolder = folder ? keyJoin(folder) : keyJoin(clientFolder, addressFolder);
 
-    // Base filename: "Project No - Address - Post code"
     const baseName =
       userTargetFilename ||
       [projectNo, address, postcode].filter(Boolean).join(" - ") ||
@@ -96,29 +95,23 @@ export async function POST(req: Request) {
     const saved: Array<{ name: string; key: string; url: string }> = [];
 
     if (pdfs.length === 1 && files.length === 1) {
-      // Single PDF
       const pdf = pdfs[0];
       const key = keyJoin(baseFolder, `${baseName}.pdf`);
       const url = await saveBlob(pdf, key, "application/pdf");
       saved.push({ name: pdf.name, key, url });
     } else if (dbs.length >= 1) {
-      // Pair: main + _Meta
       const mains = dbs.filter((f) => !isMeta(f.name));
       const metas = dbs.filter((f) => isMeta(f.name));
 
       if (mains.length !== 1 || metas.length !== 1) {
         return NextResponse.json(
-          {
-            ok: false,
-            error: "A .db/.db3 upload must contain exactly two files: the main file and the _Meta file.",
-          },
+          { ok: false, error: "A .db/.db3 upload must include exactly two files: main + _Meta." },
           { status: 400 }
         );
       }
 
       const main = mains[0];
       const meta = metas[0];
-
       if (baseDb(main.name) !== baseDb(meta.name)) {
         return NextResponse.json(
           { ok: false, error: "The .db/.db3 and _Meta file names must match (same base name)." },
@@ -134,6 +127,7 @@ export async function POST(req: Request) {
         saveBlob(main, keyMain, "application/octet-stream"),
         saveBlob(meta, keyMeta, "application/octet-stream"),
       ]);
+
       saved.push({ name: main.name, key: keyMain, url: urlMain });
       saved.push({ name: meta.name, key: keyMeta, url: urlMeta });
     } else {
@@ -143,7 +137,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Sidecar metadata JSON for your dashboard
+    // Sidecar JSON for your dashboard
     const metadata = {
       sectorSlug,
       sectorCode,
@@ -156,7 +150,6 @@ export async function POST(req: Request) {
       saved,
       createdAt: new Date().toISOString(),
     };
-
     const metaKey = keyJoin(baseFolder, `${baseName}.json`);
     await saveBlob(
       new File([JSON.stringify(metadata, null, 2)], `${baseName}.json`, { type: "application/json" }),
