@@ -155,10 +155,21 @@ export default function UploadLanding() {
         </Link>
       </nav>
 
+      {/* Page title + subtitle (added) */}
+      <header className="mb-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+          Upload Inspection Report
+        </h1>
+        <p className="mt-1 text-gray-500">
+          Upload your CCTV inspection files (PDF or .db3 &amp; meta db format) and select
+          the applicable sector for analysis
+        </p>
+      </header>
+
       {/* Supported Files (C2) */}
       <section className="relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <DevBadge>C2</DevBadge>
-        <h1 className="text-2xl font-bold">Supported Files</h1>
+        <h2 className="text-lg font-semibold">Supported Files</h2>
         <ul className="mt-3 list-disc pl-5 text-gray-700">
           <li>PDF reports (up to 50MB)</li>
           <li>
