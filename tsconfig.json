@@ -17,6 +17,20 @@
     "esModuleInterop": true,
     "plugins": [{ "name": "next" }]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.mjs", ".next/types/**/*.ts"],
-  "exclude": ["drizzle.config.ts", "node_modules"]
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "app/**/*",
+    "components/**/*",
+    "db/**/*",
+    "lib/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "drizzle.config.ts",
+    "server/**",
+    "scripts/**",
+    "tests/**",
+    "vite/**"
+  ]
 }
