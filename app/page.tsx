@@ -48,7 +48,7 @@ const actions: ActionCard[] = [
   },
   {
     id: "C5",
-    href: "/reports",
+    href: "/uploads",
     title: "Uploaded Reports",
     desc: "Manage your inspection reports and organize project folders",
     Icon: FolderOpen,
@@ -56,7 +56,7 @@ const actions: ActionCard[] = [
   },
   {
     id: "C6",
-    href: "/upgrade",
+    href: "/billing",
     title: "Upgrade Plan",
     desc: "Access premium features and unlimited report processing",
     Icon: Crown,
@@ -64,7 +64,7 @@ const actions: ActionCard[] = [
   },
 ];
 
-export default function P1HomePage() {
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-50">
       {/* Sticky page badge */}
@@ -83,18 +83,24 @@ export default function P1HomePage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:bg-slate-50">
+            <Link
+              href="/settings"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:bg-slate-50"
+            >
               <Settings className="h-4 w-4" />
               Settings
-            </button>
-            <button className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-3 py-2 text-sm text-white shadow-sm transition hover:bg-rose-700">
+            </Link>
+            <Link
+              href="/signout"
+              className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-3 py-2 text-sm text-white shadow-sm transition hover:bg-rose-700"
+            >
               <LogOut className="h-4 w-4" />
               Sign Out
-            </button>
+            </Link>
           </div>
         </div>
 
-        {/* Hero title you requested */}
+        {/* Hero title + subtitle */}
         <section className="mt-8 text-center">
           <h2 className="text-4xl font-extrabold tracking-tight">
             Welcome to Sewer Swarm AI
