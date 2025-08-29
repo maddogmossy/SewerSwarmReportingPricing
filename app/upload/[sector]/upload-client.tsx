@@ -1,4 +1,3 @@
-// app/upload/[sector]/upload-client.tsx
 "use client";
 
 import Link from "next/link";
@@ -16,9 +15,16 @@ import {
   Loader2,
 } from "lucide-react";
 
-// -------- tiny helpers --------
+// ----------- small utils -----------
 const cn = (...s: Array<string | false | null | undefined>) => s.filter(Boolean).join(" ");
 const UK_POSTCODE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i;
+
+// optional typing for the directory picker (Chrome/Edge)
+declare global {
+  interface Window {
+    showDirectoryPicker?: () => Promise<any>;
+  }
+}
 
 type Props = {
   sectorSlug: string;
@@ -29,6 +35,7 @@ type Props = {
 
 type Client = { id: string; name: string };
 
+// Pull "Project No - Address - Postcode" from a filename
 function parseFromPattern(name: string) {
   const core = name
     .replace(/(_Meta|- Meta)?\.[^.]+$/i, "")
@@ -44,7 +51,7 @@ function parseFromPattern(name: string) {
   };
 }
 
-// -------- UI bits --------
+// ----------- Toast UI -----------
 function Toast({
   kind,
   text,
@@ -62,11 +69,15 @@ function Toast({
       : "bg-sky-50 border-sky-200 text-sky-900";
   return (
     <div role="alert" className={cn("flex items-start gap-3 rounded-xl border p-3 text-sm shadow-sm", palette)}>
-      {kind === "error" ? <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> :
-       kind === "success" ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> :
-       <svg viewBox="0 0 24 24" className="mt-0.5 h-4 w-4 shrink-0" fill="currentColor">
-         <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 15a1 1 0 0 1-1-1v-4a1 1 0 1 1 2 0v4a1 1 0 0 1-1 1zm1-8h-2V7h2z"/>
-       </svg>}
+      {kind === "error" ? (
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+      ) : kind === "success" ? (
+        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+      ) : (
+        <svg viewBox="0 0 24 24" className="mt-0.5 h-4 w-4 shrink-0" fill="currentColor">
+          <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 15a1 1 0 0 1-1-1v-4a1 1 0 1 1 2 0v4a1 1 0 0 1-1 1zm1-8h-2V7h2z" />
+        </svg>
+      )}
       <div className="flex-1">{text}</div>
       <button aria-label="dismiss" className="rounded p-1 hover:bg-black/5" onClick={onClose}>
         <X className="h-4 w-4" />
@@ -75,14 +86,14 @@ function Toast({
   );
 }
 
-// -------- main --------
+// ----------- Main component -----------
 export default function UploadClient({
   sectorSlug,
   sectorCode,
   sectorTitle,
   sectorStandards,
 }: Props) {
-  // Client state (lazy-loaded)
+  // Client state (lazy loaded)
   const [clients, setClients] = useState<Client[]>([]);
   const [clientsLoaded, setClientsLoaded] = useState(false);
   const [clientsLoading, setClientsLoading] = useState(false);
@@ -104,21 +115,25 @@ export default function UploadClient({
   const [toast, setToast] = useState<{ kind: "error" | "success" | "info"; text: string } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const suggestedFilename = useMemo(() => {
-    const pn = projectNo.trim(), ad = address.trim(), pc = postcode.trim();
-    if (!pn && !ad && !pc) return "";
-    return [pn, ad, pc].filter(Boolean).join(" - ");
-  }, [projectNo, address, postcode]);
-
+  // Where we’ll save in blob storage (client / address)
   const folderPath = useMemo(() => {
     const clientName = useNewClient
       ? newClient.trim()
-      : clients.find(c => c.id === clientSelect)?.name || "";
+      : clients.find((c) => c.id === clientSelect)?.name || "";
     const addr = address.trim();
     return [clientName, addr].filter(Boolean).join("/");
   }, [useNewClient, newClient, clients, clientSelect, address]);
 
-  // ---- lazy loader for clients (no work on initial render) ----
+  // Suggested filename from the fields
+  const suggestedFilename = useMemo(() => {
+    const pn = projectNo.trim();
+    const ad = address.trim();
+    const pc = postcode.trim();
+    if (!pn && !ad && !pc) return "";
+    return [pn, ad, pc].filter(Boolean).join(" - ");
+  }, [projectNo, address, postcode]);
+
+  // ---- lazy loader for clients (no fetch on initial render) ----
   const ensureClients = useCallback(async () => {
     if (clientsLoaded || clientsLoading) return;
     try {
@@ -134,16 +149,16 @@ export default function UploadClient({
     }
   }, [clientsLoaded, clientsLoading]);
 
-  // ---- file helpers ----
-  const isPdf  = (f: File) => /\.pdf$/i.test(f.name);
-  const isDb   = (f: File) => /\.db3?$/i.test(f.name) || /\.db$/i.test(f.name);
+  // ---- file helpers & validation ----
+  const isPdf = (f: File) => /\.pdf$/i.test(f.name);
+  const isDb = (f: File) => /\.db3?$/i.test(f.name) || /\.db$/i.test(f.name);
   const isMeta = (f: File) => /(_Meta|- Meta)\.db3?$/i.test(f.name) || /(_Meta|- Meta)\.db$/i.test(f.name);
   const baseDb = (f: File) => f.name.replace(/(_Meta|- Meta)?\.db3?$/i, "").replace(/(_Meta|- Meta)?\.db$/i, "");
 
   function checkFiles(list: File[]): { ok: boolean; reason?: string } {
     if (!list.length) return { ok: false, reason: "Please add a file." };
     const pdfs = list.filter(isPdf);
-    const dbs  = list.filter(isDb);
+    const dbs = list.filter(isDb);
     if (pdfs.length && dbs.length) return { ok: false, reason: "Choose either a single PDF or a .db/.db3 pair (not both)." };
     if (pdfs.length === 1 && list.length === 1) return { ok: true };
     if (dbs.length >= 1) {
@@ -167,9 +182,9 @@ export default function UploadClient({
     }
   }
 
-  function addFiles(selected: FileList | null) {
-    if (!selected || selected.length === 0) return;
-    const list = Array.from(selected);
+  function addFiles(selected: FileList | null | File[]) {
+    const list = Array.isArray(selected) ? selected : Array.from(selected ?? []);
+    if (!list.length) return;
     const check = checkFiles(list);
     if (!check.ok) {
       setToast({ kind: "error", text: check.reason || "Invalid files." });
@@ -185,12 +200,38 @@ export default function UploadClient({
     addFiles(e.dataTransfer.files);
   };
 
+  // ---- Folder picker (fast path on Windows network drives) ----
+  async function pickFolderFS() {
+    try {
+      // Best UX (Chrome/Edge): File System Access API
+      if (typeof window.showDirectoryPicker === "function") {
+        const dir = await window.showDirectoryPicker();
+        const picked: File[] = [];
+        // @ts-ignore: iterating entries from DirectoryHandle
+        for await (const [, entry] of dir.entries()) {
+          if (entry.kind === "file") {
+            const f = await entry.getFile();
+            if (/\.(pdf|db3?|db)$/i.test(f.name)) picked.push(f);
+          }
+        }
+        addFiles(picked);
+        return;
+      }
+      // Fallback (Chrome/Edge/Safari): hidden <input webkitdirectory>
+      (document.getElementById("folderInputHidden") as HTMLInputElement)?.click();
+    } catch (e) {
+      // user cancelled → ignore
+    }
+  }
+
+  // ---- submit ----
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     const chooseClientOk = useNewClient ? !!newClient.trim() : !!clientSelect;
     if (!chooseClientOk) return setToast({ kind: "error", text: "Please choose an existing client or enter a new client name." });
-    if (!projectNo.trim() || !address.trim() || !postcode.trim()) return setToast({ kind: "error", text: "Please fill Project No, Address and Postcode." });
+    if (!projectNo.trim() || !address.trim() || !postcode.trim())
+      return setToast({ kind: "error", text: "Please fill Project No, Address and Postcode." });
     if (!files.length) return setToast({ kind: "error", text: "Please add a file to upload." });
 
     const check = checkFiles(files);
@@ -209,6 +250,7 @@ export default function UploadClient({
       fd.append("address", address.trim());
       fd.append("postcode", postcode.trim());
       fd.append("targetFilename", suggestedFilename);
+
       if (useNewClient) {
         fd.append("clientName", newClient.trim());
       } else {
@@ -233,14 +275,11 @@ export default function UploadClient({
     }
   };
 
-  // -------- render --------
+  // ----------- render -----------
   return (
     <div className="space-y-6">
-      {/* Header */}
       <section className="relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <span className="absolute right-3 top-3 rounded-md bg-gray-900 px-2 py-0.5 text-xs font-semibold text-white">
-          P3
-        </span>
+        <span className="absolute right-3 top-3 rounded-md bg-gray-900 px-2 py-0.5 text-xs font-semibold text-white">P3</span>
         <h1 className="text-3xl font-bold">Upload Report — {sectorTitle}</h1>
         {sectorStandards && (
           <p className="mt-2 text-gray-700">
@@ -249,24 +288,22 @@ export default function UploadClient({
         )}
       </section>
 
-      {/* Toasts */}
       {toast && <Toast kind={toast.kind} text={toast.text} onClose={() => setToast(null)} />}
 
-      {/* Nav (prefetch disabled) */}
+      {/* nav (no prefetch, to keep things quiet) */}
       <div className="flex items-center gap-2">
-        <Link href="/" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:bg-gray-50">
-          <HomeIcon className="h-4 w-4" />
-          Home
+        <Link href="/" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50">
+          <HomeIcon className="h-4 w-4" /> Home
         </Link>
-        <Link href="/upload" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:bg-gray-50">
+        <Link href="/upload" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50">
           Back to sectors
         </Link>
-        <Link href="/uploads" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm text-indigo-700 shadow-sm transition hover:bg-indigo-100">
+        <Link href="/uploads" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm text-indigo-700 shadow-sm hover:bg-indigo-100">
           View uploaded reports
         </Link>
       </div>
 
-      {/* Client & project */}
+      {/* client + project */}
       <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold">Client & Project</h2>
         <p className="mt-1 text-gray-600">
@@ -274,7 +311,7 @@ export default function UploadClient({
         </p>
 
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {/* Client picker (lazy load) */}
+          {/* Client block */}
           <div className="rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-2">
               <FolderPlus className="h-5 w-5 text-gray-700" />
@@ -290,7 +327,7 @@ export default function UploadClient({
                   checked={!useNewClient}
                   onChange={() => {
                     setUseNewClient(false);
-                    // Load the list only the first time user switches to "Select existing"
+                    // load when user actually selects "existing"
                     ensureClients();
                   }}
                 />
@@ -324,6 +361,7 @@ export default function UploadClient({
                 />
                 <span className="text-sm text-gray-700">Create new</span>
               </label>
+
               {useNewClient && (
                 <input
                   value={newClient}
@@ -335,27 +373,46 @@ export default function UploadClient({
             </div>
           </div>
 
-          {/* Project fields */}
+          {/* Project details */}
           <div className="rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-gray-700" />
               <div className="font-medium">Project details</div>
             </div>
+
             <div className="mt-3 grid gap-3">
-              <input value={projectNo} onChange={(e) => setProjectNo(e.target.value)} placeholder="Project No" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
-              <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Full Site Address" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
-              <input value={postcode} onChange={(e) => setPostcode(e.target.value)} placeholder="Post code" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
+              <input
+                value={projectNo}
+                onChange={(e) => setProjectNo(e.target.value)}
+                placeholder="Project No"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              />
+              <input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Full Site Address"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              />
+              <input
+                value={postcode}
+                onChange={(e) => setPostcode(e.target.value)}
+                placeholder="Post code"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              />
+
               <div className="rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-700">
                 <div className="font-semibold">Suggested filename</div>
                 <div className="mt-0.5 font-mono">{suggestedFilename || "—"}</div>
-                <div className="mt-1 text-[11px] text-gray-500">Pattern: <code>Project No - Full Site address - Post code</code></div>
+                <div className="mt-1 text-[11px] text-gray-500">
+                  Pattern: <code>Project No - Full Site address - Post code</code>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Upload area (simple input; nothing runs before dialog opens) */}
+      {/* Upload widget */}
       <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold">Upload files</h2>
         <p className="mt-1 text-gray-600">
@@ -379,7 +436,9 @@ export default function UploadClient({
                 browse
               </label>
             </div>
-            <div className="mt-1 text-xs text-gray-500">PDF (single) or .db/.db3 pair (main + <em>_Meta</em>)</div>
+            <div className="mt-1 text-xs text-gray-500">
+              PDF (single) or .db/.db3 pair (main + <em>_Meta</em>)
+            </div>
 
             <input
               ref={inputRef}
@@ -393,6 +452,30 @@ export default function UploadClient({
             />
           </div>
 
+          {/* Fast path: pick whole folder */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={pickFolderFS}
+              className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+              title="Pick the folder that contains your .db3 and _Meta.db3"
+            >
+              Use folder picker (fast)
+            </button>
+
+            {/* hidden fallback input for directory selection */}
+            <input
+              id="folderInputHidden"
+              type="file"
+              // @ts-ignore non-standard but supported in Chromium & Safari
+              webkitdirectory
+              directory
+              multiple
+              className="hidden"
+              onChange={(e) => addFiles(e.target.files)}
+            />
+          </div>
+
           <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm">
             {files.length === 0 ? (
               <div className="flex items-center gap-2 text-gray-500">
@@ -402,9 +485,15 @@ export default function UploadClient({
               <ul className="space-y-1">
                 {files.map((f) => (
                   <li key={f.name} className="flex items-center gap-2">
-                    {/\.(pdf)$/i.test(f.name) ? <FileText className="h-4 w-4 text-gray-700" /> : <Database className="h-4 w-4 text-gray-700" />}
+                    {/\.(pdf)$/i.test(f.name) ? (
+                      <FileText className="h-4 w-4 text-gray-700" />
+                    ) : (
+                      <Database className="h-4 w-4 text-gray-700" />
+                    )}
                     <span className="font-medium">{f.name}</span>
-                    <span className="ml-auto text-xs text-gray-500">{(f.size / 1024 / 1024).toFixed(2)} MB</span>
+                    <span className="ml-auto text-xs text-gray-500">
+                      {(f.size / 1024 / 1024).toFixed(2)} MB
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -420,9 +509,19 @@ export default function UploadClient({
                 isUploading ? "opacity-80" : "hover:bg-indigo-700"
               )}
             >
-              {isUploading ? (<><Loader2 className="h-4 w-4 animate-spin" /> Uploading…</>) : (<><CheckCircle2 className="h-4 w-4" /> Upload</>)}
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Uploading…
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-4 w-4" /> Upload
+                </>
+              )}
             </button>
-            <span className="text-xs text-gray-500">Sector: <strong>{sectorCode}</strong> ({sectorTitle})</span>
+            <span className="text-xs text-gray-500">
+              Sector: <strong>{sectorCode}</strong> ({sectorTitle})
+            </span>
           </div>
         </form>
       </section>
