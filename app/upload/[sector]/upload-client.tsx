@@ -430,16 +430,21 @@ export default function UploadClient({
             )}
           >
             <UploadCloud className="h-7 w-7 text-gray-500 pointer-events-none" />
-            <div className="mt-2 text-sm text-gray-700">
-              Drag & drop files here, or{" "}
-              <label htmlFor="fileInput" className="cursor-pointer text-indigo-700 underline underline-offset-2">
-                browse
-              </label>
-            </div>
+            
             <div className="mt-1 text-xs text-gray-500">
               PDF (single) or .db/.db3 pair (main + <em>_Meta</em>)
             </div>
-
+<div className="mt-2 text-sm text-gray-700">
+  Drag & drop files here, or{" "}
+  <button
+    type="button"
+    onClick={onBrowseClick}          // ⬅️ new
+    className="text-indigo-700 underline underline-offset-2"
+    title="Click to pick a folder (Shift+Click to use classic file dialog)"
+  >
+    browse
+  </button>
+</div>
             <input
               ref={inputRef}
               id="fileInput"
