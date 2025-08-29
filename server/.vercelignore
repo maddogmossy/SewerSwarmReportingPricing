@@ -1,0 +1,15 @@
+# Ignore local-only stuff from deployments
+node_modules
+.tmp
+dist
+build
+coverage
+*.log
+
+# ✅ Keep the legacy Express server out of Vercel builds
+server/
+
+# misc local tools
+scripts/
+tests/
+vite/
