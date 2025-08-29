@@ -1,4 +1,3 @@
-// app/page.tsx
 import Link from "next/link";
 
 function Badge({ children }: { children: React.ReactNode }) {
@@ -9,23 +8,14 @@ function Badge({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Tile({
-  href,
-  title,
-  subtitle,
-  badge,
-}: {
-  href: string;
-  title: string;
-  subtitle: string;
-  badge: string;
-}) {
+function Tile(props: { href: string; title: string; subtitle: string; badge: string }) {
+  const { href, title, subtitle, badge } = props;
   return (
     <Link
       href={href}
       className="block rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md"
     >
-      <div className="text-xl font-semibold tracking-tight">
+      <div className="text-xl font-semibold">
         {title}
         <Badge>{badge}</Badge>
       </div>
@@ -41,18 +31,8 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Welcome back, Test!</h1>
           <div className="flex items-center gap-3">
-            <Link
-              href="/settings"
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50"
-            >
-              Settings
-            </Link>
-            <Link
-              href="/signout"
-              className="rounded-md bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700"
-            >
-              Sign Out
-            </Link>
+            <Link href="/settings" className="rounded-md border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50">Settings</Link>
+            <Link href="/signout" className="rounded-md bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700">Sign Out</Link>
           </div>
         </div>
         <p className="mt-2 text-gray-600">
