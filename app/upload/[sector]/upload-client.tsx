@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Home as HomeIcon,
   FolderPlus,
@@ -17,31 +17,34 @@ import {
 } from "lucide-react";
 
 type Props = {
-  sectorSlug: string;
-  sectorCode: string;
-  sectorTitle: string;
+  sectorSlug: string;   // e.g. "utilities"
+  sectorCode: string;   // e.g. "S1"
+  sectorTitle: string;  // e.g. "Utilities"
   sectorStandards: string;
 };
 
 type Client = { id: string; name: string };
 
+// ---------- utils ----------
 const cn = (...s: Array<string | false | null | undefined>) =>
   s.filter(Boolean).join(" ");
 
 const UK_POSTCODE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i;
 
 function parseFromPattern(name: string) {
+  // "Project No - Full Site address - Post code.ext"
   const core = name
     .replace(/(_Meta|- Meta)?\.[^.]+$/i, "")
     .replace(/\.[^.]+$/i, "");
   const parts = core.split(" - ").map((s) => s.trim()).filter(Boolean);
   if (parts.length < 3) return null;
-  const postcodeMatch = parts[parts.length - 1].match(UK_POSTCODE);
-  if (!postcodeMatch) return null;
-  const projectNo = parts[0];
-  const address = parts.slice(1, parts.length - 1).join(" - ");
-  const postcode = `${postcodeMatch[1].toUpperCase()} ${postcodeMatch[2].toUpperCase()}`;
-  return { projectNo, address, postcode };
+  const pc = parts[parts.length - 1].match(UK_POSTCODE);
+  if (!pc) return null;
+  return {
+    projectNo: parts[0],
+    address: parts.slice(1, parts.length - 1).join(" - "),
+    postcode: `${pc[1].toUpperCase()} ${pc[2].toUpperCase()}`,
+  };
 }
 
 async function fetchClients(): Promise<Client[]> {
@@ -55,6 +58,7 @@ async function fetchClients(): Promise<Client[]> {
   }
 }
 
+// ---------- UI bits ----------
 function Toast({
   kind,
   text,
@@ -96,25 +100,29 @@ function Toast({
   );
 }
 
+// ---------- main ----------
 export default function UploadClient({
   sectorSlug,
   sectorCode,
   sectorTitle,
   sectorStandards,
 }: Props) {
+  // Clients
   const [clients, setClients] = useState<Client[]>([]);
   const [clientSelect, setClientSelect] = useState<string>("");
   const [newClient, setNewClient] = useState("");
   const [useNewClient, setUseNewClient] = useState(false);
 
+  // Project metadata
   const [projectNo, setProjectNo] = useState("");
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
 
+  // Files
   const [files, setFiles] = useState<File[]>([]);
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const [dragOver, setDragOver] = useState(false);
 
+  // UI
   const [toast, setToast] = useState<{ kind: "error" | "success" | "info"; text: string } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -122,6 +130,7 @@ export default function UploadClient({
     fetchClients().then(setClients);
   }, []);
 
+  // Suggested filename + folder
   const suggestedFilename = useMemo(() => {
     const pn = projectNo.trim();
     const ad = address.trim();
@@ -136,6 +145,7 @@ export default function UploadClient({
     return [clientFolder, addressFolder].filter(Boolean).join("/");
   }, [useNewClient, newClient, clients, clientSelect, address]);
 
+  // File helpers
   const isPdf  = (f: File) => /\.pdf$/i.test(f.name);
   const isDb   = (f: File) => /\.db3?$/i.test(f.name) || /\.db$/i.test(f.name);
   const isMeta = (f: File) => /(_Meta|- Meta)\.db3?$/i.test(f.name) || /(_Meta|- Meta)\.db$/i.test(f.name);
@@ -180,12 +190,14 @@ export default function UploadClient({
     parseAutofill(list);
   }
 
+  // DnD
   const onDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
     setDragOver(false);
     addFiles(e.dataTransfer.files);
   };
 
+  // Submit
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
@@ -253,7 +265,7 @@ export default function UploadClient({
       {/* Toasts */}
       {toast && <Toast kind={toast.kind} text={toast.text} onClose={() => setToast(null)} />}
 
-      {/* Nav (disable prefetch to avoid unwanted requests) */}
+      {/* Nav (prefetch disabled) */}
       <div className="flex items-center gap-2">
         <Link
           href="/"
@@ -378,7 +390,7 @@ export default function UploadClient({
         </div>
       </section>
 
-      {/* Upload area */}
+      {/* Upload area (Dropzone + label/input; no programmatic click) */}
       <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold">Upload files</h2>
         <p className="mt-1 text-gray-600">
@@ -386,6 +398,7 @@ export default function UploadClient({
         </p>
 
         <form onSubmit={onSubmit} className="mt-4 space-y-4">
+          {/* Dropzone */}
           <div
             onDragOver={(e) => {
               e.preventDefault();
@@ -394,34 +407,37 @@ export default function UploadClient({
             onDragLeave={() => setDragOver(false)}
             onDrop={onDrop}
             className={cn(
-              "flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-8 text-center transition",
+              "relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-8 text-center transition",
               dragOver ? "border-indigo-400 bg-indigo-50/50" : "border-gray-300 bg-gray-50"
             )}
           >
             <UploadCloud className="h-7 w-7 text-gray-500" />
             <div className="mt-2 text-sm text-gray-700">
               Drag & drop files here, or{" "}
-              <button
-                type="button"
-                className="text-indigo-700 underline underline-offset-2"
-                onClick={() => inputRef.current?.click()}
+              <label
+                htmlFor="fileInput"
+                className="cursor-pointer text-indigo-700 underline underline-offset-2"
               >
                 browse
-              </button>
+              </label>
             </div>
             <div className="mt-1 text-xs text-gray-500">
               PDF (single) or .db/.db3 pair (main + <em>_Meta</em>)
             </div>
+
+            {/* Visible-to-browser input (visually hidden, not display:none) */}
             <input
-              ref={inputRef}
+              id="fileInput"
+              name="fileInput"
               type="file"
               multiple
-              hidden
+              className="absolute left-0 top-0 h-0.5 w-0.5 overflow-hidden border-0 p-0 opacity-0"
               accept=".pdf,.db,.db3,application/pdf,application/x-sqlite3"
               onChange={(e) => addFiles(e.target.files)}
             />
           </div>
 
+          {/* Selected files summary */}
           <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm">
             {files.length === 0 ? (
               <div className="flex items-center gap-2 text-gray-500">
