@@ -1,15 +1,15 @@
 // drizzle.config.ts
-import { defineConfig } from "drizzle-kit";
+// Keep this file minimal so Next/Vercel builds don't choke on dev-only deps.
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL missing");
 }
 
-export default defineConfig({
-  out: "./migrations",
-  schema: "./db/schema.ts",   // ✅ use ONLY this schema file
+export default {
+  schema: "./db/schema.ts",
+  out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-});
+};
