@@ -1,7 +1,7 @@
 "use client";
 
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Home as HomeIcon,
   FolderPlus,
@@ -15,11 +15,13 @@ import {
   Loader2,
 } from "lucide-react";
 
-// ----------- small utils -----------
-const cn = (...s: Array<string | false | null | undefined>) => s.filter(Boolean).join(" ");
+// ---------- utils ----------
+const cn = (...s: Array<string | false | null | undefined>) =>
+  s.filter(Boolean).join(" ");
+
 const UK_POSTCODE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i;
 
-// optional typing for the directory picker (Chrome/Edge)
+// optional typing for directory picker (Chromium)
 declare global {
   interface Window {
     showDirectoryPicker?: () => Promise<any>;
@@ -35,12 +37,15 @@ type Props = {
 
 type Client = { id: string; name: string };
 
-// Pull "Project No - Address - Postcode" from a filename
+// Pull “Project No - Address - Postcode” from a filename
 function parseFromPattern(name: string) {
   const core = name
     .replace(/(_Meta|- Meta)?\.[^.]+$/i, "")
     .replace(/\.[^.]+$/i, "");
-  const parts = core.split(" - ").map((s) => s.trim()).filter(Boolean);
+  const parts = core
+    .split(" - ")
+    .map((s) => s.trim())
+    .filter(Boolean);
   if (parts.length < 3) return null;
   const pc = parts[parts.length - 1].match(UK_POSTCODE);
   if (!pc) return null;
@@ -51,7 +56,7 @@ function parseFromPattern(name: string) {
   };
 }
 
-// ----------- Toast UI -----------
+// ---------- small toast ----------
 function Toast({
   kind,
   text,
@@ -68,32 +73,46 @@ function Toast({
       ? "bg-emerald-50 border-emerald-200 text-emerald-800"
       : "bg-sky-50 border-sky-200 text-sky-900";
   return (
-    <div role="alert" className={cn("flex items-start gap-3 rounded-xl border p-3 text-sm shadow-sm", palette)}>
+    <div
+      role="alert"
+      className={cn(
+        "flex items-start gap-3 rounded-xl border p-3 text-sm shadow-sm",
+        palette
+      )}
+    >
       {kind === "error" ? (
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
       ) : kind === "success" ? (
         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
       ) : (
-        <svg viewBox="0 0 24 24" className="mt-0.5 h-4 w-4 shrink-0" fill="currentColor">
+        <svg
+          viewBox="0 0 24 24"
+          className="mt-0.5 h-4 w-4 shrink-0"
+          fill="currentColor"
+        >
           <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 15a1 1 0 0 1-1-1v-4a1 1 0 1 1 2 0v4a1 1 0 0 1-1 1zm1-8h-2V7h2z" />
         </svg>
       )}
       <div className="flex-1">{text}</div>
-      <button aria-label="dismiss" className="rounded p-1 hover:bg-black/5" onClick={onClose}>
+      <button
+        aria-label="dismiss"
+        className="rounded p-1 hover:bg-black/5"
+        onClick={onClose}
+      >
         <X className="h-4 w-4" />
       </button>
     </div>
   );
 }
 
-// ----------- Main component -----------
+// ---------- component ----------
 export default function UploadClient({
   sectorSlug,
   sectorCode,
   sectorTitle,
   sectorStandards,
 }: Props) {
-  // Client state (lazy loaded)
+  // clients (lazy)
   const [clients, setClients] = useState<Client[]>([]);
   const [clientsLoaded, setClientsLoaded] = useState(false);
   const [clientsLoading, setClientsLoading] = useState(false);
@@ -101,21 +120,24 @@ export default function UploadClient({
   const [newClient, setNewClient] = useState("");
   const [useNewClient, setUseNewClient] = useState(false);
 
-  // Project meta
+  // project meta
   const [projectNo, setProjectNo] = useState("");
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
 
-  // Files
+  // files
   const [files, setFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // UI
-  const [toast, setToast] = useState<{ kind: "error" | "success" | "info"; text: string } | null>(null);
+  // ui
+  const [toast, setToast] = useState<{
+    kind: "error" | "success" | "info";
+    text: string;
+  } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Where we’ll save in blob storage (client / address)
+  // where we save in blob (Client/Address)
   const folderPath = useMemo(() => {
     const clientName = useNewClient
       ? newClient.trim()
@@ -124,7 +146,7 @@ export default function UploadClient({
     return [clientName, addr].filter(Boolean).join("/");
   }, [useNewClient, newClient, clients, clientSelect, address]);
 
-  // Suggested filename from the fields
+  // suggested filename
   const suggestedFilename = useMemo(() => {
     const pn = projectNo.trim();
     const ad = address.trim();
@@ -133,7 +155,7 @@ export default function UploadClient({
     return [pn, ad, pc].filter(Boolean).join(" - ");
   }, [projectNo, address, postcode]);
 
-  // ---- lazy loader for clients (no fetch on initial render) ----
+  // lazy load clients
   const ensureClients = useCallback(async () => {
     if (clientsLoaded || clientsLoading) return;
     try {
@@ -149,30 +171,52 @@ export default function UploadClient({
     }
   }, [clientsLoaded, clientsLoading]);
 
-  // ---- file helpers & validation ----
+  // file helpers
   const isPdf = (f: File) => /\.pdf$/i.test(f.name);
   const isDb = (f: File) => /\.db3?$/i.test(f.name) || /\.db$/i.test(f.name);
-  const isMeta = (f: File) => /(_Meta|- Meta)\.db3?$/i.test(f.name) || /(_Meta|- Meta)\.db$/i.test(f.name);
-  const baseDb = (f: File) => f.name.replace(/(_Meta|- Meta)?\.db3?$/i, "").replace(/(_Meta|- Meta)?\.db$/i, "");
+  const isMeta = (f: File) =>
+    /(_Meta|- Meta)\.db3?$/i.test(f.name) || /(_Meta|- Meta)\.db$/i.test(f.name);
+  const baseDb = (f: File) =>
+    f.name
+      .replace(/(_Meta|- Meta)?\.db3?$/i, "")
+      .replace(/(_Meta|- Meta)?\.db$/i, "");
 
   function checkFiles(list: File[]): { ok: boolean; reason?: string } {
     if (!list.length) return { ok: false, reason: "Please add a file." };
     const pdfs = list.filter(isPdf);
     const dbs = list.filter(isDb);
-    if (pdfs.length && dbs.length) return { ok: false, reason: "Choose either a single PDF or a .db/.db3 pair (not both)." };
+    if (pdfs.length && dbs.length)
+      return {
+        ok: false,
+        reason: "Choose either a single PDF or a .db/.db3 pair (not both).",
+      };
     if (pdfs.length === 1 && list.length === 1) return { ok: true };
     if (dbs.length >= 1) {
       const mains = dbs.filter((f) => !isMeta(f));
       const metas = dbs.filter((f) => isMeta(f));
-      if (mains.length !== 1 || metas.length !== 1) return { ok: false, reason: "A .db/.db3 upload needs exactly two files: main + _Meta." };
-      if (baseDb(mains[0]) !== baseDb(metas[0])) return { ok: false, reason: "The .db/.db3 and _Meta names must match (same base)." };
+      if (mains.length !== 1 || metas.length !== 1)
+        return {
+          ok: false,
+          reason:
+            "A .db/.db3 upload needs exactly two files: main + _Meta.",
+        };
+      if (baseDb(mains[0]) !== baseDb(metas[0]))
+        return {
+          ok: false,
+          reason:
+            "The .db/.db3 and _Meta names must match (same base).",
+        };
       return { ok: true };
     }
-    return { ok: false, reason: "Unsupported files. Upload a PDF or a .db/.db3 pair." };
+    return {
+      ok: false,
+      reason: "Unsupported files. Upload a PDF or a .db/.db3 pair.",
+    };
   }
 
   function parseAutofill(list: File[]) {
-    const main = list.find((f) => isPdf(f) || (isDb(f) && !isMeta(f))) ?? list[0];
+    const main =
+      list.find((f) => isPdf(f) || (isDb(f) && !isMeta(f))) ?? list[0];
     if (!main) return;
     const parsed = parseFromPattern(main.name);
     if (parsed) {
@@ -200,14 +244,13 @@ export default function UploadClient({
     addFiles(e.dataTransfer.files);
   };
 
-  // ---- Folder picker (fast path on Windows network drives) ----
+  // Folder picker (fast)
   async function pickFolderFS() {
     try {
-      // Best UX (Chrome/Edge): File System Access API
       if (typeof window.showDirectoryPicker === "function") {
         const dir = await window.showDirectoryPicker();
         const picked: File[] = [];
-        // @ts-ignore: iterating entries from DirectoryHandle
+        // @ts-ignore iterate DirectoryHandle entries
         for await (const [, entry] of dir.entries()) {
           if (entry.kind === "file") {
             const f = await entry.getFile();
@@ -217,25 +260,44 @@ export default function UploadClient({
         addFiles(picked);
         return;
       }
-      // Fallback (Chrome/Edge/Safari): hidden <input webkitdirectory>
+      // Fallback: hidden <input webkitdirectory>
       (document.getElementById("folderInputHidden") as HTMLInputElement)?.click();
-    } catch (e) {
-      // user cancelled → ignore
+    } catch {
+      /* user cancelled */
     }
   }
 
-  // ---- submit ----
+  // Shift+Click = classic file dialog; normal click = fast folder picker
+  function onBrowseClick(e: React.MouseEvent<HTMLButtonElement>) {
+    if (e.shiftKey) {
+      const el = document.getElementById("fileInput") as HTMLInputElement | null;
+      el?.click();
+    } else {
+      pickFolderFS();
+    }
+  }
+
+  // submit
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     const chooseClientOk = useNewClient ? !!newClient.trim() : !!clientSelect;
-    if (!chooseClientOk) return setToast({ kind: "error", text: "Please choose an existing client or enter a new client name." });
+    if (!chooseClientOk)
+      return setToast({
+        kind: "error",
+        text: "Please choose an existing client or enter a new client name.",
+      });
     if (!projectNo.trim() || !address.trim() || !postcode.trim())
-      return setToast({ kind: "error", text: "Please fill Project No, Address and Postcode." });
-    if (!files.length) return setToast({ kind: "error", text: "Please add a file to upload." });
+      return setToast({
+        kind: "error",
+        text: "Please fill Project No, Address and Postcode.",
+      });
+    if (!files.length)
+      return setToast({ kind: "error", text: "Please add a file to upload." });
 
     const check = checkFiles(files);
-    if (!check.ok) return setToast({ kind: "error", text: check.reason || "Invalid files." });
+    if (!check.ok)
+      return setToast({ kind: "error", text: check.reason || "Invalid files." });
 
     try {
       setIsUploading(true);
@@ -258,6 +320,7 @@ export default function UploadClient({
         const name = clients.find((c) => c.id === clientSelect)?.name;
         if (name) fd.append("clientName", name);
       }
+
       files.forEach((f) => fd.append("files", f, f.name));
 
       const res = await fetch("/api/uploads", { method: "POST", body: fd });
@@ -265,7 +328,10 @@ export default function UploadClient({
         const msg = await res.text().catch(() => "");
         throw new Error(msg || res.statusText);
       }
-      setToast({ kind: "success", text: "Upload complete. Redirecting to Uploaded Reports…" });
+      setToast({
+        kind: "success",
+        text: "Upload complete. Redirecting to Uploaded Reports…",
+      });
       window.location.href = "/uploads";
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -275,11 +341,12 @@ export default function UploadClient({
     }
   };
 
-  // ----------- render -----------
   return (
     <div className="space-y-6">
       <section className="relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <span className="absolute right-3 top-3 rounded-md bg-gray-900 px-2 py-0.5 text-xs font-semibold text-white">P3</span>
+        <span className="absolute right-3 top-3 rounded-md bg-gray-900 px-2 py-0.5 text-xs font-semibold text-white">
+          P3
+        </span>
         <h1 className="text-3xl font-bold">Upload Report — {sectorTitle}</h1>
         {sectorStandards && (
           <p className="mt-2 text-gray-700">
@@ -288,30 +355,44 @@ export default function UploadClient({
         )}
       </section>
 
-      {toast && <Toast kind={toast.kind} text={toast.text} onClose={() => setToast(null)} />}
+      {toast && (
+        <Toast kind={toast.kind} text={toast.text} onClose={() => setToast(null)} />
+      )}
 
-      {/* nav (no prefetch, to keep things quiet) */}
       <div className="flex items-center gap-2">
-        <Link href="/" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50">
+        <Link
+          href="/"
+          prefetch={false}
+          className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+        >
           <HomeIcon className="h-4 w-4" /> Home
         </Link>
-        <Link href="/upload" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50">
+        <Link
+          href="/upload"
+          prefetch={false}
+          className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+        >
           Back to sectors
         </Link>
-        <Link href="/uploads" prefetch={false} className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm text-indigo-700 shadow-sm hover:bg-indigo-100">
+        <Link
+          href="/uploads"
+          prefetch={false}
+          className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm text-indigo-700 shadow-sm hover:bg-indigo-100"
+        >
           View uploaded reports
         </Link>
       </div>
 
-      {/* client + project */}
+      {/* Client & Project */}
       <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold">Client & Project</h2>
         <p className="mt-1 text-gray-600">
-          Files will be saved to folder: <span className="font-medium">{folderPath || "—"}</span>
+          Files will be saved to folder:{" "}
+          <span className="font-medium">{folderPath || "—"}</span>
         </p>
 
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {/* Client block */}
+          {/* Client */}
           <div className="rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-2">
               <FolderPlus className="h-5 w-5 text-gray-700" />
@@ -327,7 +408,6 @@ export default function UploadClient({
                   checked={!useNewClient}
                   onChange={() => {
                     setUseNewClient(false);
-                    // load when user actually selects "existing"
                     ensureClients();
                   }}
                 />
@@ -342,7 +422,9 @@ export default function UploadClient({
                   onChange={(e) => setClientSelect(e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                 >
-                  <option value="">{clientsLoading ? "Loading…" : "— Choose client —"}</option>
+                  <option value="">
+                    {clientsLoading ? "Loading…" : "— Choose client —"}
+                  </option>
                   {clients.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -373,7 +455,7 @@ export default function UploadClient({
             </div>
           </div>
 
-          {/* Project details */}
+          {/* Project */}
           <div className="rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-gray-700" />
@@ -402,9 +484,12 @@ export default function UploadClient({
 
               <div className="rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-700">
                 <div className="font-semibold">Suggested filename</div>
-                <div className="mt-0.5 font-mono">{suggestedFilename || "—"}</div>
+                <div className="mt-0.5 font-mono">
+                  {suggestedFilename || "—"}
+                </div>
                 <div className="mt-1 text-[11px] text-gray-500">
-                  Pattern: <code>Project No - Full Site address - Post code</code>
+                  Pattern:{" "}
+                  <code>Project No - Full Site address - Post code</code>
                 </div>
               </div>
             </div>
@@ -412,16 +497,20 @@ export default function UploadClient({
         </div>
       </section>
 
-      {/* Upload widget */}
+      {/* Upload */}
       <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold">Upload files</h2>
         <p className="mt-1 text-gray-600">
-          Upload a single <strong>PDF</strong> or a <strong>.db/.db3</strong> pair (main + <em>_Meta</em>). Max 50MB per file.
+          Upload a single <strong>PDF</strong> or a <strong>.db/.db3</strong>{" "}
+          pair (main + <em>_Meta</em>). Max 50MB per file.
         </p>
 
         <form onSubmit={onSubmit} className="mt-4 space-y-4">
           <div
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
             onDragLeave={() => setDragOver(false)}
             onDrop={onDrop}
             className={cn(
@@ -429,12 +518,17 @@ export default function UploadClient({
               dragOver ? "border-indigo-400 bg-indigo-50/50" : "border-gray-300 bg-gray-50"
             )}
           >
-            <UploadCloud className="h-7 w-7 text-gray-500 pointer-events-none" />
+            <UploadCloud className="pointer-events-none h-7 w-7 text-gray-500" />
             <div className="mt-2 text-sm text-gray-700">
               Drag & drop files here, or{" "}
-              <label htmlFor="fileInput" className="cursor-pointer text-indigo-700 underline underline-offset-2">
+              <button
+                type="button"
+                onClick={onBrowseClick}
+                className="text-indigo-700 underline underline-offset-2"
+                title="Click to pick a folder (Shift+Click to use classic file dialog)"
+              >
                 browse
-              </label>
+              </button>
             </div>
             <div className="mt-1 text-xs text-gray-500">
               PDF (single) or .db/.db3 pair (main + <em>_Meta</em>)
@@ -452,29 +546,17 @@ export default function UploadClient({
             />
           </div>
 
-          {/* Fast path: pick whole folder */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={pickFolderFS}
-              className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
-              title="Pick the folder that contains your .db3 and _Meta.db3"
-            >
-              Use folder picker (fast)
-            </button>
-
-            {/* hidden fallback input for directory selection */}
-            <input
-              id="folderInputHidden"
-              type="file"
-              // @ts-ignore non-standard but supported in Chromium & Safari
-              webkitdirectory
-              directory
-              multiple
-              className="hidden"
-              onChange={(e) => addFiles(e.target.files)}
-            />
-          </div>
+          {/* hidden fallback for folder picker */}
+          <input
+            id="folderInputHidden"
+            type="file"
+            // @ts-ignore chromium dir selection
+            webkitdirectory
+            directory
+            multiple
+            className="hidden"
+            onChange={(e) => addFiles(e.target.files)}
+          />
 
           <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm">
             {files.length === 0 ? (
