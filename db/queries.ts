@@ -1,25 +1,23 @@
 // db/queries.ts
 import { db } from "@/db";
 import { uploads } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
-// Define a type for joined uploads with relations
-export type UploadWithRelations = {
+// Define a type for Upload records
+export type UploadWithMeta = {
   id: number;
-  sector: any;
-  client: any;
-  project: any;
+  sector: string | null;
+  client: string | null;
+  project: string | null;
   filename: string;
   url: string;
   pathname: string;
   size: number;
-  uploadedAt: Date | null;  // ✅ allow null here
+  uploadedAt: Date | null;
 };
 
-/**
- * Get latest uploads (newest first).
- */
-export async function getLatestUploads(limit = 50): Promise<UploadWithRelations[]> {
+// Get recent uploads (newest first)
+export async function getRecentUploads(limit = 50): Promise<UploadWithMeta[]> {
   const rows = await db
     .select()
     .from(uploads)
@@ -28,31 +26,13 @@ export async function getLatestUploads(limit = 50): Promise<UploadWithRelations[
 
   return rows.map(r => ({
     id: r.id,
-    sector: r.sector,
-    client: r.client,
-    project: r.project,
+    sector: r.sector ?? null,
+    client: r.client ?? null,
+    project: r.project ?? null,
     filename: r.filename,
     url: r.url,
     pathname: r.pathname,
     size: r.size,
-    uploadedAt: r.uploadedAt, // ✅ now matches Date | null
+    uploadedAt: r.uploadedAt ? new Date(r.uploadedAt) : null,
   }));
-}
-
-/**
- * Delete uploads by client, project, or specific file.
- */
-export async function deleteUploads(
-  mode: "file" | "project" | "client",
-  value: string
-) {
-  if (mode === "file") {
-    return db.delete(uploads).where(eq(uploads.pathname, value));
-  }
-  if (mode === "project") {
-    return db.delete(uploads).where(eq(uploads.project, value));
-  }
-  if (mode === "client") {
-    return db.delete(uploads).where(eq(uploads.client, value));
-  }
 }
