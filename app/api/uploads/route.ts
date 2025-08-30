@@ -2,9 +2,8 @@
 import { NextResponse } from 'next/server';
 import { put, PutBlobResult } from '@vercel/blob';
 
-export const runtime = 'nodejs'; // we use Buffer
+export const runtime = 'nodejs';
 
-// --- helpers ---
 const isPdf = (n: string) => n.toLowerCase().endsWith('.pdf');
 const isDb  = (n: string) => /\.db3?$/i.test(n);
 const isMeta = (n: string) => /_meta\.db3?$/i.test(n);
@@ -15,18 +14,15 @@ const guessType = (name: string) =>
   : isDb(name) ? 'application/octet-stream'
   : 'application/octet-stream';
 
-const sanitize = (s: string) =>
-  s.replace(/[\/\\]+/g, '-').replace(/\s+/g, ' ').trim();
+const sanitize = (s: string) => s.replace(/[\/\\]+/g, '-').replace(/\s+/g, ' ').trim();
 
 function deriveProjectFromFiles(files: File[], explicit?: string | null) {
   if (explicit && String(explicit).trim()) return sanitize(String(explicit));
-  // prefer the “main” DB if present, else the single pdf if present
   const dbs = files.filter(f => isDb(f.name));
   const main = dbs.find(f => !isMeta(f.name));
   const pdf  = files.find(f => isPdf(f.name));
   const candidate = main ?? pdf ?? files[0];
   const base = candidate.name.replace(/\.[^.]+$/, '');
-  // If it looks like "Project No - Full Site address - Post code", keep the first 3 parts
   const parts = base.split(' - ');
   if (parts.length >= 3) return sanitize(`${parts[0]} - ${parts[1]} - ${parts[2]}`);
   return sanitize(base);
@@ -59,7 +55,6 @@ async function persistToNeon(payload: {
     const { neon } = await import('@neondatabase/serverless');
     const sql = neon(url);
 
-    // Create a simple table if it doesn’t exist yet.
     await sql/*sql*/`
       CREATE TABLE IF NOT EXISTS uploads (
         id            bigserial PRIMARY KEY,
@@ -74,19 +69,11 @@ async function persistToNeon(payload: {
       );
     `;
 
-    // Insert all files
     for (const u of payload.uploaded) {
       await sql/*sql*/`
         INSERT INTO uploads (sector_code, client_name, project_key, file_name, blob_url, content_type, size_bytes)
-        VALUES (
-          ${payload.sectorCode},
-          ${payload.clientName},
-          ${payload.projectFolder},
-          ${u.name},
-          ${u.url},
-          ${u.contentType},
-          ${u.size}
-        );
+        VALUES (${payload.sectorCode}, ${payload.clientName}, ${payload.projectFolder},
+                ${u.name}, ${u.url}, ${u.contentType}, ${u.size});
       `;
     }
     return { saved: payload.uploaded.length };
@@ -104,16 +91,13 @@ export async function POST(req: Request) {
     const clientName = sanitize(String(form.get('clientName') ?? 'General'));
     const projectFolder = deriveProjectFromFiles([], form.get('projectFolder'));
 
-    // Collect files (one PDF OR a DB pair)
     const files = form.getAll('files') as unknown as File[];
     if (!files.length) {
       return NextResponse.json({ ok: false, error: 'NO_FILES' }, { status: 400 });
     }
 
-    // If projectFolder wasn’t supplied, derive now with the actual files
     const finalProject = deriveProjectFromFiles(files, projectFolder);
 
-    // Validate DB pair
     const pair = validateDbPair(files);
     if (!pair.ok) {
       return NextResponse.json({ ok: false, error: pair.error }, { status: 400 });
@@ -125,7 +109,7 @@ export async function POST(req: Request) {
       const ab = await file.arrayBuffer();
       const key = `${sectorCode}/${sanitize(clientName)}/${sanitize(finalProject)}/${sanitize(file.name)}`;
       const { url, pathname } = await put(key, Buffer.from(ab), {
-        access: 'public', // NOTE: your current @vercel/blob requires "public"
+        access: 'public', // blob SDK v0.24 expects "public" | "private"
         contentType: (file as any).type || guessType(file.name),
       });
       uploaded.push({
@@ -137,7 +121,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // Optional Neon persist
     const neonResult = await persistToNeon({
       sectorCode,
       clientName,
