@@ -4,7 +4,7 @@ import { pgTable, serial, varchar, text, integer, timestamp } from "drizzle-orm/
 export const reports = pgTable("reports", {
   id:           serial("id").primaryKey(),
   sectorCode:   varchar("sector_code", { length: 4 }).notNull(),
-  sectorTitle:  varchar("sector_title", { length: 120 }), // optional in your DB but present
+  sectorTitle:  varchar("sector_title", { length: 120 }).notNull(),
   clientName:   varchar("client_name", { length: 200 }).notNull(),
   projectFolder:varchar("project_folder", { length: 400 }).notNull(),
   projectNo:    varchar("project_no", { length: 120 }),
