@@ -1,5 +1,6 @@
 // app/api/health/route.ts
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
