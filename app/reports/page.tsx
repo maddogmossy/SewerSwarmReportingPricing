@@ -62,6 +62,7 @@ async function deleteFileAction(formData: FormData) {
   await del(url);
   revalidatePath('/reports');
 }
+
 async function deleteProjectAction(formData: FormData) {
   'use server';
   if (!process.env.BLOB_READ_WRITE_TOKEN) return;
@@ -73,13 +74,14 @@ async function deleteProjectAction(formData: FormData) {
   const prefix = `${sector}/${client}/${project}/`;
   let cursor: string | undefined;
   do {
-    const { blobs, cursor: next } = await list({ prefix, cursor });
+    const { blobs, cursor: cursorNext } = await list({ prefix, cursor });
     if (blobs?.length) await Promise.all(blobs.map((b) => del(b.url)));
-    cursor = next ?? undefined;
+    cursor = cursorNext ?? undefined;
   } while (cursor);
 
   revalidatePath('/reports');
 }
+
 async function deleteClientAction(formData: FormData) {
   'use server';
   if (!process.env.BLOB_READ_WRITE_TOKEN) return;
@@ -90,9 +92,9 @@ async function deleteClientAction(formData: FormData) {
   const prefix = `${sector}/${client}/`;
   let cursor: string | undefined;
   do {
-    const { blobs, cursor: next } = await list({ prefix, cursor });
+    const { blobs, cursor: cursorNext } = await list({ prefix, cursor });
     if (blobs?.length) await Promise.all(blobs.map((b) => del(b.url)));
-    cursor = next ?? undefined;
+    cursor = cursorNext ?? undefined;
   } while (cursor);
 
   revalidatePath('/reports');
@@ -107,15 +109,17 @@ export default async function ReportsPage() {
     try {
       let cursor: string | undefined = undefined;
       do {
-        const { blobs, cursor: next } = await list({ cursor });
+        const { blobs, cursor: cursorNext } = await list({ cursor });
         for (const b of blobs) {
           all.push({
-            url: b.url, pathname: b.pathname, size: b.size,
+            url: b.url,
+            pathname: b.pathname,
+            size: b.size,
             contentType: (b as any).contentType ?? null,
             uploadedAt: (b as any).uploadedAt ?? null,
           });
         }
-        cursor = next ?? undefined;
+        cursor = cursorNext ?? undefined;
       } while (cursor);
     } catch (e: any) {
       listError = e?.message || 'Failed to list storage';
@@ -196,9 +200,9 @@ export default async function ReportsPage() {
                           <input type="hidden" name="client" value={client} />
                           <button
                             type="submit"
-                            disabled={!hasBlob}
+                            disabled={!process.env.BLOB_READ_WRITE_TOKEN}
                             className="inline-flex items-center gap-1 rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
-                            title={hasBlob ? 'Delete client (all projects & files)' : 'Storage not connected'}
+                            title={process.env.BLOB_READ_WRITE_TOKEN ? 'Delete client (all projects & files)' : 'Storage not connected'}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                             Delete client
@@ -208,7 +212,7 @@ export default async function ReportsPage() {
 
                       <div className="space-y-3 p-3">
                         {Object.keys(projects).sort((a, b) => a.localeCompare(b)).map((project) => {
-                          const files = projects[project];
+                          const items = projects[project];
                           return (
                             <div key={project} className="rounded-md border border-slate-200">
                               <div className="flex items-center gap-2 px-3 py-2">
@@ -216,7 +220,7 @@ export default async function ReportsPage() {
                                 <Folder className="h-4 w-4 text-slate-600" />
                                 <span className="font-medium">{project}</span>
                                 <span className="ml-2 rounded-full bg-slate-50 px-2 py-0.5 text-xs text-slate-600">
-                                  {files.length} files
+                                  {items.length} files
                                 </span>
 
                                 <form action={deleteProjectAction} className="ml-auto">
@@ -225,9 +229,9 @@ export default async function ReportsPage() {
                                   <input type="hidden" name="project" value={project} />
                                   <button
                                     type="submit"
-                                    disabled={!hasBlob}
+                                    disabled={!process.env.BLOB_READ_WRITE_TOKEN}
                                     className="inline-flex items-center gap-1 rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
-                                    title={hasBlob ? 'Delete project (all files)' : 'Storage not connected'}
+                                    title={process.env.BLOB_READ_WRITE_TOKEN ? 'Delete project (all files)' : 'Storage not connected'}
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
                                     Delete project
@@ -236,7 +240,7 @@ export default async function ReportsPage() {
                               </div>
 
                               <ul className="divide-y divide-slate-200">
-                                {files.slice().sort((a, b) => a.pathname.localeCompare(b.pathname)).map((f) => (
+                                {items.slice().sort((a, b) => a.pathname.localeCompare(b.pathname)).map((f) => (
                                   <li key={f.url} className="flex items-center gap-3 px-3 py-2">
                                     {isPdf(f.pathname) ? (
                                       <FileText className="h-4 w-4 text-slate-600" />
@@ -262,9 +266,9 @@ export default async function ReportsPage() {
                                       <input type="hidden" name="url" value={f.url} />
                                       <button
                                         type="submit"
-                                        disabled={!hasBlob}
+                                        disabled={!process.env.BLOB_READ_WRITE_TOKEN}
                                         className="inline-flex items-center gap-1 rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
-                                        title={hasBlob ? 'Delete file' : 'Storage not connected'}
+                                        title={process.env.BLOB_READ_WRITE_TOKEN ? 'Delete file' : 'Storage not connected'}
                                       >
                                         <Trash2 className="h-3.5 w-3.5" />
                                         Delete
@@ -286,7 +290,7 @@ export default async function ReportsPage() {
         })}
       </div>
 
-      {hasBlob && !listError && bySector.size === 0 && (
+      {process.env.BLOB_READ_WRITE_TOKEN && !listError && bySector.size === 0 && (
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-600">
           No uploads yet. Go to the Sectors page (P2) to upload your first report.
         </div>
