@@ -3,14 +3,19 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is missing");
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.DRIZZLE_DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error(
+    "Missing DATABASE_URL/POSTGRES_URL/DRIZZLE_DATABASE_URL env var"
+  );
 }
 
-export const sql = neon(process.env.DATABASE_URL);
+// neon-http works in the Node.js runtime and on Vercel serverless
+export const sql = neon(connectionString);
 export const db = drizzle(sql, { schema });
 
-// handy re-exports so routes can do `import { db, schema } from '@/db'`
-export { schema };
-export { reports } from "./schema";
-export type { ReportInsert, ReportSelect } from "./schema";
+export type DB = typeof db;
