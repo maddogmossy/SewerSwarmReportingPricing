@@ -1,11 +1,16 @@
 // app/api/reports/list/route.ts
-export const runtime = "nodejs";
-
 import { db } from "@/db";
 import { reports } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
+export const runtime = "nodejs";
+
 export async function GET() {
-  const rows = await db.select().from(reports).orderBy(desc(reports.id));
+  const rows = await db
+    .select()
+    .from(reports)
+    .orderBy(desc(reports.uploadedAt))
+    .limit(200);
+
   return Response.json({ ok: true, rows });
 }
