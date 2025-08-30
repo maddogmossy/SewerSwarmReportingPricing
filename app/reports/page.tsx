@@ -1,8 +1,11 @@
+// app/reports/page.tsx
 import { list, del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type BlobRow = {
   url: string;
@@ -33,9 +36,7 @@ async function fetchAll(): Promise<BlobRow[]> {
   let cursor: string | undefined = undefined;
 
   do {
-    // 👇 Type the result of list(...) so nothing falls back to "any"
     const page: Awaited<ReturnType<typeof list>> = await list({ cursor });
-
     for (const b of page.blobs) {
       const { sector, client, project, filename } = parsePath(b.pathname);
       all.push({
@@ -43,7 +44,7 @@ async function fetchAll(): Promise<BlobRow[]> {
         pathname: b.pathname,
         name: filename,
         size: b.size,
-        uploadedAt: (b as any).uploadedAt, // optional depending on blob tier
+        uploadedAt: (b as any).uploadedAt,
         sector,
         client,
         project,
@@ -57,6 +58,44 @@ async function fetchAll(): Promise<BlobRow[]> {
 }
 
 export default async function ReportsPage() {
+  const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+
+  // ✅ No token at build? Render a message and do NOT call list()
+  if (!hasBlobToken) {
+    return (
+      <main className="mx-auto max-w-6xl p-6">
+        <span className="fixed left-3 top-3 z-50 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
+          P4
+        </span>
+
+        <header className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h1 className="text-3xl font-extrabold tracking-tight">Uploaded Reports</h1>
+          <p className="mt-2 text-slate-600">
+            Storage isn’t configured for this build. Set{" "}
+            <code>BLOB_READ_WRITE_TOKEN</code> in Vercel → Project → Settings → Environment Variables,
+            then redeploy.
+          </p>
+        </header>
+
+        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-6 text-amber-900">
+          <div className="font-semibold">Vercel Blob token missing</div>
+          <div className="mt-1 text-sm">
+            Until the token is configured, this page will load without listing files.
+          </div>
+          <div className="mt-3">
+            <Link
+              href="/"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:bg-slate-50"
+            >
+              Home
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Token present → list blobs normally
   const rows = await fetchAll();
 
   async function deleteFile(formData: FormData) {
@@ -69,15 +108,12 @@ export default async function ReportsPage() {
 
   return (
     <main className="mx-auto max-w-6xl p-6">
-      {/* P4 badge */}
       <span className="fixed left-3 top-3 z-50 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
         P4
       </span>
 
       <header className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="text-3xl font-extrabold tracking-tight">
-          Uploaded Reports
-        </h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">Uploaded Reports</h1>
         <p className="mt-2 text-slate-600">
           Lists the files you’ve uploaded by sector (newest first).
         </p>
