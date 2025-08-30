@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base page styles */
 html, body { height: 100%; }
 
 body {
