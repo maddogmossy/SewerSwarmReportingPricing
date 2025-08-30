@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Home as HomeIcon,
@@ -132,7 +132,8 @@ const sectors: Sector[] = [
 
 /* ---------------------------- small UI helpers --------------------------- */
 
-const cn = (...s: Array<string | false | null | undefined>) => s.filter(Boolean).join(" ");
+const cn = (...s: Array<string | false | null | undefined>) =>
+  s.filter(Boolean).join(" ");
 
 function DevBadge({ children }: { children: React.ReactNode }) {
   return (
@@ -185,7 +186,7 @@ export default function UploadLanding() {
         P2
       </span>
 
-      {/* Home shortcut (kept on P2) */}
+      {/* Home shortcut */}
       <nav className="mb-4 flex flex-wrap gap-2">
         <Link
           href="/"
@@ -215,7 +216,7 @@ export default function UploadLanding() {
         <p className="mt-3 text-gray-600">Choose a sector below to open the uploader.</p>
       </section>
 
-      {/* Sector cards (open modal instead of routing to /upload/[sector]) */}
+      {/* Sector cards (open modal) */}
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         {sectors.map((s) => (
           <button
@@ -267,26 +268,6 @@ export default function UploadLanding() {
 
 /* ----------------------------- Uploader Modal ---------------------------- */
 
-const UK_POSTCODE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i;
-
-function parseProjectFields(name: string) {
-  // Expect: "Project No - Full Site address - Post code"
-  const core = name.replace(/(_Meta|- Meta)?\.[^.]+$/i, "").replace(/\.[^.]+$/i, "");
-  const parts = core.split(" - ").map((s) => s.trim()).filter(Boolean);
-  if (parts.length < 3) return null;
-  const pc = parts[parts.length - 1].match(UK_POSTCODE);
-  if (!pc) return null;
-  return {
-    projectNo: parts[0],
-    address: parts.slice(1, parts.length - 1).join(" - "),
-    postcode: `${pc[1].toUpperCase()} ${pc[2].toUpperCase()}`,
-  };
-}
-
-function sanitize(s: string) {
-  return s.replace(/[^\w\s.-]+/g, " ").replace(/\s+/g, " ").trim();
-}
-
 function UploadModal({
   sector,
   onClose,
@@ -294,18 +275,17 @@ function UploadModal({
   sector: Sector;
   onClose: () => void;
 }) {
-  // Upload-only UI (no Client & Project panel)
+  // upload-only UI
   const [files, setFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [toast, setToast] = useState<{ kind: "error" | "success" | "info"; text: string } | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
 
-  // Parsed meta
+  // parsed meta
   const [projectNo, setProjectNo] = useState("");
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
 
-  // Client name inferred from folder picker (directory handle name)
+  // client name from folder picker (directory name)
   const [clientName, setClientName] = useState<string>("");
 
   const suggestedFilename = useMemo(() => {
@@ -314,22 +294,54 @@ function UploadModal({
     return [pn, ad, pc].filter(Boolean).join(" - ");
   }, [projectNo, address, postcode]);
 
-  const isPdf = (f: File) => /\.pdf$/i.test(f.name);
-  const isDb  = (f: File) => /\.(db3?|db)$/i.test(f.name);
-  const isMeta = (f: File) => /(_Meta|- Meta)\.(db3?|db)$/i.test(f.name);
-  const baseDb = (f: File) => f.name.replace(/(_Meta|- Meta)?\.(db3?|db)$/i, "");
+  // ---- helpers that accept File OR string (fixes TS error) ----
+  const isPdf = (x: File | string) =>
+    /\.pdf$/i.test(typeof x === "string" ? x : x.name);
+
+  const isDb = (x: File | string) =>
+    /\.(db3?|db)$/i.test(typeof x === "string" ? x : x.name);
+
+  const isMeta = (x: File | string) =>
+    /(_Meta|- Meta)\.(db3?|db)$/i.test(typeof x === "string" ? x : x.name);
+
+  const baseDb = (x: File | string) => {
+    const n = typeof x === "string" ? x : x.name;
+    return n
+      .replace(/(_Meta|- Meta)?\.(db3?|db)$/i, "")
+      .replace(/\.(db3?|db)$/i, "");
+  };
+
+  const UK_POSTCODE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i;
+
+  function parseProjectFields(name: string) {
+    // Expect: "Project No - Full Site address - Post code"
+    const core = name.replace(/(_Meta|- Meta)?\.[^.]+$/i, "").replace(/\.[^.]+$/i, "");
+    const parts = core.split(" - ").map((s) => s.trim()).filter(Boolean);
+    if (parts.length < 3) return null;
+    const pc = parts[parts.length - 1].match(UK_POSTCODE);
+    if (!pc) return null;
+    return {
+      projectNo: parts[0],
+      address: parts.slice(1, parts.length - 1).join(" - "),
+      postcode: `${pc[1].toUpperCase()} ${pc[2].toUpperCase()}`,
+    };
+  }
+
+  function sanitize(s: string) {
+    return s.replace(/[^\w\s.-]+/g, " ").replace(/\s+/g, " ").trim();
+  }
 
   function checkFiles(list: File[]): { ok: boolean; reason?: string } {
     if (!list.length) return { ok: false, reason: "Please add a file." };
-    const pdfs = list.filter(isPdf);
-    const dbs  = list.filter(isDb);
+    const pdfs = list.filter((f) => isPdf(f));
+    const dbs  = list.filter((f) => isDb(f));
     if (pdfs.length && dbs.length) return { ok: false, reason: "Choose either a single PDF or a .db/.db3 pair (not both)." };
     if (pdfs.length === 1 && list.length === 1) return { ok: true };
     if (dbs.length >= 1) {
-      const main = dbs.find((f) => !isMeta(f.name));
-      const meta = dbs.find((f) =>  isMeta(f.name));
+      const main = dbs.find((f) => !isMeta(f));
+      const meta = dbs.find((f) =>  isMeta(f));
       if (!main || !meta) return { ok: false, reason: "A .db/.db3 upload needs exactly two files: main + _Meta." };
-      if (baseDb(main) !== baseDb(meta)) return { ok: false, reason: "The .db/.db3 and _Meta names must match (same base)." };
+      if (baseDb(main!) !== baseDb(meta!)) return { ok: false, reason: "The .db/.db3 and _Meta names must match (same base)." };
       return { ok: true };
     }
     return { ok: false, reason: "Unsupported files. Upload a PDF or a .db/.db3 pair." };
@@ -356,13 +368,13 @@ function UploadModal({
     parseAutofill(list);
   };
 
-  // Folder picker: reads all files in a chosen folder; uses folder name as Client
+  // Folder picker (uses folder name as client)
   async function pickFolderFS() {
     try {
-      if (typeof window.showDirectoryPicker === "function") {
-        const dir = await window.showDirectoryPicker();
+      if (typeof (window as any).showDirectoryPicker === "function") {
+        const dir = await (window as any).showDirectoryPicker();
         const picked: File[] = [];
-        // @ts-ignore iterate entries from DirectoryHandle
+        // @ts-ignore iterate DirectoryHandle entries
         for await (const [, entry] of dir.entries()) {
           if (entry.kind === "file") {
             const f = await entry.getFile();
@@ -377,9 +389,11 @@ function UploadModal({
         parseAutofill(picked);
         return;
       }
-      // Fallback: dir input
+      // Fallback: directory input
       (document.getElementById("folderInputHidden") as HTMLInputElement)?.click();
-    } catch {/* cancelled */}
+    } catch {
+      /* cancelled */
+    }
   }
 
   function onClassicBrowseClick() {
@@ -389,7 +403,7 @@ function UploadModal({
   function onDirFallbackChange(e: React.ChangeEvent<HTMLInputElement>) {
     const list = Array.from(e.target.files || []);
     if (!list.length) return;
-    // Best we can do: try infer client from first directory segment of webkitRelativePath
+    // try infer client from first directory segment of webkitRelativePath
     const first = (e.target.files?.[0] as any);
     const rel: string = first?.webkitRelativePath || "";
     const inferredClient = rel.split("/")[0] || "Unfiled";
@@ -407,7 +421,7 @@ function UploadModal({
     if (!check.ok) return setToast({ kind: "error", text: check.reason! });
     setFiles(list);
     parseAutofill(list);
-    // No reliable client name from classic dialog; leave empty (server will fallback)
+    // No reliable client from classic dialog; keep empty (server falls back to "Unfiled" if needed)
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -428,10 +442,8 @@ function UploadModal({
       fd.append("address", address);
       fd.append("postcode", postcode);
 
-      // Derived folder structure done server-side; send clientName if we have it
       if (clientName) fd.append("clientName", clientName);
 
-      // Suggested target name for PDFs
       const target = [projectNo, address, postcode].filter(Boolean).join(" - ");
       if (target) fd.append("targetFilename", target);
 
@@ -442,7 +454,7 @@ function UploadModal({
         const msg = await res.text().catch(() => "");
         throw new Error(msg || res.statusText);
       }
-      // Go to P4 (uploaded reports)
+      // Go to P4
       window.location.href = "/uploads";
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -490,15 +502,28 @@ function UploadModal({
               PDF (single) or .db/.db3 pair (main + <em>_Meta</em>)
             </div>
 
-            {/* Fallbacks (hidden) */}
-            <input id="fileInputHidden" type="file" multiple className="hidden" onChange={onFileChange}
-              accept=".pdf,.db,.db3,application/pdf,application/x-sqlite3" />
-            <input id="folderInputHidden" type="file" multiple className="hidden"
+            {/* hidden fallbacks */}
+            <input
+              id="fileInputHidden"
+              type="file"
+              multiple
+              className="hidden"
+              onChange={onFileChange}
+              accept=".pdf,.db,.db3,application/pdf,application/x-sqlite3"
+            />
+            <input
+              id="folderInputHidden"
+              type="file"
               // @ts-ignore chromium dir selection
-              webkitdirectory directory onChange={onDirFallbackChange} />
+              webkitdirectory
+              directory
+              multiple
+              className="hidden"
+              onChange={onDirFallbackChange}
+            />
           </div>
 
-          {/* Selected files list */}
+          {/* selected files */}
           <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm">
             {files.length === 0 ? (
               <div className="flex items-center gap-2 text-gray-500">
@@ -508,16 +533,22 @@ function UploadModal({
               <ul className="space-y-1">
                 {files.map((f) => (
                   <li key={f.name} className="flex items-center gap-2">
-                    {/\.(pdf)$/i.test(f.name) ? <FileText className="h-4 w-4 text-gray-700" /> : <Database className="h-4 w-4 text-gray-700" />}
+                    {isPdf(f) ? (
+                      <FileText className="h-4 w-4 text-gray-700" />
+                    ) : (
+                      <Database className="h-4 w-4 text-gray-700" />
+                    )}
                     <span className="font-medium">{f.name}</span>
-                    <span className="ml-auto text-xs text-gray-500">{(f.size / 1024 / 1024).toFixed(2)} MB</span>
+                    <span className="ml-auto text-xs text-gray-500">
+                      {(f.size / 1024 / 1024).toFixed(2)} MB
+                    </span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          {/* Read-only summary pulled from filename + folder */}
+          {/* inferred summary */}
           <div className="grid gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700 md:grid-cols-2">
             <div><span className="font-semibold">Client:</span> {clientName || <em>— inferred from folder name —</em>}</div>
             <div><span className="font-semibold">Project No:</span> {projectNo || <em>— from filename —</em>}</div>
@@ -529,10 +560,15 @@ function UploadModal({
           </div>
 
           <div className="flex items-center gap-3 pt-1">
-            <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+            >
               <CheckCircle2 className="h-4 w-4" /> Upload
             </button>
-            <div className="text-xs text-gray-500">Sector: <strong>{sector.code}</strong> ({sector.title})</div>
+            <div className="text-xs text-gray-500">
+              Sector: <strong>{sector.code}</strong> ({sector.title})
+            </div>
           </div>
         </form>
       </div>
