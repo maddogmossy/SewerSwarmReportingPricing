@@ -106,6 +106,50 @@ function validateSelection(list: File[]): Check {
 }
 
 /* =========================
+   Tiny IndexedDB helpers to persist last folder handle
+========================= */
+const DB_NAME = 'ss-upload';
+const STORE   = 'fs-handles';
+
+function idb<T=unknown>(mode: IDBTransactionMode, fn: (store: IDBObjectStore) => void): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const open = indexedDB.open(DB_NAME, 1);
+    open.onupgradeneeded = () => {
+      const db = open.result;
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
+    };
+    open.onerror = () => reject(open.error);
+    open.onsuccess = () => {
+      const tx = open.result.transaction(STORE, mode);
+      const st = tx.objectStore(STORE);
+      tx.oncomplete = () => resolve(undefined as T);
+      tx.onerror = () => reject(tx.error);
+      fn(st);
+    };
+  });
+}
+
+async function idbGet<T=unknown>(key: string): Promise<T | undefined> {
+  return new Promise((resolve, reject) => {
+    idb('readonly', (st) => {
+      const req = st.get(key);
+      req.onsuccess = () => resolve(req.result as T | undefined);
+      req.onerror = () => reject(req.error);
+    }).catch(reject);
+  });
+}
+
+async function idbSet<T=unknown>(key: string, value: T): Promise<void> {
+  return new Promise((resolve, reject) => {
+    idb('readwrite', (st) => {
+      const req = st.put(value as unknown as IDBValidKey, key);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    }).catch(reject);
+  });
+}
+
+/* =========================
    Component
 ========================= */
 export default function UploadClient() {
@@ -113,21 +157,31 @@ export default function UploadClient() {
   const sector = String(raw ?? 'S1').toUpperCase();
   const style  = sectorStyles[sector] ?? sectorStyles.S1;
 
-  const [files, setFiles]   = React.useState<File[]>([]);
-  const [error, setError]   = React.useState<string | null>(null);
+  const [files, setFiles] = React.useState<File[]>([]);
+  const [error, setError] = React.useState<string | null>(null);
+  const [lastDir, setLastDir] = React.useState<FileSystemDirectoryHandle | null>(null);
 
   const fileInputRef   = React.useRef<HTMLInputElement>(null);
   const folderInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Add vendor folder-picking attributes safely (no TS comments needed)
+  // Make the fallback <input type="file"> behave like a folder picker
   React.useEffect(() => {
     const el = folderInputRef.current;
     if (!el) return;
-    // boolean attributes – value doesn't matter, presence enables them
     el.setAttribute('webkitdirectory', '');
     el.setAttribute('directory', '');
     el.setAttribute('mozdirectory', '');
     el.setAttribute('msdirectory', '');
+  }, []);
+
+  // Load previously used directory handle (if any) to jump there instantly
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const handle = await idbGet<FileSystemDirectoryHandle>('lastDirHandle');
+        if (handle) setLastDir(handle);
+      } catch { /* ignore */ }
+    })();
   }, []);
 
   const addFiles = (incoming: File[]) => {
@@ -140,19 +194,41 @@ export default function UploadClient() {
     });
   };
 
+  async function verifyDirPermission(dir: FileSystemDirectoryHandle, write = false) {
+    // Request permission if needed (Chrome quirk on saved handles)
+    const opts: any = { mode: write ? 'readwrite' : 'read' };
+    // @ts-ignore
+    if ((await (dir as any).queryPermission?.(opts)) !== 'granted') {
+      // @ts-ignore
+      const res = await (dir as any).requestPermission?.(opts);
+      return res === 'granted';
+    }
+    return true;
+  }
+
   const pickFolder = async (e?: React.MouseEvent) => {
     try {
-      // Shift+Click => classic multi-file dialog (can be slower on cloud/network drives)
+      // Shift+Click => classic multi-file dialog (shows .pdf/.db3)
       if (e?.shiftKey) return fileInputRef.current?.click();
 
-      // Preferred: Directory Picker (fast, and shows .db/.db3)
       const w: any = window;
       if (typeof w.showDirectoryPicker === 'function') {
         const dir = await w.showDirectoryPicker({
           id: 'sewerswarm-upload',
-          startIn: 'downloads',
+          // Jump back to last folder if we have it; else a local fast location
+          startIn: lastDir ?? 'downloads',
           mode: 'read',
         });
+
+        // Persist handle so next open is instant
+        try {
+          const ok = await verifyDirPermission(dir, false);
+          if (ok) {
+            await idbSet('lastDirHandle', dir);
+            setLastDir(dir);
+          }
+        } catch { /* ignore */ }
+
         const picked: File[] = [];
         for await (const [, entry] of dir.entries()) {
           if (entry.kind === 'file') {
@@ -164,7 +240,7 @@ export default function UploadClient() {
         return;
       }
 
-      // Fallback: hidden input with directory attributes (set in useEffect)
+      // Fallback: hidden input-based “folder” picker (slower on cloud drives)
       folderInputRef.current?.click();
     } catch {
       // user cancelled – ignore
@@ -227,7 +303,16 @@ export default function UploadClient() {
               className="text-indigo-700 underline underline-offset-2"
               title="Click to pick a folder (fast). Shift+Click for classic file dialog."
             >
-              browse
+              browse folder
+            </button>
+            {' '}|{' '}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="text-indigo-700 underline underline-offset-2"
+              title="Choose files (shows .pdf/.db3); may be slower on cloud/network drives"
+            >
+              choose files
             </button>
           </div>
           <div className="mt-1 text-xs text-neutral-500">
@@ -281,7 +366,10 @@ export default function UploadClient() {
           >
             Upload
           </button>
-          <span className="text-xs text-neutral-500">Sector: {sector} ({style.title})</span>
+          <span className="text-xs text-neutral-500">
+            Sector: {sector} ({style.title})
+            {lastDir ? ' • last folder remembered' : ''}
+          </span>
         </div>
       </div>
     </div>
