@@ -24,7 +24,7 @@ export function guessType(name: string): string {
   }
 }
 
-/** Safe folder / display name */
+/** Basic sanitizer for folder / path segments */
 export function sanitize(s?: unknown) {
   const str = String(s ?? '').trim();
   return str
@@ -32,6 +32,12 @@ export function sanitize(s?: unknown) {
     .replace(/[^\w\s\-\.\(\)&,]/g, '')        // allow common filename chars
     .replace(/\s+/g, ' ')
     .slice(0, 200);
+}
+
+/** Explicit path-part sanitizer some files import */
+export function sanitizePathPart(s?: unknown): string {
+  const v = sanitize(s);
+  return v || 'untitled';
 }
 
 export type ProjectPieces = {
@@ -61,6 +67,20 @@ export function pickFromFilename(filename: string): ProjectPieces & { folder: st
   };
 }
 
+/** Parse a project folder name back into parts (reverse of the above) */
+export function parseProjectFolder(folder?: string): ProjectPieces {
+  const safe = sanitize(folder ?? '');
+  if (!safe) return {};
+  const parts = safe.split(/\s*-\s*/);
+  const [projectNo, address, ...rest] = parts;
+  const postcode = rest.length ? rest.join(' - ') : undefined;
+  return {
+    projectNo: projectNo || undefined,
+    address:   address   || undefined,
+    postcode:  postcode  || undefined,
+  };
+}
+
 /**
  * Derive the destination "Project No - Full Site address - Post code" folder.
  * If `override` is a non-empty string, it wins. Otherwise try from provided files' names.
@@ -69,7 +89,7 @@ export function deriveProjectFromFiles(
   files: Array<{ name: string }> = [],
   override?: string | FormDataEntryValue | null | undefined
 ): string {
-  const over = typeof override === 'string' ? sanitize(override) : '';
+  const over = typeof override === 'string' ? sanitize(overridestr(override)) : '';
   if (over) return over;
 
   // Prefer a PDF name (often more human-readable)
@@ -88,6 +108,9 @@ export function deriveProjectFromFiles(
 
   return 'Unsorted';
 }
+
+// internal – ensure string typed override
+function overridestr(v: unknown) { return (typeof v === 'string' ? v : ''); }
 
 /** Validate that when a .db/.db3 is present, we also have its matching _Meta file */
 export function validateDbPair(list: Array<{ name: string }>): { ok: true } | { ok: false; reason: string } {
