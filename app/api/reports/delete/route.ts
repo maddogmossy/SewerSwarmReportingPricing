@@ -1,54 +1,21 @@
 // app/api/reports/delete/route.ts
-export const runtime = "nodejs";
-
+import { NextRequest } from "next/server";
+import { del } from "@vercel/blob";
 import { db } from "@/db";
 import { reports } from "@/db/schema";
-import { and, eq, like } from "drizzle-orm";
-import { del } from "@vercel/blob";
+import { eq } from "drizzle-orm";
 
-type Body =
-  | { mode: "file"; pathname: string }
-  | { mode: "project"; client: string; project: string }
-  | { mode: "client"; client: string };
+export const runtime = "nodejs";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return new Response("Missing BLOB_READ_WRITE_TOKEN", { status: 500 });
 
-  let body: Body;
-  try {
-    body = await req.json();
-  } catch {
-    return new Response("Bad JSON", { status: 400 });
-  }
+  const body = await req.json().catch(() => null) as { pathname?: string } | null;
+  if (!body?.pathname) return new Response("pathname required", { status: 400 });
 
-  if (body.mode === "file") {
-    // delete blob and its DB row
-    await del(body.pathname, { token });
-    await db.delete(reports).where(eq(reports.pathname, body.pathname));
-    return Response.json({ ok: true, deleted: 1 });
-  }
+  await del(body.pathname, { token });
+  await db.delete(reports).where(eq(reports.pathname, body.pathname));
 
-  if (body.mode === "project") {
-    // find all files for client/project; delete each blob; then DB rows
-    const rows = await db
-      .select()
-      .from(reports)
-      .where(and(eq(reports.clientName, body.client), eq(reports.projectFolder, body.project)));
-
-    for (const r of rows) await del(r.pathname, { token });
-    await db
-      .delete(reports)
-      .where(and(eq(reports.clientName, body.client), eq(reports.projectFolder, body.project)));
-    return Response.json({ ok: true, deleted: rows.length });
-  }
-
-  if (body.mode === "client") {
-    const rows = await db.select().from(reports).where(eq(reports.clientName, body.client));
-    for (const r of rows) await del(r.pathname, { token });
-    await db.delete(reports).where(eq(reports.clientName, body.client));
-    return Response.json({ ok: true, deleted: rows.length });
-  }
-
-  return new Response("Unknown mode", { status: 400 });
+  return Response.json({ ok: true });
 }
