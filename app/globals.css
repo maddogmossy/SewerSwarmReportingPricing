@@ -2,5 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base page styles */
 html, body { height: 100%; }
-body { background: #f8fafc; color: #0f172a; }
+
+body {
+  background: #f8fafc; /* slate-50 */
+  color: #0f172a;      /* slate-900 */
+}
