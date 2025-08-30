@@ -7,14 +7,16 @@ export const runtime = 'nodejs';
 const isPdf = (n: string) => n.toLowerCase().endsWith('.pdf');
 const isDb  = (n: string) => /\.db3?$/i.test(n);
 const isMeta = (n: string) => /_meta\.db3?$/i.test(n);
-const baseDb = (n: string) => n.replace(/_meta(?=\.db3?$)/i, '').replace(/\.[^.]+$/, '').toLowerCase();
+const baseDb = (n: string) =>
+  n.replace(/_meta(?=\.db3?$)/i, '').replace(/\.[^.]+$/, '').toLowerCase();
 
 const guessType = (name: string) =>
   isPdf(name) ? 'application/pdf'
   : isDb(name) ? 'application/octet-stream'
   : 'application/octet-stream';
 
-const sanitize = (s: string) => s.replace(/[\/\\]+/g, '-').replace(/\s+/g, ' ').trim();
+const sanitize = (s: string) =>
+  s.replace(/[\/\\]+/g, '-').replace(/\s+/g, ' ').trim();
 
 function deriveProjectFromFiles(files: File[], explicit?: string | null) {
   if (explicit && String(explicit).trim()) return sanitize(String(explicit));
@@ -22,7 +24,7 @@ function deriveProjectFromFiles(files: File[], explicit?: string | null) {
   const main = dbs.find(f => !isMeta(f.name));
   const pdf  = files.find(f => isPdf(f.name));
   const candidate = main ?? pdf ?? files[0];
-  const base = candidate.name.replace(/\.[^.]+$/, '');
+  const base = candidate ? candidate.name.replace(/\.[^.]+$/, '') : 'Project';
   const parts = base.split(' - ');
   if (parts.length >= 3) return sanitize(`${parts[0]} - ${parts[1]} - ${parts[2]}`);
   return sanitize(base);
@@ -89,21 +91,27 @@ export async function POST(req: Request) {
 
     const sectorCode = String(form.get('sectorCode') ?? 'S1').toUpperCase();
     const clientName = sanitize(String(form.get('clientName') ?? 'General'));
-    const projectFolder = deriveProjectFromFiles([], form.get('projectFolder'));
+
+    // ✅ Fix: ensure we only pass a string | null
+    const pf = form.get('projectFolder');
+    const projectFolderExplicit =
+      typeof pf === 'string' ? pf : null;
 
     const files = form.getAll('files') as unknown as File[];
     if (!files.length) {
       return NextResponse.json({ ok: false, error: 'NO_FILES' }, { status: 400 });
     }
 
-    const finalProject = deriveProjectFromFiles(files, projectFolder);
+    const finalProject = deriveProjectFromFiles(files, projectFolderExplicit);
 
     const pair = validateDbPair(files);
     if (!pair.ok) {
       return NextResponse.json({ ok: false, error: pair.error }, { status: 400 });
     }
 
-    const uploaded: Array<PutBlobResult & { name: string; size: number; contentType: string }> = [];
+    const uploaded: Array<
+      PutBlobResult & { name: string; size: number; contentType: string }
+    > = [];
 
     for (const file of files) {
       const ab = await file.arrayBuffer();
