@@ -1,117 +1,162 @@
-import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+// app/api/uploads/route.ts
+import { NextResponse } from 'next/server';
+import { put, PutBlobResult } from '@vercel/blob';
 
-export const runtime = "edge";
+export const runtime = 'nodejs'; // we use Buffer
 
-// ---------- filename helpers ----------
-const isPdf = (n: string) => /\.pdf$/i.test(n);
-const isDb  = (n: string) => /\.(?:db3?|db)$/i.test(n);
-const isMeta = (n: string) => /(?:^|[ _-])meta\.(?:db3?|db)$/i.test(n);
-const baseDb = (n: string) =>
-  n.replace(/(?:^|[ _-])meta\.(?:db3?|db)$/i, "").replace(/\.(?:db3?|db)$/i, "").trim();
+// --- helpers ---
+const isPdf = (n: string) => n.toLowerCase().endsWith('.pdf');
+const isDb  = (n: string) => /\.db3?$/i.test(n);
+const isMeta = (n: string) => /_meta\.db3?$/i.test(n);
+const baseDb = (n: string) => n.replace(/_meta(?=\.db3?$)/i, '').replace(/\.[^.]+$/, '').toLowerCase();
 
-const sanitizeSeg = (s: string) =>
-  s.replace(/[^\w\s.-]+/g, " ").replace(/\s+/g, " ").trim();
+const guessType = (name: string) =>
+  isPdf(name) ? 'application/pdf'
+  : isDb(name) ? 'application/octet-stream'
+  : 'application/octet-stream';
 
-const safeJoin = (...parts: string[]) =>
-  parts.filter(Boolean).map(sanitizeSeg).join("/");
+const sanitize = (s: string) =>
+  s.replace(/[\/\\]+/g, '-').replace(/\s+/g, ' ').trim();
 
-// ---------- POST ----------
+function deriveProjectFromFiles(files: File[], explicit?: string | null) {
+  if (explicit && String(explicit).trim()) return sanitize(String(explicit));
+  // prefer the “main” DB if present, else the single pdf if present
+  const dbs = files.filter(f => isDb(f.name));
+  const main = dbs.find(f => !isMeta(f.name));
+  const pdf  = files.find(f => isPdf(f.name));
+  const candidate = main ?? pdf ?? files[0];
+  const base = candidate.name.replace(/\.[^.]+$/, '');
+  // If it looks like "Project No - Full Site address - Post code", keep the first 3 parts
+  const parts = base.split(' - ');
+  if (parts.length >= 3) return sanitize(`${parts[0]} - ${parts[1]} - ${parts[2]}`);
+  return sanitize(base);
+}
+
+function validateDbPair(files: File[]) {
+  const dbs = files.filter(f => isDb(f.name));
+  if (dbs.length === 0) return { ok: true } as const;
+  const main = dbs.find(f => !isMeta(f.name));
+  const meta = dbs.find(f =>  isMeta(f.name));
+  if (!main || !meta) {
+    return { ok: false as const, error: 'A .db/.db3 upload needs exactly two files: main + _Meta.' };
+  }
+  if (baseDb(main.name) !== baseDb(meta.name)) {
+    return { ok: false as const, error: 'The .db/.db3 and _Meta names must match (same base).' };
+  }
+  return { ok: true } as const;
+}
+
+async function persistToNeon(payload: {
+  sectorCode: string;
+  clientName: string;
+  projectFolder: string;
+  uploaded: Array<PutBlobResult & { name: string; size: number; contentType: string }>;
+}) {
+  const url = process.env.DATABASE_URL;
+  if (!url) return { saved: 0, reason: 'DATABASE_URL missing — skipped Neon write' };
+
+  try {
+    const { neon } = await import('@neondatabase/serverless');
+    const sql = neon(url);
+
+    // Create a simple table if it doesn’t exist yet.
+    await sql/*sql*/`
+      CREATE TABLE IF NOT EXISTS uploads (
+        id            bigserial PRIMARY KEY,
+        sector_code   text NOT NULL,
+        client_name   text NOT NULL,
+        project_key   text NOT NULL,
+        file_name     text NOT NULL,
+        blob_url      text NOT NULL,
+        content_type  text,
+        size_bytes    bigint,
+        uploaded_at   timestamptz DEFAULT now()
+      );
+    `;
+
+    // Insert all files
+    for (const u of payload.uploaded) {
+      await sql/*sql*/`
+        INSERT INTO uploads (sector_code, client_name, project_key, file_name, blob_url, content_type, size_bytes)
+        VALUES (
+          ${payload.sectorCode},
+          ${payload.clientName},
+          ${payload.projectFolder},
+          ${u.name},
+          ${u.url},
+          ${u.contentType},
+          ${u.size}
+        );
+      `;
+    }
+    return { saved: payload.uploaded.length };
+  } catch (err) {
+    console.error('Neon persist error:', err);
+    return { saved: 0, reason: 'Neon error — see logs' };
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
 
-    // Sector info
-    const sectorCode  = (form.get("sectorCode") as string) || "S?";
-    const sectorTitle = (form.get("sectorTitle") as string) || "";
-    const sectorSlug  = (form.get("sectorSlug") as string) || "";
+    const sectorCode = String(form.get('sectorCode') ?? 'S1').toUpperCase();
+    const clientName = sanitize(String(form.get('clientName') ?? 'General'));
+    const projectFolder = deriveProjectFromFiles([], form.get('projectFolder'));
 
-    // Parsed from file name on client (P3)
-    const projectNo = sanitizeSeg((form.get("projectNo") as string) || "");
-    const address   = sanitizeSeg((form.get("address") as string) || "");
-    const postcode  = sanitizeSeg((form.get("postcode") as string) || "");
-
-    // Folder-level client (from folder picker or "Unfiled")
-    const clientName = sanitizeSeg((form.get("clientName") as string) || "Unfiled");
-
-    // Optional target name (already joined on client)
-    let target = sanitizeSeg((form.get("targetFilename") as string) || "");
-    if (!target) {
-      const pieces = [projectNo, address, postcode].filter(Boolean);
-      target = pieces.join(" - ") || "Untitled";
-    }
-
-    const rawFiles = form.getAll("files");
-    const files: File[] = rawFiles.filter((x): x is File => x instanceof File);
-
+    // Collect files (one PDF OR a DB pair)
+    const files = form.getAll('files') as unknown as File[];
     if (!files.length) {
-      return NextResponse.json({ error: "No files attached." }, { status: 400 });
+      return NextResponse.json({ ok: false, error: 'NO_FILES' }, { status: 400 });
     }
 
-    // Validate combination (single PDF OR main+_Meta pair)
-    const pdfs = files.filter((f) => isPdf(f.name));
-    const dbs  = files.filter((f) => isDb(f.name));
+    // If projectFolder wasn’t supplied, derive now with the actual files
+    const finalProject = deriveProjectFromFiles(files, projectFolder);
 
-    if (pdfs.length && dbs.length) {
-      return NextResponse.json(
-        { error: "Upload a single PDF OR a .db/.db3 pair (not both)." },
-        { status: 400 }
-      );
+    // Validate DB pair
+    const pair = validateDbPair(files);
+    if (!pair.ok) {
+      return NextResponse.json({ ok: false, error: pair.error }, { status: 400 });
     }
 
-    if (!(pdfs.length === 1 && files.length === 1)) {
-      // DB path
-      if (dbs.length >= 1) {
-        const main = dbs.find((f) => !isMeta(f.name));
-        const meta = dbs.find((f) =>  isMeta(f.name));
-        if (!main || !meta) {
-          return NextResponse.json(
-            { error: "A .db/.db3 upload needs exactly two files: main + _Meta." },
-            { status: 400 }
-          );
-        }
-        if (baseDb(main.name).toLowerCase() !== baseDb(meta.name).toLowerCase()) {
-          return NextResponse.json(
-            { error: "The .db/.db3 and _Meta names must match (same base)." },
-            { status: 400 }
-          );
-        }
-      } else {
-        return NextResponse.json(
-          { error: "Unsupported files. Upload a PDF or a .db/.db3 pair." },
-          { status: 400 }
-        );
-      }
-    }
+    const uploaded: Array<PutBlobResult & { name: string; size: number; contentType: string }> = [];
 
-    // Upload each file to Vercel Blob
-    const folder = safeJoin(sectorCode, clientName, target);
-    const uploads: Array<{ key: string; url: string; name: string; size: number }> = [];
-
-    for (const f of files) {
-      const ab = await f.arrayBuffer();
-      const key = safeJoin(folder, f.name);
-
-      const { url } = await put(key, new Uint8Array(ab), {
-        access: "public", // public URLs (required by current @vercel/blob types)
-        contentType:
-          f.type ||
-          (isPdf(f.name) ? "application/pdf" : "application/octet-stream"),
-        // cacheControl: "public, max-age=31536000, immutable", // optional
+    for (const file of files) {
+      const ab = await file.arrayBuffer();
+      const key = `${sectorCode}/${sanitize(clientName)}/${sanitize(finalProject)}/${sanitize(file.name)}`;
+      const { url, pathname } = await put(key, Buffer.from(ab), {
+        access: 'public', // NOTE: your current @vercel/blob requires "public"
+        contentType: (file as any).type || guessType(file.name),
       });
-
-      uploads.push({ key, url, name: f.name, size: f.size });
+      uploaded.push({
+        url,
+        pathname,
+        name: file.name,
+        size: file.size,
+        contentType: (file as any).type || guessType(file.name),
+      });
     }
+
+    // Optional Neon persist
+    const neonResult = await persistToNeon({
+      sectorCode,
+      clientName,
+      projectFolder: finalProject,
+      uploaded,
+    });
 
     return NextResponse.json({
       ok: true,
-      sector: { code: sectorCode, title: sectorTitle, slug: sectorSlug },
-      folder,
-      uploads,
+      sectorCode,
+      clientName,
+      projectFolder: finalProject,
+      uploaded,
+      neon: neonResult,
     });
   } catch (err: any) {
+    console.error('Upload API error:', err);
     return NextResponse.json(
-      { error: err?.message || "Upload failed." },
+      { ok: false, error: err?.message ?? 'UPLOAD_ERROR' },
       { status: 500 }
     );
   }
