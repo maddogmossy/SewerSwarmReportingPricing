@@ -16,8 +16,8 @@ type Sector = {
   title: string;
   subtitle: string;
   Icon: React.ElementType;
-  tone: string;       // icon bubble colours
-  borderTone: string; // card border accent
+  tone: string;
+  borderTone: string;
   standards: string[];
 };
 
@@ -127,7 +127,6 @@ function DevBadge({ children }: { children: React.ReactNode }) {
     </span>
   );
 }
-
 function IconBubble({ tone, Icon }: { tone: string; Icon: React.ElementType }) {
   return (
     <div className={`grid h-10 w-10 place-items-center rounded-xl ${tone}`} aria-hidden>
@@ -136,16 +135,13 @@ function IconBubble({ tone, Icon }: { tone: string; Icon: React.ElementType }) {
   );
 }
 
-/** P2 — Sectors page */
 export default function UploadLanding() {
   return (
     <main className="mx-auto max-w-6xl p-6">
-      {/* Page badge */}
       <span className="fixed left-3 top-3 z-50 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
         P2
       </span>
 
-      {/* Top mini-nav: Home only */}
       <nav className="mb-4 flex flex-wrap gap-2">
         <Link
           href="/"
@@ -156,7 +152,6 @@ export default function UploadLanding() {
         </Link>
       </nav>
 
-      {/* Title & subtitle requested */}
       <header className="mb-4">
         <h1 className="text-2xl font-bold">Upload Inspection Report</h1>
         <p className="mt-1 text-slate-600">
@@ -165,7 +160,6 @@ export default function UploadLanding() {
         </p>
       </header>
 
-      {/* Supported Files (C2) */}
       <section className="relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <DevBadge>C2</DevBadge>
         <h2 className="text-xl font-semibold">Supported Files</h2>
@@ -175,12 +169,9 @@ export default function UploadLanding() {
             Database files <code>.db</code> / <code>.db3</code> (up to 50MB)
           </li>
         </ul>
-        <p className="mt-3 text-gray-600">
-          Choose a sector below to continue to the upload form.
-        </p>
+        <p className="mt-3 text-gray-600">Choose a sector below to continue to the upload form.</p>
       </section>
 
-      {/* Sector cards with standards */}
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         {sectors.map((s) => (
           <Link
