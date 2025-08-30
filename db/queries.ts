@@ -1,23 +1,25 @@
 // db/queries.ts
 import { db } from "@/db";
-import { uploads, projects, clients } from "@/db/schema";
+import { uploads } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 // Define a type for joined uploads with relations
 export type UploadWithRelations = {
   id: number;
-  sector: string;
-  client: string;
-  project: string;
+  sector: any;
+  client: any;
+  project: any;
   filename: string;
   url: string;
   pathname: string;
-  size: number | null;
-  uploadedAt: Date;
+  size: number;
+  uploadedAt: Date | null;  // ✅ allow null here
 };
 
-// Get recent uploads (default limit 100)
-export async function getRecentUploads(limit = 100): Promise<UploadWithRelations[]> {
+/**
+ * Get latest uploads (newest first).
+ */
+export async function getLatestUploads(limit = 50): Promise<UploadWithRelations[]> {
   const rows = await db
     .select()
     .from(uploads)
@@ -32,24 +34,25 @@ export async function getRecentUploads(limit = 100): Promise<UploadWithRelations
     filename: r.filename,
     url: r.url,
     pathname: r.pathname,
-    size: r.size ?? null,
-    uploadedAt: r.uploadedAt,
+    size: r.size,
+    uploadedAt: r.uploadedAt, // ✅ now matches Date | null
   }));
 }
 
-// Get projects for a given client
-export async function getProjectsForClient(clientName: string) {
-  return db
-    .select()
-    .from(projects)
-    .where(eq(projects.client, clientName))
-    .orderBy(desc(projects.createdAt));
-}
-
-// Get all clients
-export async function getClients() {
-  return db
-    .select()
-    .from(clients)
-    .orderBy(desc(clients.createdAt));
+/**
+ * Delete uploads by client, project, or specific file.
+ */
+export async function deleteUploads(
+  mode: "file" | "project" | "client",
+  value: string
+) {
+  if (mode === "file") {
+    return db.delete(uploads).where(eq(uploads.pathname, value));
+  }
+  if (mode === "project") {
+    return db.delete(uploads).where(eq(uploads.project, value));
+  }
+  if (mode === "client") {
+    return db.delete(uploads).where(eq(uploads.client, value));
+  }
 }
