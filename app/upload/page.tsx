@@ -391,10 +391,6 @@ function UploadModal({
 
   // Folder picker (uses folder name as client)
   async function pickFolderFS() {
-    try {
-      if (typeof (window as any).showDirectoryPicker === "function") {
-        const dir = await (window as any).showDirectoryPicker();
-        const picked: File[] = [];
         // @ts-ignore iterate DirectoryHandle entries
         for await (const [, entry] of dir.entries()) {
           if (entry.kind === "file") {
