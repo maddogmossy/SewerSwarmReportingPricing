@@ -1,119 +1,101 @@
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+// app/reports/page.tsx
+"use client";
 
-type UploadRow = {
-  id: number;
-  sector: string;
+import React, { useEffect, useState } from "react";
+
+type FileItem = {
+  url: string;
+  pathname: string;
+  name: string;
+  size: number;
+  contentType: string;
+  uploadedAt: string;
   client: string;
   project: string;
-  filename: string;
-  blobPathname: string;
-  blobUrl: string;
-  uploadedAt: string;
+  sector: string;
 };
 
-async function fetchGrouped() {
-  const r = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : ''}/api/reports/list`, { cache: 'no-store' });
-  if (!r.ok) return { grouped: {} as Record<string, Record<string, UploadRow[]>> };
-  return r.json();
-}
+type ProjectsMap = Record<string, FileItem[]>;
 
-export default async function P4Reports() {
-  const { grouped } = await fetchGrouped();
+export default function ReportsPage() {
+  const [projects, setProjects] = useState<ProjectsMap>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchReports() {
+      try {
+        const res = await fetch("/api/reports/list");
+        if (!res.ok) throw new Error("Failed to fetch reports");
+        const data: FileItem[] = await res.json();
+
+        // Group files by project
+        const grouped: ProjectsMap = {};
+        data.forEach((file) => {
+          const key = `${file.client} - ${file.project}`;
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push(file);
+        });
+
+        setProjects(grouped);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchReports();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="max-w-4xl mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-4">Reports</h1>
+        <p>Loading…</p>
+      </main>
+    );
+  }
 
   return (
-    <main className="mx-auto max-w-6xl p-6">
-      <span className="fixed left-3 top-3 z-50 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
-        P4
-      </span>
+    <main className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-4">Reports</h1>
+      <p className="text-slate-600 mb-6">
+        Grouped by client/project from uploaded files.
+      </p>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold">Uploaded Reports</h1>
-        <p className="mt-2 text-gray-600">
-          Browse by client and project. Click a project name to view the dashboard. You can delete a file, a whole project, or an entire client.
-        </p>
-
-        <div className="mt-6 space-y-6">
-          {Object.keys(grouped).length === 0 && (
-            <div className="text-gray-500">No uploads yet.</div>
-          )}
-
-          {Object.entries(grouped).map(([client, projects]) => (
-            <div key={client} className="rounded-xl border border-slate-200 p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-lg font-semibold">{client}</h2>
-                <button
-                  className="text-sm text-rose-700 hover:underline"
-                  onClick={async () => {
-                    await fetch('/api/reports/delete', {
-                      method: 'POST',
-                      headers: { 'content-type': 'application/json' },
-                      body: JSON.stringify({ mode: 'client', client }),
-                    });
-                    location.reload();
-                  }}
+      <div className="space-y-4">
+        {Object.entries(projects).map(([project, files]) => (
+          <div
+            key={project}
+            className="rounded-lg border border-slate-200 p-3 bg-white"
+          >
+            <h2 className="text-lg font-semibold mb-2">{project}</h2>
+            <ul className="space-y-1">
+              {files.map((f) => (
+                <li
+                  key={f.pathname}
+                  className="flex items-center justify-between text-sm"
                 >
-                  Delete client
-                </button>
-              </div>
+                  <a
+                    href={f.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {f.name}
+                  </a>
+                  <span className="text-slate-500 text-xs">
+                    {new Date(f.uploadedAt).toLocaleString()}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
-              <div className="space-y-4">
-                {Object.entries(projects).map(([project, files]) => (
-                  <div key={project} className="rounded-lg border border-slate-200 p-3">
-                    <div className="mb-2 flex items-center justify-between">
-                      <a
-                        href={`/dashboard?sector=${encodeURIComponent(files[0].sector)}&client=${encodeURIComponent(client)}&project=${encodeURIComponent(project)}`}
-                        className="font-medium text-indigo-700 hover:underline"
-                      >
-                        {project}
-                      </a>
-                      <button
-                        className="text-sm text-rose-700 hover:underline"
-                        onClick={async () => {
-                          await fetch('/api/reports/delete', {
-                            method: 'POST',
-                            headers: { 'content-type': 'application/json' },
-                            body: JSON.stringify({ mode: 'project', client, project }),
-                          });
-                          location.reload();
-                        }}
-                      >
-                        Delete project
-                      </button>
-                    </div>
-
-                    <ul className="divide-y">
-                      {files.map((f) => (
-                        <li key={f.blobPathname} className="flex items-center justify-between py-2">
-                          <div className="truncate">
-                            <a href={f.blobUrl} target="_blank" className="text-slate-700 hover:underline">{f.filename}</a>
-                            <div className="text-xs text-slate-500">
-                              Sector: {f.sector} • Uploaded: {new Date(f.uploadedAt || Date.now()).toLocaleString()}
-                            </div>
-                          </div>
-                          <button
-                            className="text-sm text-rose-700 hover:underline"
-                            onClick={async () => {
-                              await fetch('/api/reports/delete', {
-                                method: 'POST',
-                                headers: { 'content-type': 'application/json' },
-                                body: JSON.stringify({ mode: 'file', pathname: f.blobPathname }),
-                              });
-                              location.reload();
-                            }}
-                          >
-                            Delete file
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+        {!Object.keys(projects).length && (
+          <div className="text-slate-500">No reports uploaded yet.</div>
+        )}
+      </div>
     </main>
   );
 }
