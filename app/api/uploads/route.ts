@@ -1,99 +1,89 @@
 // app/api/uploads/route.ts
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
-import { put } from '@vercel/blob';
-import { db } from '@/db';
-import { uploads } from '@/db/schema';
-import {
-  sanitize,
-  deriveProjectFromFiles,
-  validateDbPair,
-  guessType,
-} from '@/lib/parse';
+import { put } from "@vercel/blob";
+import { db } from "@/db";
+import { reports } from "@/db/schema";
+import { deriveProjectFromFiles, guessType, pickFromFilename, sanitize } from "@/lib/parse";
+
+// tiny helper – map S-codes to a title you display on the site
+const SECTOR_TITLES: Record<string, string> = {
+  S1: "Utilities",
+  S2: "Highways",
+  S3: "Rail",
+  S4: "Marine",
+  S5: "Water",
+};
 
 export async function POST(req: Request) {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) {
-    return new Response('Missing BLOB_READ_WRITE_TOKEN', { status: 500 });
+    return new Response("Missing BLOB_READ_WRITE_TOKEN", { status: 500 });
   }
 
   const form = await req.formData();
 
-  // Sector/client/project inputs (with sensible fallbacks)
-  const sectorCode = String(form.get('sectorCode') ?? 'S1').toUpperCase();
-  const clientName = sanitize(form.get('clientName') ?? 'General');
-  const projectOverride = form.get('projectFolder');
+  const sectorCode  = String(form.get("sectorCode") ?? "S1").toUpperCase();
+  const sectorTitle = SECTOR_TITLES[sectorCode] ?? sectorCode;
 
-  // Files
-  const files = form.getAll('files') as unknown as File[];
+  const clientName  = sanitize(form.get("clientName"));
+  const override    = form.get("projectFolder");
+
+  // files[]
+  const files = (form.getAll("files") as unknown as File[]) || [];
   if (!files.length) {
-    return new Response('No files uploaded', { status: 400 });
+    return new Response("No files provided", { status: 400 });
   }
 
-  // If a .db/.db3 is present, enforce the main + _Meta pair
-  const validate = validateDbPair(files.map((f) => ({ name: f.name })));
-  if (!('ok' in validate) || !validate.ok) {
-    return new Response(validate.reason, { status: 400 });
+  // Choose destination project folder
+  const projectFolder = deriveProjectFromFiles(files, override);
+
+  // Try to pull projectNo / address / postcode from the chosen folder or main filename
+  let projectNo: string | undefined;
+  let address  : string | undefined;
+  let postcode : string | undefined;
+
+  const fromFolder = projectFolder ? { ...pickFromFilename(projectFolder + ".pdf") } : undefined;
+  if (fromFolder) {
+    projectNo = fromFolder.projectNo;
+    address   = fromFolder.address;
+    postcode  = fromFolder.postcode;
   }
 
-  // Decide final project folder from filenames or override
-  const projectFolder = deriveProjectFromFiles(
-    files.map((f) => ({ name: f.name })),
-    projectOverride
-  );
+  const saved: any[] = [];
 
-  const uploaded: Array<{
-    url: string;
-    pathname: string;
-    name: string;
-    size: number;
-    contentType: string;
-  }> = [];
-
+  // Upload each file and create a DB row
   for (const file of files) {
-    const pathname = `${clientName}/${projectFolder}/${file.name}`;
-
-    // Upload to Vercel Blob
-    const { url, pathname: storedPathname, contentType } = await put(
-      pathname,
+    const name = file.name;
+    const { url, pathname, size, contentType } = await put(
+      // store underneath /<sector>/<client>/<project>/
+      `${sectorCode}/${clientName}/${projectFolder}/${name}`,
       file,
       {
         token,
-        access: 'private',
-        addRandomSuffix: false,
-        contentType: (file as any).type || guessType(file.name),
+        access: "public",           // types for this SDK version only allow "public"
+        addRandomSuffix: false,     // keep original filename
+        contentType: (file as any).type || guessType(name),
       }
     );
 
-    // Persist a row in Neon via Drizzle
-    await db.insert(uploads).values({
-      sector: sectorCode,
-      client: clientName,
-      project: projectFolder,
-      filename: file.name,
-      blobUrl: url,
-      blobPath: storedPathname, // <-- aligned with schema
-      size: (file as any).size ?? 0,
-      contentType:
-        contentType || ((file as any).type || guessType(file.name)),
+    await db.insert(reports).values({
+      sectorCode,
+      sectorTitle,
+      clientName,
+      projectFolder,
+      projectNo,
+      address,
+      postcode,
+      pathname,
+      url,
+      filename: name,
+      contentType: contentType || guessType(name),
+      size: Number(size),
     });
 
-    uploaded.push({
-      url,
-      pathname: storedPathname,
-      name: file.name,
-      size: (file as any).size ?? 0,
-      contentType:
-        contentType || ((file as any).type || guessType(file.name)),
-    });
+    saved.push({ url, pathname, name, size });
   }
 
-  return Response.json({
-    ok: true,
-    sector: sectorCode,
-    client: clientName,
-    project: projectFolder,
-    count: uploaded.length,
-    uploaded,
-  });
+  return Response.json({ ok: true, saved });
 }
