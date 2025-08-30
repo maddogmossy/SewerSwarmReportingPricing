@@ -1,170 +1,145 @@
-// app/api/uploads/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { put } from '@vercel/blob';
+import { db } from '@/db';
+import { uploads, sections as sectionsTable, defects as defectsTable } from '@/db/schema';
+import { baseDb, isDb, isMeta, guessType, sanitizePathPart, parseProjectFolder } from '@/lib/parse';
+import { openDbFromArrayBuffer } from '@/lib/sqlite';
+import { buildExtractResult } from '@/lib/extract';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-/* ----------------- helpers ----------------- */
-const isPdf  = (n: string) => n.toLowerCase().endsWith('.pdf');
-const isDb   = (n: string) => /\.db3?$/i.test(n);
-const isMeta = (n: string) => /_meta\.db3?$/i.test(n);
-const baseDb = (n: string) =>
-  n.replace(/_meta(?=\.db3?$)/i, '').replace(/\.[^.]+$/, '').toLowerCase();
-
-const guessType = (name: string) =>
-  isPdf(name) ? 'application/pdf'
-  : isDb(name) ? 'application/octet-stream'
-  : 'application/octet-stream';
-
-const sanitize = (s: string) =>
-  s.replace(/[\/\\]+/g, '-').replace(/\s+/g, ' ').trim();
-
-function deriveProjectFromFiles(files: File[], explicit?: string | null) {
-  if (explicit && String(explicit).trim()) return sanitize(String(explicit));
-  const dbs = files.filter(f => isDb(f.name));
-  const main = dbs.find(f => !isMeta(f.name));
-  const pdf  = files.find(f => isPdf(f.name));
-  const candidate = main ?? pdf ?? files[0];
-  const base = candidate ? candidate.name.replace(/\.[^.]+$/, '') : 'Project';
-  const parts = base.split(' - ');
-  if (parts.length >= 3) return sanitize(`${parts[0]} - ${parts[1]} - ${parts[2]}`);
-  return sanitize(base);
+function bad(msg: string, code = 400) {
+  return new Response(JSON.stringify({ ok: false, error: msg }), {
+    status: code, headers: { 'content-type': 'application/json' },
+  });
 }
 
-function validateDbPair(files: File[]) {
-  const dbs = files.filter(f => isDb(f.name));
-  if (dbs.length === 0) return { ok: true } as const;
-  const main = dbs.find(f => !isMeta(f.name));
-  const meta = dbs.find(f =>  isMeta(f.name));
-  if (!main || !meta) {
-    return { ok: false as const, error: 'A .db/.db3 upload needs exactly two files: main + _Meta.' };
+export async function POST(req: NextRequest) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return bad('BLOB_READ_WRITE_TOKEN missing on server');
   }
-  if (baseDb(main.name) !== baseDb(meta.name)) {
-    return { ok: false as const, error: 'The .db/.db3 and _Meta names must match (same base).' };
+  const form = await req.formData();
+
+  const sectorCode = String(form.get('sectorCode') ?? 'S1').toUpperCase();
+  const clientName = sanitizePathPart(String(form.get('clientName') ?? 'General'));
+  const projectFolder = sanitizePathPart(String(form.get('projectFolder') ?? 'Unsorted'));
+
+  const files = form.getAll('files') as File[];
+  if (!files.length) return bad('No files attached');
+
+  // Validate: either single PDF OR db3 pair
+  const pdfs = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
+  const dbs  = files.filter(f => isDb(f.name));
+
+  let kind: 'pdf' | 'db' = 'pdf';
+  let mainDb: File | null = null;
+  let metaDb: File | null = null;
+
+  if (pdfs.length === 1 && dbs.length === 0) {
+    kind = 'pdf';
+  } else if (dbs.length >= 1) {
+    const main = dbs.find(f => !isMeta(f.name));
+    const meta = dbs.find(f =>  isMeta(f.name));
+    if (!main || !meta) return bad('A .db/.db3 upload needs exactly two files: main + _Meta.');
+    if (baseDb(main.name) !== baseDb(meta.name)) {
+      return bad('The .db/.db3 and _Meta names must match (same base).');
+    }
+    kind = 'db';
+    mainDb = main; metaDb = meta;
+  } else {
+    return bad('Please add a single PDF or a .db/.db3 pair.');
   }
-  return { ok: true } as const;
-}
 
-/** What we store/return for each uploaded file (SDK fields optional) */
-type UploadedInfo = {
-  url: string;
-  pathname: string;
-  /** present in some SDK versions; optional here to avoid type breakage */
-  downloadUrl?: string;
-  contentDisposition?: string;
-  name: string;
-  size: number;
-  contentType: string;
-};
+  // Target "folders" in Blob
+  const folder = `${sectorCode}/${clientName}/${projectFolder}`;
 
-async function persistToNeon(payload: {
-  sectorCode: string;
-  clientName: string;
-  projectFolder: string;
-  uploaded: UploadedInfo[];
-}) {
-  const url = process.env.DATABASE_URL;
-  if (!url) return { saved: 0, reason: 'DATABASE_URL missing — skipped Neon write' };
+  // Upload to Blob
+  const uploadedResults: {
+    url: string; pathname: string; name: string; size: number; contentType: string;
+  }[] = [];
 
-  try {
-    const { neon } = await import('@neondatabase/serverless');
-    const sql = neon(url);
-
-    await sql/*sql*/`
-      CREATE TABLE IF NOT EXISTS uploads (
-        id            bigserial PRIMARY KEY,
-        sector_code   text NOT NULL,
-        client_name   text NOT NULL,
-        project_key   text NOT NULL,
-        file_name     text NOT NULL,
-        blob_url      text NOT NULL,
-        content_type  text,
-        size_bytes    bigint,
-        uploaded_at   timestamptz DEFAULT now()
-      );
-    `;
-
-    for (const u of payload.uploaded) {
-      await sql/*sql*/`
-        INSERT INTO uploads (sector_code, client_name, project_key, file_name, blob_url, content_type, size_bytes)
-        VALUES (${payload.sectorCode}, ${payload.clientName}, ${payload.projectFolder},
-                ${u.name}, ${u.url}, ${u.contentType}, ${u.size});
-      `;
-    }
-    return { saved: payload.uploaded.length };
-  } catch (err) {
-    console.error('Neon persist error:', err);
-    return { saved: 0, reason: 'Neon error — see logs' };
+  for (const file of files) {
+    const array = new Uint8Array(await file.arrayBuffer());
+    const pathname = `${folder}/${file.name}`;
+    const { url } = await put(pathname, array, {
+      access: 'public',
+      contentType: (file as any).type || guessType(file.name),
+      addRandomSuffix: false,
+    });
+    uploadedResults.push({
+      url, pathname, name: file.name, size: file.size,
+      contentType: (file as any).type || guessType(file.name),
+    });
   }
-}
 
-/* ----------------- route ----------------- */
-export async function POST(req: Request) {
-  try {
-    const form = await req.formData();
+  // Insert rows in Neon uploads table
+  const insertedIds: number[] = [];
+  for (const u of uploadedResults) {
+    const quick = parseProjectFolder(projectFolder);
+    const row = await db
+      .insert(uploads)
+      .values({
+        sector: sectorCode,
+        client: clientName,
+        project: projectFolder,
+        filename: u.name,
+        contentType: u.contentType,
+        size: u.size,
+        blobPathname: u.pathname,
+        blobUrl: u.url,
+        projectNo: quick.projectNo,
+        siteAddress: quick.siteAddress,
+        postcode: quick.postcode,
+      })
+      .returning({ id: uploads.id });
+    insertedIds.push(row[0].id);
+  }
 
-    const sectorCode = String(form.get('sectorCode') ?? 'S1').toUpperCase();
-    const clientName = sanitize(String(form.get('clientName') ?? 'General'));
+  // If DB3 pair, do extraction
+  if (kind === 'db' && mainDb && metaDb) {
+    const buf = await mainDb.arrayBuffer(); // You can cross-check with Meta if needed
+    const dbConn = await openDbFromArrayBuffer(buf);
+    const extracted = buildExtractResult(dbConn, projectFolder);
 
-    // Ensure we pass only a string | null
-    const pf = form.get('projectFolder');
-    const projectFolderExplicit = typeof pf === 'string' ? pf : null;
-
-    const files = form.getAll('files') as unknown as File[];
-    if (!files.length) {
-      return NextResponse.json({ ok: false, error: 'NO_FILES' }, { status: 400 });
-    }
-
-    const finalProject = deriveProjectFromFiles(files, projectFolderExplicit);
-
-    const pair = validateDbPair(files);
-    if (!pair.ok) {
-      return NextResponse.json({ ok: false, error: pair.error }, { status: 400 });
-    }
-
-    const uploaded: UploadedInfo[] = [];
-
-    for (const file of files) {
-      const ab = await file.arrayBuffer();
-      const key = `${sectorCode}/${sanitize(clientName)}/${sanitize(finalProject)}/${sanitize(file.name)}`;
-
-      // Get the full SDK response, then copy what we need (keeping optional fields if present)
-      const info = await put(key, Buffer.from(ab), {
-        access: 'public', // valid values: 'public' | 'private'
-        contentType: (file as any).type || guessType(file.name),
-      });
-
-      uploaded.push({
-        url: info.url,
-        pathname: (info as any).pathname ?? key,
-        downloadUrl: (info as any).downloadUrl,
-        contentDisposition: (info as any).contentDisposition,
-        name: file.name,
-        size: file.size,
-        contentType: (file as any).type || guessType(file.name),
+    // Save sections
+    for (const s of extracted.sections) {
+      await db.insert(sectionsTable).values({
+        uploadId: insertedIds[0], // tie to any of the pair; both show in P4 but sections link to one
+        sectionNo: s.sectionNo,
+        date: s.date, time: s.time,
+        startMH: s.startMH, finishMH: s.finishMH,
+        pipeSize: s.pipeSize ?? null,
+        pipeMaterial: s.pipeMaterial ?? null,
+        totalLengthM: s.totalLengthM ?? null,
+        lengthSurveyedM: s.lengthSurveyedM ?? null,
+        observationSummary: s.observationSummary ?? null,
+        severityGrade: s.severityGrade ?? null,
+        adoptable: typeof s.adoptable === 'boolean' ? s.adoptable : null,
+        costEstimateGBP: s.costEstimateGBP ?? null,
+        standard: s.standard ?? null,
       });
     }
 
-    const neonResult = await persistToNeon({
-      sectorCode,
-      clientName,
-      projectFolder: finalProject,
-      uploaded,
-    });
-
-    return NextResponse.json({
-      ok: true,
-      sectorCode,
-      clientName,
-      projectFolder: finalProject,
-      uploaded,
-      neon: neonResult,
-    });
-  } catch (err: any) {
-    console.error('Upload API error:', err);
-    return NextResponse.json(
-      { ok: false, error: err?.message ?? 'UPLOAD_ERROR' },
-      { status: 500 }
-    );
+    // Save defects
+    for (const d of extracted.defects) {
+      await db.insert(defectsTable).values({
+        uploadId: insertedIds[0],
+        sectionNo: d.sectionNo,
+        code: d.code,
+        atMeters: d.atM ?? null,
+        details: d.details ?? null,
+        severity: d.severity ?? null,
+        standard: d.standard ?? null,
+      });
+    }
   }
+
+  return new Response(JSON.stringify({
+    ok: true,
+    sector: sectorCode,
+    client: clientName,
+    project: projectFolder,
+    uploaded: uploadedResults,
+  }), { headers: { 'content-type': 'application/json' } });
 }
