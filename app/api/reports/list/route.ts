@@ -1,18 +1,11 @@
-import { db } from '@/db';
-import { uploads } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+// app/api/reports/list/route.ts
+export const runtime = "nodejs";
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+import { db } from "@/db";
+import { reports } from "@/db/schema";
+import { desc } from "drizzle-orm";
 
 export async function GET() {
-  const rows = await db.select().from(uploads);
-  // group -> { [client]: { [project]: Upload[] } }
-  const grouped: Record<string, Record<string, typeof rows>> = {};
-  for (const r of rows) {
-    grouped[r.client] ??= {};
-    grouped[r.client][r.project] ??= [];
-    grouped[r.client][r.project].push(r);
-  }
-  return Response.json({ ok: true, grouped });
+  const rows = await db.select().from(reports).orderBy(desc(reports.id));
+  return Response.json({ ok: true, rows });
 }
