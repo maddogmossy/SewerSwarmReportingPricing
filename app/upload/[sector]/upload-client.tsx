@@ -78,40 +78,31 @@ const sectorStyles: Record<
 const ACCEPT =
   '.pdf,.db,.db3,application/x-sqlite3,application/vnd.sqlite3,application/octet-stream';
 
-const isPdf = (n: string) => n.toLowerCase().endsWith('.pdf');
-const isDb = (n: string) => /\.db3?$/i.test(n);
+const isPdf  = (n: string) => n.toLowerCase().endsWith('.pdf');
+const isDb   = (n: string) => /\.db3?$/i.test(n);
 const isMeta = (n: string) => /_meta\.db3?$/i.test(n);
 const baseDb = (n: string) => n.replace(/_meta(?=\.db3?$)/i, '').toLowerCase();
 
 function validateSelection(list: File[]): Check {
-  const pdfs = list.filter((f) => isPdf(f.name));
-  const dbs = list.filter((f) => isDb(f.name));
+  const pdfs = list.filter(f => isPdf(f.name));
+  const dbs  = list.filter(f => isDb(f.name));
 
   if (pdfs.length === 1 && dbs.length === 0) return { ok: true, kind: 'pdf' };
 
   if (dbs.length >= 1) {
-    const main = dbs.find((f) => !isMeta(f.name));
-    const meta = dbs.find((f) => isMeta(f.name));
-    if (!main || !meta)
-      return {
-        ok: false,
-        reason: 'A .db/.db3 upload needs exactly two files: main + _Meta.',
-      };
-    if (baseDb(main.name) !== baseDb(meta.name))
-      return {
-        ok: false,
-        reason:
-          'The .db/.db3 and _Meta names must match (same base).',
-      };
+    const main = dbs.find(f => !isMeta(f.name));
+    const meta = dbs.find(f =>  isMeta(f.name));
+    if (!main || !meta) {
+      return { ok: false, reason: 'A .db/.db3 upload needs exactly two files: main + _Meta.' };
+    }
+    if (baseDb(main.name) !== baseDb(meta.name)) {
+      return { ok: false, reason: 'The .db/.db3 and _Meta names must match (same base).' };
+    }
     return { ok: true, kind: 'db', main, meta };
   }
 
-  if (list.length === 0)
-    return { ok: false, reason: 'Please add a PDF or a .db/.db3 pair.' };
-  return {
-    ok: false,
-    reason: 'Only a single PDF or a .db/.db3 pair is allowed.',
-  };
+  if (list.length === 0) return { ok: false, reason: 'Please add a PDF or a .db/.db3 pair.' };
+  return { ok: false, reason: 'Only a single PDF or a .db/.db3 pair is allowed.' };
 }
 
 /* =========================
@@ -120,32 +111,41 @@ function validateSelection(list: File[]): Check {
 export default function UploadClient() {
   const { sector: raw } = (useParams() ?? {}) as { sector?: string };
   const sector = String(raw ?? 'S1').toUpperCase();
-  const style = sectorStyles[sector] ?? sectorStyles.S1;
+  const style  = sectorStyles[sector] ?? sectorStyles.S1;
 
-  const [files, setFiles] = React.useState<File[]>([]);
-  const [error, setError] = React.useState<string | null>(null);
+  const [files, setFiles]   = React.useState<File[]>([]);
+  const [error, setError]   = React.useState<string | null>(null);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef   = React.useRef<HTMLInputElement>(null);
   const folderInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Add vendor folder-picking attributes safely (no TS comments needed)
+  React.useEffect(() => {
+    const el = folderInputRef.current;
+    if (!el) return;
+    // boolean attributes – value doesn't matter, presence enables them
+    el.setAttribute('webkitdirectory', '');
+    el.setAttribute('directory', '');
+    el.setAttribute('mozdirectory', '');
+    el.setAttribute('msdirectory', '');
+  }, []);
 
   const addFiles = (incoming: File[]) => {
     if (!incoming?.length) return;
-    setFiles((prev) => {
+    setFiles(prev => {
       const map = new Map<string, File>();
-      for (const f of prev)
-        map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
-      for (const f of incoming)
-        map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
+      for (const f of prev)     map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
+      for (const f of incoming) map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
       return Array.from(map.values());
     });
   };
 
   const pickFolder = async (e?: React.MouseEvent) => {
     try {
-      // Shift+Click => classic multi-file dialog (slower on cloud shares)
+      // Shift+Click => classic multi-file dialog (can be slower on cloud/network drives)
       if (e?.shiftKey) return fileInputRef.current?.click();
 
-      // Preferred: Directory Picker (fast, and sees .db/.db3)
+      // Preferred: Directory Picker (fast, and shows .db/.db3)
       const w: any = window;
       if (typeof w.showDirectoryPicker === 'function') {
         const dir = await w.showDirectoryPicker({
@@ -164,10 +164,10 @@ export default function UploadClient() {
         return;
       }
 
-      // Fallback: hidden <input webkitdirectory>
+      // Fallback: hidden input with directory attributes (set in useEffect)
       folderInputRef.current?.click();
     } catch {
-      // user cancelled
+      // user cancelled – ignore
     }
   };
 
@@ -178,27 +178,19 @@ export default function UploadClient() {
 
   const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     addFiles(Array.from(e.target.files ?? []));
-    e.currentTarget.value = ''; // allow re-choose same file
+    e.currentTarget.value = ''; // allow picking the same file again
   };
 
-  const validation = React.useMemo(
-    () => validateSelection(files),
-    [files]
-  );
-  React.useEffect(
-    () => setError(validation.ok ? null : validation.reason),
-    [validation]
-  );
+  const validation = React.useMemo(() => validateSelection(files), [files]);
+  React.useEffect(() => setError(validation.ok ? null : validation.reason), [validation]);
 
   const { Icon } = style;
 
   return (
     <div className={`rounded-xl border ${style.border} bg-white shadow-sm`}>
-      {/* Header (match sector card look) */}
+      {/* Header styled like the sector card and shows P3 & S# */}
       <div className={`flex items-center gap-3 border-b ${style.border} px-4 py-3`}>
-        <div
-          className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${style.iconBg}`}
-        >
+        <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${style.iconBg}`}>
           <Icon className="h-5 w-5" />
         </div>
         <div className="flex-1">
@@ -206,9 +198,7 @@ export default function UploadClient() {
             <span className="inline-flex items-center rounded-full bg-neutral-900 px-2 py-0.5 text-xs font-medium text-white">
               {sector}
             </span>
-            <h2 className="text-lg font-semibold">
-              Upload Report — {style.title}
-            </h2>
+            <h2 className="text-lg font-semibold">Upload Report — {style.title}</h2>
             <span className="ml-auto text-xs text-neutral-500">P3</span>
           </div>
           <p className="text-sm text-neutral-600">{style.subtitle}</p>
@@ -245,7 +235,7 @@ export default function UploadClient() {
           </div>
         </div>
 
-        {/* hidden inputs */}
+        {/* Hidden inputs */}
         <input
           ref={fileInputRef}
           type="file"
@@ -260,14 +250,6 @@ export default function UploadClient() {
           accept={ACCEPT}
           onChange={onFiles}
           className="hidden"
-          // @ts-expect-error vendor attributes
-          webkitdirectory="true"
-          // @ts-expect-error vendor attributes
-          mozdirectory="true"
-          // @ts-expect-error vendor attributes
-          msdirectory="true"
-          // @ts-expect-error vendor attributes
-          directory="true"
         />
 
         {/* Selected list */}
@@ -276,7 +258,7 @@ export default function UploadClient() {
             <span className="text-neutral-500">No files selected.</span>
           ) : (
             <ul className="grid gap-1">
-              {files.map((f) => (
+              {files.map(f => (
                 <li
                   key={`${f.name}-${f.size}-${f.lastModified}`}
                   className="truncate"
@@ -299,9 +281,7 @@ export default function UploadClient() {
           >
             Upload
           </button>
-          <span className="text-xs text-neutral-500">
-            Sector: {sector} ({style.title})
-          </span>
+          <span className="text-xs text-neutral-500">Sector: {sector} ({style.title})</span>
         </div>
       </div>
     </div>
