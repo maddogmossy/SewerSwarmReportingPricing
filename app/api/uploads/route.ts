@@ -1,58 +1,39 @@
 // app/api/uploads/route.ts
-import { NextRequest } from "next/server";
 import { put } from "@vercel/blob";
 import { db } from "@/db";
-import { reports } from "@/db/schema";
-import { guessType, sanitize, deriveProjectFromFiles } from "@/lib/parse";
+import { uploads } from "@/db/schema";
+import { guessType } from "@/lib/parse";
 
 export const runtime = "nodejs";
 
-export async function POST(req: NextRequest) {
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) {
-    return new Response("Missing BLOB_READ_WRITE_TOKEN", { status: 500 });
-  }
+export async function POST(req: Request) {
+  try {
+    const formData = await req.formData();
+    const file = formData.get("file") as File | null;
+    if (!file) return new Response("Missing file", { status: 400 });
 
-  const form = await req.formData();
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-  const sectorCode  = String(form.get("sectorCode") ?? "S1").toUpperCase();
-  // sector_title is NOT NULL in your table, so ensure we always send something
-  const sectorTitle = String(form.get("sectorTitle") ?? `Sector ${sectorCode}`);
-  const clientName  = sanitize(form.get("clientName") ?? "General");
-  const projectFolder = deriveProjectFromFiles([], form.get("projectFolder"));
-  const files = form.getAll("files") as unknown as File[];
-
-  if (!files.length) return new Response("No files attached", { status: 400 });
-
-  const uploaded: Array<{ url: string; pathname: string; name: string; size: number }> = [];
-
-  for (const file of files) {
-    const safeName = (file as any).name || "file";
-    const pathname = `${sectorCode}/${clientName}/${projectFolder}/${safeName}`;
-
-    // NOTE: types in @vercel/blob require "public" here
-    const { url } = await put(pathname, file, {
-      token,
-      access: "public",
-      addRandomSuffix: false,
-      contentType: (file as any).type || guessType(safeName),
+    const blob = await put(`uploads/${file.name}`, buffer, {
+      access: "public", // Blob only supports "public"
+      contentType: file.type || guessType(file.name),
     });
 
-    await db.insert(reports).values({
-      sectorCode,
-      sectorTitle,
-      clientName,
-      projectFolder,
-      // projectNo/address/postcode are optional in your schema; omit if unknown
-      pathname,
-      url,
-      filename: safeName,
-      contentType: (file as any).type || guessType(safeName),
+    // Insert into DB
+    const row = await db.insert(uploads).values({
+      sector: (formData.get("sector") as string) || "unknown",
+      client: (formData.get("client") as string) || "unknown",
+      project: (formData.get("project") as string) || "unknown",
+      filename: file.name,
+      url: blob.url,
+      pathname: blob.pathname,
       size: file.size,
-    });
+    }).returning();
 
-    uploaded.push({ url, pathname, name: safeName, size: file.size });
+    return Response.json(row[0]);
+  } catch (err: any) {
+    console.error(err);
+    return new Response("Upload failed", { status: 500 });
   }
-
-  return Response.json({ ok: true, uploaded });
 }
