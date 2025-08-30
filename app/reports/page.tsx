@@ -10,17 +10,21 @@ type BlobRow = {
   name: string;
   size: number;
   uploadedAt?: string;
-  sector?: string;   // e.g. S1
+  sector?: string;
   client?: string;
   project?: string;
 };
 
 function parsePath(pathname: string) {
-  // Expecting:  /S#/Client/Project/filename
+  // Expecting: /S#/Client/Project/filename
   const parts = pathname.replace(/^\/+/, "").split("/");
   const [sectorMaybe, client, project, ...rest] = parts;
-  const sector = sectorMaybe && /^S[1-6]$/i.test(sectorMaybe) ? sectorMaybe.toUpperCase() : undefined;
-  const filename = rest.length ? rest.join("/") : parts[parts.length - 1] ?? pathname;
+  const sector =
+    sectorMaybe && /^S[1-6]$/i.test(sectorMaybe)
+      ? sectorMaybe.toUpperCase()
+      : undefined;
+  const filename =
+    rest.length > 0 ? rest.join("/") : parts[parts.length - 1] ?? pathname;
   return { sector, client, project, filename };
 }
 
@@ -29,8 +33,9 @@ async function fetchAll(): Promise<BlobRow[]> {
   let cursor: string | undefined = undefined;
 
   do {
-    // @vercel/blob list pagination
-    const page = await list({ cursor });
+    // 👇 Type the result of list(...) so nothing falls back to "any"
+    const page: Awaited<ReturnType<typeof list>> = await list({ cursor });
+
     for (const b of page.blobs) {
       const { sector, client, project, filename } = parsePath(b.pathname);
       all.push({
@@ -38,7 +43,7 @@ async function fetchAll(): Promise<BlobRow[]> {
         pathname: b.pathname,
         name: filename,
         size: b.size,
-        uploadedAt: b.uploadedAt,
+        uploadedAt: (b as any).uploadedAt, // optional depending on blob tier
         sector,
         client,
         project,
@@ -47,7 +52,6 @@ async function fetchAll(): Promise<BlobRow[]> {
     cursor = page.cursor;
   } while (cursor);
 
-  // newest first
   all.sort((a, b) => (b.uploadedAt || "").localeCompare(a.uploadedAt || ""));
   return all;
 }
@@ -55,7 +59,6 @@ async function fetchAll(): Promise<BlobRow[]> {
 export default async function ReportsPage() {
   const rows = await fetchAll();
 
-  // Server action for delete
   async function deleteFile(formData: FormData) {
     "use server";
     const pathname = String(formData.get("pathname") || "");
@@ -72,7 +75,9 @@ export default async function ReportsPage() {
       </span>
 
       <header className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="text-3xl font-extrabold tracking-tight">Uploaded Reports</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">
+          Uploaded Reports
+        </h1>
         <p className="mt-2 text-slate-600">
           Lists the files you’ve uploaded by sector (newest first).
         </p>
@@ -110,15 +115,20 @@ export default async function ReportsPage() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-lg font-semibold break-all">{r.name || "file"}</div>
+                  <div className="text-lg font-semibold break-all">
+                    {r.name || "file"}
+                  </div>
                   <div className="mt-1 text-sm text-slate-600">
                     Sector: {r.sector ?? "—"}{" "}
                     {r.client ? <>· Client: {r.client}</> : null}{" "}
                     {r.project ? <>· Project: {r.project}</> : null}
                   </div>
                   <div className="mt-1 text-sm text-slate-500">
-                    Uploaded: {r.uploadedAt ? new Date(r.uploadedAt).toLocaleString() : "—"} ·{" "}
-                    {(r.size / (1024 * 1024)).toFixed(2)} MB
+                    Uploaded:{" "}
+                    {r.uploadedAt
+                      ? new Date(r.uploadedAt).toLocaleString()
+                      : "—"}{" "}
+                    · {(r.size / (1024 * 1024)).toFixed(2)} MB
                   </div>
 
                   <div className="mt-2 flex gap-3">
