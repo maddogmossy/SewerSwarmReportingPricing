@@ -1,7 +1,9 @@
 // db/schema.ts
 import { pgTable, serial, varchar, integer, timestamp, text } from "drizzle-orm/pg-core";
 
-// Reports table (confirmed in Neon)
+//
+// REPORTS TABLE (matches your Neon schema exactly)
+//
 export const reports = pgTable("reports", {
   id: serial("id").primaryKey(),
   sectorCode: varchar("sector_code", { length: 4 }).notNull(),
@@ -19,21 +21,22 @@ export const reports = pgTable("reports", {
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Placeholder uploads table (so imports stop breaking)
+//
+// PLACEHOLDER TABLES
+// (so imports in your code stop breaking — safe to extend later)
+//
 export const uploads = pgTable("uploads", {
   id: serial("id").primaryKey(),
   filename: varchar("filename", { length: 300 }).notNull(),
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow(),
 });
 
-// Placeholder sections table
 export const sectionsTable = pgTable("sections", {
   id: serial("id").primaryKey(),
   reportId: integer("report_id"),
   data: text("data"),
 });
 
-// Placeholder defects table
 export const defectsTable = pgTable("defects", {
   id: serial("id").primaryKey(),
   sectionId: integer("section_id"),
