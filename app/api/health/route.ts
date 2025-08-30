@@ -1,6 +1,16 @@
 // app/api/health/route.ts
-import { NextResponse } from 'next/server';
+export const runtime = 'nodejs';
 
 export async function GET() {
-  return NextResponse.json({ ok: true, status: 'healthy' });
+  const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
+  const hasDb   = !!process.env.DATABASE_URL;
+  return new Response(
+    JSON.stringify({
+      ok: true,
+      blobToken: hasBlob ? 'present' : 'missing',
+      databaseUrl: hasDb ? 'present' : 'missing',
+      envRuntime: 'nodejs',
+    }),
+    { headers: { 'content-type': 'application/json' } }
+  );
 }
