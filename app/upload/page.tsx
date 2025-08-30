@@ -26,8 +26,8 @@ type Sector = {
   title: string;
   subtitle: string;
   Icon: React.ElementType;
-  tone: string;       // icon bubble colours
-  borderTone: string; // card border accent
+  tone: string;
+  borderTone: string;
   standards: string[];
 };
 
@@ -294,28 +294,27 @@ function UploadModal({
     return [pn, ad, pc].filter(Boolean).join(" - ");
   }, [projectNo, address, postcode]);
 
-  // ---- helpers that accept File OR string (fixes TS error) ----
-  const isPdf = (x: File | string) =>
-    /\.pdf$/i.test(typeof x === "string" ? x : x.name);
+  // ---- name helpers (accept File OR string) ----
+  const fname = (x: File | string) => (typeof x === "string" ? x : x.name).trim();
 
-  const isDb = (x: File | string) =>
-    /\.(db3?|db)$/i.test(typeof x === "string" ? x : x.name);
+  const isPdf = (x: File | string) => /\.pdf$/i.test(fname(x));
+  const isDb  = (x: File | string) => /\.(?:db3?|db)$/i.test(fname(x));
 
+  // accept _Meta / -Meta / " Meta" (case-insensitive) before the extension
   const isMeta = (x: File | string) =>
-    /(_Meta|- Meta)\.(db3?|db)$/i.test(typeof x === "string" ? x : x.name);
+    /(?:^|[ _-])meta\.(?:db3?|db)$/i.test(fname(x));
 
-  const baseDb = (x: File | string) => {
-    const n = typeof x === "string" ? x : x.name;
-    return n
-      .replace(/(_Meta|- Meta)?\.(db3?|db)$/i, "")
-      .replace(/\.(db3?|db)$/i, "");
-  };
+  const baseDb = (x: File | string) =>
+    fname(x)
+      .replace(/(?:^|[ _-])meta\.(?:db3?|db)$/i, "")
+      .replace(/\.(?:db3?|db)$/i, "")
+      .trim();
 
   const UK_POSTCODE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s?(\d[A-Z]{2})\b/i;
 
   function parseProjectFields(name: string) {
     // Expect: "Project No - Full Site address - Post code"
-    const core = name.replace(/(_Meta|- Meta)?\.[^.]+$/i, "").replace(/\.[^.]+$/i, "");
+    const core = name.replace(/(?:^|[ _-])meta\.[^.]+$/i, "").replace(/\.[^.]+$/i, "");
     const parts = core.split(" - ").map((s) => s.trim()).filter(Boolean);
     if (parts.length < 3) return null;
     const pc = parts[parts.length - 1].match(UK_POSTCODE);
@@ -333,17 +332,38 @@ function UploadModal({
 
   function checkFiles(list: File[]): { ok: boolean; reason?: string } {
     if (!list.length) return { ok: false, reason: "Please add a file." };
+
+    // quick visibility in DevTools if it ever mis-detects
+    console.debug("[P3] files dropped:", list.map((f) => f.name));
+
     const pdfs = list.filter((f) => isPdf(f));
     const dbs  = list.filter((f) => isDb(f));
-    if (pdfs.length && dbs.length) return { ok: false, reason: "Choose either a single PDF or a .db/.db3 pair (not both)." };
+
+    if (pdfs.length && dbs.length) {
+      return { ok: false, reason: "Choose either a single PDF or a .db/.db3 pair (not both)." };
+    }
+
     if (pdfs.length === 1 && list.length === 1) return { ok: true };
+
     if (dbs.length >= 1) {
+      if (dbs.length === 2) {
+        const [a, b] = dbs;
+        const aMeta = isMeta(a), bMeta = isMeta(b);
+        if (aMeta !== bMeta && baseDb(a).toLowerCase() === baseDb(b).toLowerCase()) {
+          return { ok: true };
+        }
+      }
       const main = dbs.find((f) => !isMeta(f));
       const meta = dbs.find((f) =>  isMeta(f));
-      if (!main || !meta) return { ok: false, reason: "A .db/.db3 upload needs exactly two files: main + _Meta." };
-      if (baseDb(main!) !== baseDb(meta!)) return { ok: false, reason: "The .db/.db3 and _Meta names must match (same base)." };
+      if (!main || !meta) {
+        return { ok: false, reason: "A .db/.db3 upload needs exactly two files: main + _Meta." };
+      }
+      if (baseDb(main).toLowerCase() !== baseDb(meta).toLowerCase()) {
+        return { ok: false, reason: "The .db/.db3 and _Meta names must match (same base)." };
+      }
       return { ok: true };
     }
+
     return { ok: false, reason: "Unsupported files. Upload a PDF or a .db/.db3 pair." };
   }
 
@@ -362,6 +382,7 @@ function UploadModal({
     e.preventDefault();
     setDragOver(false);
     const list = Array.from(e.dataTransfer.files);
+    console.debug("[P3] onDrop ->", list.map((f) => f.name));
     const check = checkFiles(list);
     if (!check.ok) return setToast({ kind: "error", text: check.reason! });
     setFiles(list);
@@ -396,12 +417,9 @@ function UploadModal({
     }
   }
 
-  function onClassicBrowseClick() {
-    (document.getElementById("fileInputHidden") as HTMLInputElement)?.click();
-  }
-
   function onDirFallbackChange(e: React.ChangeEvent<HTMLInputElement>) {
     const list = Array.from(e.target.files || []);
+    console.debug("[P3] dir fallback ->", list.map((f) => f.name));
     if (!list.length) return;
     // try infer client from first directory segment of webkitRelativePath
     const first = (e.target.files?.[0] as any);
@@ -416,12 +434,12 @@ function UploadModal({
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const list = Array.from(e.target.files || []);
+    console.debug("[P3] classic file dialog ->", list.map((f) => f.name));
     if (!list.length) return;
     const check = checkFiles(list);
     if (!check.ok) return setToast({ kind: "error", text: check.reason! });
     setFiles(list);
     parseAutofill(list);
-    // No reliable client from classic dialog; keep empty (server falls back to "Unfiled" if needed)
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -437,16 +455,12 @@ function UploadModal({
       fd.append("sectorSlug", sector.slug);
       fd.append("sectorCode", sector.code);
       fd.append("sectorTitle", sector.title);
-
       fd.append("projectNo", projectNo);
       fd.append("address", address);
       fd.append("postcode", postcode);
-
       if (clientName) fd.append("clientName", clientName);
-
       const target = [projectNo, address, postcode].filter(Boolean).join(" - ");
       if (target) fd.append("targetFilename", target);
-
       files.forEach((f) => fd.append("files", f, f.name));
 
       const res = await fetch("/api/uploads", { method: "POST", body: fd });
@@ -454,7 +468,7 @@ function UploadModal({
         const msg = await res.text().catch(() => "");
         throw new Error(msg || res.statusText);
       }
-      // Go to P4
+      // go to P4
       window.location.href = "/uploads";
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -463,11 +477,7 @@ function UploadModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[60] grid place-items-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-    >
+    <div className="fixed inset-0 z-[60] grid place-items-center bg-black/40 p-4" role="dialog" aria-modal="true">
       <div className="w-full max-w-3xl rounded-2xl bg-white shadow-xl">
         <div className="flex items-center justify-between border-b px-5 py-4">
           <div className="flex items-center gap-2">
