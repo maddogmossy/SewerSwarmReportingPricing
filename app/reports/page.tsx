@@ -45,36 +45,26 @@ function groupByClientProject(blobs: FileLeaf[]) {
   }
   return tree;
 }
-
 function prettyBytes(n: number) {
   const units = ['B', 'KB', 'MB', 'GB'];
   let v = n, u = 0;
   while (v >= 1024 && u < units.length - 1) { v /= 1024; u++; }
   return `${v.toFixed(v < 10 && u > 0 ? 1 : 0)} ${units[u]}`;
 }
-
 const isDb  = (p: string) => /\.db3?$/i.test(p);
 const isPdf = (p: string) => /\.pdf$/i.test(p);
 
-/* ---------- Local server actions (not exported) ---------- */
 async function deleteFileAction(formData: FormData) {
   'use server';
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.warn('Delete skipped: BLOB_READ_WRITE_TOKEN missing');
-    return;
-  }
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return;
   const url = String(formData.get('url') || '');
   if (!url) return;
   await del(url);
   revalidatePath('/reports');
 }
-
 async function deleteProjectAction(formData: FormData) {
   'use server';
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.warn('Delete skipped: BLOB_READ_WRITE_TOKEN missing');
-    return;
-  }
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return;
   const sector = String(formData.get('sector') || '');
   const client = String(formData.get('client') || '');
   const project = String(formData.get('project') || '');
@@ -90,13 +80,9 @@ async function deleteProjectAction(formData: FormData) {
 
   revalidatePath('/reports');
 }
-
 async function deleteClientAction(formData: FormData) {
   'use server';
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.warn('Delete skipped: BLOB_READ_WRITE_TOKEN missing');
-    return;
-  }
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return;
   const sector = String(formData.get('sector') || '');
   const client = String(formData.get('client') || '');
   if (!sector || !client) return;
@@ -111,12 +97,10 @@ async function deleteClientAction(formData: FormData) {
 
   revalidatePath('/reports');
 }
-/* -------------------------------------------------------- */
 
 export default async function ReportsPage() {
   const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
 
-  // Try to list blobs, but never crash the page if it fails
   let all: FileLeaf[] = [];
   let listError: string | null = null;
   if (hasBlob) {
@@ -126,9 +110,7 @@ export default async function ReportsPage() {
         const { blobs, cursor: next } = await list({ cursor });
         for (const b of blobs) {
           all.push({
-            url: b.url,
-            pathname: b.pathname,
-            size: b.size,
+            url: b.url, pathname: b.pathname, size: b.size,
             contentType: (b as any).contentType ?? null,
             uploadedAt: (b as any).uploadedAt ?? null,
           });
@@ -160,27 +142,21 @@ export default async function ReportsPage() {
         </p>
       </header>
 
-      {/* Blob connectivity guard */}
       {!hasBlob && (
         <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900">
           <div className="font-semibold">Storage not connected</div>
           <div className="mt-1 text-sm">
-            Set the <code>BLOB_READ_WRITE_TOKEN</code> environment variable in Vercel
-            (Project → Settings → Environment Variables), then redeploy. The page will show client/project/files once connected.
+            Set <code>BLOB_READ_WRITE_TOKEN</code> in Vercel → Environment Variables, then redeploy.
           </div>
         </div>
       )}
-
       {listError && (
         <div className="mb-6 rounded-lg border border-red-300 bg-red-50 p-4 text-red-900">
           <div className="font-semibold">Couldn’t read storage</div>
-          <div className="mt-1 text-sm">
-            {listError}. The app is still running; try again after checking your Blob token.
-          </div>
+          <div className="mt-1 text-sm">{listError}</div>
         </div>
       )}
 
-      {/* Sectors accordion */}
       <div className="space-y-4">
         {[...bySector.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([sector, files]) => {
           const clients = groupByClientProject(files);
