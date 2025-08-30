@@ -6,84 +6,153 @@ import {
   Wrench, ShieldCheck, Car, House, Shield, Hammer, FileUp,
 } from 'lucide-react';
 
+/* =========================
+   Types
+========================= */
 type Ok =
   | { ok: true; kind: 'pdf' }
   | { ok: true; kind: 'db'; main: File; meta: File };
 type NotOk = { ok: false; reason: string };
 type Check = Ok | NotOk;
 
-const sectorStyles: Record<string, {
-  title: string;
-  subtitle: string;
-  border: string;
-  iconBg: string;
-  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-}> = {
-  S1: { title: 'Utilities',  subtitle: 'Water companies, utility providers',         border: 'border-indigo-300', iconBg: 'bg-indigo-50 text-indigo-700', Icon: Wrench },
-  S2: { title: 'Adoption',   subtitle: 'Section 104 adoption agreements',            border: 'border-emerald-300',iconBg: 'bg-emerald-50 text-emerald-700',Icon: ShieldCheck },
-  S3: { title: 'Highways',   subtitle: 'Highway drainage systems',                   border: 'border-amber-300',  iconBg: 'bg-amber-50 text-amber-700',   Icon: Car },
-  S4: { title: 'Domestic',   subtitle: 'Household and private drain assessments',    border: 'border-rose-300',   iconBg: 'bg-rose-50 text-rose-700',     Icon: House },
-  S5: { title: 'Insurance',  subtitle: 'Insurance assessments and claims',           border: 'border-sky-300',    iconBg: 'bg-sky-50 text-sky-700',       Icon: Shield },
-  S6: { title: 'Construction',subtitle:'New build and development projects',         border: 'border-cyan-300',   iconBg: 'bg-cyan-50 text-cyan-700',     Icon: Hammer },
+/* =========================
+   Sector style map (S1..S6)
+========================= */
+const sectorStyles: Record<
+  string,
+  {
+    title: string;
+    subtitle: string;
+    border: string;
+    iconBg: string;
+    Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  }
+> = {
+  S1: {
+    title: 'Utilities',
+    subtitle: 'Water companies, utility providers',
+    border: 'border-indigo-300',
+    iconBg: 'bg-indigo-50 text-indigo-700',
+    Icon: Wrench,
+  },
+  S2: {
+    title: 'Adoption',
+    subtitle: 'Section 104 adoption agreements',
+    border: 'border-emerald-300',
+    iconBg: 'bg-emerald-50 text-emerald-700',
+    Icon: ShieldCheck,
+  },
+  S3: {
+    title: 'Highways',
+    subtitle: 'Highway drainage systems',
+    border: 'border-amber-300',
+    iconBg: 'bg-amber-50 text-amber-700',
+    Icon: Car,
+  },
+  S4: {
+    title: 'Domestic',
+    subtitle: 'Household and private drain assessments',
+    border: 'border-rose-300',
+    iconBg: 'bg-rose-50 text-rose-700',
+    Icon: House,
+  },
+  S5: {
+    title: 'Insurance',
+    subtitle: 'Insurance assessments and claims',
+    border: 'border-sky-300',
+    iconBg: 'bg-sky-50 text-sky-700',
+    Icon: Shield,
+  },
+  S6: {
+    title: 'Construction',
+    subtitle: 'New build and development projects',
+    border: 'border-cyan-300',
+    iconBg: 'bg-cyan-50 text-cyan-700',
+    Icon: Hammer,
+  },
 };
 
+/* =========================
+   Helpers / validators
+========================= */
 const ACCEPT =
   '.pdf,.db,.db3,application/x-sqlite3,application/vnd.sqlite3,application/octet-stream';
 
-const isPdf  = (n: string) => n.toLowerCase().endsWith('.pdf');
-const isDb   = (n: string) => /\.db3?$/i.test(n);
+const isPdf = (n: string) => n.toLowerCase().endsWith('.pdf');
+const isDb = (n: string) => /\.db3?$/i.test(n);
 const isMeta = (n: string) => /_meta\.db3?$/i.test(n);
 const baseDb = (n: string) => n.replace(/_meta(?=\.db3?$)/i, '').toLowerCase();
 
 function validateSelection(list: File[]): Check {
-  const pdfs = list.filter(f => isPdf(f.name));
-  const dbs  = list.filter(f => isDb(f.name));
+  const pdfs = list.filter((f) => isPdf(f.name));
+  const dbs = list.filter((f) => isDb(f.name));
 
   if (pdfs.length === 1 && dbs.length === 0) return { ok: true, kind: 'pdf' };
 
   if (dbs.length >= 1) {
-    const main = dbs.find(f => !isMeta(f.name));
-    const meta = dbs.find(f =>  isMeta(f.name));
-    if (!main || !meta) return { ok: false, reason: 'A .db/.db3 upload needs exactly two files: main + _Meta.' };
+    const main = dbs.find((f) => !isMeta(f.name));
+    const meta = dbs.find((f) => isMeta(f.name));
+    if (!main || !meta)
+      return {
+        ok: false,
+        reason: 'A .db/.db3 upload needs exactly two files: main + _Meta.',
+      };
     if (baseDb(main.name) !== baseDb(meta.name))
-      return { ok: false, reason: 'The .db/.db3 and _Meta names must match (same base).' };
+      return {
+        ok: false,
+        reason:
+          'The .db/.db3 and _Meta names must match (same base).',
+      };
     return { ok: true, kind: 'db', main, meta };
   }
 
-  if (list.length === 0) return { ok: false, reason: 'Please add a PDF or a .db/.db3 pair.' };
-  return { ok: false, reason: 'Only a single PDF or a .db/.db3 pair is allowed.' };
+  if (list.length === 0)
+    return { ok: false, reason: 'Please add a PDF or a .db/.db3 pair.' };
+  return {
+    ok: false,
+    reason: 'Only a single PDF or a .db/.db3 pair is allowed.',
+  };
 }
 
+/* =========================
+   Component
+========================= */
 export default function UploadClient() {
   const { sector: raw } = (useParams() ?? {}) as { sector?: string };
   const sector = String(raw ?? 'S1').toUpperCase();
-  const style  = sectorStyles[sector] ?? sectorStyles.S1;
+  const style = sectorStyles[sector] ?? sectorStyles.S1;
 
   const [files, setFiles] = React.useState<File[]>([]);
   const [error, setError] = React.useState<string | null>(null);
 
-  const fileInputRef   = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const folderInputRef = React.useRef<HTMLInputElement>(null);
 
   const addFiles = (incoming: File[]) => {
     if (!incoming?.length) return;
-    setFiles(prev => {
+    setFiles((prev) => {
       const map = new Map<string, File>();
-      for (const f of prev)     map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
-      for (const f of incoming) map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
+      for (const f of prev)
+        map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
+      for (const f of incoming)
+        map.set(`${f.name}|${f.size}|${f.lastModified}`, f);
       return Array.from(map.values());
     });
   };
 
   const pickFolder = async (e?: React.MouseEvent) => {
     try {
-      // Shift+click => classic multi-file dialog
+      // Shift+Click => classic multi-file dialog (slower on cloud shares)
       if (e?.shiftKey) return fileInputRef.current?.click();
 
-      // Best path (usually faster than cloud “Browse…”)
+      // Preferred: Directory Picker (fast, and sees .db/.db3)
       const w: any = window;
       if (typeof w.showDirectoryPicker === 'function') {
-        const dir = await w.showDirectoryPicker({ id: 'we-upload', startIn: 'downloads', mode: 'read' });
+        const dir = await w.showDirectoryPicker({
+          id: 'sewerswarm-upload',
+          startIn: 'downloads',
+          mode: 'read',
+        });
         const picked: File[] = [];
         for await (const [, entry] of dir.entries()) {
           if (entry.kind === 'file') {
@@ -94,30 +163,42 @@ export default function UploadClient() {
         addFiles(picked);
         return;
       }
-      // Fallback hidden <input webkitdirectory>
+
+      // Fallback: hidden <input webkitdirectory>
       folderInputRef.current?.click();
-    } catch { /* user cancelled */ }
+    } catch {
+      // user cancelled
+    }
   };
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     addFiles(Array.from(e.dataTransfer.files ?? []));
   };
+
   const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     addFiles(Array.from(e.target.files ?? []));
-    e.currentTarget.value = '';
+    e.currentTarget.value = ''; // allow re-choose same file
   };
 
-  const validation = React.useMemo(() => validateSelection(files), [files]);
-  React.useEffect(() => setError(validation.ok ? null : validation.reason), [validation]);
+  const validation = React.useMemo(
+    () => validateSelection(files),
+    [files]
+  );
+  React.useEffect(
+    () => setError(validation.ok ? null : validation.reason),
+    [validation]
+  );
 
   const { Icon } = style;
 
   return (
     <div className={`rounded-xl border ${style.border} bg-white shadow-sm`}>
-      {/* Header styled like the sector card and shows P3 & S# */}
+      {/* Header (match sector card look) */}
       <div className={`flex items-center gap-3 border-b ${style.border} px-4 py-3`}>
-        <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${style.iconBg}`}>
+        <div
+          className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${style.iconBg}`}
+        >
           <Icon className="h-5 w-5" />
         </div>
         <div className="flex-1">
@@ -125,7 +206,9 @@ export default function UploadClient() {
             <span className="inline-flex items-center rounded-full bg-neutral-900 px-2 py-0.5 text-xs font-medium text-white">
               {sector}
             </span>
-            <h2 className="text-lg font-semibold">Upload Report — {style.title}</h2>
+            <h2 className="text-lg font-semibold">
+              Upload Report — {style.title}
+            </h2>
             <span className="ml-auto text-xs text-neutral-500">P3</span>
           </div>
           <p className="text-sm text-neutral-600">{style.subtitle}</p>
@@ -139,6 +222,7 @@ export default function UploadClient() {
           </div>
         )}
 
+        {/* Drop zone */}
         <div
           onDragOver={(e) => e.preventDefault()}
           onDrop={onDrop}
@@ -162,7 +246,14 @@ export default function UploadClient() {
         </div>
 
         {/* hidden inputs */}
-        <input ref={fileInputRef} type="file" multiple accept={ACCEPT} onChange={onFiles} className="hidden" />
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept={ACCEPT}
+          onChange={onFiles}
+          className="hidden"
+        />
         <input
           ref={folderInputRef}
           type="file"
@@ -170,31 +261,47 @@ export default function UploadClient() {
           onChange={onFiles}
           className="hidden"
           // @ts-expect-error vendor attributes
-          webkitdirectory="true" mozdirectory="true" msdirectory="true" directory="true"
+          webkitdirectory="true"
+          // @ts-expect-error vendor attributes
+          mozdirectory="true"
+          // @ts-expect-error vendor attributes
+          msdirectory="true"
+          // @ts-expect-error vendor attributes
+          directory="true"
         />
 
+        {/* Selected list */}
         <div className="mb-4 min-h-10 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm">
           {files.length === 0 ? (
             <span className="text-neutral-500">No files selected.</span>
           ) : (
             <ul className="grid gap-1">
-              {files.map(f => (
-                <li key={`${f.name}-${f.size}-${f.lastModified}`} className="truncate">{f.name}</li>
+              {files.map((f) => (
+                <li
+                  key={`${f.name}-${f.size}-${f.lastModified}`}
+                  className="truncate"
+                  title={f.name}
+                >
+                  {f.name}
+                </li>
               ))}
             </ul>
           )}
         </div>
 
+        {/* Action row */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             disabled={!validation.ok}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => console.log('submit files', files)}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={() => console.log('TODO: POST to /api/uploads with', files)}
           >
             Upload
           </button>
-          <span className="text-xs text-neutral-500">Sector: {sector} ({style.title})</span>
+          <span className="text-xs text-neutral-500">
+            Sector: {sector} ({style.title})
+          </span>
         </div>
       </div>
     </div>
