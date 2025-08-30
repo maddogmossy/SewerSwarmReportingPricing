@@ -1,11 +1,12 @@
 // app/api/uploads/route.ts
 import { NextResponse } from 'next/server';
-import { put, PutBlobResult } from '@vercel/blob';
+import { put } from '@vercel/blob';
 
 export const runtime = 'nodejs';
 
-const isPdf = (n: string) => n.toLowerCase().endsWith('.pdf');
-const isDb  = (n: string) => /\.db3?$/i.test(n);
+/* ----------------- helpers ----------------- */
+const isPdf  = (n: string) => n.toLowerCase().endsWith('.pdf');
+const isDb   = (n: string) => /\.db3?$/i.test(n);
 const isMeta = (n: string) => /_meta\.db3?$/i.test(n);
 const baseDb = (n: string) =>
   n.replace(/_meta(?=\.db3?$)/i, '').replace(/\.[^.]+$/, '').toLowerCase();
@@ -44,11 +45,23 @@ function validateDbPair(files: File[]) {
   return { ok: true } as const;
 }
 
+/** What we store/return for each uploaded file (SDK fields optional) */
+type UploadedInfo = {
+  url: string;
+  pathname: string;
+  /** present in some SDK versions; optional here to avoid type breakage */
+  downloadUrl?: string;
+  contentDisposition?: string;
+  name: string;
+  size: number;
+  contentType: string;
+};
+
 async function persistToNeon(payload: {
   sectorCode: string;
   clientName: string;
   projectFolder: string;
-  uploaded: Array<PutBlobResult & { name: string; size: number; contentType: string }>;
+  uploaded: UploadedInfo[];
 }) {
   const url = process.env.DATABASE_URL;
   if (!url) return { saved: 0, reason: 'DATABASE_URL missing — skipped Neon write' };
@@ -85,6 +98,7 @@ async function persistToNeon(payload: {
   }
 }
 
+/* ----------------- route ----------------- */
 export async function POST(req: Request) {
   try {
     const form = await req.formData();
@@ -92,10 +106,9 @@ export async function POST(req: Request) {
     const sectorCode = String(form.get('sectorCode') ?? 'S1').toUpperCase();
     const clientName = sanitize(String(form.get('clientName') ?? 'General'));
 
-    // ✅ Fix: ensure we only pass a string | null
+    // Ensure we pass only a string | null
     const pf = form.get('projectFolder');
-    const projectFolderExplicit =
-      typeof pf === 'string' ? pf : null;
+    const projectFolderExplicit = typeof pf === 'string' ? pf : null;
 
     const files = form.getAll('files') as unknown as File[];
     if (!files.length) {
@@ -109,20 +122,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: pair.error }, { status: 400 });
     }
 
-    const uploaded: Array<
-      PutBlobResult & { name: string; size: number; contentType: string }
-    > = [];
+    const uploaded: UploadedInfo[] = [];
 
     for (const file of files) {
       const ab = await file.arrayBuffer();
       const key = `${sectorCode}/${sanitize(clientName)}/${sanitize(finalProject)}/${sanitize(file.name)}`;
-      const { url, pathname } = await put(key, Buffer.from(ab), {
-        access: 'public', // blob SDK v0.24 expects "public" | "private"
+
+      // Get the full SDK response, then copy what we need (keeping optional fields if present)
+      const info = await put(key, Buffer.from(ab), {
+        access: 'public', // valid values: 'public' | 'private'
         contentType: (file as any).type || guessType(file.name),
       });
+
       uploaded.push({
-        url,
-        pathname,
+        url: info.url,
+        pathname: (info as any).pathname ?? key,
+        downloadUrl: (info as any).downloadUrl,
+        contentDisposition: (info as any).contentDisposition,
         name: file.name,
         size: file.size,
         contentType: (file as any).type || guessType(file.name),
