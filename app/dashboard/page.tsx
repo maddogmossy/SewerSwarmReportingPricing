@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { reports } from "@/db/schema";
+import { db } from "../../db";
+import { reports } from "../../db/schema";
 import { desc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
