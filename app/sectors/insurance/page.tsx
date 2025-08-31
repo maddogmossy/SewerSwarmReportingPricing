@@ -2,7 +2,7 @@
 import React from "react";
 import DevLabel from "../../../components/ui/DevLabel";
 
-export default function InsuranceSector() {
+export default function UtilitiesSector() {
   return (
     <main className="relative max-w-4xl mx-auto px-4 py-10">
       <DevLabel kind="sector" position="top-right" />
