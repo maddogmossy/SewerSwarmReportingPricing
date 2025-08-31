@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DevLabel } from "@/components/PageId";
+import PageId from "../../components/PageId";
 
 export default function HighwaysSector() {
   return (
