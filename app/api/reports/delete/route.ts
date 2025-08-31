@@ -1,29 +1,29 @@
-// app/api/reports/delete/route.ts
-import { del } from "@vercel/blob";
-import { db } from "@/db";
-import { uploads } from "@/db/schema";
-import { eq } from "drizzle-orm";
-
 export const runtime = "nodejs";
 
-export async function POST(req: Request) {
+import { NextResponse } from "next/server";
+import { db } from "@/db";
+import { reports } from "@/db/schema";
+import { eq } from "drizzle-orm";
+
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
-    if (!body || !body.id) {
-      return new Response("Missing id", { status: 400 });
+    const { id } = await request.json();
+
+    if (!id) {
+      return NextResponse.json(
+        { ok: false, error: "Missing id" },
+        { status: 400 }
+      );
     }
 
-    // Delete from DB
-    await db.delete(uploads).where(eq(uploads.id, body.id));
+    await db.delete(reports).where(eq(reports.id, Number(id)));
 
-    // Delete from Blob store if provided
-    if (body.pathname) {
-      await del(body.pathname);
-    }
-
-    return new Response("Deleted", { status: 200 });
-  } catch (err: any) {
-    console.error(err);
-    return new Response("Error deleting", { status: 500 });
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    console.error("DELETE_ERROR:", e);
+    return NextResponse.json(
+      { ok: false, error: e?.message || "Delete failed" },
+      { status: 500 }
+    );
   }
 }
