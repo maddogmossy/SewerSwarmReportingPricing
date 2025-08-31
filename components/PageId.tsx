@@ -1,51 +1,28 @@
 // components/PageId.tsx
 "use client";
-
 import React from "react";
 
 type Corner = "top-right" | "top-left" | "bottom-right" | "bottom-left";
 
-type DevLabelProps = {
+export default function PageId({
+  id,
+  corner = "top-right",
+}: {
   id: string;
-  position?: Corner;
-  className?: string;
-};
+  corner?: Corner;
+}) {
+  const position = {
+    "top-right": "top-2 right-2",
+    "top-left": "top-2 left-2",
+    "bottom-right": "bottom-2 right-2",
+    "bottom-left": "bottom-2 left-2",
+  }[corner];
 
-type CardIdProps = {
-  id: string;
-  position?: Corner;
-  className?: string;
-};
-
-function cornerToClasses(pos: Corner = "top-right") {
-  switch (pos) {
-    case "top-left": return "left-3 top-3";
-    case "bottom-right": return "right-3 bottom-3";
-    case "bottom-left": return "left-3 bottom-3";
-    default: return "right-3 top-3";
-  }
-}
-
-export function DevLabel({ id, position = "top-right", className = "" }: DevLabelProps) {
   return (
-    <span className={[
-      "absolute rounded-md bg-slate-900/80 px-2 py-1 text-xs font-semibold text-white shadow",
-      cornerToClasses(position),
-      className,
-    ].join(" ")}>
+    <div
+      className={`absolute ${position} bg-gray-800 text-white text-xs px-2 py-1 rounded`}
+    >
       {id}
-    </span>
-  );
-}
-
-export function CardId({ id, position = "top-right", className = "" }: CardIdProps) {
-  return (
-    <span className={[
-      "absolute rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-semibold text-white shadow",
-      cornerToClasses(position),
-      className,
-    ].join(" ")}>
-      {id}
-    </span>
+    </div>
   );
 }
