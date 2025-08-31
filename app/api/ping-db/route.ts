@@ -1,6 +1,8 @@
-// app/api/health/route.ts
-import { NextResponse } from 'next/server';
+import { db } from "@/db";
+import { sql } from "drizzle-orm";
 
+export const runtime = "nodejs"; // ensure Node runtime
 export async function GET() {
-  return NextResponse.json({ ok: true, status: 'healthy' });
+  await db.execute(sql`select 1`);
+  return Response.json({ ok: true });
 }
