@@ -1,6 +1,6 @@
 // components/PageId.tsx
 "use client";
-import React from "react";
+import PageId from "../../components/PageId";
 
 type Corner = "top-right" | "top-left" | "bottom-right" | "bottom-left";
 
