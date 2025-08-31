@@ -1,8 +1,9 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { reports } from "@/db/schema";
+// swap alias to relative:
+import { db } from "../../../db";
+import { reports } from "../../../db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(request: Request) {
@@ -17,7 +18,6 @@ export async function POST(request: Request) {
     }
 
     await db.delete(reports).where(eq(reports.id, Number(id)));
-
     return NextResponse.json({ ok: true });
   } catch (e: any) {
     console.error("DELETE_ERROR:", e);
