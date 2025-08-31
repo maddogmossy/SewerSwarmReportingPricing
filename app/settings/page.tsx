@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import PageId from "../../components/PageId"; // <- go up TWO levels: app/settings → (..)->app → (..)->root → components
+import PageId from "../../components/ui/PageId";
 
 export default function SettingsPage() {
   return (
