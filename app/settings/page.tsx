@@ -1,15 +1,14 @@
 // app/settings/page.tsx
 "use client";
-
 import React from "react";
-import PageId from "../../components/ui/PageId";
+import DevLabel from "../../components/ui/DevLabel";
 
 export default function SettingsPage() {
   return (
-    <main className="relative min-h-screen p-6">
-      <h1 className="text-2xl font-bold">Settings</h1>
-      <p className="mt-4">This is the Settings page.</p>
-      <PageId id="Settings" />
+    <main className="relative max-w-4xl mx-auto px-4 py-10">
+      {/* Page label (P). Will use legacy if present, else red P. */}
+      <DevLabel kind="page" position="top-right" />
+      <h1 className="text-3xl font-bold">Settings</h1>
     </main>
   );
 }
