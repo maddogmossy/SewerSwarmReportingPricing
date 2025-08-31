@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PageId from "../../components/PageId";
+import PageId from "../../components/ui/PageId";
 
 export default function DomesticSector() {
   return (
