@@ -1,8 +1,9 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { reports } from "@/db/schema";
+// swap alias to relative:
+import { db } from "../../../db";
+import { reports } from "../../../db/schema";
 import { desc } from "drizzle-orm";
 
 export async function GET() {
