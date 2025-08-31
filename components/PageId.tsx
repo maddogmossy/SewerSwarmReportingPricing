@@ -1,6 +1,6 @@
 // components/PageId.tsx
 "use client";
-import PageId from "../../components/PageId";
+import React from "react";
 
 type Corner = "top-right" | "top-left" | "bottom-right" | "bottom-left";
 
@@ -19,9 +19,7 @@ export default function PageId({
   }[corner];
 
   return (
-    <div
-      className={`absolute ${position} bg-gray-800 text-white text-xs px-2 py-1 rounded`}
-    >
+    <div className={`absolute ${position} bg-gray-800 text-white text-xs px-2 py-1 rounded`}>
       {id}
     </div>
   );
