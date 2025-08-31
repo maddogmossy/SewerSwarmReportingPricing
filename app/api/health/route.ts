@@ -1,7 +1,6 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-// alias didn't resolve on Vercel, so use relative path:
 import { pingDb } from "../../../db/client";
 
 export async function GET() {
@@ -10,9 +9,6 @@ export async function GET() {
     return NextResponse.json({ ok }, { status: ok ? 200 : 500 });
   } catch (e: any) {
     console.error("HEALTH_ERROR:", e?.message || e);
-    return NextResponse.json(
-      { ok: false, error: e?.message || "Unknown error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: e?.message || "Unknown error" }, { status: 500 });
   }
 }
