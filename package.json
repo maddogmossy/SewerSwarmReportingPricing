@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "@types/sql.js": "^1.4.5"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
