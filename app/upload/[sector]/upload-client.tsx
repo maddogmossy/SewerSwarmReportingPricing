@@ -114,8 +114,21 @@ export default function UploadClient() {
     e.currentTarget.value = '';
   };
 
-  const validation = React.useMemo(() => validateSelection(files), [files]);
-  React.useEffect(() => setError(validation.ok ? null : validation.reason), [validation]);
+// If you don't already have this type in the file, add it near the top:
+type Check =
+  | { ok: true; kind: "pdf" | "db3" }
+  | { ok: false; reason: string };
+
+const validation: Check = React.useMemo(() => validateSelection(files), [files]);
+
+React.useEffect(() => {
+  if (validation.ok) {
+    setError(null);
+  } else {
+    setError(validation.reason);
+  }
+}, [validation]);
+
 
   async function doUpload() {
     if (!validation.ok) return;
