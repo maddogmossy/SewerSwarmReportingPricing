@@ -1,7 +1,8 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { pingDb } from "@/db/client";
+// alias didn't resolve on Vercel, so use relative path:
+import { pingDb } from "../../../db/client";
 
 export async function GET() {
   try {
