@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    // Tells TypeScript where the root of your project is
-    "baseUrl": ".",
-    // Path alias: allows you to use `@/` as shortcut for the root
+    "baseUrl": ".",                          // REQUIRED
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"]                         // ✅ Enables @/db etc.
     },
+    ...
+  }
+}
+
 
     // Basic settings for Next.js
     "target": "es5",
