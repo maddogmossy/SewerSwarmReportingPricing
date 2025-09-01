@@ -1,57 +1,44 @@
 import { put } from "@vercel/blob";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { reports } from "@/db/schema";
 
-export const runtime = "nodejs"; // required for formdata + blob
+export const runtime = "nodejs"; // using Vercel Blob from server
 
-export async function POST(req: Request) {
-  const form = await req.formData();
+export async function POST(req: NextRequest) {
+  try {
+    const form = await req.formData();
+    const file = form.get("file") as File | null;
+    if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
 
-  // metadata from the form (strings only)
-  const sectorCode   = String(form.get("sectorCode") || "S1");
-  const sectorTitle  = String(form.get("sectorTitle") || "Utilities");
-  const clientName   = String(form.get("clientName") || "Unknown Client");
-  const projectFolder= String(form.get("projectFolder") || "Unsorted");
-  const projectNo    = String(form.get("projectNo") || "");
-  const address      = String(form.get("address") || "");
-  const postcode     = String(form.get("postcode") || "");
+    const sectorCode = String(form.get("sectorCode") || "S1");
+    const sectorTitle = String(form.get("sectorTitle") || "Utilities");
+    const clientName = String(form.get("clientName") || "Unknown Client");
+    const projectFolder = String(form.get("projectFolder") || "Unknown Project");
 
-  // allow multiple files
-  const files = form.getAll("files") as File[];
-  if (!files.length) return new Response("No files", { status: 400 });
-
-  const inserted: any[] = [];
-
-  for (const file of files) {
-    // create a neat path: client/project/filename
-    const safeClient  = clientName.replace(/[^\w\-]+/g, "_");
-    const safeProject = projectFolder.replace(/[^\w\-]+/g, "_");
-
-    const pathname = `${safeClient}/${safeProject}/${file.name}`;
-    const blob = await put(pathname, file, {
-      access: "public", // or "private" if you prefer
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-      contentType: file.type || "application/octet-stream",
-      addRandomSuffix: false
+    const blob = await put(`uploads/${Date.now()}-${file.name}`, file, {
+      access: "public",
+      token: process.env.BLOB_READ_WRITE_TOKEN
     });
 
-    const row = await db.insert(reports).values({
-      sectorCode,
-      sectorTitle,
-      clientName,
-      projectFolder,
-      projectNo,
-      address,
-      postcode,
-      pathname: blob.pathname,
-      url: blob.url,
-      filename: file.name,
-      contentType: blob.contentType || file.type || "application/octet-stream",
-      size: file.size,
-    }).returning();
+    const [row] = await db
+      .insert(reports)
+      .values({
+        sectorCode,
+        sectorTitle,
+        clientName,
+        projectFolder,
+        pathname: blob.pathname,
+        url: blob.url,
+        filename: file.name,
+        contentType: file.type || "application/octet-stream",
+        size: file.size
+      })
+      .returning();
 
-    inserted.push(row[0]);
+    return NextResponse.json({ ok: true, report: row });
+  } catch (err: any) {
+    console.error(err);
+    return NextResponse.json({ error: err.message ?? "Upload failed" }, { status: 500 });
   }
-
-  return Response.json({ ok: true, count: inserted.length, rows: inserted });
 }
