@@ -1,5 +1,5 @@
 // app/api/upload/route.ts
-import { NextResponse } from "next/server";
+import { db } from "../../db"; // ✅ relative fallback
 
 function looksLikeDbPair(files: File[]) {
   const names = files.map(f => f.name.toLowerCase());
