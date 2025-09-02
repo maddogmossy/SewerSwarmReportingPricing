@@ -1,3 +1,5 @@
+'use client'
+
 // app/p5/page.tsx
 // Sewer Swarm – Pricing Configuration (P5)
 // Tailwind CSS required. App Router compatible. 
