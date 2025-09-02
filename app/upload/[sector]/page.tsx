@@ -1,6 +1,11 @@
-// app/upload/[sector]/page.tsx
-import UploadClient from "./upload-client";
+import UploadClient from './upload-client';
 
-export default function SectorUploadPage() {
-  return <UploadClient />;
+export const metadata = { title: 'Upload Report' };
+
+export default function Page() {
+  return (
+    <main className="mx-auto max-w-4xl p-6">
+      <UploadClient />
+    </main>
+  );
 }
