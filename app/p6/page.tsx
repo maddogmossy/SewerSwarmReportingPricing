@@ -1,15 +1,16 @@
 'use client'
 
 // app/p6/page.tsx — Rate Configuration (P6)
-// - Suspense wrapper for useSearchParams (build-safe)
-// - P6-C4: F1/F2/F3 dev labels + 2/3-field templates
+// - Suspense-safe (useSearchParams wrapped)
+// - P6-C4: dev IDs F1/F2/F3 top-right per UI, color-coded blocks
+// - "New Block" is a dropdown (Rate / Assumed Qty Per Shift)
 
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Camera, Building, Wrench, Home, ShieldCheck, Truck,
-  Plus, Trash2, Save, Copy
+  Plus, Trash2, Copy
 } from 'lucide-react';
 
 // ---------- tokens ----------
@@ -36,21 +37,22 @@ type PriceField = { id:string; label:string; value:number | '' };
 type PriceBlock = { id:string; name:string; formula?:string; fields: PriceField[] };
 
 function uid(prefix:string){ return `${prefix}-${Math.random().toString(36).slice(2,8)}`; }
-
-// dev pill for F1/F2/F3
-const devPill = (label: string) => (
-  <span className="ml-2 inline-flex items-center rounded-md bg-slate-900/90 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-    {label}
-  </span>
-);
-
-// field set factory (2 or 3 fields)
 function makeFields(count:number): PriceField[] {
   return Array.from({ length: count }).map((_, i) => ({
     id: uid('f'),
     label: i === 0 ? 'Day Rate' : i === 1 ? 'Qty Per Shift' : 'Value',
     value: '',
   }));
+}
+
+// Color styling for block UIs: F1 blue, F2 green, F3 purple, others neutral
+function blockStyles(index:number){
+  switch(index){
+    case 0: return { bg:'bg-blue-50',    border:'border-blue-200'    };
+    case 1: return { bg:'bg-emerald-50', border:'border-emerald-200' };
+    case 2: return { bg:'bg-violet-50',  border:'border-violet-200'  };
+    default:return { bg:'bg-white',      border:'border-slate-200'   };
+  }
 }
 
 // ========== Inner (wrapped in Suspense) ==========
@@ -76,13 +78,14 @@ function P6Inner() {
   const [sizes, setSizes] = React.useState<number[]>(DEFAULT_SIZES);
   const [activeSize, setActiveSize] = React.useState<number>(DEFAULT_SIZES[0]);
 
-  // C4 template (2 or 3 fields) + default blocks
-  const defaultTemplate: 2 | 3 = 3;
-  const [templateFields, setTemplateFields] = React.useState<2|3>(defaultTemplate);
+  // C4 template (2 or 3 fields), block type for add, and default blocks
+  const [templateFields, setTemplateFields] = React.useState<2|3>(3);
+  const [newBlockType, setNewBlockType] =
+    React.useState<'Rate' | 'Assumed Qty Per Shift'>('Rate');
 
   const [blocks, setBlocks] = React.useState<PriceBlock[]>([
-    { id: uid('blk'), name: 'Day Rate',     fields: makeFields(defaultTemplate) },
-    { id: uid('blk'), name: 'No Per Shift', fields: makeFields(defaultTemplate) },
+    { id: uid('blk'), name: 'Rate',                  fields: makeFields(3) },
+    { id: uid('blk'), name: 'Assumed Qty Per Shift', fields: makeFields(3) },
   ]);
 
   function applyTemplate(n: 2 | 3) {
@@ -90,13 +93,15 @@ function P6Inner() {
     setBlocks(prev => prev.map(b => ({ ...b, fields: makeFields(n) })));
   }
   function addBlock() {
-    setBlocks(prev => [...prev, { id: uid('blk'), name: 'New Block', fields: makeFields(templateFields), formula: '' }]);
+    setBlocks(prev => [...prev, { id: uid('blk'), name: newBlockType, fields: makeFields(templateFields), formula: '' }]);
   }
   function removeBlock(id: string) {
     setBlocks(prev => prev.filter(b => b.id !== id));
   }
   function addField(bid: string) {
-    setBlocks(prev => prev.map(b => b.id === bid ? { ...b, fields: [...b.fields, { id: uid('f'), label: 'Value', value: '' }] } : b));
+    setBlocks(prev => prev.map(b =>
+      b.id === bid ? { ...b, fields: [...b.fields, { id: uid('f'), label: 'Value', value: '' }] } : b
+    ));
   }
 
   // C5 vehicle rows
@@ -122,9 +127,6 @@ function P6Inner() {
             <Link href="/p5" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm">
               Back to Pricing
             </Link>
-            <button className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-sm text-white shadow-sm">
-              <Save className="h-4 w-4" /> Save
-            </button>
           </div>
         </div>
 
@@ -170,9 +172,6 @@ function P6Inner() {
         <section className={`${card} p-5 mb-6`}>
           <span className={tag}>P6-C2</span>
           <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-slate-600">Colour Picker Section</h2>
-          <p className="mb-3 text-sm text-slate-600">
-            Pick a diary-style colour. The colour will be saved to the current category (e.g. {catId}) and sector ({sectorCode}).
-          </p>
           <div className="grid grid-cols-10 gap-3 sm:grid-cols-12">
             {['#93c5fd','#86efac','#fde68a','#fca5a5','#d8b4fe','#f9a8d4','#7dd3fc','#e5e7eb','#f4bfa1','#a3a3a3',
               '#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#ec4899','#06b6d4','#64748b','#b45309','#a8a29e'
@@ -214,7 +213,7 @@ function P6Inner() {
           </div>
         </section>
 
-        {/* P6-C4: Section Calculator (with templates + F1/F2/F3) */}
+        {/* P6-C4: Section Calculator (F1/F2/F3 top-right + dropdown new block) */}
         <section className={`${card} p-5 mb-6`}>
           <span className={tag}>P6-C4</span>
           <div className="mb-3 flex items-center justify-between">
@@ -231,6 +230,16 @@ function P6Inner() {
                 <option value={2}>2 fields</option>
                 <option value={3}>3 fields</option>
               </select>
+
+              <label className="ml-3 text-xs text-slate-600">New Block</label>
+              <select
+                value={newBlockType}
+                onChange={(e)=>setNewBlockType(e.target.value as any)}
+                className="rounded-md border border-slate-200 px-2 py-1 text-xs"
+              >
+                <option>Rate</option>
+                <option>Assumed Qty Per Shift</option>
+              </select>
               <button
                 onClick={addBlock}
                 className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm shadow-sm hover:bg-slate-50"
@@ -241,56 +250,61 @@ function P6Inner() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {blocks.map((b) => (
-              <div key={b.id} className="rounded-2xl border border-slate-200 bg-white p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <input
-                    className="w-full max-w-[240px] rounded-md border border-slate-200 px-2 py-1 text-sm"
-                    defaultValue={b.name}
-                    onChange={(e) => { b.name = e.target.value; }}
-                  />
-                  <button
-                    onClick={() => removeBlock(b.id)}
-                    className="ml-2 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50"
-                  >
-                    <Trash2 className="h-3 w-3" /> Remove
-                  </button>
-                </div>
+            {blocks.map((b, idx) => {
+              const st = blockStyles(idx);
+              return (
+                <div key={b.id} className={`relative rounded-2xl border ${st.border} ${st.bg} p-4`}>
+                  {/* dev id top-right */}
+                  <span className="absolute right-3 top-3 rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-white">
+                    F{idx + 1}
+                  </span>
 
-                <div className="space-y-2">
-                  {b.fields.map((f, idx) => (
-                    <div key={f.id} className="grid grid-cols-2 items-center gap-2">
-                      <label className="text-sm text-slate-700">
-                        {f.label}
-                        {devPill(`F${idx + 1}`)}
-                      </label>
-                      <input
-                        type="number"
-                        placeholder="Enter value"
-                        className="rounded-md border border-slate-200 px-2 py-1 text-sm"
-                      />
-                    </div>
-                  ))}
-
-                  <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <input
+                      className="w-full max-w-[260px] rounded-md border border-slate-200 bg-white/60 px-2 py-1 text-sm"
+                      defaultValue={b.name}
+                      onChange={(e) => { b.name = e.target.value; }}
+                    />
                     <button
-                      onClick={() => addField(b.id)}
-                      className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50"
+                      onClick={() => removeBlock(b.id)}
+                      className="ml-2 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50"
                     >
-                      <Plus className="h-3 w-3" /> Add field
+                      <Trash2 className="h-3 w-3" /> Remove
                     </button>
                   </div>
 
-                  <div className="mt-2 grid grid-cols-[auto,1fr] items-center gap-2">
-                    <span className="text-xs text-slate-600">Math</span>
-                    <input
-                      placeholder="e.g. field1*field2 + 15"
-                      className="rounded-md border border-slate-200 px-2 py-1 text-sm font-mono"
-                    />
+                  <div className="space-y-2">
+                    {b.fields.map((f) => (
+                      <div key={f.id} className="grid grid-cols-2 items-center gap-2">
+                        <label className="text-sm text-slate-700">{f.label}</label>
+                        <input
+                          type="number"
+                          placeholder="Enter value"
+                          className="rounded-md border border-slate-200 px-2 py-1 text-sm"
+                        />
+                      </div>
+                    ))}
+
+                    <div>
+                      <button
+                        onClick={() => addField(b.id)}
+                        className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50"
+                      >
+                        <Plus className="h-3 w-3" /> Add field
+                      </button>
+                    </div>
+
+                    <div className="mt-2 grid grid-cols-[auto,1fr] items-center gap-2">
+                      <span className="text-xs text-slate-600">Math</span>
+                      <input
+                        placeholder="e.g. field1*field2 + 15"
+                        className="rounded-md border border-slate-200 px-2 py-1 text-sm font-mono"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -311,7 +325,7 @@ function P6Inner() {
                 </div>
                 <div className="flex items-end">
                   <button
-                    onClick={addVehicle}
+                    onClick={() => setVehicleRows(v => [...v, { id: uid('veh'), weight: '', rate: '' }])}
                     className="inline-flex items-center gap-2 rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-sm hover:bg-emerald-100"
                   >
                     <Plus className="h-4 w-4" /> Add
@@ -319,19 +333,6 @@ function P6Inner() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* P6-C6: Save/Meta */}
-        <section className={`${card} p-5`}>
-          <span className={tag}>P6-C6</span>
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-slate-600">
-              Saving entries per your spec: C1, C3, C4, C5 each have their own DB rows. C3 stores <b>18 sizes per sector config</b>.
-            </div>
-            <button className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-sm text-white shadow-sm">
-              <Save className="h-4 w-4" /> Save All
-            </button>
           </div>
         </section>
       </div>
