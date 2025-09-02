@@ -1,7 +1,5 @@
 'use client'
 
-// app/p6/page.tsx — P6 complete (compact F1/F2/F3 and restored C1/C2/C3/C5)
-
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -40,7 +38,7 @@ type QtyRow   = { qty: string };
 type RangeRow = { lengthM: string; debrisPct: string };
 
 /* inner page */
-function P6Inner() {
+function P6Inner(): JSX.Element {
   const search = useSearchParams();
   const sectorParam = search.get('sector') || 'sector_utilities';
   const catId = search.get('catId') || 'A1';
@@ -51,7 +49,7 @@ function P6Inner() {
   })();
 
   /* C2 colour (persist later) */
-  const [colour, setColour] = React.useState('#3b82f6');
+  const [colour, setColour] = React.useState<string>('#3b82f6');
 
   /* C3 size */
   const [activeSize, setActiveSize] = React.useState<number>(DEFAULT_SIZES[0]);
@@ -75,11 +73,13 @@ function P6Inner() {
   type VehicleRow = { weight:string; rate:string };
   const [vehicles, setVehicles] = React.useState<VehicleRow[]>([{ weight:'', rate:'' }]);
 
-  const addVehicle = (): void =>
+  const addVehicle = (): void => {
     setVehicles(v => [...v, { weight:'', rate:'' }]);
+  };
 
-  const removeVehicle = (i: number): void =>
+  const removeVehicle = (i: number): void => {
     setVehicles(v => v.filter((_, idx) => idx !== i));
+  };
 
   return (
     <div className="relative">
@@ -285,15 +285,17 @@ function P6Inner() {
                 {devId('F3')}
                 <div className="mb-2 flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-slate-800">Range Configuration</h3>
-                 
+                  <span className="rounded-md bg-white/70 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
                     {activeSize}mm
                   </span>
                 </div>
-                className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
 
                 <div className="space-y-2">
                   {rangeRows.map((row, i) => (
-                    <div key={`rg-${i}`} className="grid grid-cols-[minmax(0,1fr),minmax(0,1fr),auto] items-center gap-2">
+                    <div
+                      key={`rg-${i}`}
+                      className="grid grid-cols-[minmax(0,1fr),minmax(0,1fr),auto] items-center gap-2"
+                    >
                       <input
                         value={row.lengthM}
                         onChange={(e) => {
@@ -302,7 +304,7 @@ function P6Inner() {
                         }}
                         type="number"
                         placeholder="Length mtrs"
-                        className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
                       />
                       <input
                         value={row.debrisPct}
@@ -316,27 +318,20 @@ function P6Inner() {
                       />
                       {i === 0 ? (
                         <button
-                          <button
-  onClick={addRangeRow}
-  className="shrink-0 rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white hover:bg-violet-700"
-  title="Add range row (also adds a qty row)"
->
-  +
-</button>
-
+                          onClick={addRangeRow}
+                          className="shrink-0 rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white hover:bg-violet-700"
+                          title="Add range row (also adds a qty row)"
                         >
                           +
                         </button>
                       ) : (
                         <button
-                      <button
-  onClick={() => removePairRow(i)}
-  className="shrink-0 rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-  title="Delete row"
->
-  <Trash2 className="h-4 w-4" />
-</button>
-
+                          onClick={() => removePairRow(i)}
+                          className="shrink-0 rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+                          title="Delete row"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       )}
                     </div>
                   ))}
@@ -385,7 +380,7 @@ function P6Inner() {
 }
 
 /* suspense wrapper */
-export default function P6RateConfiguration() {
+export default function P6RateConfiguration(): JSX.Element {
   return (
     <Suspense fallback={<div className="p-6 text-sm text-slate-600">Loading…</div>}>
       <P6Inner />
