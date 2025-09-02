@@ -294,14 +294,13 @@ function P6Inner(): JSX.Element {
                         className="min-w-0 h-8 rounded-md border border-slate-200 bg-white px-2 text-sm"
                       />
                       {i === 0 ? (
-                       <button
-  onClick={addRangeRow}
-  className="h-8 w-8 shrink-0 grid place-items-center rounded-md border border-violet-300 bg-white text-violet-600 hover:bg-violet-600 hover:text-white"
-  title="Add range row"
-  aria-label="Add range row"
->
-  <Plus className="h-4 w-4" />
-</button>
+                        <button
+                          onClick={addRangeRow}
+                          className="h-8 w-8 shrink-0 grid place-items-center rounded-md border border-violet-300 bg-white text-violet-600 hover:bg-violet-600 hover:text-white"
+                          title="Add range row"
+                          aria-label="Add range row"
+                        >
+                          <Plus className="h-4 w-4" />
                         </button>
                       ) : (
                         <button
@@ -322,10 +321,9 @@ function P6Inner(): JSX.Element {
 
           {/* C5: next to C4 */}
           <section className={`${card} p-5`}>
-  <span className={tag}>P6-C5</span>
-  {devId('F4')}
-  <h2 className="mb-3 text-sm font-medium text-slate-600">Vehicle Travel Rates</h2>
-
+            <span className={tag}>P6-C5</span>
+            {devId('F4')}
+            <h2 className="mb-3 text-sm font-medium text-slate-600">Vehicle Travel Rates</h2>
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
               {vehicles.map((row, i) => (
                 <div key={`veh-${i}`} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
