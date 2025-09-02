@@ -142,7 +142,7 @@ export default function HomePage() {
           />
           {/* Pricing Settings — route not ready; send to home for now */}
           <RowTile
-            href="/"
+            href="/p5"
             title="Pricing Settings"
             subtitle="Customize repair cost estimates for each sector based on your market rates"
             badge="C4"
