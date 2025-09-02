@@ -1,17 +1,15 @@
 'use client'
 
-// app/p6/page.tsx — Rate Configuration (P6)
-// - Suspense-safe (useSearchParams wrapped)
-// - P6-C4: dev IDs F1/F2/F3 top-right per UI, color-coded blocks
-// - "New Block" is a dropdown (Rate / Assumed Qty Per Shift)
+// app/p6/page.tsx — P6 full rewrite
+// - Per-block templates (F1 Day Rate, F2 Qty per shift, F3 Range Config)
+// - Dev IDs F1/F2/F3 shown top-right per block, colour-coded (blue/green/purple)
+// - Each block has its own template dropdown; rows can be added/removed where relevant
+// - P6-C5 placed next to P6-C4 and supports add/remove rows
 
 import React, { Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
-import {
-  Camera, Building, Wrench, Home, ShieldCheck, Truck,
-  Plus, Trash2, Copy
-} from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { Camera, Building, Wrench, Home, ShieldCheck, Truck, Plus, Trash2 } from 'lucide-react';
 
 // ---------- tokens ----------
 const shell = 'mx-auto max-w-7xl px-6 py-8';
@@ -33,33 +31,52 @@ const SECTOR_ORDER = ['SA','SB','SC','SD','SE','SF'] as const;
 // ---------- helpers ----------
 const DEFAULT_SIZES = [100,150,225,300,375,450,525,600,675,750,900,1050,1200,1350,1500,1800,2100,2400];
 
-type PriceField = { id:string; label:string; value:number | '' };
-type PriceBlock = { id:string; name:string; formula?:string; fields: PriceField[] };
-
 function uid(prefix:string){ return `${prefix}-${Math.random().toString(36).slice(2,8)}`; }
-function makeFields(count:number): PriceField[] {
-  return Array.from({ length: count }).map((_, i) => ({
-    id: uid('f'),
-    label: i === 0 ? 'Day Rate' : i === 1 ? 'Qty Per Shift' : 'Value',
-    value: '',
-  }));
-}
 
-// Color styling for block UIs: F1 blue, F2 green, F3 purple, others neutral
-function blockStyles(index:number){
-  switch(index){
-    case 0: return { bg:'bg-blue-50',    border:'border-blue-200'    };
-    case 1: return { bg:'bg-emerald-50', border:'border-emerald-200' };
-    case 2: return { bg:'bg-violet-50',  border:'border-violet-200'  };
-    default:return { bg:'bg-white',      border:'border-slate-200'   };
+// Dev ID badge for F1/F2/F3..
+const devId = (id: string) => (
+  <span className="absolute right-2 top-2 rounded-md bg-slate-900/90 px-1.5 py-0.5 text-[10px] font-semibold text-white">{id}</span>
+);
+
+// ---------- Types for C4 templates ----------
+// A block can be one of three templates
+export type TemplateType = 'dayRate' | 'qty' | 'range';
+
+type DayRateRow = { value: string }; // £ value as text for now
+
+type QtyRow   = { qty: string }; // number per shift
+
+type RangeRow = { maxQty: string; debrisPct: string };
+
+type BlockRows = DayRateRow[] | QtyRow[] | RangeRow[];
+
+type PriceBlock = {
+  id: string;
+  template: TemplateType;
+  // rows structure depends on template
+  rows: BlockRows;
+};
+
+// Default rows per template
+function defaultRows(t: TemplateType): BlockRows {
+  switch(t){
+    case 'dayRate': return [{ value: '' }];
+    case 'qty':     return [{ qty: '' }];
+    case 'range':   return [{ maxQty: '', debrisPct: '' }];
   }
 }
 
-// ========== Inner (wrapped in Suspense) ==========
-function P6Inner() {
-  const search = useSearchParams();
-  const router = useRouter();
+// Background colour by dev id order
+function blockBg(idx:number){
+  if(idx===0) return 'bg-blue-50 border-blue-200';     // F1
+  if(idx===1) return 'bg-emerald-50 border-emerald-200'; // F2
+  if(idx===2) return 'bg-violet-50 border-violet-200';   // F3
+  return 'bg-white';
+}
 
+// ========== Inner (wrapped in Suspense) ==========
+function P6Inner(){
+  const search = useSearchParams();
   const sectorParam = (search.get('sector') || 'sector_utilities');
   const catId = (search.get('catId') || 'A1');
 
@@ -71,279 +88,185 @@ function P6Inner() {
   })();
   const palette = PALETTE[sectorCode];
 
-  // C2 colour
+  // C2 colour (stored for future persistence)
   const [colour, setColour] = React.useState<string>('#3b82f6');
 
   // C3 sizes
-  const [sizes, setSizes] = React.useState<number[]>(DEFAULT_SIZES);
   const [activeSize, setActiveSize] = React.useState<number>(DEFAULT_SIZES[0]);
 
-  // C4 template (2 or 3 fields), block type for add, and default blocks
-  const [templateFields, setTemplateFields] = React.useState<2|3>(3);
-  const [newBlockType, setNewBlockType] =
-    React.useState<'Rate' | 'Assumed Qty Per Shift'>('Rate');
-
+  // C4 blocks — start with the three you described
   const [blocks, setBlocks] = React.useState<PriceBlock[]>([
-    { id: uid('blk'), name: 'Rate',                  fields: makeFields(3) },
-    { id: uid('blk'), name: 'Assumed Qty Per Shift', fields: makeFields(3) },
+    { id: uid('blk'), template: 'dayRate', rows: defaultRows('dayRate') },      // F1
+    { id: uid('blk'), template: 'qty',     rows: defaultRows('qty') },          // F2
+    { id: uid('blk'), template: 'range',   rows: defaultRows('range') },        // F3
   ]);
 
-  function applyTemplate(n: 2 | 3) {
-    setTemplateFields(n);
-    setBlocks(prev => prev.map(b => ({ ...b, fields: makeFields(n) })));
+  // Add/remove row for a block (template-aware)
+  function addRow(bid:string){
+    setBlocks(prev => prev.map(b => {
+      if(b.id !== bid) return b;
+      const t = b.template;
+      if(t==='dayRate')  return { ...b, rows: [...(b.rows as DayRateRow[]), { value:'' }] };
+      if(t==='qty')      return { ...b, rows: [...(b.rows as QtyRow[]), { qty:'' }] };
+      /* range */        return { ...b, rows: [...(b.rows as RangeRow[]), { maxQty:'', debrisPct:'' }] };
+    }));
   }
-  function addBlock() {
-    setBlocks(prev => [...prev, { id: uid('blk'), name: newBlockType, fields: makeFields(templateFields), formula: '' }]);
-  }
-  function removeBlock(id: string) {
-    setBlocks(prev => prev.filter(b => b.id !== id));
-  }
-  function addField(bid: string) {
-    setBlocks(prev => prev.map(b =>
-      b.id === bid ? { ...b, fields: [...b.fields, { id: uid('f'), label: 'Value', value: '' }] } : b
-    ));
+  function removeRow(bid:string, idx:number){
+    setBlocks(prev => prev.map(b => {
+      if(b.id !== bid) return b;
+      const rows = [...(b.rows as any[])];
+      rows.splice(idx,1);
+      return { ...b, rows };
+    }));
   }
 
-  // C5 vehicle rows
-  const [vehicleRows, setVehicleRows] = React.useState<{id:string; weight:string; rate:string}[]>([
-    { id: uid('veh'), weight: '', rate: '' },
+  // Change a block's template and reset rows to default of that template
+  function changeTemplate(bid:string, t:TemplateType){
+    setBlocks(prev => prev.map(b => b.id===bid ? { ...b, template:t, rows: defaultRows(t) } : b));
+  }
+
+  // Add/Remove entire block (new block defaults to dayRate)
+  function addBlock(){
+    setBlocks(prev => [...prev, { id: uid('blk'), template:'dayRate', rows: defaultRows('dayRate') }]);
+  }
+  function removeBlock(bid:string){ setBlocks(prev => prev.filter(b => b.id!==bid)); }
+
+  // C5 Vehicle Travel — rows with add/remove
+  type VehicleRow = { weight:string; rate:string };
+  const [vehicleRows, setVehicleRows] = React.useState<VehicleRow[]>([
+    { weight:'', rate:'' }
   ]);
-  const addVehicle = () => setVehicleRows(v => [...v, { id: uid('veh'), weight: '', rate: '' }]);
+  const addVehicle = () => setVehicleRows(v => [...v, { weight:'', rate:'' }]);
+  const removeVehicle = (i:number) => setVehicleRows(v => v.filter((_,idx)=>idx!==i));
 
-  // ---------- UI ----------
   return (
-    <div className="relative">
-      <span className="fixed left-3 top-3 z-50 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white shadow-md">P6</span>
+    <div className='relative'>
+      <span className='fixed left-3 top-3 z-50 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white shadow-md'>P6</span>
 
       <div className={shell}>
-        <div className="mb-6 flex items-center justify-between">
+        <div className='mb-6 flex items-center justify-between'>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Rate Configuration</h1>
+            <h1 className='text-2xl font-semibold tracking-tight'>Rate Configuration</h1>
             <p className={`mt-1 ${muted}`}>
-              Sector/category • <span className="font-mono">{sectorParam}</span> • <span className="font-mono">{catId}</span>
+              Sector/category • <span className='font-mono'>{sectorParam}</span> • <span className='font-mono'>{catId}</span>
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Link href="/p5" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm">
-              Back to Pricing
-            </Link>
+          <div className='flex items-center gap-2'>
+            <Link href='/p5' className='rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm'>Back to Pricing</Link>
           </div>
         </div>
 
-        {/* P6-C1: Sector Configuration */}
-        <section className={`${card} p-5 mb-6`}>
-          <span className={tag}>P6-C1</span>
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-slate-600">Sector Configuration</h2>
-          <p className="mb-3 text-sm text-slate-600">Copy prices between sectors. Each sector has independent entries.</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {SECTOR_ORDER.map(code => {
-              const pal = PALETTE[code];
-              const active = code === sectorCode;
-              return (
-                <Link
-                  key={code}
-                  href={{ pathname: '/p6', query: { sector: sectorParam, catId: code.replace('S', '') + '1' } }}
-                  className={`rounded-2xl border p-4 text-left transition-all ${
-                    active ? `${pal.bg} ${pal.ring} border-transparent` : 'border-slate-200 bg-white hover:bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`grid h-10 w-10 place-items-center rounded-xl ${pal.bg} ${pal.text}`}>{pal.icon}</div>
-                    <div>
-                      <div className={`text-sm font-semibold ${pal.text}`}>{pal.name}</div>
-                      <div className={`mt-0.5 text-xs ${muted}`}>{code}</div>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2 text-xs">
-                    <button className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 hover:bg-slate-50">
-                      <Copy className="h-3 w-3" /> Copy in
-                    </button>
-                    <button className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 hover:bg-slate-50">
-                      <Copy className="h-3 w-3" /> Copy out
-                    </button>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* P6-C2: Colour Picker Section */}
-        <section className={`${card} p-5 mb-6`}>
-          <span className={tag}>P6-C2</span>
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-slate-600">Colour Picker Section</h2>
-          <div className="grid grid-cols-10 gap-3 sm:grid-cols-12">
-            {['#93c5fd','#86efac','#fde68a','#fca5a5','#d8b4fe','#f9a8d4','#7dd3fc','#e5e7eb','#f4bfa1','#a3a3a3',
-              '#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#ec4899','#06b6d4','#64748b','#b45309','#a8a29e'
-            ].map(hex => (
-              <button key={hex} title={hex} onClick={() => setColour(hex)}
-                className="h-8 rounded-md border border-slate-200 shadow-sm" style={{ backgroundColor: hex }} />
-            ))}
-          </div>
-          <div className="mt-3 text-sm">Selected: <span className="font-mono">{colour}</span></div>
-        </section>
-
-        {/* P6-C3: Pipe Sizes (MSCC5) */}
-        <section className={`${card} p-5 mb-6`}>
-          <span className={tag}>P6-C3</span>
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-slate-600">Pipe Sizes (MSCC5)</h2>
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-              {DEFAULT_SIZES.map(sz => (
-                <button key={sz} onClick={() => setActiveSize(sz)}
-                  className={`rounded-xl border px-3 py-2 text-sm ${
-                    activeSize === sz ? 'border-amber-400 bg-white ring-2 ring-amber-200' : 'border-slate-200 bg-white hover:bg-slate-50'
-                  }`}>
-                  {sz}<span className="text-xs">mm</span>
-                </button>
-              ))}
-            </div>
-            <div className="mt-3">
-              <button
-                onClick={() => {
-                  const v = Number(prompt('Add size (mm):') || '');
-                  if (!Number.isFinite(v) || v <= 0) return;
-                  setSizes(s => Array.from(new Set([...s, v])).sort((a, b) => a - b));
-                }}
-                className="inline-flex items-center gap-2 rounded-md border border-amber-300 bg-white px-3 py-1.5 text-sm hover:bg-amber-100"
-              >
-                <Plus className="h-4 w-4" /> Add size
+        {/* Layout row: C4 (span 2) and C5 (span 1) */}
+        <div className='grid gap-6 lg:grid-cols-3'>
+          {/* P6-C4 */}
+          <section className={`${card} p-5 lg:col-span-2`}>
+            <span className={tag}>P6-C4</span>
+            <div className='mb-3 flex items-center justify-between'>
+              <h2 className='text-base font-semibold'>Section Calculator – <span className='font-mono'>{activeSize}mm</span></h2>
+              <button onClick={addBlock} className='inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm shadow-sm hover:bg-slate-50'>
+                <Plus className='h-4 w-4'/>Add UI
               </button>
             </div>
-          </div>
-        </section>
 
-        {/* P6-C4: Section Calculator (F1/F2/F3 top-right + dropdown new block) */}
-        <section className={`${card} p-5 mb-6`}>
-          <span className={tag}>P6-C4</span>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-base font-semibold">
-              Section Calculator – <span className="font-mono">{activeSize}mm</span>
-            </h2>
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-slate-600">Template</label>
-              <select
-                value={templateFields}
-                onChange={(e) => applyTemplate(Number(e.target.value) as 2 | 3)}
-                className="rounded-md border border-slate-200 px-2 py-1 text-xs"
-              >
-                <option value={2}>2 fields</option>
-                <option value={3}>3 fields</option>
-              </select>
-
-              <label className="ml-3 text-xs text-slate-600">New Block</label>
-              <select
-                value={newBlockType}
-                onChange={(e)=>setNewBlockType(e.target.value as any)}
-                className="rounded-md border border-slate-200 px-2 py-1 text-xs"
-              >
-                <option>Rate</option>
-                <option>Assumed Qty Per Shift</option>
-              </select>
-              <button
-                onClick={addBlock}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm shadow-sm hover:bg-slate-50"
-              >
-                <Plus className="h-4 w-4" /> Add UI
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {blocks.map((b, idx) => {
-              const st = blockStyles(idx);
-              return (
-                <div key={b.id} className={`relative rounded-2xl border ${st.border} ${st.bg} p-4`}>
-                  {/* dev id top-right */}
-                  <span className="absolute right-3 top-3 rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-white">
-                    F{idx + 1}
-                  </span>
-
-                  <div className="mb-2 flex items-center justify-between">
-                    <input
-                      className="w-full max-w-[260px] rounded-md border border-slate-200 bg-white/60 px-2 py-1 text-sm"
-                      defaultValue={b.name}
-                      onChange={(e) => { b.name = e.target.value; }}
-                    />
-                    <button
-                      onClick={() => removeBlock(b.id)}
-                      className="ml-2 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50"
-                    >
-                      <Trash2 className="h-3 w-3" /> Remove
-                    </button>
-                  </div>
-
-                  <div className="space-y-2">
-                    {b.fields.map((f) => (
-                      <div key={f.id} className="grid grid-cols-2 items-center gap-2">
-                        <label className="text-sm text-slate-700">{f.label}</label>
-                        <input
-                          type="number"
-                          placeholder="Enter value"
-                          className="rounded-md border border-slate-200 px-2 py-1 text-sm"
-                        />
-                      </div>
-                    ))}
-
-                    <div>
-                      <button
-                        onClick={() => addField(b.id)}
-                        className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50"
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'>
+              {blocks.map((b, idx)=> {
+                const bg = blockBg(idx);
+                return (
+                  <div key={b.id} className={`relative rounded-2xl border p-4 ${bg}`}>
+                    {devId(`F${idx+1}`)}
+                    <div className='mb-2 flex items-center justify-between'>
+                      <select
+                        value={b.template}
+                        onChange={e=>changeTemplate(b.id, e.target.value as TemplateType)}
+                        className='rounded-md border border-slate-200 bg-white/70 px-2 py-1 text-sm'
                       >
-                        <Plus className="h-3 w-3" /> Add field
+                        <option value='dayRate'>Day Rate</option>
+                        <option value='qty'>Number of lengths per shift</option>
+                        <option value='range'>Range Configuration</option>
+                      </select>
+                      <button onClick={()=>removeBlock(b.id)} className='ml-2 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50'>
+                        <Trash2 className='h-3 w-3'/>Remove
                       </button>
                     </div>
 
-                    <div className="mt-2 grid grid-cols-[auto,1fr] items-center gap-2">
-                      <span className="text-xs text-slate-600">Math</span>
-                      <input
-                        placeholder="e.g. field1*field2 + 15"
-                        className="rounded-md border border-slate-200 px-2 py-1 text-sm font-mono"
-                      />
-                    </div>
+                    {/* Template bodies */}
+                    {b.template==='dayRate' && (
+                      <div>
+                        <label className='text-sm text-slate-700'>Day Rate</label>
+                        <input type='number' inputMode='decimal' placeholder='£0.00' className='mt-1 w-full rounded-md border border-slate-200 px-2 py-1 text-sm' />
+                      </div>
+                    )}
+
+                    {b.template==='qty' && (
+                      <div className='space-y-2'>
+                        { (b.rows as QtyRow[]).map((row, i)=> (
+                          <div key={i} className='flex items-center gap-2'>
+                            <input type='number' placeholder='Enter quantity' className='flex-1 rounded-md border border-slate-200 px-2 py-1 text-sm' />
+                            <button onClick={()=>removeRow(b.id, i)} className='rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50'>
+                              <Trash2 className='h-4 w-4'/>
+                            </button>
+                          </div>
+                        ))}
+                        <button onClick={()=>addRow(b.id)} className='text-sm text-indigo-600'>+ Add quantity</button>
+                      </div>
+                    )}
+
+                    {b.template==='range' && (
+                      <div className='space-y-2'>
+                        { (b.rows as RangeRow[]).map((row, i)=> (
+                          <div key={i} className='grid grid-cols-[1fr,1fr,auto] items-center gap-2'>
+                            <input type='number' placeholder='Max Qty per Shift' className='rounded-md border border-slate-200 px-2 py-1 text-sm' />
+                            <input type='number' placeholder='Debris Range %' className='rounded-md border border-slate-200 px-2 py-1 text-sm' />
+                            <button onClick={()=>removeRow(b.id, i)} className='rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50'>
+                              <Trash2 className='h-4 w-4'/>
+                            </button>
+                          </div>
+                        ))}
+                        <button onClick={()=>addRow(b.id)} className='text-sm text-indigo-600'>+ Add range</button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* P6-C5 (next to C4) */}
+          <section className={`${card} p-5`}>
+            <span className={tag}>P6-C5</span>
+            <h2 className='mb-3 text-base font-semibold'>Vehicle Travel Rates</h2>
+            <div className='rounded-2xl border border-emerald-200 bg-emerald-50 p-4'>
+              {vehicleRows.map((row, i)=> (
+                <div key={i} className='mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3'>
+                  <div>
+                    <label className='text-xs text-slate-600'>Vehicle Weight</label>
+                    <input className='mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm' placeholder='3.5t' />
+                  </div>
+                  <div>
+                    <label className='text-xs text-slate-600'>Cost per Mile</label>
+                    <input className='mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm' placeholder='£45' />
+                  </div>
+                  <div className='flex items-end gap-2'>
+                    <button onClick={addVehicle} className='rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-sm hover:bg-emerald-100'>
+                      <Plus className='h-4 w-4'/>
+                    </button>
+                    <button onClick={()=>removeVehicle(i)} className='rounded-md border border-rose-200 bg-white px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50'>
+                      <Trash2 className='h-4 w-4'/>
+                    </button>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* P6-C5: Vehicle Travel Rates */}
-        <section className={`${card} p-5 mb-6`}>
-          <span className={tag}>P6-C5</span>
-          <h2 className="mb-3 text-base font-semibold">Vehicle Travel Rates</h2>
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-            {vehicleRows.map((row) => (
-              <div key={row.id} className="mb-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div>
-                  <label className="text-xs text-slate-600">Vehicle Weight</label>
-                  <input className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm" placeholder="3.5t" />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-600">Cost per Mile</label>
-                  <input className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm" placeholder="£45" />
-                </div>
-                <div className="flex items-end">
-                  <button
-                    onClick={() => setVehicleRows(v => [...v, { id: uid('veh'), weight: '', rate: '' }])}
-                    className="inline-flex items-center gap-2 rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-sm hover:bg-emerald-100"
-                  >
-                    <Plus className="h-4 w-4" /> Add
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );
 }
 
-// ========= page export with Suspense =========
-export default function P6RateConfiguration() {
+export default function P6RateConfiguration(){
   return (
-    <Suspense fallback={<div className="p-6 text-sm text-slate-600">Loading…</div>}>
+    <Suspense fallback={<div className='p-6 text-sm text-slate-600'>Loading…</div>}>
       <P6Inner />
     </Suspense>
   );
