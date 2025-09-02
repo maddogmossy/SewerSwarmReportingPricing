@@ -70,70 +70,17 @@ function P6Inner(): JSX.Element {
   }
 
   /* C5 vehicle */
- <section className={`${card} p-5`}>
-  <span className={tag}>P6-C5</span>
-  {/* Title style matches F1/F2/F3 */}
-  <h2 className="mb-3 text-sm font-medium text-slate-600">Vehicle Travel Rates</h2>
+  type VehicleRow = { weight:string; rate:string };
+  const VEHICLE_WEIGHTS = ['3.5t','5t','7.5t','10t','12t','14t','16t','18t','20t','26t','32t'];
+  const [vehicles, setVehicles] = React.useState<VehicleRow[]>([{ weight:'3.5t', rate:'' }]);
 
-  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-    {vehicles.map((row, i) => (
-      <div key={`veh-${i}`} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
-        {/* Vehicle weight (dropdown) */}
-        <div>
-          {i === 0 && <label className="text-xs text-slate-600">Vehicle Weight</label>}
-          <select
-            value={row.weight}
-            onChange={(e) =>
-              setVehicles(v => v.map((r, idx) => (idx === i ? { ...r, weight: e.target.value } : r)))
-            }
-            className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
-          >
-            {['3.5t','5t','7.5t','10t','12t','14t','16t','18t','20t','26t','32t'].map(w => (
-              <option key={w} value={w}>{w}</option>
-            ))}
-          </select>
-        </div>
+  const addVehicle = (): void => {
+    setVehicles(v => [...v, { weight:'3.5t', rate:'' }]);
+  };
 
-        {/* Cost per mile */}
-        <div>
-          {i === 0 && <label className="text-xs text-slate-600">Cost per Mile</label>}
-          <input
-            value={row.rate}
-            onChange={(e) =>
-              setVehicles(v => v.map((r, idx) => (idx === i ? { ...r, rate: e.target.value } : r)))
-            }
-            className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
-            placeholder="£45"
-          />
-        </div>
-
-        {/* Actions: show + only on first row, bin only on rows > 0 */}
-        <div className="flex items-end gap-2">
-          {i === 0 && (
-            <button
-              onClick={addVehicle}
-              className="h-8 w-8 grid place-items-center rounded-md border border-emerald-300 bg-white hover:bg-emerald-100"
-              title="Add vehicle row"
-              aria-label="Add vehicle row"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-          )}
-          {i > 0 && (
-            <button
-              onClick={() => removeVehicle(i)}
-              className="h-8 w-8 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
-              title="Delete vehicle row"
-              aria-label="Delete vehicle row"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
+  const removeVehicle = (i: number): void => {
+    setVehicles(v => v.filter((_, idx) => idx !== i));
+  };
 
   return (
     <div className="relative">
@@ -287,7 +234,7 @@ function P6Inner(): JSX.Element {
                   type="number"
                   inputMode="decimal"
                   placeholder="£0.00"
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
+                  className="mt-1 h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-sm"
                 />
               </div>
 
@@ -307,7 +254,7 @@ function P6Inner(): JSX.Element {
                         }}
                         type="number"
                         placeholder="Enter quantity"
-                        className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
+                        className="h-8 flex-1 rounded-md border border-slate-200 bg-white px-2 text-sm"
                       />
                       {/* No bin in green */}
                     </div>
@@ -344,27 +291,26 @@ function P6Inner(): JSX.Element {
                         }}
                         type="number"
                         placeholder="Debris %"
-                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
+                        className="min-w-0 h-8 rounded-md border border-slate-200 bg-white px-2 text-sm"
                       />
                       {i === 0 ? (
-  <button
-    onClick={addRangeRow}
-    className="h-8 w-8 shrink-0 grid place-items-center rounded-md bg-violet-600 text-white hover:bg-violet-700"
-    title="Add range row"
-    aria-label="Add range row"
-  >
-    <Plus className="h-4 w-4" />
-  </button>
-) : (
-  <button
-    onClick={() => removePairRow(i)}
-    className="h-8 w-8 shrink-0 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
-    title="Delete row"
-    aria-label="Delete row"
-  >
-    <Trash2 className="h-4 w-4" />
-  </button>
-)}
+                        <button
+                          onClick={addRangeRow}
+                          className="h-8 w-8 shrink-0 grid place-items-center rounded-md bg-violet-600 text-white hover:bg-violet-700"
+                          title="Add range row"
+                          aria-label="Add range row"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => removePairRow(i)}
+                          className="h-8 w-8 shrink-0 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
+                          title="Delete row"
+                          aria-label="Delete row"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       )}
                     </div>
                   ))}
@@ -378,62 +324,65 @@ function P6Inner(): JSX.Element {
             <span className={tag}>P6-C5</span>
             <h2 className="mb-3 text-sm font-medium text-slate-600">Vehicle Travel Rates</h2>
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                      </div>
+              {vehicles.map((row, i) => (
+                <div key={`veh-${i}`} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
+                  <div>
+                    {i === 0 && <label className="text-xs text-slate-600">Vehicle Weight</label>}
+                    <select
+                      value={row.weight}
+                      onChange={(e) =>
+                        setVehicles(v => v.map((r, idx) => (idx === i ? { ...r, weight: e.target.value } : r)))
+                      }
+                      className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
+                    >
+                      {VEHICLE_WEIGHTS.map(w => (
+                        <option key={w} value={w}>{w}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    {i === 0 && <label className="text-xs text-slate-600">Cost per Mile</label>}
+                    <input
+                      value={row.rate}
+                      onChange={(e) =>
+                        setVehicles(v => v.map((r, idx) => (idx === i ? { ...r, rate: e.target.value } : r)))
+                      }
+                      className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
+                      placeholder="£45"
+                    />
+                  </div>
+                  <div className="flex items-end gap-2">
+                    {i === 0 && (
+                      <button
+                        onClick={addVehicle}
+                        className="h-8 w-8 grid place-items-center rounded-md border border-emerald-300 bg-white hover:bg-emerald-100"
+                        title="Add vehicle row"
+                        aria-label="Add vehicle row"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    )}
+                    {i > 0 && (
+                      <button
+                        onClick={() => removeVehicle(i)}
+                        className="h-8 w-8 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
+                        title="Delete vehicle row"
+                        aria-label="Delete vehicle row"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         </div>
       </div>
     </div>
   );
 }
-{vehicles.map((row, i) => (
-  <div key={i} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
-    {/* Vehicle weight (dropdown) */}
-    <div>
-      {i === 0 && <label className="text-xs text-slate-600">Vehicle Weight</label>}
-      <select
-        className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
-        defaultValue={row.weight || '3.5t'}
-      >
-        {['3.5t','5t','7.5t','10t','12t','14t','16t','18t','20t','26t','32t'].map(w => (
-          <option key={w} value={w}>{w}</option>
-        ))}
-      </select>
-    </div>
 
-    {/* Cost per mile */}
-    <div>
-      {i === 0 && <label className="text-xs text-slate-600">Cost per Mile</label>}
-      <input
-        className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
-        placeholder="£45"
-      />
-    </div>
-
-    {/* Actions: no delete on row 1; no + on row >= 2 */}
-    <div className="flex items-end gap-2">
-      {i === 0 && (
-        <button
-          onClick={addVehicle}
-          className="h-8 w-8 grid place-items-center rounded-md border border-emerald-300 bg-white hover:bg-emerald-100"
-          title="Add vehicle row"
-          aria-label="Add vehicle row"
-        >
-          <Plus className="h-4 w-4" />
-        </button>
-      )}
-      {i > 0 && (
-        <button
-          onClick={() => removeVehicle(i)}
-          className="h-8 w-8 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
-          title="Delete vehicle row"
-          aria-label="Delete vehicle row"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      )}
-    </div>
-  </div>
-))}
 /* suspense wrapper */
 export default function P6RateConfiguration(): JSX.Element {
   return (
