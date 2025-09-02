@@ -213,113 +213,8 @@ function P6Inner(): JSX.Element {
         {/* ===================== C4 + C5 row ===================== */}
         <div className="grid gap-6 lg:grid-cols-3">
           {/* C4: compact 3-up grid with wider F3 */}
-<section className={`${card} p-5 lg:col-span-2`}>
-  <span className={tag}>P6-C4</span>
-
-  <div className="mb-3 flex items-center justify-between">
-    <h2 className="text-base font-semibold">
-      Section Calculator – <span className="font-mono">{activeSize}mm</span>
-    </h2>
-  </div>
-
-  {/* F1 ~0.9, F2 ~0.9, F3 ~1.2 so purple has more room */}
-  <div className="grid grid-cols-1 gap-4 lg:grid-cols-[.9fr_.9fr_1.2fr]">
-    {/* ===== F1: Day Rate (blue) ===== */}
-    <div className="relative rounded-2xl border border-blue-200 bg-blue-50 p-4">
-      {devId('F1')}
-      {/* title matches the muted label style */}
-      <div className="mb-2 text-sm font-medium text-slate-600">Day Rate</div>
-      <input
-        value={dayRate}
-        onChange={(e) => setDayRate(e.target.value)}
-        type="number"
-        inputMode="decimal"
-        placeholder="£0.00"
-        className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
-      />
-    </div>
-
-    {/* ===== F2: Number of Lengths Per Shift (green) ===== */}
-    <div className="relative rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-      {devId('F2')}
-      <div className="mb-2 text-sm font-medium text-slate-600">Number of Lengths Per Shift</div>
-
-      <div className="space-y-2">
-        {qtyRows.map((row, i) => (
-          <div key={`qty-${i}`} className="flex items-center gap-2">
-            <input
-              value={row.qty}
-              onChange={(e) => {
-                const v = e.target.value;
-                setQtyRows(prev => prev.map((r, idx) => (idx === i ? { ...r, qty: v } : r)));
-              }}
-              type="number"
-              placeholder="Enter quantity"
-              className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
-            />
-            {/* No bin in green (even for extra rows) */}
-          </div>
-        ))}
-      </div>
-    </div>
-
-    {/* ===== F3: Range Configuration (purple) ===== */}
-    <div className="relative rounded-2xl border border-violet-200 bg-violet-50 p-4">
-      {devId('F3')}
-      <div className="mb-2 text-sm font-medium text-slate-600">Range Configuration</div>
-
-      <div className="space-y-2">
-        {rangeRows.map((row, i) => (
-          <div
-            key={`rg-${i}`}
-            className="grid grid-cols-[minmax(0,1fr),minmax(0,1fr),auto] items-center gap-2"
-          >
-            <input
-              value={row.lengthM}
-              onChange={(e) => {
-                const v = e.target.value;
-                setRangeRows(prev => prev.map((r, idx) => (idx === i ? { ...r, lengthM: v } : r)));
-              }}
-              type="number"
-              placeholder="Length mtrs"
-              className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
-            />
-            <input
-              value={row.debrisPct}
-              onChange={(e) => {
-                const v = e.target.value;
-                setRangeRows(prev => prev.map((r, idx) => (idx === i ? { ...r, debrisPct: v } : r)));
-              }}
-              type="number"
-              placeholder="Debris %"
-              className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
-            />
-
-            {i === 0 ? (
-              /* Add range row (also adds paired qty row in green) */
-              <button
-                onClick={addRangeRow}
-                className="shrink-0 rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white hover:bg-violet-700"
-                title="Add range row"
-              >
-                +
-              </button>
-            ) : (
-              /* Red bin deletes this pair in BOTH F2 and F3 */
-              <button
-                onClick={() => removePairRow(i)}
-                className="shrink-0 rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                title="Delete row"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-</section>
+          <section className={`${card} p-5 lg:col-span-2`}>
+            <span className={tag}>P6-C4</span>
 
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-base font-semibold">
@@ -327,37 +222,25 @@ function P6Inner(): JSX.Element {
               </h2>
             </div>
 
-            {/* 3 columns on lg for compact F1/F2/F3 in one row */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[.9fr_.9fr_1.2fr]">
               {/* ===== F1: Day Rate (blue) ===== */}
               <div className="relative rounded-2xl border border-blue-200 bg-blue-50 p-4">
                 {devId('F1')}
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-slate-800">Day Rate</h3>
-                  <span className="rounded-md bg-white/70 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
-                    {activeSize}mm
-                  </span>
-                </div>
-                <label className="text-xs text-slate-600">Day Rate</label>
+                <div className="mb-2 text-sm font-medium text-slate-600">Day Rate</div>
                 <input
                   value={dayRate}
                   onChange={(e) => setDayRate(e.target.value)}
                   type="number"
                   inputMode="decimal"
                   placeholder="£0.00"
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
                 />
               </div>
 
               {/* ===== F2: Number of Lengths Per Shift (green) ===== */}
               <div className="relative rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                 {devId('F2')}
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-slate-800">Number of Lengths Per Shift</h3>
-                  <span className="rounded-md bg-white/70 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
-                    {activeSize}mm
-                  </span>
-                </div>
+                <div className="mb-2 text-sm font-medium text-slate-600">Number of Lengths Per Shift</div>
 
                 <div className="space-y-2">
                   {qtyRows.map((row, i) => (
@@ -370,17 +253,9 @@ function P6Inner(): JSX.Element {
                         }}
                         type="number"
                         placeholder="Enter quantity"
-                        className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                        className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
                       />
-                      {i > 0 && (
-                        <button
-                          onClick={() => removePairRow(i)}
-                          className="rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                          title="Delete row"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
+                      {/* No bin in green */}
                     </div>
                   ))}
                 </div>
@@ -389,12 +264,7 @@ function P6Inner(): JSX.Element {
               {/* ===== F3: Range Configuration (purple) ===== */}
               <div className="relative rounded-2xl border border-violet-200 bg-violet-50 p-4">
                 {devId('F3')}
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-slate-800">Range Configuration</h3>
-                  <span className="rounded-md bg-white/70 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
-                    {activeSize}mm
-                  </span>
-                </div>
+                <div className="mb-2 text-sm font-medium text-slate-600">Range Configuration</div>
 
                 <div className="space-y-2">
                   {rangeRows.map((row, i) => (
@@ -410,7 +280,7 @@ function P6Inner(): JSX.Element {
                         }}
                         type="number"
                         placeholder="Length mtrs"
-                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
                       />
                       <input
                         value={row.debrisPct}
@@ -420,13 +290,13 @@ function P6Inner(): JSX.Element {
                         }}
                         type="number"
                         placeholder="Debris %"
-                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
                       />
                       {i === 0 ? (
                         <button
                           onClick={addRangeRow}
                           className="shrink-0 rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white hover:bg-violet-700"
-                          title="Add range row (also adds a qty row)"
+                          title="Add range row"
                         >
                           +
                         </button>
