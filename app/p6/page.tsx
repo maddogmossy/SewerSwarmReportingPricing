@@ -280,7 +280,7 @@ function P6Inner(): JSX.Element {
                         }}
                         type="number"
                         placeholder="Length mtrs"
-                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
+                        className="min-w-0 h-8 rounded-md border border-slate-200 bg-white px-2 text-sm"
                       />
                       <input
                         value={row.debrisPct}
@@ -293,21 +293,24 @@ function P6Inner(): JSX.Element {
                         className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
                       />
                       {i === 0 ? (
-                        <button
-                          onClick={addRangeRow}
-                          className="shrink-0 rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white hover:bg-violet-700"
-                          title="Add range row"
-                        >
-                          +
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => removePairRow(i)}
-                          className="shrink-0 rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                          title="Delete row"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+  <button
+    onClick={addRangeRow}
+    className="h-8 w-8 shrink-0 grid place-items-center rounded-md bg-violet-600 text-white hover:bg-violet-700"
+    title="Add range row"
+    aria-label="Add range row"
+  >
+    <Plus className="h-4 w-4" />
+  </button>
+) : (
+  <button
+    onClick={() => removePairRow(i)}
+    className="h-8 w-8 shrink-0 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
+    title="Delete row"
+    aria-label="Delete row"
+  >
+    <Trash2 className="h-4 w-4" />
+  </button>
+)}
                       )}
                     </div>
                   ))}
@@ -319,42 +322,64 @@ function P6Inner(): JSX.Element {
           {/* C5: next to C4 */}
           <section className={`${card} p-5`}>
             <span className={tag}>P6-C5</span>
-            <h2 className="mb-3 text-base font-semibold">Vehicle Travel Rates</h2>
+            <h2 className="mb-3 text-sm font-medium text-slate-600">Vehicle Travel Rates</h2>
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              {vehicles.map((row, i) => (
-                <div key={i} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
-                  <div>
-                    <label className="text-xs text-slate-600">Vehicle Weight</label>
-                    <input className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm" placeholder="3.5t" />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-600">Cost per Mile</label>
-                    <input className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm" placeholder="£45" />
-                  </div>
-                  <div className="flex items-end gap-2">
-                    <button
-                      onClick={addVehicle}
-                      className="rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-sm hover:bg-emerald-100"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => removeVehicle(i)}
-                      className="rounded-md border border-rose-200 bg-white px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                      </div>
           </section>
         </div>
       </div>
     </div>
   );
 }
+{vehicles.map((row, i) => (
+  <div key={i} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
+    {/* Vehicle weight (dropdown) */}
+    <div>
+      {i === 0 && <label className="text-xs text-slate-600">Vehicle Weight</label>}
+      <select
+        className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
+        defaultValue={row.weight || '3.5t'}
+      >
+        {['3.5t','5t','7.5t','10t','12t','14t','16t','18t','20t','26t','32t'].map(w => (
+          <option key={w} value={w}>{w}</option>
+        ))}
+      </select>
+    </div>
 
+    {/* Cost per mile */}
+    <div>
+      {i === 0 && <label className="text-xs text-slate-600">Cost per Mile</label>}
+      <input
+        className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
+        placeholder="£45"
+      />
+    </div>
+
+    {/* Actions: no delete on row 1; no + on row >= 2 */}
+    <div className="flex items-end gap-2">
+      {i === 0 && (
+        <button
+          onClick={addVehicle}
+          className="h-8 w-8 grid place-items-center rounded-md border border-emerald-300 bg-white hover:bg-emerald-100"
+          title="Add vehicle row"
+          aria-label="Add vehicle row"
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+      )}
+      {i > 0 && (
+        <button
+          onClick={() => removeVehicle(i)}
+          className="h-8 w-8 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
+          title="Delete vehicle row"
+          aria-label="Delete vehicle row"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  </div>
+))}
 /* suspense wrapper */
 export default function P6RateConfiguration(): JSX.Element {
   return (
