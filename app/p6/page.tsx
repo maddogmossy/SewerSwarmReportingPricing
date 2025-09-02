@@ -316,20 +316,27 @@ function P6Inner() {
                       />
                       {i === 0 ? (
                         <button
-                          onClick={addRangeRow}
-                          className="rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white hover:bg-violet-700"
-                          title="Add range row (also adds a qty row)"
+                          <button
+  onClick={addRangeRow}
+  className="shrink-0 rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white hover:bg-violet-700"
+  title="Add range row (also adds a qty row)"
+>
+  +
+</button>
+
                         >
                           +
                         </button>
                       ) : (
                         <button
-                          onClick={() => removePairRow(i)}
-                          className="rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                          title="Delete row"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                      <button
+  onClick={() => removePairRow(i)}
+  className="shrink-0 rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+  title="Delete row"
+>
+  <Trash2 className="h-4 w-4" />
+</button>
+
                       )}
                     </div>
                   ))}
