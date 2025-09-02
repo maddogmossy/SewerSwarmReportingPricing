@@ -70,16 +70,70 @@ function P6Inner(): JSX.Element {
   }
 
   /* C5 vehicle */
-  type VehicleRow = { weight:string; rate:string };
-  const [vehicles, setVehicles] = React.useState<VehicleRow[]>([{ weight:'', rate:'' }]);
+ <section className={`${card} p-5`}>
+  <span className={tag}>P6-C5</span>
+  {/* Title style matches F1/F2/F3 */}
+  <h2 className="mb-3 text-sm font-medium text-slate-600">Vehicle Travel Rates</h2>
 
-  const addVehicle = (): void => {
-    setVehicles(v => [...v, { weight:'', rate:'' }]);
-  };
+  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+    {vehicles.map((row, i) => (
+      <div key={`veh-${i}`} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
+        {/* Vehicle weight (dropdown) */}
+        <div>
+          {i === 0 && <label className="text-xs text-slate-600">Vehicle Weight</label>}
+          <select
+            value={row.weight}
+            onChange={(e) =>
+              setVehicles(v => v.map((r, idx) => (idx === i ? { ...r, weight: e.target.value } : r)))
+            }
+            className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
+          >
+            {['3.5t','5t','7.5t','10t','12t','14t','16t','18t','20t','26t','32t'].map(w => (
+              <option key={w} value={w}>{w}</option>
+            ))}
+          </select>
+        </div>
 
-  const removeVehicle = (i: number): void => {
-    setVehicles(v => v.filter((_, idx) => idx !== i));
-  };
+        {/* Cost per mile */}
+        <div>
+          {i === 0 && <label className="text-xs text-slate-600">Cost per Mile</label>}
+          <input
+            value={row.rate}
+            onChange={(e) =>
+              setVehicles(v => v.map((r, idx) => (idx === i ? { ...r, rate: e.target.value } : r)))
+            }
+            className={`w-full rounded-md border border-slate-200 px-2 text-sm ${i === 0 ? 'mt-1 h-8' : 'h-8'}`}
+            placeholder="£45"
+          />
+        </div>
+
+        {/* Actions: show + only on first row, bin only on rows > 0 */}
+        <div className="flex items-end gap-2">
+          {i === 0 && (
+            <button
+              onClick={addVehicle}
+              className="h-8 w-8 grid place-items-center rounded-md border border-emerald-300 bg-white hover:bg-emerald-100"
+              title="Add vehicle row"
+              aria-label="Add vehicle row"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          )}
+          {i > 0 && (
+            <button
+              onClick={() => removeVehicle(i)}
+              className="h-8 w-8 grid place-items-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
+              title="Delete vehicle row"
+              aria-label="Delete vehicle row"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
   return (
     <div className="relative">
