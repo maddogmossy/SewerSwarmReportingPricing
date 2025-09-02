@@ -285,14 +285,15 @@ function P6Inner() {
                 {devId('F3')}
                 <div className="mb-2 flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-slate-800">Range Configuration</h3>
-                  <span className="rounded-md bg-white/70 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
+                 
                     {activeSize}mm
                   </span>
                 </div>
+                className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
 
                 <div className="space-y-2">
                   {rangeRows.map((row, i) => (
-                    <div key={`rg-${i}`} className="grid grid-cols-[1fr,1fr,auto] items-center gap-2">
+                    <div key={`rg-${i}`} className="grid grid-cols-[minmax(0,1fr),minmax(0,1fr),auto] items-center gap-2">
                       <input
                         value={row.lengthM}
                         onChange={(e) => {
@@ -311,7 +312,7 @@ function P6Inner() {
                         }}
                         type="number"
                         placeholder="Debris %"
-                        className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                        className="min-w-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
                       />
                       {i === 0 ? (
                         <button
