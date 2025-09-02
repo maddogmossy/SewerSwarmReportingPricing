@@ -1,12 +1,10 @@
 'use client'
 
-// app/p6/page.tsx — P6 complete
-// - C1 Sector Configuration (restored)
-// - C2 Colour Picker (restored)
-// - C3 Pipe Sizes (restored)
-// - C4 compact per-block templates (F1/F2/F3 in one row on lg+)
-// - C5 vehicle rates (next to C4)
-// - Dev IDs & colour coding
+// app/p6/page.tsx — P6 complete (compact F1/F2/F3 and restored C1/C2/C3/C5)
+// - F1: Day Rate (no dropdown/delete; compact blue)
+// - F2: Number of Lengths Per Shift (no dropdown/delete; compact; per-row delete)
+// - F3: Range Configuration (Length mtrs + Debris %; purple + adds paired rows; per-row delete removes paired rows)
+// - C1 Sector Configuration, C2 Colour Picker, C3 Pipe Sizes, C5 Vehicle Travel (row add/remove)
 
 import React, { Suspense } from 'react';
 import Link from 'next/link';
@@ -42,23 +40,9 @@ const devId = (id: string) => (
   </span>
 );
 
-/* C4 templates */
-type TemplateType = 'dayRate' | 'qty' | 'range';
-type DayRateRow = { value: string };
-type QtyRow     = { qty: string };
-type RangeRow   = { maxQty: string; debrisPct: string };
-type BlockRows  = DayRateRow[] | QtyRow[] | RangeRow[];
-type PriceBlock = { id: string; template: TemplateType; rows: BlockRows };
-
-const defaultRows = (t: TemplateType): BlockRows =>
-  t === 'dayRate' ? [{ value: '' }] :
-  t === 'qty'     ? [{ qty: '' }] :
-                    [{ maxQty: '', debrisPct: '' }];
-
-const blockSkin = (i:number) =>
-  i===0 ? 'bg-blue-50 border-blue-200' :
-  i===1 ? 'bg-emerald-50 border-emerald-200' :
-  i===2 ? 'bg-violet-50 border-violet-200' : 'bg-white';
+/* C4 types */
+type QtyRow   = { qty: string };
+type RangeRow = { lengthM: string; debrisPct: string };
 
 /* inner page */
 function P6Inner() {
@@ -70,7 +54,6 @@ function P6Inner() {
     const m: Record<string, keyof typeof PALETTE> = {A:'SA',B:'SB',C:'SC',D:'SD',E:'SE',F:'SF'};
     return m[catId[0]] || 'SA';
   })();
-  const pal = PALETTE[sectorCode];
 
   /* C2 colour (persist later) */
   const [colour, setColour] = React.useState('#3b82f6');
@@ -78,34 +61,19 @@ function P6Inner() {
   /* C3 size */
   const [activeSize, setActiveSize] = React.useState<number>(DEFAULT_SIZES[0]);
 
-  /* C4 blocks (compact) */
-  const [blocks, setBlocks] = React.useState<PriceBlock[]>([
-    { id: uid('blk'), template: 'dayRate', rows: defaultRows('dayRate') }, // F1
-    { id: uid('blk'), template: 'qty',     rows: defaultRows('qty') },     // F2
-    { id: uid('blk'), template: 'range',   rows: defaultRows('range') },   // F3
-  ]);
+  /* C4 – explicit state per F1/F2/F3 */
+  const [dayRate, setDayRate] = React.useState<string>('');
+  const [qtyRows, setQtyRows] = React.useState<QtyRow[]>([{ qty: '' }]);
+  const [rangeRows, setRangeRows] = React.useState<RangeRow[]>([{ lengthM: '', debrisPct: '' }]);
 
-  const changeTemplate = (bid:string, t:TemplateType) =>
-    setBlocks(prev => prev.map(b => b.id===bid ? ({...b, template: t, rows: defaultRows(t)}) : b));
-
-  const addBlock    = () => setBlocks(p => [...p, { id: uid('blk'), template:'dayRate', rows: defaultRows('dayRate') }]);
-  const removeBlock = (bid:string) => setBlocks(p => p.filter(b => b.id !== bid));
-
-  const addRow = (bid:string) => setBlocks(prev => prev.map(b => {
-    if (b.id !== bid) return b;
-    return b.template === 'dayRate'
-      ? {...b, rows:[...(b.rows as DayRateRow[]), {value:''}]}
-      : b.template === 'qty'
-      ? {...b, rows:[...(b.rows as QtyRow[]),     {qty:''}]}
-      : {...b, rows:[...(b.rows as RangeRow[]),   {maxQty:'', debrisPct:''}]};
-  }));
-
-  const removeRow = (bid:string, i:number) => setBlocks(prev => prev.map(b => {
-    if (b.id !== bid) return b;
-    const rows = [...(b.rows as any[])];
-    rows.splice(i,1);
-    return {...b, rows};
-  }));
+  function addRangeRow() {
+    setQtyRows(prev => [...prev, { qty: '' }]);
+    setRangeRows(prev => [...prev, { lengthM: '', debrisPct: '' }]);
+  }
+  function removePairRow(index: number) {
+    setQtyRows(prev => prev.filter((_, i) => i !== index));
+    setRangeRows(prev => prev.filter((_, i) => i !== index));
+  }
 
   /* C5 vehicle */
   type VehicleRow = { weight:string; rate:string };
@@ -213,137 +181,28 @@ function P6Inner() {
               <h2 className="text-base font-semibold">
                 Section Calculator – <span className="font-mono">{activeSize}mm</span>
               </h2>
-              <button
-                onClick={addBlock}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm shadow-sm hover:bg-slate-50"
-              >
-                <Plus className="h-4 w-4" /> Add UI
-              </button>
             </div>
 
             {/* 3 columns on lg for compact F1/F2/F3 in one row */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-              {blocks.map((b, idx) => {
-                const skin = blockSkin(idx);
-                return (
-                  <div key={b.id} className={`relative rounded-2xl border p-4 ${skin}`}>
-                    {devId(`F${idx+1}`)}
-                    <div className="mb-2 flex items-center justify-between">
-                      <select
-                        value={b.template}
-                        onChange={e => changeTemplate(b.id, e.target.value as TemplateType)}
-                        className="rounded-md border border-slate-200 bg-white/70 px-2 py-1 text-sm"
-                      >
-                        <option value="dayRate">Day Rate</option>
-                        <option value="qty">Number of lengths per shift</option>
-                        <option value="range">Range Configuration</option>
-                      </select>
-                      <button
-                        onClick={() => removeBlock(b.id)}
-                        className="ml-2 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50"
-                      >
-                        <Trash2 className="h-3 w-3" /> Remove
-                      </button>
-                    </div>
-
-                    {/* template bodies, kept compact */}
-                    {b.template === 'dayRate' && (
-                      <div>
-                        <label className="text-xs text-slate-600">Day Rate</label>
-                        <input
-                          type="number" inputMode="decimal" placeholder="£0.00"
-                          className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1 text-sm"
-                        />
-                      </div>
-                    )}
-
-                    {b.template === 'qty' && (
-                      <div className="space-y-2">
-                        {(b.rows as QtyRow[]).map((row, i) => (
-                          <div key={i} className="flex items-center gap-2">
-                            <input
-                              type="number" placeholder="Enter quantity"
-                              className="flex-1 rounded-md border border-slate-200 px-2 py-1 text-sm"
-                            />
-                            <button
-                              onClick={() => removeRow(b.id, i)}
-                              className="rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ))}
-                        <button onClick={() => addRow(b.id)} className="text-xs text-indigo-600">+ Add quantity</button>
-                      </div>
-                    )}
-
-                    {b.template === 'range' && (
-                      <div className="space-y-2">
-                        {(b.rows as RangeRow[]).map((row, i) => (
-                          <div key={i} className="grid grid-cols-[1fr,1fr,auto] items-center gap-2">
-                            <input
-                              type="number" placeholder="Max Qty per Shift"
-                              className="rounded-md border border-slate-200 px-2 py-1 text-sm"
-                            />
-                            <input
-                              type="number" placeholder="Debris Range %"
-                              className="rounded-md border border-slate-200 px-2 py-1 text-sm"
-                            />
-                            <button
-                              onClick={() => removeRow(b.id, i)}
-                              className="rounded-md border border-rose-200 bg-white px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ))}
-                        <button onClick={() => addRow(b.id)} className="text-xs text-indigo-600">+ Add range</button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* C5: next to C4 */}
-          <section className={`${card} p-5`}>
-            <span className={tag}>P6-C5</span>
-            <h2 className="mb-3 text-base font-semibold">Vehicle Travel Rates</h2>
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              {vehicles.map((row, i) => (
-                <div key={i} className="mb-2 grid grid-cols-[1fr,1fr,auto] items-end gap-3">
-                  <div>
-                    <label className="text-xs text-slate-600">Vehicle Weight</label>
-                    <input className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm" placeholder="3.5t" />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-600">Cost per Mile</label>
-                    <input className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm" placeholder="£45" />
-                  </div>
-                  <div className="flex items-end gap-2">
-                    <button onClick={addVehicle} className="rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-sm hover:bg-emerald-100">
-                      <Plus className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => removeVehicle(i)} className="rounded-md border border-rose-200 bg-white px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+              {/* ===== F1: Day Rate (blue) ===== */}
+              <div className="relative rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                {devId('F1')}
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-slate-800">Day Rate</h3>
+                  <span className="rounded-md bg-white/70 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">{activeSize}mm</span>
                 </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      </div>
-    </div>
-  );
-}
+                <label className="text-xs text-slate-600">Day Rate</label>
+                <input
+                  value={dayRate}
+                  onChange={(e)=>setDayRate(e.target.value)}
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="£0.00"
+                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                />
+              </div>
 
-/* suspense wrapper */
-export default function P6RateConfiguration() {
-  return (
-    <Suspense fallback={<div className="p-6 text-sm text-slate-600">Loading…</div>}>
-      <P6Inner />
-    </Suspense>
-  );
-}
+              {/* ===== F2: Number of Lengths Per Shift (green) ===== */}
+              <div className="relative rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                {devId
