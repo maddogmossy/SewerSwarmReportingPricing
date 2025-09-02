@@ -6,23 +6,22 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Settings, Wrench, Camera, Truck, Drill, Layers, Wand2, Scissors, Package, CircleCheck } from 'lucide-react';
+import { Camera, Truck, Wrench, Scissors, Wand2, Package, Drill, Layers, Settings, CircleCheck, Building, Home, ShieldCheck } from 'lucide-react';
 
-// ---------- Design tokens (align with P1/P2) ----------
+// ---------- Design tokens ----------
 const card = 'rounded-2xl border border-slate-200 bg-white shadow-sm';
 const shell = 'mx-auto max-w-7xl px-6 py-8';
 const muted = 'text-slate-500';
 const tag = 'inline-flex items-center rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold tracking-wider text-white';
 
-// ---------- P2 Sector color system (S1–S6) ----------
-// Keep colors consistent with P2 tiles
-const sectorPalette: Record<string, {bg:string; text:string; ring:string; iconWrap:string}> = {
-  SA: { bg: 'bg-indigo-50',   text: 'text-indigo-700',   ring: 'ring-2 ring-indigo-200',   iconWrap: 'bg-indigo-100 text-indigo-700' }, // Utilities (S1)
-  SB: { bg: 'bg-emerald-50',  text: 'text-emerald-700',  ring: 'ring-2 ring-emerald-200',  iconWrap: 'bg-emerald-100 text-emerald-700' }, // Adoption (S2)
-  SC: { bg: 'bg-amber-50',    text: 'text-amber-700',    ring: 'ring-2 ring-amber-200',    iconWrap: 'bg-amber-100 text-amber-700' },   // Highways (S3)
-  SD: { bg: 'bg-sky-50',      text: 'text-sky-700',      ring: 'ring-2 ring-sky-200',      iconWrap: 'bg-sky-100 text-sky-700' },       // Insurance (S5 in screenshot ordering)
-  SE: { bg: 'bg-rose-50',     text: 'text-rose-700',     ring: 'ring-2 ring-rose-200',     iconWrap: 'bg-rose-100 text-rose-700' },     // Construction (S6)
-  SF: { bg: 'bg-pink-50',     text: 'text-pink-700',     ring: 'ring-2 ring-pink-200',     iconWrap: 'bg-pink-100 text-pink-700' },     // Domestic (S4)
+// ---------- Sector palette + icons (match P2 S1–S6) ----------
+const sectorPalette: Record<string, { bg:string; text:string; ring:string; icon: React.ReactNode }> = {
+  SA: { bg: 'bg-indigo-50',   text: 'text-indigo-700',   ring: 'ring-2 ring-indigo-200',   icon: <Camera className="h-5 w-5" /> }, // Utilities (S1)
+  SB: { bg: 'bg-emerald-50',  text: 'text-emerald-700',  ring: 'ring-2 ring-emerald-200',  icon: <Building className="h-5 w-5" /> }, // Adoption (S2)
+  SC: { bg: 'bg-amber-50',    text: 'text-amber-700',    ring: 'ring-2 ring-amber-200',    icon: <Wrench className="h-5 w-5" /> },   // Highways (S3)
+  SF: { bg: 'bg-pink-50',     text: 'text-pink-700',     ring: 'ring-2 ring-pink-200',     icon: <Home className="h-5 w-5" /> },     // Domestic (S4)
+  SD: { bg: 'bg-sky-50',      text: 'text-sky-700',      ring: 'ring-2 ring-sky-200',      icon: <ShieldCheck className="h-5 w-5" /> }, // Insurance (S5)
+  SE: { bg: 'bg-rose-50',     text: 'text-rose-700',     ring: 'ring-2 ring-rose-200',     icon: <Truck className="h-5 w-5" /> },    // Construction (S6)
 };
 
 // ---------- Sectors ----------
@@ -80,10 +79,9 @@ export default function P5PricingConfiguration() {
             <h1 className="text-2xl font-semibold tracking-tight">Pricing Configuration</h1>
             <p className={`mt-1 ${muted}`}>Configure pricing by sector and category</p>
           </div>
-          <Link href="/dashboard" className={tag}>Dashboard</Link>
         </div>
 
-        {/* P5-C1: Select Sector (card) */}
+        {/* P5-C1: Select Sector */}
         <section className={`${card} p-5 mb-6 relative`}>
           <span className={`${tag} absolute right-3 top-3`}>P5-C1</span>
           <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-slate-600">Select Sector</h2>
@@ -102,8 +100,8 @@ export default function P5PricingConfiguration() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`grid h-10 w-10 place-items-center rounded-xl ${pal.iconWrap}`}>
-                      <div className="h-2 w-2 rounded-full bg-current" />
+                    <div className={`grid h-10 w-10 place-items-center rounded-xl ${pal.bg} ${pal.text}`}>
+                      {pal.icon}
                     </div>
                     <div>
                       <div className={`text-sm font-semibold ${pal.text}`}>{s.name}</div>
@@ -116,8 +114,8 @@ export default function P5PricingConfiguration() {
           </div>
         </section>
 
-        {/* P5-C2: Categories (card) */}
-        <section className={`${card} p-5`}>
+        {/* P5-C2: Categories */}
+        <section className={`${card} p-5 relative`}>
           <span className={`${tag} absolute right-3 top-3`}>P5-C2</span>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-base font-semibold">Categories</h2>
@@ -136,7 +134,7 @@ export default function P5PricingConfiguration() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`rounded-xl border border-slate-200 p-2 ${palette.iconWrap}`}>
+                      <div className={`rounded-xl border border-slate-200 p-2 ${palette.bg} ${palette.text}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
@@ -151,8 +149,6 @@ export default function P5PricingConfiguration() {
             })}
           </div>
         </section>
-
-        {/* Footer summary removed per request */}
       </div>
     </div>
   );
