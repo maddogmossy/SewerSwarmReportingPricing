@@ -37,65 +37,20 @@ const devId = (id: string) => (
 type QtyRow   = { qty: string };
 type RangeRow = { lengthM: string; debrisPct: string };
 
-/* inner page */
 function P6Inner(): JSX.Element {
   const search = useSearchParams();
   const sectorParam = search.get('sector') || 'sector_utilities';
   const catId = search.get('catId') || 'A1';
 
+  /* derive default sector from category letter */
   const sectorCode = ((): keyof typeof PALETTE => {
-    const m: Record<string, keyof typeof PALETTE> = { A:'SA', B:'SB', C:'SC', D:'SD', E:'SE', F:'SF' };
-    return m[catId[0]] || 'SA';
+    const map: Record<string, keyof typeof PALETTE> = { A:'SA', B:'SB', C:'SC', D:'SD', E:'SE', F:'SF' };
+    return map[catId[0]] || 'SA';
   })();
-  
-// P6-C1: active sector to save/read pricing for
-<section className={`${card} p-5 mb-6`}>
-  <span className={tag}>P6-C1</span>
 
-  <section className={`${card} p-5 mb-6`}>
-  <span className={tag}>P6-C1</span>
-  <h2 className="mb-1 text-sm font-medium uppercase tracking-wider text-slate-600">
-    Sector Configuration
-  </h2>
-  <p className="mb-3 text-sm text-slate-600">
-    Select the sector you want to save prices into. Each sector saves independently.
-  </p>
-
-  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-    {ORDER.map(code => {
-      const p = PALETTE[code];
-      const active = code === selectedSector;
-      return (
-        <button
-          key={code}
-          type="button"
-          aria-pressed={active}
-          onClick={() => setSelectedSector(code)}
-          className={`text-left rounded-2xl border p-4 transition ${
-            active
-              ? `${p.bg} ${p.ring} border-transparent`
-              : 'bg-white border-slate-200 hover:bg-slate-50'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <div className={`grid h-10 w-10 place-items-center rounded-xl ${p.bg} ${p.text}`}>
-              {p.icon}
-            </div>
-            <div>
-              <div className={`text-sm font-semibold ${p.text}`}>{p.name}</div>
-              <div className="mt-0.5 text-xs text-slate-500">{code}</div>
-            </div>
-          </div>
-
-          <div className="mt-3 text-xs text-slate-500">
-            {active ? 'Selected • prices will save to this sector' : 'Click to select'}
-          </div>
-        </button>
-      );
-    })}
-  </div>
-</section>
-
+  /* === P6-C1: active sector selector (sticky) === */
+  const [selectedSector, setSelectedSector] =
+    React.useState<keyof typeof PALETTE>(sectorCode);
 
   /* C2 colour (persist later) */
   const [colour, setColour] = React.useState<string>('#3b82f6');
@@ -112,7 +67,6 @@ function P6Inner(): JSX.Element {
     setQtyRows(prev => [...prev, { qty: '' }]);
     setRangeRows(prev => [...prev, { lengthM: '', debrisPct: '' }]);
   }
-
   function removePairRow(index: number): void {
     setQtyRows(prev => prev.filter((_, i) => i !== index));
     setRangeRows(prev => prev.filter((_, i) => i !== index));
@@ -122,14 +76,20 @@ function P6Inner(): JSX.Element {
   type VehicleRow = { weight:string; rate:string };
   const VEHICLE_WEIGHTS = ['3.5t','5t','7.5t','10t','12t','14t','16t','18t','20t','26t','32t'];
   const [vehicles, setVehicles] = React.useState<VehicleRow[]>([{ weight:'3.5t', rate:'' }]);
+  const addVehicle = (): void => setVehicles(v => [...v, { weight:'3.5t', rate:'' }]);
+  const removeVehicle = (i: number): void => setVehicles(v => v.filter((_, idx) => idx !== i));
 
-  const addVehicle = (): void => {
-    setVehicles(v => [...v, { weight:'3.5t', rate:'' }]);
-  };
-
-  const removeVehicle = (i: number): void => {
-    setVehicles(v => v.filter((_, idx) => idx !== i));
-  };
+  /* scaffold: saving C4 to the selected sector (wire to API later) */
+  async function saveC4ToSector() {
+    const payload = {
+      sector: selectedSector,
+      category: catId,
+      pipeSize: activeSize,
+      data: { dayRate, qtyRows, rangeRows },
+    };
+    console.log('Saving pricing config', payload);
+    // await fetch('/api/pricing', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+  }
 
   return (
     <div className="relative">
@@ -151,6 +111,50 @@ function P6Inner(): JSX.Element {
             Back to Pricing
           </Link>
         </div>
+
+        {/* ===================== C1 (SECTOR SELECTOR) ===================== */}
+        <section className={`${card} p-5 mb-6`}>
+          <span className={tag}>P6-C1</span>
+          <h2 className="mb-1 text-sm font-medium uppercase tracking-wider text-slate-600">
+            Sector Configuration
+          </h2>
+          <p className="mb-3 text-sm text-slate-600">
+            Select the sector you want to save prices into. Each sector saves independently.
+          </p>
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {ORDER.map(code => {
+              const p = PALETTE[code];
+              const active = code === selectedSector;
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setSelectedSector(code)}
+                  className={`text-left rounded-2xl border p-4 transition ${
+                    active
+                      ? `${p.bg} ${p.ring} border-transparent`
+                      : 'bg-white border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`grid h-10 w-10 place-items-center rounded-xl ${p.bg} ${p.text}`}>
+                      {p.icon}
+                    </div>
+                    <div>
+                      <div className={`text-sm font-semibold ${p.text}`}>{p.name}</div>
+                      <div className="mt-0.5 text-xs text-slate-500">{code}</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 text-xs text-slate-500">
+                    {active ? 'Selected • prices will save to this sector' : 'Click to select'}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* ===================== C2 ===================== */}
         <section className={`${card} p-5 mb-6`}>
@@ -219,10 +223,9 @@ function P6Inner(): JSX.Element {
 
         {/* ===================== C4 + C5 row ===================== */}
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* C4: compact 3-up grid with wider F3 */}
+          {/* C4 */}
           <section className={`${card} p-5 lg:col-span-2`}>
             <span className={tag}>P6-C4</span>
-
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-base font-semibold">
                 Section Calculator – <span className="font-mono">{activeSize}mm</span>
@@ -230,7 +233,7 @@ function P6Inner(): JSX.Element {
             </div>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[.9fr_.9fr_1.2fr]">
-              {/* ===== F1: Day Rate (blue) ===== */}
+              {/* F1 */}
               <div className="relative rounded-2xl border border-blue-200 bg-blue-50 p-4">
                 {devId('F1')}
                 <div className="mb-2 text-sm font-normal text-slate-600">Day Rate</div>
@@ -244,11 +247,10 @@ function P6Inner(): JSX.Element {
                 />
               </div>
 
-              {/* ===== F2: Number of Lengths Per Shift (green) ===== */}
+              {/* F2 */}
               <div className="relative rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                 {devId('F2')}
                 <div className="mb-2 text-sm font-normal text-slate-600">Number of Lengths Per Shift</div>
-
                 <div className="space-y-2">
                   {qtyRows.map((row, i) => (
                     <div key={`qty-${i}`} className="flex items-center gap-2">
@@ -262,23 +264,19 @@ function P6Inner(): JSX.Element {
                         placeholder="Enter quantity"
                         className="h-8 flex-1 rounded-md border border-slate-200 bg-white px-2 text-sm"
                       />
-                      {/* No bin in green */}
+                      {/* bin is only in purple block */}
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* ===== F3: Range Configuration (purple) ===== */}
+              {/* F3 */}
               <div className="relative rounded-2xl border border-violet-200 bg-violet-50 p-4">
                 {devId('F3')}
                 <div className="mb-2 text-sm font-normal text-slate-600">Range Configuration</div>
-
                 <div className="space-y-2">
                   {rangeRows.map((row, i) => (
-                    <div
-                      key={`rg-${i}`}
-                      className="grid grid-cols-[minmax(0,1fr),minmax(0,1fr),auto] items-center gap-2"
-                    >
+                    <div key={`rg-${i}`} className="grid grid-cols-[minmax(0,1fr),minmax(0,1fr),auto] items-center gap-2">
                       <input
                         value={row.lengthM}
                         onChange={(e) => {
@@ -323,9 +321,17 @@ function P6Inner(): JSX.Element {
                 </div>
               </div>
             </div>
+
+            {/* temp save while wiring storage */}
+            <button
+              onClick={saveC4ToSector}
+              className="mt-4 inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+            >
+              Save to selected sector ({selectedSector})
+            </button>
           </section>
 
-          {/* C5: next to C4 */}
+          {/* C5 */}
           <section className={`${card} p-5`}>
             <span className={tag}>P6-C5</span>
             {devId('F4')}
@@ -390,7 +396,6 @@ function P6Inner(): JSX.Element {
   );
 }
 
-/* suspense wrapper */
 export default function P6RateConfiguration(): JSX.Element {
   return (
     <Suspense fallback={<div className="p-6 text-sm text-slate-600">Loading…</div>}>
