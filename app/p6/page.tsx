@@ -49,8 +49,7 @@ function P6Inner(): JSX.Element {
   })();
 
   /* === P6-C1: active sector selector (sticky) === */
-  const [selectedSector, setSelectedSector] =
-    React.useState<keyof typeof PALETTE>(sectorCode);
+  const [selectedSectors, setSelectedSectors] = React.useState<(keyof typeof PALETTE)[]>([sectorCode]);
 
   /* C2 colour (persist later) */
   const [colour, setColour] = React.useState<string>('#3b82f6');
@@ -82,7 +81,7 @@ function P6Inner(): JSX.Element {
   /* scaffold: saving C4 to the selected sector (wire to API later) */
   async function saveC4ToSector() {
     const payload = {
-      sector: selectedSector,
+      sectors: selectedSectors, // array, e.g. ['SA','SB']
       category: catId,
       pipeSize: activeSize,
       data: { dayRate, qtyRows, rangeRows },
@@ -124,20 +123,25 @@ function P6Inner(): JSX.Element {
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {ORDER.map(code => {
-              const p = PALETTE[code];
-              const active = code === selectedSector;
-              return (
-                <button
-                  key={code}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setSelectedSector(code)}
-                  className={`text-left rounded-2xl border p-4 transition ${
-                    active
-                      ? `${p.bg} ${p.ring} border-transparent`
-                      : 'bg-white border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
+              const active = selectedSectors.includes(code);
+<button
+  key={code}
+  type="button"
+  aria-pressed={active}
+  onClick={() => {
+    setSelectedSectors(prev =>
+      prev.includes(code)
+        ? prev.filter(s => s !== code) // deselect if already selected
+        : [...prev, code]              // add if not selected
+    );
+  }}
+  className={`text-left rounded-2xl border p-4 transition ${
+    active
+      ? `${p.bg} ${p.ring} border-transparent`
+      : 'bg-white border-slate-200 hover:bg-slate-50'
+  }`}
+>
+
                   <div className="flex items-center gap-3">
                     <div className={`grid h-10 w-10 place-items-center rounded-xl ${p.bg} ${p.text}`}>
                       {p.icon}
