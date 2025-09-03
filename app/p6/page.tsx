@@ -49,8 +49,53 @@ function P6Inner(): JSX.Element {
   })();
   
 // P6-C1: active sector to save/read pricing for
-const [selectedSector, setSelectedSector] =
-  React.useState<keyof typeof PALETTE>(sectorCode);
+<section className={`${card} p-5 mb-6`}>
+  <span className={tag}>P6-C1</span>
+
+  <section className={`${card} p-5 mb-6`}>
+  <span className={tag}>P6-C1</span>
+  <h2 className="mb-1 text-sm font-medium uppercase tracking-wider text-slate-600">
+    Sector Configuration
+  </h2>
+  <p className="mb-3 text-sm text-slate-600">
+    Select the sector you want to save prices into. Each sector saves independently.
+  </p>
+
+  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    {ORDER.map(code => {
+      const p = PALETTE[code];
+      const active = code === selectedSector;
+      return (
+        <button
+          key={code}
+          type="button"
+          aria-pressed={active}
+          onClick={() => setSelectedSector(code)}
+          className={`text-left rounded-2xl border p-4 transition ${
+            active
+              ? `${p.bg} ${p.ring} border-transparent`
+              : 'bg-white border-slate-200 hover:bg-slate-50'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`grid h-10 w-10 place-items-center rounded-xl ${p.bg} ${p.text}`}>
+              {p.icon}
+            </div>
+            <div>
+              <div className={`text-sm font-semibold ${p.text}`}>{p.name}</div>
+              <div className="mt-0.5 text-xs text-slate-500">{code}</div>
+            </div>
+          </div>
+
+          <div className="mt-3 text-xs text-slate-500">
+            {active ? 'Selected • prices will save to this sector' : 'Click to select'}
+          </div>
+        </button>
+      );
+    })}
+  </div>
+</section>
+
 
   /* C2 colour (persist later) */
   const [colour, setColour] = React.useState<string>('#3b82f6');
