@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   Camera, Building, Wrench, Home, ShieldCheck, Truck,
-  Plus, Trash2, Copy
+  Plus, Trash2
 } from 'lucide-react';
 
 /* tokens */
@@ -48,8 +48,9 @@ function P6Inner(): JSX.Element {
     return map[catId[0]] || 'SA';
   })();
 
-  /* === P6-C1: active sector selector (sticky) === */
-  const [selectedSectors, setSelectedSectors] = React.useState<(keyof typeof PALETTE)[]>([sectorCode]);
+  /* === P6-C1: MULTI-SELECT sector toggles (latching) === */
+  const [selectedSectors, setSelectedSectors] =
+    React.useState<(keyof typeof PALETTE)[]>([sectorCode]);
 
   /* C2 colour (persist later) */
   const [colour, setColour] = React.useState<string>('#3b82f6');
@@ -78,16 +79,16 @@ function P6Inner(): JSX.Element {
   const addVehicle = (): void => setVehicles(v => [...v, { weight:'3.5t', rate:'' }]);
   const removeVehicle = (i: number): void => setVehicles(v => v.filter((_, idx) => idx !== i));
 
-  /* scaffold: saving C4 to the selected sector (wire to API later) */
-  async function saveC4ToSector() {
+  /* scaffold: saving C4 to ALL selected sectors (wire API later) */
+  async function saveC4ToSectors() {
     const payload = {
-      sectors: selectedSectors, // array, e.g. ['SA','SB']
+      sectors: selectedSectors,   // array, e.g., ['SA','SB']
       category: catId,
       pipeSize: activeSize,
       data: { dayRate, qtyRows, rangeRows },
     };
     console.log('Saving pricing config', payload);
-    // await fetch('/api/pricing', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    // await fetch('/api/pricing/bulk', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
   }
 
   return (
@@ -118,30 +119,31 @@ function P6Inner(): JSX.Element {
             Sector Configuration
           </h2>
           <p className="mb-3 text-sm text-slate-600">
-            Select the sector you want to save prices into. Each sector saves independently.
+            Toggle the sectors you want to save prices into. Each sector saves independently.
           </p>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {ORDER.map(code => {
+              const p = PALETTE[code];
               const active = selectedSectors.includes(code);
-<button
-  key={code}
-  type="button"
-  aria-pressed={active}
-  onClick={() => {
-    setSelectedSectors(prev =>
-      prev.includes(code)
-        ? prev.filter(s => s !== code) // deselect if already selected
-        : [...prev, code]              // add if not selected
-    );
-  }}
-  className={`text-left rounded-2xl border p-4 transition ${
-    active
-      ? `${p.bg} ${p.ring} border-transparent`
-      : 'bg-white border-slate-200 hover:bg-slate-50'
-  }`}
->
-
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() =>
+                    setSelectedSectors(prev =>
+                      prev.includes(code)
+                        ? prev.filter(s => s !== code)  // deselect
+                        : [...prev, code]               // latch on
+                    )
+                  }
+                  className={`text-left rounded-2xl border p-4 transition ${
+                    active
+                      ? `${p.bg} ${p.ring} border-transparent`
+                      : 'bg-white border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
                   <div className="flex items-center gap-3">
                     <div className={`grid h-10 w-10 place-items-center rounded-xl ${p.bg} ${p.text}`}>
                       {p.icon}
@@ -152,7 +154,7 @@ function P6Inner(): JSX.Element {
                     </div>
                   </div>
                   <div className="mt-3 text-xs text-slate-500">
-                    {active ? 'Selected • prices will save to this sector' : 'Click to select'}
+                    {active ? 'Selected • will save to this sector' : 'Click to select'}
                   </div>
                 </button>
               );
@@ -210,18 +212,6 @@ function P6Inner(): JSX.Element {
                 </button>
               ))}
             </div>
-            <div className="mt-3">
-              <button
-                onClick={() => {
-                  const v = Number(prompt('Add size (mm):') || '');
-                  if (!Number.isFinite(v) || v <= 0) return;
-                  alert('Size added locally (persist to DB later).');
-                }}
-                className="inline-flex items-center gap-2 rounded-md border border-amber-300 bg-white px-3 py-1.5 text-sm hover:bg-amber-100"
-              >
-                <Plus className="h-4 w-4" /> Add size
-              </button>
-            </div>
           </div>
         </section>
 
@@ -268,7 +258,7 @@ function P6Inner(): JSX.Element {
                         placeholder="Enter quantity"
                         className="h-8 flex-1 rounded-md border border-slate-200 bg-white px-2 text-sm"
                       />
-                      {/* bin is only in purple block */}
+                      {/* no bin in green */}
                     </div>
                   ))}
                 </div>
@@ -303,7 +293,7 @@ function P6Inner(): JSX.Element {
                       />
                       {i === 0 ? (
                         <button
-                          onClick={addRangeRow}
+                          onClick={() => addRangeRow()}
                           className="h-8 w-8 shrink-0 grid place-items-center rounded-md border border-violet-300 bg-white text-violet-600 hover:bg-violet-600 hover:text-white"
                           title="Add range row"
                           aria-label="Add range row"
@@ -326,12 +316,12 @@ function P6Inner(): JSX.Element {
               </div>
             </div>
 
-            {/* temp save while wiring storage */}
+            {/* temp save while wiring storage: saves to ALL selected sectors */}
             <button
-              onClick={saveC4ToSector}
+              onClick={saveC4ToSectors}
               className="mt-4 inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
             >
-              Save to selected sector ({selectedSector})
+              Save to sectors ({selectedSectors.join(', ')})
             </button>
           </section>
 
