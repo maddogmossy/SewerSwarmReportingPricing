@@ -47,6 +47,10 @@ function P6Inner(): JSX.Element {
     const m: Record<string, keyof typeof PALETTE> = { A:'SA', B:'SB', C:'SC', D:'SD', E:'SE', F:'SF' };
     return m[catId[0]] || 'SA';
   })();
+  
+// P6-C1: active sector to save/read pricing for
+const [selectedSector, setSelectedSector] =
+  React.useState<keyof typeof PALETTE>(sectorCode);
 
   /* C2 colour (persist later) */
   const [colour, setColour] = React.useState<string>('#3b82f6');
@@ -102,49 +106,6 @@ function P6Inner(): JSX.Element {
             Back to Pricing
           </Link>
         </div>
-
-        {/* ===================== C1 ===================== */}
-        <section className={`${card} p-5 mb-6`}>
-          <span className={tag}>P6-C1</span>
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-slate-600">
-            Sector Configuration
-          </h2>
-          <p className="mb-3 text-sm text-slate-600">
-            Copy prices between sectors. Each sector saves independently.
-          </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {ORDER.map(code => {
-              const p = PALETTE[code];
-              const active = code === sectorCode;
-              return (
-                <div
-                  key={code}
-                  className={`rounded-2xl border p-4 ${
-                    active ? `${p.bg} ${p.ring} border-transparent` : 'bg-white border-slate-200'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`grid h-10 w-10 place-items-center rounded-xl ${p.bg} ${p.text}`}>
-                      {p.icon}
-                    </div>
-                    <div>
-                      <div className={`text-sm font-semibold ${p.text}`}>{p.name}</div>
-                      <div className="mt-0.5 text-xs text-slate-500">{code}</div>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2 text-xs">
-                    <button className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1">
-                      <Copy className="h-3 w-3" /> Copy in
-                    </button>
-                    <button className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1">
-                      <Copy className="h-3 w-3" /> Copy out
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
 
         {/* ===================== C2 ===================== */}
         <section className={`${card} p-5 mb-6`}>
