@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { defects, reports, sections } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import { evaluateSection, type SectorCode } from "@/lib/standards";
 
 type Row = {
   id: number;
