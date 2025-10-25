@@ -2,11 +2,67 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { defects, reports, sections } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+
+// -------------------------------------------
+// TEMPORARY EVALUATION LOGIC (placeholder)
+// -------------------------------------------
+function evaluateSection(
+  sector: string,
+  input: {
+    itemNo: string;
+    pipeSize?: number;
+    pipeMaterial?: string;
+    observations?: string;
+    defects: any[];
+  }
+) {
+  const hasStructuralDefects = input.defects.some(d => d.code === "STR");
+  const hasServiceDefects = input.defects.some(d => d.code === "SER");
+
+  // Simple placeholder rules until WRc / MSCC5 logic is integrated
+  if (hasStructuralDefects && !hasServiceDefects) {
+    return {
+      recommendation: "Structural repair required",
+      adoptable: false,
+      srmGrading: "C",
+      severityGrade: 4,
+      costGBP: 1200,
+    };
+  } else if (hasServiceDefects && !hasStructuralDefects) {
+    return {
+      recommendation: "Clean and re-survey",
+      adoptable: true,
+      srmGrading: "B",
+      severityGrade: 2,
+      costGBP: 350,
+    };
+  } else if (hasStructuralDefects && hasServiceDefects) {
+    return {
+      recommendation: "Structural repair and service cleaning required",
+      adoptable: false,
+      srmGrading: "D",
+      severityGrade: 5,
+      costGBP: 1500,
+    };
+  } else {
+    return {
+      recommendation: "No major action required",
+      adoptable: true,
+      srmGrading: "A",
+      severityGrade: 1,
+      costGBP: 0,
+    };
+  }
+}
+
+// -------------------------------------------
+// SECTION API ROUTE
+// -------------------------------------------
 
 type Row = {
   id: number;
-  itemNo: string;             // may get "a" suffix for split rows
+  itemNo: string;
   projectNo: string;
   inspectionNo: string | null;
   date: string | null;
@@ -30,29 +86,28 @@ type Row = {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const reportId = searchParams.get("reportId");
-  // sector can come from report OR override via query:
-  const sectorOverride = searchParams.get("sector") as SectorCode | null;
+  const sectorOverride = searchParams.get("sector");
 
   if (!reportId) {
     return NextResponse.json({ error: "reportId is required" }, { status: 400 });
   }
 
-  // pull sections + defects
+  // Fetch sections and defects for this report
   const secRows = await db.query.sections.findMany({
     where: eq(sections.reportId, Number(reportId)),
     with: { defects: true },
     orderBy: (s, { asc }) => [asc(s.itemNo), asc(s.id)],
   });
 
-  // find the upload sector as default
+  // Fetch report for default sector
   const rep = await db.query.reports.findFirst({
     where: eq(reports.id, Number(reportId)),
   });
 
-  const sector: SectorCode = (sectorOverride || rep?.sector || "SA") as SectorCode;
+  const sector = sectorOverride || rep?.sector || "S1"; // default to Utilities
 
-  // Expand combined SER+STR into two rows: item "13" + "13a"
   const expanded: Row[] = [];
+
   for (const s of secRows) {
     const hasSER = s.defects.some(d => d.code === "SER");
     const hasSTR = s.defects.some(d => d.code === "STR");
@@ -80,7 +135,7 @@ export async function GET(req: Request) {
       costGBP: s.costGBP ? String(s.costGBP) : null,
     };
 
-    // rules input
+    // helper for filtering defects by code
     const toInput = (codes: string[]) => ({
       itemNo: s.itemNo,
       pipeSize: s.pipeSize ?? undefined,
@@ -90,7 +145,7 @@ export async function GET(req: Request) {
     });
 
     if (hasSER && hasSTR) {
-      // 1) SER row (original item number)
+      // 1️⃣ SER row
       const serEval = evaluateSection(sector, toInput(["SER"]));
       expanded.push({
         ...base,
@@ -101,7 +156,7 @@ export async function GET(req: Request) {
         costGBP: serEval.costGBP != null ? String(serEval.costGBP) : null,
       });
 
-      // 2) STR row (use "a" suffix)
+      // 2️⃣ STR row (with "a" suffix)
       const strEval = evaluateSection(sector, toInput(["STR"]));
       expanded.push({
         ...base,
