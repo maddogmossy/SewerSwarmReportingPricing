@@ -13,8 +13,7 @@ export async function GET(req: Request) {
   const rows = await db.query.sections.findMany({
     where: (s, { eq, and }) => and(
       eq(s.reportId, reportId),
-      sector ? eq(s.sectionSector, sector as any) : undefined
-    ),
+      sector ? eq(s.sector, sector as any) : undefined
     with: { defects: true, report: true },
     orderBy: (s, { asc }) => [asc(s.itemNo)],
   });
