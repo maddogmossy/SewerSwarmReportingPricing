@@ -1,5 +1,12 @@
-import { db, uploads, projects, clients } from "@/db";
-import { desc, eq } from "drizzle-orm";
+import { db, // In /db/schema.ts
+export const uploads = pgTable("uploads", {
+  id: serial("id").primaryKey(),
+  reportId: integer("report_id").references(() => reports.id),
+  fileName: text("file_name"),
+  fileType: text("file_type"),
+  fileSize: integer("file_size"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
 export type UploadWithRelations = {
   id: number;
