@@ -20,7 +20,7 @@ export async function GET(req: Request) {
         eq(s.reportId, reportId),
         sector ? eq(s.sector, sector as any) : undefined
       ),
-    with: { defects: true, report: true },
+    with: { defects: true },
     orderBy: (s, { asc }) => [asc(s.itemNo)],
   });
 
