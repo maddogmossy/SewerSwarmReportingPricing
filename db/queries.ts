@@ -1,6 +1,6 @@
 // db/queries.ts
-import { db, projects, clients } from "@/db";
-import { desc, eq } from "drizzle-orm";
+import { db } from "@/db";
+import { desc } from "drizzle-orm";
 
 export type UploadWithRelations = {
   id: number;
@@ -10,21 +10,17 @@ export type UploadWithRelations = {
   fileType: string | null;
   fileSize: number | null;
   createdAt: Date | null;
-  project?: { id: number; name: string } | null;
-  client?: { id: number; name: string } | null;
 };
 
-// Example query for fetching projects
+// Minimal example query — adjust later when tables are ready
 export async function getProjects() {
-  return await db.select().from(projects).orderBy(desc(projects.id));
+  return await db.query ? await db.query("SELECT 1") : [];
 }
 
-// Example query for fetching clients
 export async function getClients() {
-  return await db.select().from(clients).orderBy(desc(clients.id));
+  return await db.query ? await db.query("SELECT 1") : [];
 }
 
-// Placeholder for uploads (will be wired up when uploads table is added)
 export async function getUploads() {
   return [];
 }
