@@ -1,48 +1,30 @@
-// In /db/schema.t
+// db/queries.ts
 import { db, projects, clients } from "@/db";
-  id: serial("id").primaryKey(),
-  reportId: integer("report_id").references(() => reports.id),
-  fileName: text("file_name"),
-  fileType: text("file_type"),
-  fileSize: integer("file_size"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+import { desc, eq } from "drizzle-orm";
 
 export type UploadWithRelations = {
   id: number;
-  sector: string;
-  filename: string;
-  storagePath: string | null;
-  uploadedAt: Date;
-  project: { id: number | null; name: string | null } | null;
-  client: { id: number | null; name: string | null } | null;
+  projectId: number | null;
+  clientId: number | null;
+  fileName: string;
+  fileType: string | null;
+  fileSize: number | null;
+  createdAt: Date | null;
+  project?: { id: number; name: string } | null;
+  client?: { id: number; name: string } | null;
 };
 
-export async function getUploadsWithRelations(): Promise<UploadWithRelations[]> {
-  const rows = await db
-    .select({
-      id: uploads.id,
-      sector: uploads.sector,
-      filename: uploads.filename,
-      storagePath: uploads.storagePath,
-      uploadedAt: uploads.uploadedAt,
-      projectId: uploads.projectId,
-      projectName: projects.name,
-      clientId: clients.id,
-      clientName: clients.name,
-    })
-    .from(uploads)
-    .leftJoin(projects, eq(projects.id, uploads.projectId))
-    .leftJoin(clients, eq(clients.id, projects.clientId))
-    .orderBy(desc(uploads.uploadedAt));
+// Example query for fetching projects
+export async function getProjects() {
+  return await db.select().from(projects).orderBy(desc(projects.id));
+}
 
-  return rows.map(r => ({
-    id: r.id,
-    sector: r.sector,
-    filename: r.filename,
-    storagePath: r.storagePath,
-    uploadedAt: r.uploadedAt,
-    project: r.projectId ? { id: r.projectId, name: r.projectName ?? null } : null,
-    client: r.clientId ? { id: r.clientId, name: r.clientName ?? null } : null,
-  }));
+// Example query for fetching clients
+export async function getClients() {
+  return await db.select().from(clients).orderBy(desc(clients.id));
+}
+
+// Placeholder for uploads (will be wired up when uploads table is added)
+export async function getUploads() {
+  return [];
 }
