@@ -1,5 +1,5 @@
-import { db, // In /db/schema.ts
-export const uploads = pgTable("uploads", {
+// In /db/schema.t
+import { db, projects, clients } from "@/db";
   id: serial("id").primaryKey(),
   reportId: integer("report_id").references(() => reports.id),
   fileName: text("file_name"),
