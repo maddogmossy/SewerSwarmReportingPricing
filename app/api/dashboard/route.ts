@@ -11,12 +11,13 @@ export async function GET(req: Request) {
 
   // join sections + defects; simple shaping for now
   const rows = await db.query.sections.findMany({
-    where: (s, { eq, and }) => and(
-      eq(s.reportId, reportId),
-      sector ? eq(s.sector, sector as any) : undefined
-    with: { defects: true, report: true },
-    orderBy: (s, { asc }) => [asc(s.itemNo)],
-  });
+    where: (s, { eq, and }) =>
+  and(
+    eq(s.reportId, reportId),
+    sector ? eq(s.sector, sector as any) : undefined
+  ),
+with: { defects: true, report: true },
+orderBy: (s, { asc }) => [asc(s.itemNo)],
 
   // split SER/STR: base row first (e.g. 13), then 13a for STR
   const display: Array<any> = [];
