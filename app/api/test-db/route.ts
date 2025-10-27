@@ -5,12 +5,13 @@ export async function GET() {
   try {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
+      ssl: { rejectUnauthorized: false }, // important for RDS
     });
-    const res = await pool.query('SELECT NOW()');
-    return NextResponse.json({ connected: true, time: res.rows[0].now });
-  } catch (err) {
-    console.error('DB connection error:', err);
-    return NextResponse.json({ connected: false, error: err.message });
+    const result = await pool.query('SELECT NOW()');
+    return NextResponse.json({ connected: true, time: result.rows[0].now });
+  } catch (error: any) {
+    console.error('DB connection error:', error);
+    return NextResponse.json({ connected: false, error: error.message });
   }
 }
+
